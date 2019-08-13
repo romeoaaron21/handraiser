@@ -6,6 +6,14 @@ exports.up = (pgm) => {
       type: 'serial',
       primaryKey: true
     },
+    firstname: {
+      type: 'text',
+      notNull: true,
+    },
+    lastname: {
+      type: 'text',
+      notNull: true
+    },
     email: {
       type: 'text',
       notNull: true
