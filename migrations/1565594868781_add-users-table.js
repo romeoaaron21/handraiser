@@ -14,11 +14,15 @@ exports.up = (pgm) => {
       type: 'text',
       notNull: true
     },
-    email: {
+    sub: {
       type: 'text',
       notNull: true
     },
     privilege: {
+      type: 'text',
+      notNull: true
+    },
+    avatar: {
       type: 'text',
       notNull: true
     }
