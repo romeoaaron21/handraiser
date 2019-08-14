@@ -39,10 +39,9 @@ class AddClass extends React.Component{
       <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
           <DialogTitle id="form-dialog-title">Add Class</DialogTitle>
           <DialogContent>
-            {/* <DialogContentText>
-              To subscribe to this website, please enter your email address here. We will send updates
-              occasionally.
-            </DialogContentText> */}
+            <DialogContentText>
+              Please Fill up the forms.
+            </DialogContentText>
             <TextField
               autoFocus
               margin="dense"
@@ -66,7 +65,7 @@ class AddClass extends React.Component{
             <Button onClick={close} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.submit} color="primary">
+            <Button onClick={this.submit} color="primary" autoFocus>
               Add
             </Button>
           </DialogActions>
