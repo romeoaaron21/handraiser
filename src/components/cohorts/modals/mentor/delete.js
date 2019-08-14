@@ -14,7 +14,7 @@ class DeleteClass extends React.Component {
   }
 
   render(){
-    const { open, close, id } = this.props;
+    const { open, close } = this.props;
     return (
       <Dialog
         open={open}
@@ -22,19 +22,18 @@ class DeleteClass extends React.Component {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {id} Let Google help apps determine location. This means sending anonymous location data to
-            Google, even when no apps are running.
+            Are you sure you want to delete class?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={close} color="primary">
-            Disagree
+            Cancel
           </Button>
           <Button onClick={this.submit} color="primary" autoFocus>
-            Agree
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
