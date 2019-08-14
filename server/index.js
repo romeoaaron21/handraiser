@@ -11,7 +11,7 @@ massive({
     password: 'handraiser',
 })
 .then(db => {
-    const cohorts = require('./controller/cohorts.js')
+    const cohorts = require('./controllers/cohorts.js')
     const PORT = 3001;
     const app = express();
 
@@ -21,11 +21,16 @@ massive({
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 
+    // Cohorts Start
     app.get('/api/cohorts/', cohorts.getAll);
-    app.get('/api/cohorts/mentor/:id', cohorts.getByMentorID);
+    app.get('/api/student/:id/cohorts/', cohorts.getCohortsByStudentID)
+    app.get('/api/mentor/:id/cohorts/', cohorts.getByMentorID);
     app.get('/api/cohorts/:id', cohorts.deleteCohort);
+    app.get('/api/cohorts/:cid/students/:sid', cohorts.leave);
 
     app.post('/api/cohorts/mentor/:id/add', cohorts.addCohort);
+    app.post('/api/cohorts/:id/students', cohorts.enroll);
+    // Cohorts End
 
     app.listen(PORT, () => {
         console.log(`Running on port ${PORT}`)
