@@ -6,12 +6,12 @@ exports.up = (pgm) => {
       type: 'serial',
       primaryKey: true
     },
-    studentid: {
+    student_id: {
       type: 'integer',
       notNull: true,
       references: '"users"'
     },
-    cohortid: {
+    cohort_id: {
       type: 'integer',
       notNull: true,
       references: '"cohorts"'

@@ -6,7 +6,7 @@ exports.up = (pgm) => {
       type: 'serial',
       primaryKey: true
     },
-    mentorid: {
+    mentor_id: {
       type: 'integer',
       notNull: true,
       references: '"users"'
