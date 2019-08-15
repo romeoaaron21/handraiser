@@ -1,20 +1,21 @@
 exports.shorthands = undefined;
 
 exports.up = (pgm) => {
-  pgm.createTable('requests', {
+  pgm.createTable('keys', {
     id: {
       type: 'serial',
       primaryKey: true
     },
-    memberid: {
+    sign_in_key: {
       type: 'integer',
       notNull: true,
-      references: '"member"'
+      references: '"users"'
     },
-    status: {
+    user_id: {
       type: 'text',
-      notNull: true
-    }
+      notNull: true,
+      references: '"users"'
+    },
   })
 };
 

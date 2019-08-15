@@ -1,20 +1,19 @@
 exports.shorthands = undefined;
 
 exports.up = (pgm) => {
-  pgm.createTable('member', {
+  pgm.createTable('requests', {
     id: {
       type: 'serial',
       primaryKey: true
     },
-    studentid: {
+    member_id: {
       type: 'integer',
       notNull: true,
-      references: '"users"'
+      references: '"member"'
     },
-    cohortid: {
-      type: 'integer',
-      notNull: true,
-      references: '"cohorts"'
+    status: {
+      type: 'text',
+      notNull: true
     }
   })
 };
