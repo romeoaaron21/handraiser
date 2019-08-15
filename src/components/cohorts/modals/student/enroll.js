@@ -33,7 +33,7 @@ class Enroll extends React.Component {
   }
 
   render(){
-    const { open, close, id } = this.props;
+    const { open, close } = this.props;
     return(
       <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Enroll to Class</DialogTitle>
@@ -46,7 +46,7 @@ class Enroll extends React.Component {
             margin="dense"
             id="password"
             label="Class Password"
-            type="password"
+            type="text"
             fullWidth
             onChange={this.onType}
           />
@@ -56,7 +56,7 @@ class Enroll extends React.Component {
             Cancel
           </Button>
           <Button onClick={this.submit} color="primary">
-            Subscribe
+            Enroll
           </Button>
         </DialogActions>
       </Dialog>
