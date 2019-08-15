@@ -7,6 +7,11 @@ export default class AuthService {
     return !!token;
   };
 
+  logout = () => {
+    localStorage.removeItem("id_token");
+    window.location.href = '/sign-in';
+  };
+
   getConfirm = () => {
     let answer = decode(this.getToken());
     return answer;

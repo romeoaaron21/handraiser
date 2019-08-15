@@ -1,7 +1,27 @@
+function validate(req, res) {
+  const db = req.app.get('db');
+
+  const { key } = req.body;
+
+  db.keys
+    .findOne(
+      {
+        sign_in_key: key
+      }
+    )
+    .then(key => {
+      res.status(201).send({ key });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(501).end();
+    });
+}
+
 function signIn(req, res) {
   const db = req.app.get('db');
 
-  const { givenName, familyName, sub, privilege, avatar } = req.body;
+  const { first_name, last_name, sub, privilege, avatar } = req.body;
 
   db.users
     .findOne(
@@ -13,25 +33,30 @@ function signIn(req, res) {
       if (!user) {
         db.users
           .insert({
-            firstname: givenName,
-            lastname: familyName,
+            first_name,
+            last_name,
             sub,
             privilege,
             avatar
           })
           .then(user => {
-            res.sent(201).send({ user })
+            res.status(201).send(user.privilege)
           })
           .catch(err => {
-            res.send(500).end();
+            console.log(err);
+            res.status(501).end();
           })
+      } else {
+        res.status(201).send(user.privilege)
       }
     })
     .catch(err => {
-      res.send(501).end();
+      console.log(err);
+      res.status(501).end();
     });
 }
 
 module.exports = {
+  validate,
   signIn
 }

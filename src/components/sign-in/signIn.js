@@ -1,32 +1,81 @@
 import React, { Component } from 'react';
+import decode from 'jwt-decode';
+
 import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Dialog from '@material-ui/core/Dialog';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Person from '@material-ui/icons/Person';
 import Typography from '@material-ui/core/Typography';
 import GoogleLogin from 'react-google-login';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import styles from './signIn.component.style'
+import styles from './signIn.component.style';
 
-const responseGoogle = (response) => {
-  console.log(response);
-}
+import api from '../../services/fetchApi';
+import AuthService from '../../auth/AuthService';
+import SignInKey from './dialogs/validateKey';
+import GoogleSignIn from './dialogs/googleSignIn';
 
 class SignInSide extends Component {
   constructor() {
     super();
+    this.Auth = new AuthService();
+
+    this.state = {
+      validateKeyDialog: false,
+      signInGoogleDialog: false,
+    }
   }
 
   componentDidMount() {
     document.title = 'Welcome to Handraiser';
+    if (this.Auth.loggedIn()) {
+      window.location.href = '/cohorts';
+    }
+  }
+
+  openValiteKeyDialog = () => this.setState({ validateKeyDialog: true })
+  closeValiteKeyDialog = () => this.setState({ validateKeyDialog: false })
+
+  openSignInGoogle = () => this.setState({ signInGoogleDialog: true })
+  closeSignInGoogle = () => this.setState({ signInGoogleDialog: false })
+
+  responseGoogleStudent = (res) => {
+    localStorage.setItem("id_token", res.tokenId);
+    const user = decode(res.tokenId);
+    const data = {
+      first_name : user.given_name,
+      last_name : user.family_name,
+      sub: user.sub,
+      privilege: 'student',
+      avatar: user.picture
+    }
+
+    api.fetch('/sign-in', 'post', data)
+      .then(res => {
+        if(res.data !== 'student') {
+          toast.error("Sorry, you're not a student", {
+            hideProgressBar: true,
+            draggable: false,
+          });        } else {
+          window.location.href = '/cohorts';
+        }
+      })
   }
 
 	render() {
 		const { classes } = this.props
 		return (
+      <React.Fragment>
 			<Container component="main" maxWidth="xs">
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
+        />
 				<div className={classes.paper}>
 					<Avatar className={classes.avatar}>
 						<Person />
@@ -39,8 +88,8 @@ class SignInSide extends Component {
 							<Grid item xs={12}>
 								<GoogleLogin
 									clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
-									onSuccess={responseGoogle}
-									onFailure={responseGoogle}
+									onSuccess={this.responseGoogleStudent}
+									onFailure={this.responseGoogleStudent}
 									cookiePolicy={'single_host_origin'}
 									render={renderProps => (
 										<Button
@@ -54,23 +103,15 @@ class SignInSide extends Component {
 								/>
 							</Grid>
 
-							<Grid item xs={12}>
-								<GoogleLogin
-									clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
-									onSuccess={responseGoogle}
-									onFailure={responseGoogle}
-									cookiePolicy={'single_host_origin'}
-									render={renderProps => (
-										<Button
-											fullWidth
-											className={classes.submit}
-											onClick={renderProps.onClick} disabled={renderProps.disabled}
-										>
-											Mentor
-										</Button>
-									)}
-								/>
-							</Grid>
+              <Grid item xs={12}>
+                <Button
+                  fullWidth
+                  className={classes.submit}
+                  onClick = {this.openValiteKeyDialog}
+                >
+                  Mentor
+                </Button>
+              </Grid>
 						</Grid>
 
 						<Grid container alignItems="center">
@@ -83,6 +124,30 @@ class SignInSide extends Component {
 					</form>
 				</div>
 			</Container>
+
+      <Dialog
+        open = {this.state.validateKeyDialog}
+        onClose = {this.closeValiteKeyDialog}
+      >
+        <SignInKey
+          title = 'Enter sign-in key'
+          label = 'Sign-in key'
+          content = 'Ask administrator for your sign-in key'
+          handleCancel = {this.closeValiteKeyDialog}
+          openSignInGoogleFn = {this.openSignInGoogle}
+        />
+      </Dialog>
+
+      {/* SIGN IN WITH GOOGLE */}
+      <Dialog
+        open = {this.state.signInGoogleDialog}
+        onClose = {this.closeSignInGoogle}
+      >
+        <GoogleSignIn
+          title = 'Successfully, validated'
+        />
+      </Dialog>
+      </React.Fragment>
 		);
 	}
 }
