@@ -4,6 +4,6 @@ export default {
 		return axios(path, {
 			method: method,
 			data: data
-		}).then((res) => res.json());
+		});
 	}
 };
