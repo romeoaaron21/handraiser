@@ -66,7 +66,6 @@ function signIn(req, res) {
           })
       } else {
         if (validatedKey[0].sub === sub) {
-          console.log('12323');
           db.users
             .findOne(
               {
