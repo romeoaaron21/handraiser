@@ -16,7 +16,7 @@ const drawerWidth = 240;
 
 const styles = theme => ({
   drawer: {
-    width: drawerWidth,
+    width: 0,
     flexShrink: 0,
   },
   drawerPaper: {
