@@ -21,6 +21,7 @@ const styles = theme => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    boxShadow: '0 4px 0 rgba(60,64,67,0.302), 0 8px 12px 6px rgba(60,64,67,0.149)'
   },
   drawerHeader: {
     display: 'flex',
@@ -53,7 +54,7 @@ class SideNav extends React.Component {
         >
           <div className={classes.drawerHeader}>
             <IconButton onClick={this.handleDrawerClose}>
-              {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              <ChevronLeftIcon />
             </IconButton>
           </div>
           <Divider />
