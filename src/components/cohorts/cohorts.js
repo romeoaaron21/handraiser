@@ -19,6 +19,7 @@ import api from './../../services/fetchApi';
 
 //AUTH
 import Auth from '../../auth/Auth';
+import AuthService from '../../auth/AuthService';
 
 //NAVIGATION
 import NavBar from '../common-components/nav-bar/navBar';
@@ -69,6 +70,9 @@ class Cohorts extends React.Component{
   constructor(){
     super();
 
+    this.Auth = new AuthService();
+    this.fetch = this.Auth.getFetchedTokenAPI();
+
     this.state = {
       privilege: 'mentor',
       id: 3,
@@ -93,24 +97,32 @@ class Cohorts extends React.Component{
 
   componentDidMount(){
     document.title = 'Cohorts';
-    if(this.state.privilege === 'mentor'){
-      api.fetch(`http://localhost:3001/api/mentor/${this.state.id}/cohorts/`, 'get').then((res) => {
-        this.setState({
-          cohorts: res.data.cohorts.reverse()
+    this.fetch.then(fetch => {
+      const user = fetch.data.user[0];
+      if(user.privilege === 'mentor'){
+        api.fetch(`http://localhost:3001/api/mentor/${user.id}/cohorts/`, 'get').then((res) => {
+          this.setState({
+            cohorts: res.data.cohorts.reverse()
+          })
         })
-      })
-    }else{
-      api.fetch(`http://localhost:3001/api/cohorts/`, 'get').then((res) => {
-        this.setState({
-          cohorts: res.data.cohorts.reverse()
+      }else{
+        api.fetch(`http://localhost:3001/api/cohorts/`, 'get').then((res) => {
+          this.setState({
+            cohorts: res.data.cohorts.reverse()
+          })
         })
-      })
-      api.fetch(`http://localhost:3001/api/student/${this.state.id}/cohorts/`, 'get').then((res) => {
-        this.setState({
-          member: res.data.member
+        api.fetch(`http://localhost:3001/api/student/${user.id}/cohorts/`, 'get').then((res) => {
+          this.setState({
+            member: res.data.member
+          })
         })
+      }
+      this.setState({
+        id: user.id,
+        privilege: user.privilege
       })
-    }
+    })
+    
   }
 
   openAdd = () => {
@@ -162,9 +174,14 @@ class Cohorts extends React.Component{
 
   add = (name, password, mentor_id) => {
     const state = { name, password }
-    api.fetch(`http://localhost:3001/api/cohorts/mentor/${mentor_id}/add`, 'post', state).then(() => {
-      this.componentDidMount();
-    })
+    let check = this.state.cohorts.find(cohorts => cohorts.name === name);
+    if(!check){
+      api.fetch(`http://localhost:3001/api/cohorts/mentor/${mentor_id}/add`, 'post', state).then(() => {
+        this.componentDidMount();
+      })
+    }else{
+      console.log('Class already exists!');
+    }
   }
 
   delete = (id) => {
