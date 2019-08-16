@@ -4,14 +4,14 @@ import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
 
 //Modals
-import AddClass from './modals/superAdmin/add';
-import DeleteClass from './modals/superAdmin/delete';
+import AddClass from './modals/mentor/add';
+import DeleteClass from './modals/mentor/delete';
 import EnrollToClass from './modals/student/enroll';
 import LeaveClass from './modals/student/leave'
 
 //Cards
-import StudentCards from './cards/student';
-import NonStudentCards from './cards/nonStudent';
+import StudentClassCards from './cards/student';
+import MentorClassCards from './cards/mentor';
 
 //API
 import api from './../../services/services';
@@ -40,7 +40,6 @@ class Cohorts extends React.Component{
       id: 3,
       cohorts: [],
       member: [],
-      mentors: [],
       add: false,
       delete: false,
       enroll: false,
@@ -62,19 +61,11 @@ class Cohorts extends React.Component{
           cohorts: res.data.cohorts.reverse()
         })
       })
-      if(this.state.privilege === 'student'){
-        api.fetch(`http://localhost:3001/api/student/${this.state.id}/cohorts/`, 'get').then((res) => {
-          this.setState({
-            member: res.data.member
-          })
+      api.fetch(`http://localhost:3001/api/student/${this.state.id}/cohorts/`, 'get').then((res) => {
+        this.setState({
+          member: res.data.member
         })
-      }else{
-        api.fetch(`http://localhost:3001/api/mentors/`, 'get').then((res) => {
-          this.setState({
-            mentors: res.data.mentor
-          })
-        })
-      }
+      })
     }
   }
 
@@ -89,11 +80,17 @@ class Cohorts extends React.Component{
     })
   }
 
+  redirect = () => {
+    //Dito ilagay redirect to classes!
+    console.log(this.state.privilege)
+    console.log('redirect to Class!');
+  }
+
   openEnroll = (e) => {
     let array = e.currentTarget.getAttribute('name').split(",");
     let check = array.find(name => name === 'goToClass');
     if(check){
-      console.log('class')
+      this.redirect();
     }else{
       this.setState({
         enroll: true,
@@ -152,14 +149,14 @@ class Cohorts extends React.Component{
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.center}>
         { this.state.privilege !== 'student' ?
-          <NonStudentCards 
+          <MentorClassCards 
             cohorts={this.state.cohorts}
-            privilege={this.state.privilege}
             openAdd={this.openAdd}
             openDelete={this.openDelete}
+            redirect={this.redirect}
           />
         :
-          <StudentCards
+          <StudentClassCards
             cohorts={this.state.cohorts}
             members={this.state.member}
             openEnroll={this.openEnroll}
@@ -171,7 +168,6 @@ class Cohorts extends React.Component{
             close={this.closeModal}
             add={this.add}
             id={this.state.id}
-            mentors={this.state.mentors}
           />
           <DeleteClass 
             open={this.state.delete}
