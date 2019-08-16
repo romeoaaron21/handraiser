@@ -22,7 +22,7 @@ const drawerWidth = 240;
 
 const styles = theme => ({
   appBarBg: {
-    backgroundColor: '#983cac'
+    backgroundColor: '#983cac',
   },
   appBar: {
     transition: theme.transitions.create(['margin', 'width'], {
