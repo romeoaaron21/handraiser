@@ -16,6 +16,9 @@ import MentorClassCards from './cards/mentor';
 //API
 import api from './../../services/services';
 
+//AUTH
+import Auth from '../../auth/Auth';
+
 const styles = theme => ({
   container: {
     paddingTop: theme.spacing(2),
@@ -36,7 +39,7 @@ class Cohorts extends React.Component{
     super();
 
     this.state = {
-      privilege: 'student',
+      privilege: 'mentor',
       id: 3,
       cohorts: [],
       member: [],
@@ -49,6 +52,7 @@ class Cohorts extends React.Component{
   }
 
   componentDidMount(){
+    document.title = 'Cohorts';
     if(this.state.privilege === 'mentor'){
       api.fetch(`http://localhost:3001/api/mentor/${this.state.id}/cohorts/`, 'get').then((res) => {
         this.setState({
@@ -142,14 +146,14 @@ class Cohorts extends React.Component{
       this.componentDidMount();
     })
   }
-  
+
   render(){
     const { classes } = this.props;
     return(
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.center}>
         { this.state.privilege !== 'student' ?
-          <MentorClassCards 
+          <MentorClassCards
             cohorts={this.state.cohorts}
             openAdd={this.openAdd}
             openDelete={this.openDelete}
@@ -163,25 +167,25 @@ class Cohorts extends React.Component{
             openLeave={this.openLeave}
           />
         }
-          <AddClass 
+          <AddClass
             open={this.state.add}
             close={this.closeModal}
             add={this.add}
             id={this.state.id}
           />
-          <DeleteClass 
+          <DeleteClass
             open={this.state.delete}
             close={this.closeModal}
             id={this.state.selected}
             delete={this.delete}
           />
-          <EnrollToClass 
+          <EnrollToClass
             open={this.state.enroll}
             close={this.closeModal}
             id={this.state.selected}
             enroll={this.enroll}
           />
-          <LeaveClass 
+          <LeaveClass
             open={this.state.leave}
             close={this.closeModal}
             id={this.state.selected}
@@ -193,4 +197,4 @@ class Cohorts extends React.Component{
   }
 }
 
-export default withStyles(styles)(Cohorts)
+export default Auth(withStyles(styles)(Cohorts));

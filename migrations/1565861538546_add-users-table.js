@@ -8,7 +8,7 @@ exports.up = (pgm) => {
     },
     first_name: {
       type: 'text',
-      notNull: true
+      notNull: true,
     },
     last_name: {
       type: 'text',

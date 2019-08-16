@@ -1,7 +1,10 @@
 const express = require('express');
 const massive = require('massive');
-const cors = require("cors");
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const user = require('./controllers/user.js');
+const cohorts = require('./controllers/cohorts.js')
 
 massive({
     host: 'localhost',
@@ -20,6 +23,10 @@ massive({
     app.use(express.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
+
+    //USERS
+    app.post('/validate', user.validate);
+    app.post('/sign-in', user.signIn);
 
     // Cohorts Start
     app.get('/api/cohorts/', cohorts.getAll);
