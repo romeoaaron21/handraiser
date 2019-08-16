@@ -10,10 +10,9 @@ exports.up = (pgm) => {
       type: 'text',
       notNull: true,
     },
-    user_id: {
-      type: 'integer',
+    sub: {
+      type: 'text',
       notNull: false,
-      references: '"users"'
     },
   })
 };

@@ -28,6 +28,7 @@ class SignInSide extends Component {
     this.state = {
       validateKeyDialog: false,
       signInGoogleDialog: false,
+      validatedKey: ''
     }
   }
 
@@ -38,11 +39,14 @@ class SignInSide extends Component {
     }
   }
 
-  openValiteKeyDialog = () => this.setState({ validateKeyDialog: true })
-  closeValiteKeyDialog = () => this.setState({ validateKeyDialog: false })
+  openValidateKeyDialog = () => this.setState({ validateKeyDialog: true });
+  closeValidateKeyDialog = () => this.setState({ validateKeyDialog: false });
+  getValidatedKey = (key) => {
+    this.setState({ validatedKey: key })
+  }
 
-  openSignInGoogle = () => this.setState({ signInGoogleDialog: true })
-  closeSignInGoogle = () => this.setState({ signInGoogleDialog: false })
+  openSignInGoogle = (key) => this.setState({ signInGoogleDialog: true });
+  closeSignInGoogle = () => this.setState({ signInGoogleDialog: false });
 
   responseGoogleStudent = (res) => {
     localStorage.setItem("id_token", res.tokenId);
@@ -107,7 +111,7 @@ class SignInSide extends Component {
                 <Button
                   fullWidth
                   className={classes.submit}
-                  onClick = {this.openValiteKeyDialog}
+                  onClick = {this.openValidateKeyDialog}
                 >
                   Mentor
                 </Button>
@@ -127,14 +131,14 @@ class SignInSide extends Component {
 
       <Dialog
         open = {this.state.validateKeyDialog}
-        onClose = {this.closeValiteKeyDialog}
       >
         <SignInKey
           title = 'Enter sign-in key'
           label = 'Sign-in key'
           content = 'Ask administrator for your sign-in key'
-          handleCancel = {this.closeValiteKeyDialog}
+          handleCancel = {this.closeValidateKeyDialog}
           openSignInGoogleFn = {this.openSignInGoogle}
+          getValidatedKeyFn = {this.getValidatedKey}
         />
       </Dialog>
 
@@ -144,6 +148,7 @@ class SignInSide extends Component {
         onClose = {this.closeSignInGoogle}
       >
         <GoogleSignIn
+          validatedKey = {this.state.validatedKey === '' ? null : this.state.validatedKey}
           title = 'Successfully, validated'
         />
       </Dialog>

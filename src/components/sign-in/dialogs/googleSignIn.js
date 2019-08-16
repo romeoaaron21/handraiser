@@ -21,10 +21,12 @@ const styles = {
 }
 
 export default class googleSignIn extends Component {
+
   responseGoogleMentor = (res) => {
-    localStorage.setItem("id_token", res.tokenId);
+    const token = res.tokenId;
     const user = decode(res.tokenId);
     const data = {
+      key: this.props.validatedKey,
       first_name : user.given_name,
       last_name : user.family_name,
       sub: user.sub,
@@ -34,12 +36,26 @@ export default class googleSignIn extends Component {
 
     api.fetch('/sign-in', 'post', data)
     .then(res => {
-      if(res.data !== 'mentor') {
-        toast.error("Sorry, you're not a mentor", {
-          hideProgressBar: true,
-          draggable: false,
-        });
+      console.log(res.data.user.key + ' ' + this.props.validatedKey)
+      if (res.data.user.key !== undefined) {
+        if (res.data.user.key !== this.props.validatedKey || res.data.user.sub !== user.sub) {
+          toast.error("Sorry, its not your key", {
+            hideProgressBar: true,
+            draggable: false,
+          });
+        } else {
+          if(res.data.user.privilege !== 'mentor') {
+            toast.error("Sorry, you're not a mentor", {
+              hideProgressBar: true,
+              draggable: false,
+            });
+          } else {
+            localStorage.setItem("id_token", token);
+            window.location.href = '/cohorts';
+          }
+        }
       } else {
+        localStorage.setItem("id_token", token);
         window.location.href = '/cohorts';
       }
     })

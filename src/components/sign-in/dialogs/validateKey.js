@@ -22,6 +22,7 @@ export default class SignInKey extends Component {
   handleKey = (e) => this.setState({ key: e.target.value });
 
   validateKey = () => {
+    this.props.getValidatedKeyFn(this.state.key)
     api.fetch('/validate', 'post', this.state)
       .then(res => {
         if(res.data.key === null) {
