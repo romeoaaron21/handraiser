@@ -20,12 +20,6 @@ const styles = theme => ({
 })
 
 class BeingHelpedModal extends Component {
-    constructor() {
-        super()
-        this.state = {
-            open: false
-        }
-    }
 
     render() {
         const { classes } = this.props
@@ -46,16 +40,16 @@ class BeingHelpedModal extends Component {
                             </Grid>
                             <Grid item xs={12} sm={7} className={classes.text}>
                                 <AccountCircle style={{ color: '#fff', fontSize: '60px' }} />
-                                <Typography variant="h4" component="h3" >Sid Bercasio</Typography>
+                                <Typography variant="h4" component="h3">Sid Bercasio</Typography>
                             </Grid>
                         </Grid>
                     </DialogTitle>
                     
                     <DialogActions>
-                        <Button color="primary" focusVisible>
+                        <Button color="primary">
                             Back
                         </Button>
-                        <Button onClick={this.props.helpStudentX} color="primary" autoFocus>
+                        <Button onClick={this.props.helpStudentClose} color="primary" autoFocus>
                             Done
                         </Button>
                     </DialogActions>

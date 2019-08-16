@@ -7,7 +7,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
-import AccountCircle from '@material-ui/icons/AccountCircle'
+import Avatar from '@material-ui/core/Avatar'
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import Delete from '@material-ui/icons/Delete';
 import ThumbsUp from '@material-ui/icons/PanTool';
 import IconButton from '@material-ui/core/IconButton';
@@ -17,8 +18,10 @@ const styles = theme => ({
     rightNav: {
         padding: theme.spacing(0, 1),
         maxWidth: 'auto',
+        minHeight: '530px',
         maxHeight: '530px',
-        boxShadow: ' 0px 0px 3px 0px rgba(176,173,176,1)',
+        // boxShadow: ' 0px 0px 3px 0px rgba(176,173,176,1)',
+        boxShadow: '0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)',
         overflowY: 'scroll',
         borderBottomRightRadius: '5px',
         borderBottomLeftRadius: '5px',
@@ -49,7 +52,7 @@ const styles = theme => ({
         fontSize: '19px'
     },
     list: {
-        maxHeight: '42px',
+        maxHeight: '52px',
         '&:hover .actionShow': {
             display: 'inline-block'
         },
@@ -61,7 +64,11 @@ const styles = theme => ({
         display: 'none',
     },
     queueName: {
-        fontSize: '15px'
+        fontSize: '17px'
+    },
+    userAvatar: {
+        width: 35,
+        height: 35,
     }
 })
 
@@ -73,18 +80,19 @@ class requestQueue extends Component {
         return (
             <div>
                 <Paper className={classes.rightTopNav} square={true} >
-                    <Typography variant="h6">
+                    <Typography variant="h6" align="center">
                         Queue Students
-                                </Typography>
+                    </Typography>
                 </Paper>
                 <Paper className={`${classes.rightNav} ${classes.scrollBar}`} square={true}>
                     <Box item xs={12} sm={8} mt={2}>
                         <ListItem className={`${classes.list}`}>
                             <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
+                                <Avatar src="https://lh6.googleusercontent.com/-_OuXadnBbqs/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfEr_FE92jf3RrOO98KilrRcrinvw/s96-c/photo.jpg"
+                                className={classes.userAvatar} />
                             </ListItemAvatar>
                             <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Marvin Banton</Typography>
+                                <Typography variant="h6" component="h3" className={classes.queueName}>Marvin Banton</Typography>
                             </ListItemText>
 
                             {this.props.priv === 'student'
@@ -124,7 +132,7 @@ class requestQueue extends Component {
                             }
 
                         </ListItem>
-                        <ListItem className={classes.list}>
+                        {/* <ListItem className={classes.list}>
                             <ListItemAvatar>
                                 <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
                             </ListItemAvatar>
@@ -537,7 +545,7 @@ class requestQueue extends Component {
                                 <Typography component="p" className={classes.queueName}>George Dela tore</Typography>
                             </ListItemText>
 
-                            {this.props.priv === 'mentor'
+                            {this.props.previledge === 'mentor'
 
                                 ?
                                 <div className={`${classes.queueaction} actionShow`}>
@@ -559,7 +567,7 @@ class requestQueue extends Component {
 
                             }
 
-                        </ListItem>
+                        </ListItem> */}
                     </Box>
                 </Paper>
             </div>
