@@ -36,7 +36,6 @@ export default class googleSignIn extends Component {
 
     api.fetch('/sign-in', 'post', data)
     .then(res => {
-      console.log(res.data.user.key + ' ' + this.props.validatedKey)
       if (res.data.user.key !== undefined) {
         if (res.data.user.key !== this.props.validatedKey || res.data.user.sub !== user.sub) {
           toast.error("Sorry, its not your key", {

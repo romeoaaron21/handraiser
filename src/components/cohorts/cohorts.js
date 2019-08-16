@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,12 +15,42 @@ import StudentClassCards from './cards/student';
 import MentorClassCards from './cards/mentor';
 
 //API
-import api from './../../services/services';
+import api from './../../services/fetchApi';
 
 //AUTH
 import Auth from '../../auth/Auth';
 
+//NAVIGATION
+import NavBar from '../common-components/nav-bar/navBar';
+import SideNav from '../common-components/side-nav/sideNav';
+
 const styles = theme => ({
+  root: {
+    display: 'flex',
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: 0,
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+  },
   container: {
     paddingTop: theme.spacing(2),
     display: 'flex',
@@ -49,6 +80,15 @@ class Cohorts extends React.Component{
       leave: false,
       selected: ''
     }
+  }
+
+  //NAVIGATION
+  handleDrawerOpen = () => {
+    this.setState({ open: true})
+  }
+
+  handleDrawerClose = () => {
+    this.setState({ open: false})
   }
 
   componentDidMount(){
@@ -150,49 +190,65 @@ class Cohorts extends React.Component{
   render(){
     const { classes } = this.props;
     return(
-      <Container maxWidth="lg" className={classes.container}>
-        <div className={classes.center}>
-        { this.state.privilege !== 'student' ?
-          <MentorClassCards
-            cohorts={this.state.cohorts}
-            openAdd={this.openAdd}
-            openDelete={this.openDelete}
-            redirect={this.redirect}
-          />
-        :
-          <StudentClassCards
-            cohorts={this.state.cohorts}
-            members={this.state.member}
-            openEnroll={this.openEnroll}
-            openLeave={this.openLeave}
-          />
-        }
-          <AddClass
-            open={this.state.add}
-            close={this.closeModal}
-            add={this.add}
-            id={this.state.id}
-          />
-          <DeleteClass
-            open={this.state.delete}
-            close={this.closeModal}
-            id={this.state.selected}
-            delete={this.delete}
-          />
-          <EnrollToClass
-            open={this.state.enroll}
-            close={this.closeModal}
-            id={this.state.selected}
-            enroll={this.enroll}
-          />
-          <LeaveClass
-            open={this.state.leave}
-            close={this.closeModal}
-            id={this.state.selected}
-            leave={this.leave}
-          />
-        </div>
-      </Container>
+      <div className={classes.root}>
+        <NavBar
+          open = {this.state.open}
+          title = 'Handraiser'
+          handleDrawerOpenFn = {this.handleDrawerOpen}
+        />
+
+        <SideNav
+          open = {this.state.open}
+          handleDrawerCloseFn = {this.handleDrawerClose}
+        />
+
+        <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
+          <div className={classes.drawerHeader} />
+          <Container maxWidth="lg" className={classes.container}>
+            <div className={classes.center}>
+            { this.state.privilege !== 'student' ?
+              <MentorClassCards
+                cohorts={this.state.cohorts}
+                openAdd={this.openAdd}
+                openDelete={this.openDelete}
+                redirect={this.redirect}
+              />
+            :
+              <StudentClassCards
+                cohorts={this.state.cohorts}
+                members={this.state.member}
+                openEnroll={this.openEnroll}
+                openLeave={this.openLeave}
+              />
+            }
+              <AddClass
+                open={this.state.add}
+                close={this.closeModal}
+                add={this.add}
+                id={this.state.id}
+              />
+              <DeleteClass
+                open={this.state.delete}
+                close={this.closeModal}
+                id={this.state.selected}
+                delete={this.delete}
+              />
+              <EnrollToClass
+                open={this.state.enroll}
+                close={this.closeModal}
+                id={this.state.selected}
+                enroll={this.enroll}
+              />
+              <LeaveClass
+                open={this.state.leave}
+                close={this.closeModal}
+                id={this.state.selected}
+                leave={this.leave}
+              />
+            </div>
+          </Container>
+        </main>
+      </div>
     )
   }
 }

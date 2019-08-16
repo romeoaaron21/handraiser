@@ -23,90 +23,83 @@ function signIn(req, res) {
 
   const { key, first_name, last_name, sub, privilege, avatar } = req.body;
 
-  db.query(
-    `SELECT * FROM keys WHERE sub IN (SELECT sub FROM keys WHERE sub = '${sub}')`
+  db.keys
+    .findOne(
+      {
+        sub
+      }
     )
-    .then(validatedKey => {
-      if (validatedKey.length === 0) {
+    .then(checkSub => {
+      if (checkSub === null) {
         db.query(
-          `UPDATE keys SET sub = '${sub}' WHERE sign_in_key = '${key}'`
+          `SELECT * FROM keys WHERE sub IS NOT NULL AND sign_in_key = '${key}' AND sub NOT IN (SELECT sub FROM keys WHERE sub = '${sub}' AND sign_in_key = '${key}')`
           )
-          .then(keys => {
-            db.users
-              .findOne(
-                {
-                  avatar
-                }
-              )
-              .then(user => {
-                if (!user) {
+          .then(validatedKey => {
+            if (validatedKey.length === 0) {
+              db.query(
+                `UPDATE keys SET sub = '${sub}' WHERE sign_in_key = '${key}'`
+                )
+                .then(keys => {
                   db.users
-                    .insert({
-                      first_name,
-                      last_name,
-                      sub,
-                      privilege,
-                      avatar
-                    })
+                    .findOne(
+                      {
+                        avatar
+                      }
+                    )
                     .then(user => {
-                      res.status(201).send({ user })
+                      if (!user) {
+                        db.users
+                          .insert({
+                            first_name,
+                            last_name,
+                            sub,
+                            privilege,
+                            avatar
+                          })
+                          .then(user => {
+                            res.status(201).send({ user })
+                          })
+                      } else {
+                        res.status(201).send({ user })
+                      }
                     })
-                    .catch(err => {
-                      console.log(err);
-                      res.status(501).end();
-                    })
-                } else {
-                  res.status(201).send({ user })
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                res.status(501).end();
-              });
-          })
-      } else {
-        if (validatedKey[0].sub === sub) {
-          db.users
-            .findOne(
-              {
-                avatar
-              }
-            )
-            .then(user => {
-              if (!user) {
+                })
+            } else {
+              if (validatedKey[0].sub === sub) {
                 db.users
-                  .insert({
-                    first_name,
-                    last_name,
-                    sub,
-                    privilege,
-                    avatar
-                  })
+                  .findOne(
+                    {
+                      avatar
+                    }
+                  )
                   .then(user => {
-                    res.status(201).send({ user })
-                  })
-                  .catch(err => {
-                    console.log(err);
-                    res.status(501).end();
+                    if (!user) {
+                      db.users
+                        .insert({
+                          first_name,
+                          last_name,
+                          sub,
+                          privilege,
+                          avatar
+                        })
+                        .then(user => {
+                          res.status(201).send({ user })
+                        })
+                    } else {
+                      user.key = validatedKey[0].sign_in_key;
+                      res.status(201).send({ user })
+                    }
                   })
               } else {
-                user.key = validatedKey[0].sign_in_key;
-                res.status(201).send({ user })
+                const user = { sub: validatedKey[0].sub, key: validatedKey[0].sign_in_key, privilege: 'mentor' };
+                res.status(201).send({ user });
               }
-            })
-            .catch(err => {
-              console.log(err);
-              res.status(501).end();
-            });
-        } else {
-          const user = { sub: null };
-          res.status(201).send({ user });
-        }
+            }
+          })
+      } else {
+        const user = { sub: checkSub.sub, key: checkSub.sign_in_key, privilege: 'mentor' };
+        res.status(201).send({ user });
       }
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(501).end();
     })
 }
 
