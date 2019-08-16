@@ -32,78 +32,78 @@ const styles = theme => ({
   },
 })
 
-class StudentCards extends React.Component {
+class StudentClassCards extends React.Component {
   render(){
     const { classes, cohorts, openEnroll, openLeave, members} = this.props
     return(
       <React.Fragment>
-       { cohorts.map(cohort => {
+    { cohorts.map(cohort => {
+      return (
+        <Card className={classes.card} key={cohort.id}>
+          <CardActionArea
+          id={cohort.id}
+          onClick={openEnroll}
+          name=
+          { 
+            members.length !== 0 ?
+              members.map(member => {
+                if(member.cohort_id === cohort.id){ 
+                  return 'goToClass'
+                }else{
+                  return 'enroll'
+                }
+              })
+            :
+              'enroll'
+          }
+          className=
+          { 
+            members.length !== 0 ?
+              members.map(member => {
+                if(member.cohort_id === cohort.id){ 
+                  return classes.cardContainer
+                }else{
+                  return classes.wholeCardContainer
+                }
+              })
+            :
+              classes.wholeCardContainer
+          }
+          >
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="h2">
+                {cohort.name}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" component="p">
+                Mentor: {cohort.first_name+' '+cohort.last_name}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" component="p">
+                Class Members: {cohort.members}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+    { members.map(member => {
+      if(member.cohort_id === cohort.id){
         return (
-          <Card className={classes.card} key={cohort.id}>
-            <CardActionArea
-            id={cohort.id}
-            onClick={openEnroll}
-            name=
-            { 
-              members.length !== 0 ?
-                members.map(member => {
-                  if(member.cohort_id === cohort.id){ 
-                    return 'goToClass'
-                  }else{
-                    return 'enroll'
-                  }
-                })
-              :
-                'enroll'
-            }
-            className=
-            { 
-              members.length !== 0 ?
-                members.map(member => {
-                  if(member.cohort_id === cohort.id){ 
-                    return classes.cardContainer
-                  }else{
-                    return classes.wholeCardContainer
-                  }
-                })
-              :
-                classes.wholeCardContainer
-            }
-            >
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
-                  {cohort.name}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  Mentor: {cohort.first_name+' '+cohort.last_name}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  Class Members: {cohort.members}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-      { members.map(member => {
-        if(member.cohort_id === cohort.id){
-          return (
-            <CardActions className={classes.buttonContainer} key={member.id}>
-              <Button size="small" color="primary" id={cohort.id} onClick={openLeave}>
-                Leave
-              </Button>
-              <Button size="small" color="primary">
-                Students
-              </Button>
-            </CardActions>
-          )
-        }else{
-          return null
-        }
-      })}
-          </Card>
+          <CardActions className={classes.buttonContainer} key={member.id}>
+            <Button size="small" color="primary" id={cohort.id} onClick={openLeave}>
+              Leave
+            </Button>
+            <Button size="small" color="primary">
+              Students
+            </Button>
+          </CardActions>
         )
-      })}
-        </React.Fragment>
+      }else{
+        return null
+      }
+    })}
+        </Card>
+      )
+    })}
+      </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(StudentCards);
+export default withStyles(styles)(StudentClassCards);
