@@ -1,4 +1,5 @@
 import decode from "jwt-decode";
+import api from '../services/fetchApi';
 
 export default class AuthService {
 
@@ -20,4 +21,13 @@ export default class AuthService {
   getToken = () => {
     return localStorage.getItem("id_token");
   };
+
+  getDecodedToken = () => {
+    return decode(localStorage.getItem("id_token"));
+  };
+
+  getFetchedTokenAPI = () => {
+    let user = decode(localStorage.getItem("id_token"));
+    return api.fetch(`/api/users/${user.sub}`, 'get')
+  }
 }
