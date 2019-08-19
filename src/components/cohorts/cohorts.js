@@ -25,6 +25,8 @@ import AuthService from '../../auth/AuthService';
 import NavBar from '../common-components/nav-bar/navBar';
 import SideNav from '../common-components/side-nav/sideNav';
 
+import { Link, Redirect } from 'react-router-dom';
+
 const styles = theme => ({
   root: {
     display: 'flex',
@@ -82,7 +84,8 @@ class Cohorts extends React.Component{
       delete: false,
       enroll: false,
       leave: false,
-      selected: ''
+      selected: '',
+      cohort_id: ''
     }
   }
 
@@ -136,17 +139,17 @@ class Cohorts extends React.Component{
     })
   }
 
-  redirect = () => {
+  redirect = (cohort_id) => {
     //Dito ilagay redirect to classes!
-    console.log(this.state.privilege)
-    console.log('redirect to Class!');
+    this.setState({cohort_id})
+    // window.location.href = `/queue/${cohort_id}`;
   }
 
-  openEnroll = (e) => {
+  openEnroll = (e,cohort_id) => {
     let array = e.currentTarget.getAttribute('name').split(",");
     let check = array.find(name => name === 'goToClass');
     if(check){
-      this.redirect();
+      this.redirect(cohort_id);
     }else{
       this.setState({
         enroll: true,
@@ -206,6 +209,7 @@ class Cohorts extends React.Component{
 
   render(){
     const { classes } = this.props;
+    
     return(
       <div className={classes.root}>
         <NavBar
@@ -265,6 +269,13 @@ class Cohorts extends React.Component{
             </div>
           </Container>
         </main>
+        {this.state.cohort_id ? 
+          <Redirect to={{
+            pathname: '/queue',
+            state: { cohort_id:this.state.cohort_id }
+        }}
+/>
+          : null }
       </div>
     )
   }
