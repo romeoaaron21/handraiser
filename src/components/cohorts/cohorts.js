@@ -82,6 +82,7 @@ class Cohorts extends React.Component{
       delete: false,
       enroll: false,
       leave: false,
+      open: false,
       selected: ''
     }
   }
@@ -122,7 +123,6 @@ class Cohorts extends React.Component{
         privilege: user.privilege
       })
     })
-    
   }
 
   openAdd = () => {
@@ -213,12 +213,10 @@ class Cohorts extends React.Component{
           title = 'Handraiser'
           handleDrawerOpenFn = {this.handleDrawerOpen}
         />
-
         <SideNav
           open = {this.state.open}
           handleDrawerCloseFn = {this.handleDrawerClose}
         />
-
         <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
           <div className={classes.drawerHeader} />
           <Container maxWidth="lg" className={classes.container}>
