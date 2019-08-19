@@ -61,7 +61,7 @@ class SignInSide extends Component {
 
     api.fetch('/sign-in', 'post', data)
       .then(res => {
-        if(res.data !== 'student') {
+        if(res.data.user.privilege !== 'student') {
           toast.error("Sorry, you're not a student", {
             hideProgressBar: true,
             draggable: false,
