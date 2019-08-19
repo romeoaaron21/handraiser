@@ -1,10 +1,19 @@
+const http = require('http');
+const socketIO = require('socket.io');
+
+
 const express = require('express');
 const massive = require('massive');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+
 const user = require('./controllers/user.js');
 const cohorts = require('./controllers/cohorts.js')
+const mentor = require('./controllers/mentor');
+const students = require('./controllers/students');
+
+
 
 massive({
     host: 'localhost',
@@ -24,6 +33,39 @@ massive({
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 
+    //Websockets
+const server = http.Server(app);
+	const io = socketIO(server);
+
+	io.on('connection', (socket) => {
+		console.log('CONNECTED: ' + socket.id);
+
+		socket.on('requestHelp', (students) => {
+			// console.log(students);
+			io.emit('requestHelping', [ ...students ]);
+		});
+
+		socket.on('deleteRequest', (students) => {
+			// console.log(students);
+			io.emit('deleteRequest', [ ...students ]);
+		});
+
+		socket.on('helpStudent', (students) => {
+			// console.log(students);
+			io.emit('helpStudent', students);
+		});
+		socket.on('close', (students) => {
+			// console.log(students);
+			io.emit('close', students);
+		});
+
+		socket.on('displayStudents', (students) => {
+			// console.log(students);
+			io.emit('displayStudents', students);
+		});
+	});
+//end websockets
+
     //USERS
     app.post('/validate', user.validate);
     app.post('/sign-in', user.signIn);
@@ -42,7 +84,19 @@ massive({
     app.post('/api/cohorts/:id/students', cohorts.enroll);
     // Cohorts End
 
-    app.listen(PORT, () => {
+
+    app.patch('/api/helpStudent/:memberid/:cohort_id', mentor.helpStudent);
+    app.get('/api/removebeinghelped/:memberid/:cohort_id', mentor.movebacktoqueu);
+    app.get('/api/doneHelp/:memberid/:cohort_id', mentor.doneHelp);
+
+
+	app.get('/api/displayUserInfo/:sub/:cohort_id', students.displayUserInfo);
+	app.get('/api/displayStudents/:cohort_id', students.displayStudents);
+	app.post('/api/requestHelp/:sub/:cohort_id', students.requestHelp);
+	app.delete('/api/deleteRequest/:student_id/:cohort_id', students.deleteRequest);
+
+
+    server.listen(PORT, () => {
         console.log(`Running on port ${PORT}`)
     })
 })

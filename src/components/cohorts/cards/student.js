@@ -42,7 +42,7 @@ class StudentClassCards extends React.Component {
         <Card className={classes.card} key={cohort.id}>
           <CardActionArea
           id={cohort.id}
-          onClick={openEnroll}
+          onClick={(e) => openEnroll(e,cohort.id)}
           name=
           { 
             members.length !== 0 ?
