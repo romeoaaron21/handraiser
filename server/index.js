@@ -28,6 +28,8 @@ massive({
     app.post('/validate', user.validate);
     app.post('/sign-in', user.signIn);
 
+    app.get('/api/users/:id', user.getFromSub);
+
     // Cohorts Start
     app.get('/api/cohorts/', cohorts.getAll);
     app.get('/api/student/:id/cohorts/', cohorts.getCohortsByStudentID)

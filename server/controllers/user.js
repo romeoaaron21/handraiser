@@ -103,7 +103,20 @@ function signIn(req, res) {
     })
 }
 
+function getFromSub(req, res){
+  const db = req.app.get('db');
+  const { id } = req.params;
+
+  db
+    .query(`SELECT * FROM users WHERE sub = '${id}'`)
+    .then(user => {
+      console.log(user);
+      res.status(201).send({ user })
+    })
+}
+
 module.exports = {
   validate,
-  signIn
+  signIn,
+  getFromSub
 }
