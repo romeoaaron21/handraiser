@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { ToastContainer, toast } from 'react-toastify';
 
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
@@ -84,13 +85,9 @@ class Cohorts extends React.Component{
       delete: false,
       enroll: false,
       leave: false,
-<<<<<<< HEAD
       open: false,
-      selected: ''
-=======
       selected: '',
       cohort_id: ''
->>>>>>> 09c4b15af6c0a53553b07739dbbf300d338c64f7
     }
   }
 
@@ -159,7 +156,6 @@ class Cohorts extends React.Component{
         enroll: true,
         selected: e.currentTarget.getAttribute('id')
       })
-      console.log('enroll')
     }
   }
 
@@ -187,7 +183,10 @@ class Cohorts extends React.Component{
         this.componentDidMount();
       })
     }else{
-      console.log('Class already exists!');
+      toast.error("Class already exists!", {
+        hideProgressBar: true,
+        draggable: false,
+      });
     }
   }
 
@@ -224,6 +223,10 @@ class Cohorts extends React.Component{
         <SideNav
           open = {this.state.open}
           handleDrawerCloseFn = {this.handleDrawerClose}
+        />
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
         />
         <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
           <div className={classes.drawerHeader} />
@@ -276,7 +279,7 @@ class Cohorts extends React.Component{
             pathname: '/queue',
             state: { cohort_id:this.state.cohort_id }
         }}
-/>
+          />
           : null }
       </div>
     )
