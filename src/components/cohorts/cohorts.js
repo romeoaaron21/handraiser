@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { ToastContainer, toast } from 'react-toastify';
+import io from 'socket.io-client';
 
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
@@ -69,6 +70,9 @@ const styles = theme => ({
   }
 });
 
+const socketUrl = 'http://localhost:3001/';
+const socket = io('http://localhost:3001/');
+
 class Cohorts extends React.Component{
   constructor(){
     super();
@@ -87,7 +91,8 @@ class Cohorts extends React.Component{
       leave: false,
       open: false,
       selected: '',
-      cohort_id: ''
+      cohort_id: '',
+      socket: null
     }
   }
 
@@ -105,21 +110,15 @@ class Cohorts extends React.Component{
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       if(user.privilege === 'mentor'){
-        api.fetch(`http://localhost:3001/api/mentor/${user.id}/cohorts/`, 'get').then((res) => {
-          this.setState({
-            cohorts: res.data.cohorts.reverse()
-          })
+        api.fetch(`/api/mentor/${user.id}/cohorts/`, 'get').then((res) => {
+          socket.emit('displayCohorts', res.data.cohorts.reverse());
         })
       }else{
-        api.fetch(`http://localhost:3001/api/cohorts/`, 'get').then((res) => {
-          this.setState({
-            cohorts: res.data.cohorts.reverse()
-          })
+        api.fetch(`/api/cohorts/`, 'get').then((res) => {
+          socket.emit('displayCohorts', res.data.cohorts.reverse());
         })
-        api.fetch(`http://localhost:3001/api/student/${user.id}/cohorts/`, 'get').then((res) => {
-          this.setState({
-            member: res.data.member
-          })
+        api.fetch(`/api/student/${user.id}/cohorts/`, 'get').then((res) => {
+          socket.emit('displayMember', res.data.member);
         })
       }
       this.setState({
@@ -127,6 +126,25 @@ class Cohorts extends React.Component{
         privilege: user.privilege
       })
     })
+  }
+
+  componentWillMount(){
+    const socket = io(socketUrl);
+		socket.on('connect', () => {
+			console.log('CONNECTED');
+		});
+    this.setState({ socket });
+    
+    socket.on('displayCohorts', (cohorts) => {
+			this.setState({
+        cohorts
+      })
+    });
+    socket.on('displayMember', (member) => {
+			this.setState({
+        member
+      })
+		});
   }
 
   openAdd = () => {
@@ -142,7 +160,11 @@ class Cohorts extends React.Component{
 
   redirect = (cohort_id) => {
     //Dito ilagay redirect to classes!
-    this.setState({cohort_id})
+    if(cohort_id !== 'mentor'){
+      this.setState({cohort_id})  
+    }else{
+      console.log('asd');
+    }
     // window.location.href = `/queue/${cohort_id}`;
   }
 
@@ -179,7 +201,7 @@ class Cohorts extends React.Component{
     const state = { name, password }
     let check = this.state.cohorts.find(cohorts => cohorts.name === name);
     if(!check){
-      api.fetch(`http://localhost:3001/api/cohorts/mentor/${mentor_id}/add`, 'post', state).then(() => {
+      api.fetch(`/api/cohorts/mentor/${mentor_id}/add`, 'post', state).then(() => {
         this.componentDidMount();
       })
     }else{
@@ -191,7 +213,7 @@ class Cohorts extends React.Component{
   }
 
   delete = (id) => {
-    api.fetch(`http://localhost:3001/api/cohorts/${id}`, 'get').then(() => {
+    api.fetch(`/api/cohorts/${id}`, 'get').then(() => {
       this.componentDidMount();
     })
   }
@@ -199,13 +221,13 @@ class Cohorts extends React.Component{
   enroll = (id, password) => {
     let student_id = this.state.id;
     const state = { student_id, password }
-    api.fetch(`http://localhost:3001/api/cohorts/${id}/students`, 'post', state).then(() => {
+    api.fetch(`/api/cohorts/${id}/students`, 'post', state).then(() => {
       this.componentDidMount();
     })
   }
 
   leave = (id) => {
-    api.fetch(`http://localhost:3001/api/cohorts/${id}/students/${this.state.id}`, 'get').then(() => {
+    api.fetch(`/api/cohorts/${id}/students/${this.state.id}`, 'get').then(() => {
       this.componentDidMount();
     })
   }
