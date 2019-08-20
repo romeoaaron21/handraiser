@@ -1,19 +1,15 @@
 const http = require('http');
 const socketIO = require('socket.io');
 
-
 const express = require('express');
 const massive = require('massive');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 const user = require('./controllers/user.js');
 const cohorts = require('./controllers/cohorts.js')
 const mentor = require('./controllers/mentor');
 const students = require('./controllers/students');
-
-
 
 massive({
     host: 'localhost',
@@ -23,7 +19,6 @@ massive({
     password: 'handraiser',
 })
 .then(db => {
-    const cohorts = require('./controllers/cohorts.js')
     const PORT = 3001;
     const app = express();
 
@@ -33,38 +28,39 @@ massive({
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 
-    //Websockets
-const server = http.Server(app);
+    //WEBSOCKET START
+    const server = http.Server(app);
 	const io = socketIO(server);
 
 	io.on('connection', (socket) => {
-		console.log('CONNECTED: ' + socket.id);
 
 		socket.on('requestHelp', (students) => {
-			// console.log(students);
 			io.emit('requestHelping', [ ...students ]);
 		});
 
 		socket.on('deleteRequest', (students) => {
-			// console.log(students);
 			io.emit('deleteRequest', [ ...students ]);
 		});
 
 		socket.on('helpStudent', (students) => {
-			// console.log(students);
 			io.emit('helpStudent', students);
 		});
 		socket.on('close', (students) => {
-			// console.log(students);
 			io.emit('close', students);
 		});
 
 		socket.on('displayStudents', (students) => {
-			// console.log(students);
 			io.emit('displayStudents', students);
-		});
+        });
+        
+        socket.on('displayCohorts', (cohorts) => {
+            io.emit('displayCohorts', (cohorts))
+        })
+        socket.on('displayMember', (member) => {
+            io.emit('displayMember', (member))
+        })
 	});
-//end websockets
+    //WEBSOCKETS END
 
     //USERS
     app.post('/validate', user.validate);
@@ -84,11 +80,9 @@ const server = http.Server(app);
     app.post('/api/cohorts/:id/students', cohorts.enroll);
     // Cohorts End
 
-
     app.patch('/api/helpStudent/:memberid/:cohort_id', mentor.helpStudent);
     app.get('/api/removebeinghelped/:memberid/:cohort_id', mentor.movebacktoqueu);
     app.get('/api/doneHelp/:memberid/:cohort_id', mentor.doneHelp);
-
 
 	app.get('/api/displayUserInfo/:sub/:cohort_id', students.displayUserInfo);
 	app.get('/api/displayStudents/:cohort_id', students.displayStudents);
