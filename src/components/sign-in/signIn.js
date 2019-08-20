@@ -51,6 +51,9 @@ class signIn extends Component {
     }
   }
 
+  componentDidMount() {
+    document.title = 'Sign-in'
+  }
 
   inputChecker = (value, option) => {
     if (option === 'username') {

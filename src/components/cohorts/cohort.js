@@ -120,7 +120,7 @@ class Mentor extends React.Component {
   }
 
   componentDidMount() {
-    document.title = 'Mentor List'
+    document.title = 'Cohorts'
   }
 
   handleDrawerOpen = () => this.setState({ open: true});
