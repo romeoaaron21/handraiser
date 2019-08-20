@@ -66,11 +66,10 @@ const styles = theme => ({
     flexDirection: 'column'
   },
   center: {
-    maxWidth: 1016,
+    maxWidth: 1000,
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-    margin: '0 auto'
   },
   search: {
     position: 'relative',
@@ -83,7 +82,7 @@ const styles = theme => ({
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
+      marginLeft: theme.spacing(2),
       width: 'auto',
     },
   },
@@ -104,7 +103,7 @@ const styles = theme => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: 200,
+      width: '100%',
     },
   },
 });
