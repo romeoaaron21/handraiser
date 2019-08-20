@@ -16,6 +16,9 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    '@media (max-width: 780px)' : {
+      display: 'none',
+    }
   },
   avatar: {
     margin: 2,

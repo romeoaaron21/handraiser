@@ -1,7 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
 import { withStyles, fade } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,12 +12,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Grid from '@material-ui/core/Grid';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 import NavBar from '../common-components/nav-bar/navBar';
@@ -116,26 +109,22 @@ const styles = theme => ({
   }
 });
 
-class MentorKeys extends React.Component {
+class Mentor extends React.Component {
   constructor() {
     super();
 
     this.state = {
       open: true,
-      generateDialog: false,
       search: ''
     }
   }
 
   componentDidMount() {
-    document.title = 'Generated Keys'
+    document.title = 'Mentor List'
   }
 
   handleDrawerOpen = () => this.setState({ open: true});
   handleDrawerClose = () => this.setState({ open: false});
-
-  openGenerateDialog = () => this.setState({ generateDialog: true });
-  closeGenerateDialog = () => this.setState({ generateDialog: false });
 
   handleSearch = (e) => this.setState({ search: e.target.value });
 
@@ -157,16 +146,11 @@ class MentorKeys extends React.Component {
 
         <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
           <div className={classes.drawerHeader} />
-          <Grid item={true} xs={8} sm={12} style={{textAlign: 'right'}}>
-            <Button variant="contained" color="primary" onClick={() => this.openGenerateDialog()}>
-              Generate new key
-            </Button>
-          </Grid>
           <Paper className={classes.paper}>
             <Card className={classes.cardContact}>
               <CardHeader
                 className = {classes.cardHeader}
-                title = 'Generated Keys'
+                title = 'Cohorts'
                 classes={{action: classes.actionSearch}}
                 action= {
                   <Grid item={true} xs={8} sm={12}>
@@ -175,7 +159,7 @@ class MentorKeys extends React.Component {
                         <SearchIcon />
                       </div>
                       <InputBase
-                        placeholder="Search by sign-in key and name"
+                        placeholder="Search by cohorts name and mentor"
                         classes={{
                           root: classes.inputRoot,
                           input: classes.inputInput,
@@ -190,63 +174,30 @@ class MentorKeys extends React.Component {
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Sign-in key</TableCell>
-                    <TableCell align="center">Use by</TableCell>
-                    <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Cohort name</TableCell>
+                    <TableCell align="center">Mentor</TableCell>
+                    <TableCell align="center">No. of students</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow>
-                    <TableCell align="center">{'2gh320'}</TableCell>
+                    <TableCell align="center">{'React'}</TableCell>
                     <TableCell align="center">{'John Doe'}</TableCell>
-                    <TableCell align="center">{'using'}</TableCell>
+                    <TableCell align="center">{'12'}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell align="center">{'kj234ju5'}</TableCell>
-                    <TableCell align="center">{'---'}</TableCell>
-                    <TableCell align="center">{'not use'}</TableCell>
+                    <TableCell align="center">{'Node'}</TableCell>
+                    <TableCell align="center">{'Alex Doe'}</TableCell>
+                    <TableCell align="center">{'5'}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </Card>
           </Paper>
         </main>
-
-        {/* GENERATE KEY */}
-        <Dialog
-          open = {this.state.generateDialog}
-        >
-          <DialogTitle id="form-dialog-title">{'Generate Key'}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              {'This is your generated key'}
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="key"
-              type="key"
-              fullWidth
-              value = {'34Etf3'}
-              disabled
-              InputProps = {{classes: {input: classes.inputField}}}
-            />
-
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => this.closeGenerateDialog()} color="primary">
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-            >
-              Ok
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(MentorKeys);
+export default withStyles(styles)(Mentor);

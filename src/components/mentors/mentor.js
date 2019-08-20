@@ -1,7 +1,19 @@
 import React from 'react';
 import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { withStyles, fade } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import Grid from '@material-ui/core/Grid';
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
+
 
 import NavBar from '../common-components/nav-bar/navBar';
 import SideNav from '../common-components/side-nav/sideNav';
@@ -35,24 +47,87 @@ const styles = theme => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
+  paper: {
+    width: '100%',
+    marginTop: theme.spacing(3),
+    overflowX: 'auto',
+  },
+  table: {
+    minWidth: 650,
+  },
+  cardContact: {
+    height: '710px'
+  },
+  cardHeader: {
+    backgroundColor: '#696968',
+    color: '#ffffff',
+    height: '32px'
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    width: theme.spacing(7),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionSearch: {
+    marginTop: '0%',
+    marginRight: '0%',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 7),
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: 120,
+      '&:focus': {
+        width: 200,
+      },
+    },
+  },
+  inputField: {
+    textAlign: 'center',
+    color: '#005406',
+    letterSpacing: '2px'
+  }
 });
 
-class PersistentDrawerLeft extends React.Component {
+class Mentor extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      open: true
+      open: true,
+      search: ''
     }
   }
 
-  handleDrawerOpen = () => {
-    this.setState({ open: true})
+  componentDidMount() {
+    document.title = 'Mentor List'
   }
 
-  handleDrawerClose = () => {
-    this.setState({ open: false})
-  }
+  handleDrawerOpen = () => this.setState({ open: true});
+  handleDrawerClose = () => this.setState({ open: false});
+
+  handleSearch = (e) => this.setState({ search: e.target.value });
 
   render() {
     const { classes } = this.props;
@@ -72,33 +147,58 @@ class PersistentDrawerLeft extends React.Component {
 
         <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
           <div className={classes.drawerHeader} />
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-            facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-            gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-            donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-            adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-            Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-            imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-            arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-            donec massa sapien faucibus et molestie ac.
-          </Typography>
-          <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-            facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-            tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-            consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
-            vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
-            hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
-            tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
-            nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
-            accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
-          </Typography>
+          <Paper className={classes.paper}>
+            <Card className={classes.cardContact}>
+              <CardHeader
+                className = {classes.cardHeader}
+                title = 'Mentors'
+                classes={{action: classes.actionSearch}}
+                action= {
+                  <Grid item={true} xs={8} sm={12}>
+                    <div className={classes.search}>
+                      <div className={classes.searchIcon}>
+                        <SearchIcon />
+                      </div>
+                      <InputBase
+                        placeholder="Search by name"
+                        classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                        }}
+                        inputProps={{ 'aria-label': 'search' }}
+                        onChange = {e => this.handleSearch(e)}
+                      />
+                    </div>
+                  </Grid>
+                }
+              />
+              <Table className={classes.table}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="left" style={{width: '5%'}}>Name</TableCell>
+                    <TableCell align="center"></TableCell>
+                    <TableCell align="center">No. of classes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell align="right"><Avatar src="https://lh6.googleusercontent.com/-_OuXadnBbqs/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfEr_FE92jf3RrOO98KilrRcrinvw/s96-c/photo.jpg" /></TableCell>
+                    <TableCell align="left">{'John Doe'}</TableCell>
+                    <TableCell align="center">{'12'}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell align="right"><Avatar src="https://lh6.googleusercontent.com/-_OuXadnBbqs/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfEr_FE92jf3RrOO98KilrRcrinvw/s96-c/photo.jpg" /></TableCell>
+                    <TableCell align="left">{'Alex Doe'}</TableCell>
+                    <TableCell align="center">{'5'}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Card>
+          </Paper>
         </main>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(PersistentDrawerLeft);
+export default withStyles(styles)(Mentor);

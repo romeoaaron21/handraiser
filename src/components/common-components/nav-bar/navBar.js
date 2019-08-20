@@ -1,6 +1,4 @@
 import React from 'react';
-import decode from 'jwt-decode';
-import { GoogleLogout } from 'react-google-login';
 
 import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
@@ -11,9 +9,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Tooltip from '@material-ui/core/Tooltip';
-import Menu from '@material-ui/core/Menu';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 
 const drawerWidth = 240;
 
