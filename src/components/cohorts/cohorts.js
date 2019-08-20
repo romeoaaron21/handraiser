@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { ToastContainer, toast } from 'react-toastify';
 
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
@@ -24,6 +25,8 @@ import AuthService from '../../auth/AuthService';
 //NAVIGATION
 import NavBar from '../common-components/nav-bar/navBar';
 import SideNav from '../common-components/side-nav/sideNav';
+
+import { Link, Redirect } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -82,7 +85,9 @@ class Cohorts extends React.Component{
       delete: false,
       enroll: false,
       leave: false,
-      selected: ''
+      open: false,
+      selected: '',
+      cohort_id: ''
     }
   }
 
@@ -122,7 +127,6 @@ class Cohorts extends React.Component{
         privilege: user.privilege
       })
     })
-    
   }
 
   openAdd = () => {
@@ -136,23 +140,22 @@ class Cohorts extends React.Component{
     })
   }
 
-  redirect = () => {
+  redirect = (cohort_id) => {
     //Dito ilagay redirect to classes!
-    console.log(this.state.privilege)
-    console.log('redirect to Class!');
+    this.setState({cohort_id})
+    // window.location.href = `/queue/${cohort_id}`;
   }
 
-  openEnroll = (e) => {
+  openEnroll = (e,cohort_id) => {
     let array = e.currentTarget.getAttribute('name').split(",");
     let check = array.find(name => name === 'goToClass');
     if(check){
-      this.redirect();
+      this.redirect(cohort_id);
     }else{
       this.setState({
         enroll: true,
         selected: e.currentTarget.getAttribute('id')
       })
-      console.log('enroll')
     }
   }
 
@@ -180,7 +183,10 @@ class Cohorts extends React.Component{
         this.componentDidMount();
       })
     }else{
-      console.log('Class already exists!');
+      toast.error("Class already exists!", {
+        hideProgressBar: true,
+        draggable: false,
+      });
     }
   }
 
@@ -206,6 +212,7 @@ class Cohorts extends React.Component{
 
   render(){
     const { classes } = this.props;
+    
     return(
       <div className={classes.root}>
         <NavBar
@@ -213,12 +220,14 @@ class Cohorts extends React.Component{
           title = 'Handraiser'
           handleDrawerOpenFn = {this.handleDrawerOpen}
         />
-
         <SideNav
           open = {this.state.open}
           handleDrawerCloseFn = {this.handleDrawerClose}
         />
-
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
+        />
         <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
           <div className={classes.drawerHeader} />
           <Container maxWidth="lg" className={classes.container}>
@@ -265,6 +274,13 @@ class Cohorts extends React.Component{
             </div>
           </Container>
         </main>
+        {this.state.cohort_id ? 
+          <Redirect to={{
+            pathname: '/queue',
+            state: { cohort_id:this.state.cohort_id }
+        }}
+          />
+          : null }
       </div>
     )
   }
