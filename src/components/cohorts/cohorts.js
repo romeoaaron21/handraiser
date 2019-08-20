@@ -5,6 +5,8 @@ import io from 'socket.io-client';
 
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
+import InputBase from '@material-ui/core/InputBase';
+import SearchIcon from '@material-ui/icons/Search';
 
 //Modals
 import AddClass from './modals/mentor/add';
@@ -61,13 +63,50 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    flexDirection: 'column'
   },
   center: {
-    maxWidth: 1000,
+    maxWidth: 1016,
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-  }
+    margin: '0 auto'
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: '#e0e0e0',
+    '&:hover': {
+      backgroundColor: '#e0e0e0',
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(3),
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    width: theme.spacing(7),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 7),
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: 200,
+    },
+  },
 });
 
 const socketUrl = 'http://localhost:3001/';
@@ -136,14 +175,10 @@ class Cohorts extends React.Component{
     this.setState({ socket });
     
     socket.on('displayCohorts', (cohorts) => {
-			this.setState({
-        cohorts
-      })
+			this.setState({ cohorts })
     });
     socket.on('displayMember', (member) => {
-			this.setState({
-        member
-      })
+			this.setState({ member })
 		});
   }
 
@@ -161,7 +196,7 @@ class Cohorts extends React.Component{
   redirect = (cohort_id) => {
     //Dito ilagay redirect to classes!
     if(cohort_id !== 'mentor'){
-      this.setState({cohort_id})  
+      this.setState({ cohort_id })  
     }else{
       console.log('asd');
     }
@@ -232,6 +267,21 @@ class Cohorts extends React.Component{
     })
   }
 
+  search = (e) => {
+    if(e.currentTarget.value === ''){ 
+      return this.componentDidMount();
+    }
+    if(this.state.privilege !== 'student'){
+      api.fetch(`/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, 'get').then((res) => {
+        this.setState({ cohorts: res.data.cohorts })
+      })
+    }else{
+      api.fetch(`/api/cohorts/${e.currentTarget.value}/search`, 'get').then((res) => {
+        this.setState({ cohorts: res.data.cohorts })
+      })
+    }
+  }
+
   render(){
     const { classes } = this.props;
     
@@ -253,6 +303,21 @@ class Cohorts extends React.Component{
         <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
           <div className={classes.drawerHeader} />
           <Container maxWidth="lg" className={classes.container}>
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                onChange={this.search}
+                fullWidth
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </div>
             <div className={classes.center}>
             { this.state.privilege !== 'student' ?
               <MentorClassCards
