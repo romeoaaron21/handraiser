@@ -23,6 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import NavBar from '../common-components/nav-bar/navBar';
 import SideNav from '../common-components/side-nav/sideNav';
+import Auth from '../../auth/auth';
 
 const drawerWidth = 240;
 
@@ -70,13 +71,13 @@ const styles = theme => ({
     height: '32px'
   },
   search: {
+    width: '350px',
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
-    width: '100%',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(1),
       width: 'auto',
@@ -103,16 +104,16 @@ const styles = theme => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      width: 120,
+      width: 320,
       '&:focus': {
-        width: 200,
+        width: 400,
       },
     },
   },
   inputField: {
     textAlign: 'center',
     color: '#005406',
-    letterSpacing: '2px'
+    letterSpacing: '2px',
   }
 });
 
@@ -249,4 +250,4 @@ class MentorKeys extends React.Component {
   }
 }
 
-export default withStyles(styles)(MentorKeys);
+export default Auth(withStyles(styles)(MentorKeys));

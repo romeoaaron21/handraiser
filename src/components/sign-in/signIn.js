@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -8,7 +9,10 @@ import TextField from '@material-ui/core/TextField';
 import Person from '@material-ui/icons/Person';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import 'react-toastify/dist/ReactToastify.css';
+
+import api from '../../services/fetchApi';
+
+import AuthService from '../../auth/services';
 
 const styles = {
   paper: {
@@ -40,10 +44,12 @@ const styles = {
   }
 }
 
-
 class signIn extends Component {
   constructor() {
     super()
+
+    this.Auth = new AuthService();
+
     this.state = {
       username: ' ',
       password: ' ',
@@ -53,18 +59,29 @@ class signIn extends Component {
 
   componentDidMount() {
     document.title = 'Sign-in'
+    if (this.Auth.loggedIn()) {
+      window.location.href = '/admin/keys';
+    }
   }
 
   inputChecker = (value, option) => {
-    if (option === 'username') {
-      this.setState({
-        username: value,
+    this.setState({ [option] : value })
+  }
+
+  login = (e) => {
+    e.preventDefault();
+    this.Auth.login(this.state.username, this.state.password)
+      .then(res => {
+        if (res.token === null) {
+          toast.error("Invalid username or password", {
+            hideProgressBar: true,
+            draggable: false,
+          });
+        } else {
+          window.location.href = '/admin/keys';
+        }
       })
-    } else {
-      this.setState({
-        password: value,
-      })
-    }
+
   }
 
   render() {
@@ -72,6 +89,10 @@ class signIn extends Component {
 
     return (
       <Container component="main" maxWidth="xs" mt={100} >
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
+        />
         <CssBaseline />
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
@@ -117,6 +138,7 @@ class signIn extends Component {
               variant="contained"
               color="primary"
               className={classes.submit}
+              onClick = {this.login}
             >
               Sign In
             </Button>

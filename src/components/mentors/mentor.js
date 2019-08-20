@@ -17,6 +17,7 @@ import InputBase from '@material-ui/core/InputBase';
 
 import NavBar from '../common-components/nav-bar/navBar';
 import SideNav from '../common-components/side-nav/sideNav';
+import Auth from '../../auth/auth';
 
 const drawerWidth = 240;
 
@@ -201,4 +202,4 @@ class Mentor extends React.Component {
   }
 }
 
-export default withStyles(styles)(Mentor);
+export default Auth(withStyles(styles)(Mentor));

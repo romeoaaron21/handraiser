@@ -10,6 +10,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import AuthService from '../../../auth/services';
+
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -77,12 +79,18 @@ class NavBar extends React.Component {
   constructor() {
     super();
 
+    this.Auth = new AuthService();
+
     this.state = {
       anchor: null
     }
   }
 
   handleDrawerOpen = () => this.props.handleDrawerOpenFn();
+
+  logout = () => {
+    this.Auth.logout();
+  }
 
   render() {
     const { classes } = this.props;
@@ -108,8 +116,8 @@ class NavBar extends React.Component {
               {this.props.title}
             </Typography>
 
-            <Tooltip title="Logout" placement="bottom-right">
-              <IconButton>
+            <Tooltip title="Logout" placement="bottom-end">
+              <IconButton onClick={this.logout}>
                 <ExitToAppIcon style={{color: 'white'}} />
               </IconButton>
             </Tooltip>
