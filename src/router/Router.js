@@ -3,7 +3,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import SignIn from '../components/sign-in/signIn';
 import Cohorts from '../components/cohorts/cohorts';
-import Queue from '../components/student-queue/studentQueue';
+import Queue from '../components/student-queue/main';
 
 function Router() {
   return (

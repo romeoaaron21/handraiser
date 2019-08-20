@@ -48,8 +48,9 @@ class BeingHelpedModal extends Component {
 		const { classes } = this.props;
 		return (
 			<div>
+				
 				<Dialog
-					open={this.props.helpingStudent.length !== 0 ? true : this.props.helpStudentModal}
+					open={this.props.helpingStudent.length !== 0? true : this.props.helpStudentModal}
 					aria-labelledby="alert-dialog-title"
 				>
 					<DialogTitle classes={{ root: classes.dialogWrapper }}>
@@ -82,6 +83,7 @@ class BeingHelpedModal extends Component {
 					</DialogActions>
 				</Dialog>
 			</div>
+			
 		);
 	}
 }

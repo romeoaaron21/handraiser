@@ -12,7 +12,7 @@ const mentor = require('./controllers/mentor');
 const students = require('./controllers/students');
 
 massive({
-    host: 'localhost',
+    host: 'boom-handraiser.com',
     port: 5432,
     database: 'handraiser',
     user: 'postgres',

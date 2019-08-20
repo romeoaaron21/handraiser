@@ -33,7 +33,7 @@ function displayStudents(req, res) {
 
 	db
 		.query(
-			`SELECT users.*, requests.status FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${cohort_id} order by requests.id asc`
+			`SELECT users.*, requests.status, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${cohort_id} order by requests.id asc`
 		)
 		.then((members) => {
 			res.status(200).json([ ...members ]);
@@ -58,7 +58,7 @@ function requestHelp(req, res) {
 							db.member.findOne({ id: mem.member_id }).then((memb) => {
 								db
 									.query(
-										`SELECT users.*, requests.status FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${memb.cohort_id}  order by requests.id asc`
+										`SELECT users.*, requests.status, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${memb.cohort_id}  order by requests.id asc`
 									)
 									.then((result) => {
 										res.status(201).json([ ...result ]);

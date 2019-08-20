@@ -108,8 +108,11 @@ const styles = theme => ({
   },
 });
 
-const socketUrl = 'http://localhost:3001/';
-const socket = io('http://localhost:3001/');
+// const socketUrl = 'http://localhost:3001/';
+// const socket = io('http://localhost:3001/');
+
+const socketUrl = 'http://boom-handraiser.com:3001/';
+const socket = io('http://boom-handraiser.com:3001/');
 
 class Cohorts extends React.Component{
   constructor(){
@@ -194,11 +197,7 @@ class Cohorts extends React.Component{
 
   redirect = (cohort_id) => {
     //Dito ilagay redirect to classes!
-    if(cohort_id !== 'mentor'){
-      this.setState({ cohort_id })  
-    }else{
-      console.log('asd');
-    }
+      this.setState({ cohort_id })
     // window.location.href = `/queue/${cohort_id}`;
   }
 

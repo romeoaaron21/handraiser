@@ -69,7 +69,7 @@ class MentorClassCards extends React.Component {
         </Card>
       { cohorts.map(cohort => (
         <Card className={classes.card} key={cohort.id}>
-          <CardActionArea className={classes.cardContainer} onClick={() => redirect('mentor')}>
+          <CardActionArea className={classes.cardContainer} onClick={() => redirect(cohort.id)}>
             <CardMedia
               className={classes.media}
               image={"https://source.unsplash.com/1600x900?classroom?sig="+Math.random()}

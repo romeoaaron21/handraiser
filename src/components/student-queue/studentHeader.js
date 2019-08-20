@@ -10,11 +10,17 @@ import Typography from '@material-ui/core/Typography';
 
 const styles = (theme) => ({
 	raiseBtn: {
-		backgroundColor: '#8220b3',
-		'&:hover': {
-			backgroundColor: '#780aaf'
-		}
-	}
+        backgroundColor: '#983cac',
+        '&:hover': {
+            backgroundColor: '#780aaf',
+        }
+    },
+    userAvatar: {
+        width: 56,
+        height: 56,
+        marginRight: 6
+    }
+
 });
 
 class StudentHeader extends Component {
@@ -23,12 +29,12 @@ class StudentHeader extends Component {
 		return (
 			<div>
 				<Box item xs={12} sm={12}>
-					<Typography variant="h5" component="h3">
+					<Typography variant="h5" component="h3" align="center">
 						{this.props.user.name.charAt(0).toUpperCase() + this.props.user.name.slice(1)}
 					</Typography>
 					<ListItem>
 						<ListItemAvatar>
-							<Avatar src={this.props.user.avatar} style={{ color: '#077ce8', fontSize: '70px' }} />
+							<Avatar src={this.props.user.avatar} />
 						</ListItemAvatar>
 						<ListItemText>
 							<Typography variant="h6" component="h3">
