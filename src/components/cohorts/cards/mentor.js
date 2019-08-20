@@ -91,9 +91,14 @@ class MentorClassCards extends React.Component {
             <Button size="small" color="primary" id={cohort.id} onClick={openDelete}>
               Delete
             </Button>
-            <Button size="small" color="primary">
-              Students
-            </Button>
+            { cohort.members !== '0' ?
+              <Button size="small" color="primary">
+                Students
+              </Button>
+            :
+              null
+            }
+            
           </CardActions>
         </Card>
       ))}
