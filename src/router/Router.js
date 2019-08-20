@@ -4,7 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import SignIn from '../components/sign-in/signIn';
 import Cohorts from '../components/cohorts/cohorts';
 
-function App() {
+function Router() {
   return (
     <BrowserRouter>
       <Route path='/sign-in' component={SignIn} />
@@ -13,4 +13,4 @@ function App() {
   );
 }
 
-export default App;
+export default Router;

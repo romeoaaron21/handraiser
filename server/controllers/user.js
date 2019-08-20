@@ -110,7 +110,6 @@ function getFromSub(req, res){
   db
     .query(`SELECT * FROM users WHERE sub = '${id}'`)
     .then(user => {
-      console.log(user);
       res.status(201).send({ user })
     })
 }

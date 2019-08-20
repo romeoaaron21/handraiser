@@ -65,7 +65,8 @@ class SignInSide extends Component {
           toast.error("Sorry, you're not a student", {
             hideProgressBar: true,
             draggable: false,
-          });        } else {
+          });
+        } else {
           window.location.href = '/cohorts';
         }
       })
