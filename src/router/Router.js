@@ -10,10 +10,10 @@ import Cohorts from '../components/cohorts/cohort';
 function Router() {
   return (
     <BrowserRouter>
-      <Route path='/sign-in' component={SignIn} />
-      <Route path='/keys' component={MentorKeys} />
-      <Route path='/mentors' component={Mentor} />
-      <Route path='/cohorts' component={Cohorts} />
+      <Route path='/admin/sign-in' component={SignIn} />
+      <Route path='/admin/keys' component={MentorKeys} />
+      <Route path='/admin/mentors' component={Mentor} />
+      <Route path='/admin/cohorts' component={Cohorts} />
     </BrowserRouter>
   );
 }
