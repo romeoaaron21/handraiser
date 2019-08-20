@@ -12,14 +12,16 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Delete from '@material-ui/icons/Delete';
 import ThumbsUp from '@material-ui/icons/PanTool';
 import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import EmptyQueue from '../../images/noResult.svg';
 
 const styles = theme => ({
 
     rightNav: {
         padding: theme.spacing(0, 1),
         maxWidth: 'auto',
-        minHeight: '530px',
-        maxHeight: '530px',
+        minHeight: '520px',
+        maxHeight: '520px',
         // boxShadow: ' 0px 0px 3px 0px rgba(176,173,176,1)',
         boxShadow: '0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)',
         overflowY: 'scroll',
@@ -69,6 +71,13 @@ const styles = theme => ({
     userAvatar: {
         width: 35,
         height: 35,
+    },
+    emptyQueue: {
+        marginTop: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column'
+
     }
 })
 
@@ -86,7 +95,12 @@ class requestQueue extends Component {
                 </Paper>
                 <Paper className={`${classes.rightNav} ${classes.scrollBar}`} square={true}>
                     <Box item xs={12} sm={8} mt={2}>
-                        <ListItem className={`${classes.list}`}>
+                        <Grid container className={classes.emptyQueue}>
+                            <img src={EmptyQueue} width="280" height="250" />
+                            <Typography variant="overline" display="block">No one needs help...</Typography>
+                        </Grid>
+
+                        {/* <ListItem className={`${classes.list}`}>
                             <ListItemAvatar>
                                 <Avatar src="https://lh6.googleusercontent.com/-_OuXadnBbqs/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfEr_FE92jf3RrOO98KilrRcrinvw/s96-c/photo.jpg"
                                 className={classes.userAvatar} />
@@ -121,442 +135,6 @@ class requestQueue extends Component {
 
                                     <Tooltip title="Remove Request" placement="top">
                                         <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        {/* <ListItem className={classes.list}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Pedro Maniac</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton onClick={this.props.helpStudent}>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Sid Bercasio</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton onClick={this.props.helpStudent}>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Juan Abunda</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton onClick={this.props.helpStudent}>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>George Dela tore</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton onClick={this.props.helpStudent}>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>April Salandoni</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton onClick={this.props.helpStudent}>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Bong Nebrija</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton onClick={this.props.helpStudent}>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton onClick={this.props.removeStudentRequest}>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={classes.list}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Pedro Maniac</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Sid Bercasio</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Juan Abunda</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>George Dela tore</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={classes.list}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Pedro Maniac</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Sid Bercasio</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>Juan Abunda</Typography>
-                            </ListItemText>
-
-                            {this.props.priv === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
-                                            <Delete className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-
-                                :
-                                null
-
-                            }
-
-                        </ListItem>
-                        <ListItem className={`${classes.list}`}>
-                            <ListItemAvatar>
-                                <AccountCircle style={{ color: '#077ce8', fontSize: '33px' }} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <Typography component="p" className={classes.queueName}>George Dela tore</Typography>
-                            </ListItemText>
-
-                            {this.props.previledge === 'mentor'
-
-                                ?
-                                <div className={`${classes.queueaction} actionShow`}>
-                                    <Tooltip title="Help Student" placement="top">
-                                        <IconButton>
-                                            <ThumbsUp className={classes.actionIcon} />
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Remove Request" placement="top">
-                                        <IconButton>
                                             <Delete className={classes.actionIcon} />
                                         </IconButton>
                                     </Tooltip>

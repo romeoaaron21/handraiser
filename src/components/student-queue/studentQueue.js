@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+
+
 
 import BeingHelped from '../being-helped/BeingHelped';
 import BeingHelpedModal from '../being-helped/beingHelpedModal';
 import RemoveRequest from '../being-helped/removeRequestModal';
 import StudentHeader from './studentHeader';
 import RequestQueue from './requestQueue';
+import StudentNavHeader from './navHeader';
 
 
 const styles = theme => ({
@@ -26,19 +30,37 @@ const styles = theme => ({
     main: {
         marginTop: '13px',
     },
+    navHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
 
 });
+
+
 
 class Student extends Component {
     constructor() {
         super()
         this.state = {
             previledge: 'student',
+            value: 0,
             open: false,
             helpStudentModal: false,
             removeStudentReqModal: false
 
         }
+    }
+    handleChange = () => {
+        this.setState({
+            newValue: 1
+        })
+    }
+
+    handleClick = (event) => {
+        event.preventDefault();
+        alert('You clicked a breadcrumb.');
     }
 
     helpStudent = () => {
@@ -66,6 +88,19 @@ class Student extends Component {
                     <StudentHeader />
                 </Paper>
 
+                
+                <Grid container className={classes.navHeader}>
+                {this.state.previledge === 'mentor'
+
+                ?
+                    null
+                :
+                 <StudentNavHeader />
+
+                }
+                  
+                </Grid>
+                
                 <Grid container className={classes.main} spacing={1}>
 
                     <Grid item xs={12} sm={4}>
