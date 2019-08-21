@@ -20,7 +20,7 @@ import PersonIcon from '@material-ui/icons/Person';
 const styles = theme => ({
   list: {
     width: '100%',
-    width: 360,
+    maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   }
 })
