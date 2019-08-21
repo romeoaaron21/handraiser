@@ -27,7 +27,7 @@ function displayStudents(req, res) {
   const db = req.app.get("db");
 
   db.query(
-    `SELECT users.*, requests.status, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' order by requests.id asc`
+    `SELECT users.*, requests.status,reasons.reason, member.cohort_id FROM reasons, users, member, requests WHERE requests.id = reasons.request_id AND users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' order by requests.id asc`
   ).then(members => {
     res.status(200).json([...members]);
   });
@@ -36,7 +36,7 @@ function displayStudents(req, res) {
 function requestHelp(req, res) {
   const db = req.app.get("db");
   const { sub, cohort_id } = req.params;
-
+  const { reason } = req.body;
   db.users
     .findOne({ sub: sub })
     .then(function(data) {
@@ -49,17 +49,26 @@ function requestHelp(req, res) {
               status: "waiting"
             })
             .then(user => {
-              db.requests.findOne({ member_id: user.member_id }).then(mem => {
-                db.member.findOne({ id: mem.member_id }).then(memb => {
-                  db.query(
-                    `SELECT users.*, requests.status, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${
-                      memb.cohort_id
-                    }  order by requests.id asc`
-                  ).then(result => {
-                    res.status(201).json([...result]);
-                  });
+              db.reasons
+                .insert({
+                  request_id: user.id,
+                  reason
+                })
+                .then(() => {
+                  db.requests
+                    .findOne({ member_id: user.member_id })
+                    .then(mem => {
+                      db.member.findOne({ id: mem.member_id }).then(memb => {
+                        db.query(
+                          `SELECT users.*, requests.status,reasons.reason, member.cohort_id FROM reasons, users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND requests.id = reasons.request_id AND member.cohort_id=${
+                            memb.cohort_id
+                          }  order by requests.id asc`
+                        ).then(result => {
+                          res.status(201).json([...result]);
+                        });
+                      });
+                    });
                 });
-              });
             });
         });
     })

@@ -63,7 +63,6 @@ massive({
   //USERS
   app.post("/validate", user.validate);
   app.post("/sign-in", user.signIn);
-
   app.get("/api/users/:id", user.getFromSub);
 
   // Cohorts Start

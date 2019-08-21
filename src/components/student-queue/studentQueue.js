@@ -59,12 +59,14 @@ class Student extends Component {
       removeStudentReqModal: false,
       user: [],
       members: [],
-      button: false,
+      button: true,
       btntext: "Raise Hand",
       socket: null,
       member: "",
       helpingStudent: "",
       sub: "",
+      requested: false,
+      studentsReason: "",
       // cohort_id: this.props.cohort,
 
       value: 0,
@@ -122,14 +124,16 @@ class Student extends Component {
       if (students.length === 0) {
         this.setState({
           button: true,
-          btntext: "Waiting for help"
+          btntext: "Waiting for help",
+          requested: true
         });
       }
       students.map(student => {
         if (student.sub === this.state.sub) {
           this.setState({
             button: true,
-            btntext: "Waiting for help"
+            btntext: "Waiting for help",
+            requested: true
           });
         }
       });
@@ -139,15 +143,15 @@ class Student extends Component {
       this.setState({ members: students });
       if (students.length === 0) {
         this.setState({
-          button: false,
-          btntext: "Raise Hand"
+          btntext: "Raise Hand",
+          requested: false
         });
       }
       students.map(student => {
         if (student.sub !== this.state.sub) {
           this.setState({
-            button: false,
-            btntext: "Raise Hand"
+            btntext: "Raise Hand",
+            requested: false
           });
         }
       });
@@ -238,7 +242,8 @@ class Student extends Component {
   requestHelp = () => {
     const data = api.fetch(
       `/api/requestHelp/${this.state.sub}/${this.props.cohort_id}`,
-      "post"
+      "post",
+      { reason: this.state.studentsReason }
     );
     data
       .then(res => {
@@ -263,6 +268,19 @@ class Student extends Component {
       });
   };
 
+  handleChangeReasons = e => {
+    if (e.target.value !== "") {
+      this.setState({
+        button: false,
+        studentsReason: e.target.value
+      });
+    } else {
+      this.setState({
+        button: true
+      });
+    }
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -282,7 +300,10 @@ class Student extends Component {
 
               <Grid container className={classes.navHeader}>
                 {this.state.previledge === "mentor" ? null : (
-                  <StudentNavHeader />
+                  <StudentNavHeader
+                    requested={this.state.requested}
+                    handleChangeReasons={this.handleChangeReasons}
+                  />
                 )}
               </Grid>
             </React.Fragment>

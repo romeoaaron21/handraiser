@@ -86,6 +86,7 @@ const styles = theme => ({
 
 class requestQueue extends Component {
   render() {
+    console.log(this.props.members);
     const { classes } = this.props;
     const insideCohort = this.props.members.filter(
       member => member.cohort_id === parseInt(this.props.cohort_id)
@@ -127,6 +128,10 @@ class requestQueue extends Component {
                               member.first_name.slice(1)}{" "}
                             {member.last_name.charAt(0).toUpperCase() +
                               member.last_name.slice(1)}
+                            <span style={{ marginLeft: "100px" }}>
+                              {" "}
+                              {member.reason}{" "}
+                            </span>
                           </Typography>
                         </ListItemText>
 
