@@ -87,7 +87,9 @@ const styles = theme => ({
 class requestQueue extends Component {
   render() {
     const { classes } = this.props;
-
+    const insideCohort = this.props.members.filter(
+      member => member.cohort_id === parseInt(this.props.cohort_id)
+    );
     return (
       <div>
         <Paper className={classes.rightTopNav} square={true}>
@@ -99,84 +101,91 @@ class requestQueue extends Component {
           className={`${classes.rightNav} ${classes.scrollBar}`}
           square={true}
         >
-          <Box item xs={12} sm={8} mt={2}>
-            {this.props.members.length > 0 ? (
-              this.props.members.map(member =>
-                member.status === "waiting" &&
-                parseInt(this.props.cohort_id) ===
-                  parseInt(member.cohort_id) ? (
-                  <React.Fragment key={member.id}>
-                    <ListItem className={`${classes.list}`}>
-                      <ListItemAvatar>
-                        {/* <img style={{ height: 28, borderRadius: '50%' }} /> */}
-                        <Avatar
-                          style={{ color: "#077ce8", fontSize: "33px" }}
-                          src={member.avatar}
-                        />
-                      </ListItemAvatar>
+          {insideCohort.length !== 0 ? (
+            <Box item xs={12} sm={8} mt={2}>
+              {this.props.members.length > 0 ? (
+                this.props.members.map(member =>
+                  member.status === "waiting" &&
+                  parseInt(this.props.cohort_id) ===
+                    parseInt(member.cohort_id) ? (
+                    <React.Fragment key={member.id}>
+                      <ListItem className={`${classes.list}`}>
+                        <ListItemAvatar>
+                          {/* <img style={{ height: 28, borderRadius: '50%' }} /> */}
+                          <Avatar
+                            style={{ color: "#077ce8", fontSize: "33px" }}
+                            src={member.avatar}
+                          />
+                        </ListItemAvatar>
 
-                      <ListItemText>
-                        <Typography component="p" className={classes.queueName}>
-                          {member.first_name.charAt(0).toUpperCase() +
-                            member.first_name.slice(1)}{" "}
-                          {member.last_name.charAt(0).toUpperCase() +
-                            member.last_name.slice(1)}
-                        </Typography>
-                      </ListItemText>
-
-                      {member.privilege === "student" &&
-                      member.sub === this.props.sub ? (
-                        <Tooltip title="Cancel Request" placement="top">
-                          <IconButton
-                            onClick={() =>
-                              this.props.removeStudentRequest(member.id)
-                            }
+                        <ListItemText>
+                          <Typography
+                            component="p"
+                            className={classes.queueName}
                           >
-                            <Delete className={classes.actionIcon} />
-                          </IconButton>
-                        </Tooltip>
-                      ) : null}
-                      {this.props.priv === "mentor" ? (
-                        <div className={`${classes.queueaction} actionShow`}>
-                          <Tooltip title="Help Student" placement="top">
-                            <IconButton
-                              onClick={() => this.props.helpStudent(member.id)}
-                            >
-                              <ThumbsUp className={classes.actionIcon} />
-                            </IconButton>
-                          </Tooltip>
+                            {member.first_name.charAt(0).toUpperCase() +
+                              member.first_name.slice(1)}{" "}
+                            {member.last_name.charAt(0).toUpperCase() +
+                              member.last_name.slice(1)}
+                          </Typography>
+                        </ListItemText>
 
-                          <Tooltip title="Remove Request" placement="top">
+                        {member.privilege === "student" &&
+                        member.sub === this.props.sub ? (
+                          <Tooltip title="Cancel Request" placement="top">
                             <IconButton
-                              onClick={() => {
-                                this.props.removeStudentRequest(member.id);
-                              }}
+                              onClick={() =>
+                                this.props.removeStudentRequest(member.id)
+                              }
                             >
                               <Delete className={classes.actionIcon} />
                             </IconButton>
                           </Tooltip>
-                        </div>
-                      ) : null}
-                    </ListItem>
-                  </React.Fragment>
-                ) : (
-                  <Grid container className={classes.emptyQueue}>
-                    <img src={EmptyQueue} width="280" height="250" />
-                    <Typography variant="overline" display="block">
-                      No one needs help...1
-                    </Typography>
-                  </Grid>
+                        ) : null}
+                        {this.props.priv === "mentor" ? (
+                          <div className={`${classes.queueaction} actionShow`}>
+                            <Tooltip title="Help Student" placement="top">
+                              <IconButton
+                                onClick={() =>
+                                  this.props.helpStudent(member.id)
+                                }
+                              >
+                                <ThumbsUp className={classes.actionIcon} />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Remove Request" placement="top">
+                              <IconButton
+                                onClick={() => {
+                                  this.props.removeStudentRequest(member.id);
+                                }}
+                              >
+                                <Delete className={classes.actionIcon} />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        ) : null}
+                      </ListItem>
+                    </React.Fragment>
+                  ) : null
                 )
-              )
-            ) : (
-              <Grid container className={classes.emptyQueue}>
-                <img src={EmptyQueue} width="280" height="250" />
-                <Typography variant="overline" display="block">
-                  No one needs help...
-                </Typography>
-              </Grid>
-            )}
-          </Box>
+              ) : (
+                <Grid container className={classes.emptyQueue}>
+                  <img src={EmptyQueue} width="280" height="250" />
+                  <Typography variant="overline" display="block">
+                    No one needs help...
+                  </Typography>
+                </Grid>
+              )}
+            </Box>
+          ) : (
+            <Grid container className={classes.emptyQueue}>
+              <img src={EmptyQueue} width="280" height="250" />
+              <Typography variant="overline" display="block">
+                No one needs help...
+              </Typography>
+            </Grid>
+          )}
         </Paper>
       </div>
     );

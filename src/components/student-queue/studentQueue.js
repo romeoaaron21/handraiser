@@ -181,22 +181,27 @@ class Student extends Component {
       });
       if (this.state.members) {
         this.state.members.map(member => {
-          if (member.sub === this.state.sub && member.status === "inprogress") {
-            this.setState({
-              helpingStudent: member,
-              button: true,
-              btntext: "Currently Helping"
-            });
-          } else if (member.sub === this.state.sub) {
-            this.setState({
-              button: true,
-              btntext: "Waiting for help"
-            });
-          }
-          if (member.status === "inprogress") {
-            this.setState({
-              helpingStudent: member
-            });
+          if (parseInt(member.cohort_id) === parseInt(this.props.cohort_id)) {
+            if (
+              member.sub === this.state.sub &&
+              member.status === "inprogress"
+            ) {
+              this.setState({
+                helpingStudent: member,
+                button: true,
+                btntext: "Currently Helping"
+              });
+            } else if (member.sub === this.state.sub) {
+              this.setState({
+                button: true,
+                btntext: "Waiting for help"
+              });
+            }
+            if (member.status === "inprogress") {
+              this.setState({
+                helpingStudent: member
+              });
+            }
           }
         });
       }
