@@ -204,10 +204,7 @@ class Student extends Component {
   };
 
   fetchStudents = () => {
-    const data = api.fetch(
-      `/api/displayStudents/${this.props.cohort_id}`,
-      "get"
-    );
+    const data = api.fetch(`/api/displayStudents/`, "get");
     data.then(res => {
       socket.emit("displayStudents", res.data);
     });
@@ -238,9 +235,13 @@ class Student extends Component {
       `/api/requestHelp/${this.state.sub}/${this.props.cohort_id}`,
       "post"
     );
-    data.then(res => {
-      socket.emit("requestHelp", res.data);
-    });
+    data
+      .then(res => {
+        socket.emit("requestHelp", res.data);
+      })
+      .then(() => {
+        this.fetchStudents();
+      });
   };
 
   deleteRequest = id => {
@@ -248,9 +249,13 @@ class Student extends Component {
       `/api/deleteRequest/${id}/${this.props.cohort_id}`,
       "delete"
     );
-    data.then(res => {
-      socket.emit("deleteRequest", res.data);
-    });
+    data
+      .then(res => {
+        socket.emit("deleteRequest", res.data);
+      })
+      .then(() => {
+        this.fetchStudents();
+      });
   };
 
   render() {
