@@ -1,59 +1,59 @@
-import React from 'react';
-import clsx from 'clsx';
-import { ToastContainer, toast } from 'react-toastify';
-import io from 'socket.io-client';
-import { Redirect } from 'react-router-dom';
+import React from "react";
+import clsx from "clsx";
+import { ToastContainer, toast } from "react-toastify";
+import io from "socket.io-client";
+import { Redirect } from "react-router-dom";
 
-import Container from '@material-ui/core/Container';
-import { withStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/Search';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Container from "@material-ui/core/Container";
+import { withStyles } from "@material-ui/core/styles";
+import InputBase from "@material-ui/core/InputBase";
+import SearchIcon from "@material-ui/icons/Search";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
 
 //Modals
-import AddClass from './modals/mentor/add';
-import DeleteClass from './modals/mentor/delete';
-import EnrollToClass from './modals/student/enroll';
-import LeaveClass from './modals/student/leave'
-import StudentList from './modals/studentList'
+import AddClass from "./modals/mentor/add";
+import DeleteClass from "./modals/mentor/delete";
+import EnrollToClass from "./modals/student/enroll";
+import LeaveClass from "./modals/student/leave";
+import StudentList from "./modals/studentList";
 
 //Cards
-import StudentClassCards from './cards/student';
-import MentorClassCards from './cards/mentor';
+import StudentClassCards from "./cards/student";
+import MentorClassCards from "./cards/mentor";
 
 //API
-import api from './../../services/fetchApi';
+import api from "./../../services/fetchApi";
 
 //AUTH
-import Auth from '../../auth/Auth';
-import AuthService from '../../auth/AuthService';
+import Auth from "../../auth/Auth";
+import AuthService from "../../auth/AuthService";
 
 //NAVIGATION
-import NavBar from '../common-components/nav-bar/navBar';
-import SideNav from '../common-components/side-nav/sideNav';
+import NavBar from "../common-components/nav-bar/navBar";
+import SideNav from "../common-components/side-nav/sideNav";
 
 //CSS
-import styles from './cohorts-component-style';
+import styles from "./cohorts-component-style";
 
 //SVG
-import EmptyQueue from './../../images/emptyqueue.svg';
+import EmptyQueue from "./../../images/emptyqueue.svg";
 
 // const socketUrl = 'http://localhost:3001/';
 // const socket = io('http://localhost:3001/');
 
-const socketUrl = 'http://boom-handraiser.com:3001/';
-const socket = io('http://boom-handraiser.com:3001/');
+const socketUrl = "http://boom-handraiser.com:3001/";
+const socket = io("http://boom-handraiser.com:3001/");
 
-class Cohorts extends React.Component{
-  constructor(){
+class Cohorts extends React.Component {
+  constructor() {
     super();
 
     this.Auth = new AuthService();
     this.fetch = this.Auth.getFetchedTokenAPI();
 
     this.state = {
-      privilege: '',
+      privilege: "",
       id: 0,
       cohorts: [],
       member: [],
@@ -64,105 +64,105 @@ class Cohorts extends React.Component{
       leave: false,
       open: false,
       studentList: false,
-      scroll: 'paper',
-      selected: '',
-      cohort_id: '',
+      scroll: "paper",
+      selected: "",
+      cohort_id: "",
       socket: null
-    }
+    };
   }
 
   //NAVIGATION
   handleDrawerOpen = () => {
-    this.setState({ open: true})
-  }
+    this.setState({ open: true });
+  };
 
   handleDrawerClose = () => {
-    this.setState({ open: false})
-  }
+    this.setState({ open: false });
+  };
 
-  componentDidMount(){
-    document.title = 'Cohorts';
+  componentDidMount() {
+    document.title = "Cohorts";
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
-      if(user.privilege === 'mentor'){
-        api.fetch(`/api/mentor/${user.id}/cohorts/`, 'get').then((res) => {
-          socket.emit('displayCohorts', res.data.cohorts.reverse());
-        })
-      }else{
-        api.fetch(`/api/cohorts/`, 'get').then((res) => {
-          socket.emit('displayCohorts', res.data.cohorts.reverse());
-        })
-        api.fetch(`/api/student/${user.id}/cohorts/`, 'get').then((res) => {
-          socket.emit('displayMember', res.data.member);
-        })
+      if (user.privilege === "mentor") {
+        api.fetch(`/api/cohorts/`, "get").then(res => {
+          socket.emit("displayCohorts", res.data.cohorts.reverse());
+        });
+      } else {
+        api.fetch(`/api/cohorts/`, "get").then(res => {
+          socket.emit("displayCohorts", res.data.cohorts.reverse());
+        });
+        api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
+          socket.emit("displayMember", res.data.member);
+        });
       }
       this.setState({
         id: user.id,
         privilege: user.privilege
-      })
-    })
-  }
-
-  componentWillMount(){
-    const socket = io(socketUrl);
-		socket.on('connect', () => {
-			console.log('CONNECTED');
-		});
-    this.setState({ socket });
-    
-    socket.on('displayCohorts', (cohorts) => {
-      this.setState({ cohorts })
+      });
     });
-    socket.on('displayMember', (member) => {
-			this.setState({ member })
-		});
   }
 
-  openStudentList = (cohort_id) => {
-    api.fetch(`/api/cohorts/${cohort_id}/students/`, 'get').then((res) => {
-      this.setState({ 
+  componentWillMount() {
+    const socket = io(socketUrl);
+    socket.on("connect", () => {
+      console.log("CONNECTED");
+    });
+    this.setState({ socket });
+
+    socket.on("displayCohorts", cohorts => {
+      this.setState({ cohorts });
+    });
+    socket.on("displayMember", member => {
+      this.setState({ member });
+    });
+  }
+
+  openStudentList = cohort_id => {
+    api.fetch(`/api/cohorts/${cohort_id}/students/`, "get").then(res => {
+      this.setState({
         studentList: true,
         students: res.data.students
-      })
-    })
-  }
+      });
+    });
+  };
 
   openAdd = () => {
-    this.setState({ add: true })
-  }
+    this.setState({ add: true });
+  };
 
-  openDelete = (e) => {
+  openDelete = e => {
     this.setState({
       delete: true,
-      selected: e.currentTarget.getAttribute('id')
-    })
-  }
+      selected: e.currentTarget.getAttribute("id")
+    });
+  };
 
-  redirect = (cohort_id) => {
+  redirect = cohort_id => {
     //Dito ilagay redirect to classes!
-      this.setState({ cohort_id })
+    this.setState({ cohort_id });
     // window.location.href = `/queue/${cohort_id}`;
-  }
+  };
 
-  openEnroll = (e,cohort_id) => {
-    let array = e.currentTarget.getAttribute('name').split(",");
-    let check = array.find(name => name === 'goToClass');
-    if(check){
+  openEnroll = (e, cohort_id) => {
+    let array = e.currentTarget.getAttribute("name").split(",");
+    let check = array.find(name => name === "goToClass");
+    if (check) {
       this.redirect(cohort_id);
-    }else{
+    } else {
       this.setState({
         enroll: true,
-        selected: e.currentTarget.getAttribute('id')
-      })
+        selected: e.currentTarget.getAttribute("id")
+      });
     }
-  }
+  };
 
-  openLeave = (e) => {
+  openLeave = e => {
     this.setState({
       leave: true,
-      selected: e.currentTarget.getAttribute('id')
-    })
-  }
+      selected: e.currentTarget.getAttribute("id")
+    });
+  };
 
   closeModal = () => {
     this.setState({
@@ -171,78 +171,95 @@ class Cohorts extends React.Component{
       enroll: false,
       leave: false,
       studentList: false
-    })
-  }
+    });
+  };
 
   add = (name, password, mentor_id) => {
-    const state = { name, password }
+    const state = { name, password };
     let check = this.state.cohorts.find(cohorts => cohorts.name === name);
-    if(!check){
-      api.fetch(`/api/cohorts/mentor/${mentor_id}/add`, 'post', state).then(() => {
-        this.componentDidMount();
-      })
-    }else{
+    if (!check) {
+      api
+        .fetch(`/api/cohorts/mentor/${mentor_id}/add`, "post", state)
+        .then(() => {
+          this.componentDidMount();
+        });
+    } else {
       toast.error("Class already exists!", {
         hideProgressBar: true,
-        draggable: false,
+        draggable: false
       });
     }
-  }
+  };
 
-  delete = (id) => {
-    api.fetch(`/api/cohorts/${id}`, 'get').then(() => {
+  delete = id => {
+    api.fetch(`/api/cohorts/${id}`, "get").then(() => {
       this.componentDidMount();
-    })
-  }
+    });
+  };
 
   enroll = (id, password) => {
     let student_id = this.state.id;
-    const state = { student_id, password }
-    api.fetch(`/api/cohorts/${id}/students`, 'post', state).then(() => {
+    const state = { student_id, password };
+    api.fetch(`/api/cohorts/${id}/students`, "post", state).then(() => {
       this.componentDidMount();
-    })
-  }
+    });
+  };
 
-  leave = (id) => {
-    api.fetch(`/api/cohorts/${id}/students/${this.state.id}`, 'get').then(() => {
-      this.componentDidMount();
-    })
-  }
+  leave = id => {
+    api
+      .fetch(`/api/cohorts/${id}/students/${this.state.id}`, "get")
+      .then(() => {
+        this.componentDidMount();
+      });
+  };
 
-  search = (e) => {
-    if(e.currentTarget.value === ''){ 
+  search = e => {
+    if (e.currentTarget.value === "") {
       return this.componentDidMount();
     }
-    if(this.state.privilege !== 'student'){
-      api.fetch(`/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, 'get').then((res) => {
-        this.setState({ cohorts: res.data.cohorts })
-      })
-    }else{
-      api.fetch(`/api/cohorts/${e.currentTarget.value}/search`, 'get').then((res) => {
-        this.setState({ cohorts: res.data.cohorts })
-      })
+    if (this.state.privilege !== "student") {
+      api
+        .fetch(
+          `/api/cohorts/${e.currentTarget.value}/search/mentor/${
+            this.state.id
+          }`,
+          "get"
+        )
+        .then(res => {
+          this.setState({ cohorts: res.data.cohorts });
+        });
+    } else {
+      api
+        .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
+        .then(res => {
+          this.setState({ cohorts: res.data.cohorts });
+        });
     }
-  }
+  };
 
-  render(){
+  render() {
     const { classes } = this.props;
-    
-    return(
+
+    return (
       <div className={classes.root}>
         <NavBar
-          open = {this.state.open}
-          title = 'Handraiser'
-          handleDrawerOpenFn = {this.handleDrawerOpen}
+          open={this.state.open}
+          title="Handraiser"
+          handleDrawerOpenFn={this.handleDrawerOpen}
         />
         <SideNav
-          open = {this.state.open}
-          handleDrawerCloseFn = {this.handleDrawerClose}
+          open={this.state.open}
+          handleDrawerCloseFn={this.handleDrawerClose}
         />
         <ToastContainer
           enableMultiContainer
           position={toast.POSITION.TOP_RIGHT}
         />
-        <main className={clsx(classes.content, { [classes.contentShift]: this.state.open, })}>
+        <main
+          className={clsx(classes.content, {
+            [classes.contentShift]: this.state.open
+          })}
+        >
           <div className={classes.drawerHeader} />
           <Container maxWidth="lg" className={classes.container}>
             <div className={classes.search}>
@@ -253,31 +270,31 @@ class Cohorts extends React.Component{
                 placeholder="Search…"
                 classes={{
                   root: classes.inputRoot,
-                  input: classes.inputInput,
+                  input: classes.inputInput
                 }}
                 onChange={this.search}
                 fullWidth
-                inputProps={{ 'aria-label': 'search' }}
+                inputProps={{ "aria-label": "search" }}
               />
             </div>
             <div className={classes.center}>
-            { this.state.privilege !== 'student' ?
-              <MentorClassCards
-                cohorts={this.state.cohorts}
-                openAdd={this.openAdd}
-                openDelete={this.openDelete}
-                redirect={this.redirect}
-                openStudentList={this.openStudentList}
-              />
-            :
-              <StudentClassCards
-                cohorts={this.state.cohorts}
-                members={this.state.member}
-                openEnroll={this.openEnroll}
-                openLeave={this.openLeave}
-                openStudentList={this.openStudentList}
-              />
-            }
+              {this.state.privilege !== "student" ? (
+                <MentorClassCards
+                  cohorts={this.state.cohorts}
+                  openAdd={this.openAdd}
+                  openDelete={this.openDelete}
+                  redirect={this.redirect}
+                  openStudentList={this.openStudentList}
+                />
+              ) : (
+                <StudentClassCards
+                  cohorts={this.state.cohorts}
+                  members={this.state.member}
+                  openEnroll={this.openEnroll}
+                  openLeave={this.openLeave}
+                  openStudentList={this.openStudentList}
+                />
+              )}
               <AddClass
                 open={this.state.add}
                 close={this.closeModal}
@@ -302,37 +319,36 @@ class Cohorts extends React.Component{
                 id={this.state.selected}
                 leave={this.leave}
               />
-              { this.state.students !== undefined ? 
-                <StudentList 
+              {this.state.students !== undefined ? (
+                <StudentList
                   open={this.state.studentList}
                   close={this.closeModal}
                   students={this.state.students}
                   scroll={this.state.scroll}
                   id={this.state.id}
-                /> 
-              : null }
+                />
+              ) : null}
             </div>
-            { this.state.cohorts.length !== 0 ? 
-                null
-              :
-                <Grid container className={classes.emptyQueue}>
-                  <img alt='Classes' src={EmptyQueue} width="280" height="250" />
-                  <Typography variant="overline" display="block">
-                    No Classes Found
-                  </Typography>
-                </Grid>
-            }
+            {this.state.cohorts.length !== 0 ? null : (
+              <Grid container className={classes.emptyQueue}>
+                <img alt="Classes" src={EmptyQueue} width="280" height="250" />
+                <Typography variant="overline" display="block">
+                  No Classes Found
+                </Typography>
+              </Grid>
+            )}
           </Container>
         </main>
-        {this.state.cohort_id ? 
-          <Redirect to={{
-            pathname: '/queue',
-            state: { cohort_id:this.state.cohort_id }
-        }}
+        {this.state.cohort_id ? (
+          <Redirect
+            to={{
+              pathname: "/queue",
+              state: { cohort_id: this.state.cohort_id }
+            }}
           />
-          : null }
+        ) : null}
       </div>
-    )
+    );
   }
 }
 
