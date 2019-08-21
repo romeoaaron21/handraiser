@@ -44,7 +44,7 @@ class navHeader extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.requested) {
+    if (this.props.raise === "Waiting for help") {
       if (this.state.clearText === "") {
         this.setState({
           disabled: true,
@@ -53,12 +53,22 @@ class navHeader extends Component {
         });
       }
     } else {
-      if (this.state.clearText !== "") {
-        this.setState({
-          disabled: false,
-          reason: "",
-          clearText: ""
-        });
+      if (this.props.requested) {
+        if (this.state.clearText === "") {
+          this.setState({
+            disabled: true,
+            reason: "",
+            clearText: "cleared"
+          });
+        }
+      } else {
+        if (this.state.clearText !== "") {
+          this.setState({
+            disabled: false,
+            reason: "",
+            clearText: ""
+          });
+        }
       }
     }
   }

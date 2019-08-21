@@ -301,6 +301,7 @@ class Student extends Component {
               <Grid container className={classes.navHeader}>
                 {this.state.previledge === "mentor" ? null : (
                   <StudentNavHeader
+                    raise={this.state.btntext}
                     requested={this.state.requested}
                     handleChangeReasons={this.handleChangeReasons}
                   />
