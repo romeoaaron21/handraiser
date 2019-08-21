@@ -55,7 +55,7 @@ const styles = theme => ({
 class MentorClassCards extends React.Component {
 
   render(){
-    const { classes, cohorts, openAdd, openDelete, redirect} = this.props
+    const { classes, cohorts, openAdd, openDelete, openStudentList, redirect} = this.props
     return(
       <React.Fragment>
         <Card className={classes.card}>
@@ -83,7 +83,7 @@ class MentorClassCards extends React.Component {
                 Password: {cohort.password}
               </Typography>
               <Typography variant="body2" color="textSecondary" component="p">
-                  Class Members: {cohort.members}
+                  Students: {cohort.members}
                 </Typography>
             </CardContent>
           </CardActionArea>
@@ -92,7 +92,7 @@ class MentorClassCards extends React.Component {
               Delete
             </Button>
             { cohort.members !== '0' ?
-              <Button size="small" color="primary">
+              <Button size="small" color="primary" id={cohort.id} onClick={() => {openStudentList(cohort.id)}}>
                 Students
               </Button>
             :
