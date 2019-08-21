@@ -77,6 +77,7 @@ massive({
     app.get('/api/mentors/', cohorts.getAllMentors);
     app.get('/api/cohorts/:value/search/mentor/:id', cohorts.getMentorCohortsByName);
     app.get('/api/cohorts/:value/search', cohorts.getAllCohortsByName);
+    app.get('/api/cohorts/:id/students', cohorts.getStudentsByClass);
 
     app.post('/api/cohorts/mentor/:id/add', cohorts.addCohort);
     app.post('/api/cohorts/:id/students', cohorts.enroll);
