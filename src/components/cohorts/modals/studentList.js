@@ -20,7 +20,6 @@ import PersonIcon from '@material-ui/icons/Person';
 const styles = theme => ({
   list: {
     width: '100%',
-    maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   }
 })
@@ -38,7 +37,7 @@ class StudentList extends React.Component {
       >
         <DialogTitle id="scroll-dialog-title">Students</DialogTitle>
         <DialogContent dividers={scroll === 'paper'}>
-          <DialogContentText>
+          <DialogContentText style={{width: 500}}>
             { students.map(student => (
                 <List className={classes.list} key={student.id}>
                   <ListItem button>
