@@ -74,7 +74,12 @@ const styles = theme => ({
       width: '100%',
     },
   },
-  
+  emptyQueue: {
+    paddingTop: theme.spacing(15),
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column"
+  }
 });
 
 export default styles;

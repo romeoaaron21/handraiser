@@ -2,12 +2,14 @@ import React from 'react';
 import clsx from 'clsx';
 import { ToastContainer, toast } from 'react-toastify';
 import io from 'socket.io-client';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 //Modals
 import AddClass from './modals/mentor/add';
@@ -33,6 +35,9 @@ import SideNav from '../common-components/side-nav/sideNav';
 
 //CSS
 import styles from './cohorts-component-style';
+
+//SVG
+import EmptyQueue from './../../images/emptyqueue.svg';
 
 // const socketUrl = 'http://localhost:3001/';
 // const socket = io('http://localhost:3001/');
@@ -307,6 +312,16 @@ class Cohorts extends React.Component{
                 /> 
               : null }
             </div>
+            { this.state.cohorts.length !== 0 ? 
+                null
+              :
+                <Grid container className={classes.emptyQueue}>
+                  <img alt='Classes' src={EmptyQueue} width="280" height="250" />
+                  <Typography variant="overline" display="block">
+                    No Classes Found
+                  </Typography>
+                </Grid>
+            }
           </Container>
         </main>
         {this.state.cohort_id ? 
