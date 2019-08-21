@@ -13,6 +13,7 @@ import AddClass from './modals/mentor/add';
 import DeleteClass from './modals/mentor/delete';
 import EnrollToClass from './modals/student/enroll';
 import LeaveClass from './modals/student/leave'
+import StudentList from './modals/studentList'
 
 //Cards
 import StudentClassCards from './cards/student';
@@ -70,6 +71,7 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
+    margin: '0 auto'
   },
   search: {
     position: 'relative',
@@ -106,6 +108,7 @@ const styles = theme => ({
       width: '100%',
     },
   },
+  
 });
 
 // const socketUrl = 'http://localhost:3001/';
@@ -122,15 +125,18 @@ class Cohorts extends React.Component{
     this.fetch = this.Auth.getFetchedTokenAPI();
 
     this.state = {
-      privilege: 'mentor',
-      id: 3,
+      privilege: '',
+      id: 0,
       cohorts: [],
       member: [],
+      students: [],
       add: false,
       delete: false,
       enroll: false,
       leave: false,
       open: false,
+      studentList: false,
+      scroll: 'paper',
       selected: '',
       cohort_id: '',
       socket: null
@@ -177,11 +183,21 @@ class Cohorts extends React.Component{
     this.setState({ socket });
     
     socket.on('displayCohorts', (cohorts) => {
-			this.setState({ cohorts })
+      this.setState({ cohorts })
+      console.log(cohorts);
     });
     socket.on('displayMember', (member) => {
 			this.setState({ member })
 		});
+  }
+
+  openStudentList = (cohort_id) => {
+    api.fetch(`/api/cohorts/${cohort_id}/students/`, 'get').then((res) => {
+      this.setState({ 
+        studentList: true,
+        students: res.data.students
+      })
+    })
   }
 
   openAdd = () => {
@@ -227,6 +243,7 @@ class Cohorts extends React.Component{
       delete: false,
       enroll: false,
       leave: false,
+      studentList: false
     })
   }
 
@@ -323,6 +340,7 @@ class Cohorts extends React.Component{
                 openAdd={this.openAdd}
                 openDelete={this.openDelete}
                 redirect={this.redirect}
+                openStudentList={this.openStudentList}
               />
             :
               <StudentClassCards
@@ -330,6 +348,7 @@ class Cohorts extends React.Component{
                 members={this.state.member}
                 openEnroll={this.openEnroll}
                 openLeave={this.openLeave}
+                openStudentList={this.openStudentList}
               />
             }
               <AddClass
@@ -356,6 +375,15 @@ class Cohorts extends React.Component{
                 id={this.state.selected}
                 leave={this.leave}
               />
+              { this.state.students !== undefined ? 
+                <StudentList 
+                  open={this.state.studentList}
+                  close={this.closeModal}
+                  students={this.state.students}
+                  scroll={this.state.scroll}
+                  id={this.state.id}
+                /> 
+              : null }
             </div>
           </Container>
         </main>
