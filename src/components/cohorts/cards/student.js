@@ -9,6 +9,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 
+import cohortImage from './../../../images/cohort_1.jpeg';
+
 const styles = theme => ({
   card: {
     height: 275,
@@ -102,7 +104,7 @@ class StudentClassCards extends React.Component {
           >
             <CardMedia
               className={classes.media}
-              image={"https://source.unsplash.com/1600x900?classroom?sig="+Math.random()}
+              image={cohortImage}
               title={cohort.name}
             />
             <CardContent className={classes.cardContent}>

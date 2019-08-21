@@ -7,7 +7,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+
 import AddIcon from '@material-ui/icons/Add';
+
+import cohortImage from './../../../images/cohort_2.jpeg';
 
 const styles = theme => ({
   card: {
@@ -49,7 +52,7 @@ const styles = theme => ({
   media: {
     height: '45%',
     width: 300
-  },
+  }
 })
 
 class MentorClassCards extends React.Component {
@@ -72,7 +75,7 @@ class MentorClassCards extends React.Component {
           <CardActionArea className={classes.cardContainer} onClick={() => redirect(cohort.id)}>
             <CardMedia
               className={classes.media}
-              image={"https://source.unsplash.com/1600x900?classroom?sig="+Math.random()}
+              image={cohortImage}
               title={cohort.name}
             />
             <CardContent className={classes.cardContent}>
@@ -97,8 +100,7 @@ class MentorClassCards extends React.Component {
               </Button>
             :
               null
-            }
-            
+            }   
           </CardActions>
         </Card>
       ))}
