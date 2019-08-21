@@ -16,7 +16,7 @@ function getByMentorID(req, res){
   const db = req.app.get('db');
   const { id } = req.params
   db
-    .query(`SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id}`)
+    .query(`SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id}`)
     .then(cohorts => {
       res.status(201).json({cohorts});
     })
@@ -130,7 +130,7 @@ function getMentorCohortsByName(req, res){
   const { value, id } = req.params;
 
   db
-    .query(`SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id} AND LOWER(cohorts.name) LIKE LOWER('%${value}%')`)
+    .query(`SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id} AND LOWER(cohorts.name) LIKE LOWER('%${value}%')`)
     .then(cohorts => {
       res.status(201).json({cohorts});
     })
@@ -145,7 +145,7 @@ function getAllCohortsByName(req, res){
   const { value } = req.params;
 
   db
-    .query(`SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON cohorts.mentor_id = users.id WHERE LOWER(cohorts.name) LIKE LOWER('%${value}%')`)
+    .query(`SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON cohorts.mentor_id = users.id WHERE LOWER(cohorts.name) LIKE LOWER('%${value}%')`)
     .then(cohorts => {
       res.status(201).json({cohorts});
     })
