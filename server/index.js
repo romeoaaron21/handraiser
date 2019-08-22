@@ -63,6 +63,7 @@ massive({
   //USERS
   app.post("/validate", user.validate);
   app.post("/sign-in", user.signIn);
+
   app.get("/api/users/:id", user.getFromSub);
 
   // Cohorts Start
@@ -77,6 +78,7 @@ massive({
     cohorts.getMentorCohortsByName
   );
   app.get("/api/cohorts/:value/search", cohorts.getAllCohortsByName);
+  app.get("/api/cohorts/:id/students", cohorts.getStudentsByClass);
 
   app.post("/api/cohorts/mentor/:id/add", cohorts.addCohort);
   app.post("/api/cohorts/:id/students", cohorts.enroll);
@@ -87,7 +89,7 @@ massive({
   app.get("/api/doneHelp/:memberid/:cohort_id", mentor.doneHelp);
 
   app.get("/api/displayUserInfo/:sub/:cohort_id", students.displayUserInfo);
-  app.get("/api/displayStudents/", students.displayStudents);
+  app.get("/api/displayStudents/:cohort_id", students.displayStudents);
   app.post("/api/requestHelp/:sub/:cohort_id", students.requestHelp);
   app.delete(
     "/api/deleteRequest/:student_id/:cohort_id",

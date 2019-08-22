@@ -7,6 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
+
+import cohortImage from './../../../images/cohort_1.jpeg';
 
 const styles = theme => ({
   card: {
@@ -32,6 +35,7 @@ const styles = theme => ({
   },
   cardContent: {
     height: '55%',
+    width: '90%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -46,11 +50,23 @@ const styles = theme => ({
     height: '45%',
     width: 300
   },
+  bigAvatar: {
+    margin: 10,
+    width: 60,
+    height: 60,
+    float: 'right'
+  },
+  class: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }
 })
 
 class StudentClassCards extends React.Component {
   render(){
-    const { classes, cohorts, openEnroll, openLeave, members} = this.props
+    const { classes, cohorts, openEnroll, openLeave, openStudentList, members} = this.props
     return(
       <React.Fragment>
     { cohorts.map(cohort => {
@@ -88,18 +104,21 @@ class StudentClassCards extends React.Component {
           >
             <CardMedia
               className={classes.media}
-              image={"https://source.unsplash.com/1600x900?classroom?sig="+Math.random()}
+              image={cohortImage}
               title={cohort.name}
             />
             <CardContent className={classes.cardContent}>
-              <Typography gutterBottom variant="h5" component="h2">
-                {cohort.name}
-              </Typography>
+              <div className={classes.class}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  {cohort.name} 
+                </Typography>
+                <Avatar alt={cohort.first_name+' '+cohort.last_name} src={cohort.avatar} className={classes.bigAvatar} />
+              </div>
               <Typography variant="body2" color="textSecondary" component="p">
                 Mentor: {cohort.first_name+' '+cohort.last_name}
               </Typography>
               <Typography variant="body2" color="textSecondary" component="p">
-                Class Members: {cohort.members}
+                Students: {cohort.members}
               </Typography>
             </CardContent>
           </CardActionArea>
@@ -110,7 +129,7 @@ class StudentClassCards extends React.Component {
             <Button size="small" color="primary" id={cohort.id} onClick={openLeave}>
               Leave
             </Button>
-            <Button size="small" color="primary">
+            <Button size="small" color="primary" id={cohort.id} onClick={() => {openStudentList(cohort.id)}}>
               Students
             </Button>
           </CardActions>

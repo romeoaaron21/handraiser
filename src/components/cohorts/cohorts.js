@@ -2,17 +2,21 @@ import React from "react";
 import clsx from "clsx";
 import { ToastContainer, toast } from "react-toastify";
 import io from "socket.io-client";
+import { Redirect } from "react-router-dom";
 
 import Container from "@material-ui/core/Container";
 import { withStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
 
 //Modals
 import AddClass from "./modals/mentor/add";
 import DeleteClass from "./modals/mentor/delete";
 import EnrollToClass from "./modals/student/enroll";
 import LeaveClass from "./modals/student/leave";
+import StudentList from "./modals/studentList";
 
 //Cards
 import StudentClassCards from "./cards/student";
@@ -29,84 +33,11 @@ import AuthService from "../../auth/AuthService";
 import NavBar from "../common-components/nav-bar/navBar";
 import SideNav from "../common-components/side-nav/sideNav";
 
-import { Link, Redirect } from "react-router-dom";
+//CSS
+import styles from "./cohorts-component-style";
 
-const styles = theme => ({
-  root: {
-    display: "flex"
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    marginLeft: 0
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginLeft: 0
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
-  },
-  container: {
-    paddingTop: theme.spacing(2),
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    flexDirection: "column"
-  },
-  center: {
-    maxWidth: 1000,
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "flex-start"
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: "#e0e0e0",
-    "&:hover": {
-      backgroundColor: "#e0e0e0"
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(2),
-      width: "auto"
-    }
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  inputRoot: {
-    color: "inherit"
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "100%"
-    }
-  }
-});
+//SVG
+import EmptyQueue from "./../../images/emptyqueue.svg";
 
 // const socketUrl = 'http://localhost:3001/';
 // const socket = io('http://localhost:3001/');
@@ -122,17 +53,21 @@ class Cohorts extends React.Component {
     this.fetch = this.Auth.getFetchedTokenAPI();
 
     this.state = {
-      privilege: "mentor",
-      id: 3,
+      privilege: "",
+      id: 0,
       cohorts: [],
       member: [],
+      students: [],
       add: false,
       delete: false,
       enroll: false,
       leave: false,
       open: false,
+      studentList: false,
+      scroll: "paper",
       selected: "",
       cohort_id: "",
+      search: false,
       socket: null
     };
   }
@@ -151,7 +86,7 @@ class Cohorts extends React.Component {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       if (user.privilege === "mentor") {
-        api.fetch(`/api/mentor/${user.id}/cohorts/`, "get").then(res => {
+        api.fetch(`/api/cohorts/`, "get").then(res => {
           socket.emit("displayCohorts", res.data.cohorts.reverse());
         });
       } else {
@@ -183,6 +118,15 @@ class Cohorts extends React.Component {
       this.setState({ member });
     });
   }
+
+  openStudentList = cohort_id => {
+    api.fetch(`/api/cohorts/${cohort_id}/students/`, "get").then(res => {
+      this.setState({
+        studentList: true,
+        students: res.data.students
+      });
+    });
+  };
 
   openAdd = () => {
     this.setState({ add: true });
@@ -226,7 +170,8 @@ class Cohorts extends React.Component {
       add: false,
       delete: false,
       enroll: false,
-      leave: false
+      leave: false,
+      studentList: false
     });
   };
 
@@ -271,7 +216,10 @@ class Cohorts extends React.Component {
 
   search = e => {
     if (e.currentTarget.value === "") {
+      this.setState({ search: false });
       return this.componentDidMount();
+    } else {
+      this.setState({ search: true });
     }
     if (this.state.privilege !== "student") {
       api
@@ -282,13 +230,17 @@ class Cohorts extends React.Component {
           "get"
         )
         .then(res => {
-          this.setState({ cohorts: res.data.cohorts });
+          this.setState({
+            cohorts: res.data.cohorts
+          });
         });
     } else {
       api
         .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
         .then(res => {
-          this.setState({ cohorts: res.data.cohorts });
+          this.setState({
+            cohorts: res.data.cohorts
+          });
         });
     }
   };
@@ -336,10 +288,12 @@ class Cohorts extends React.Component {
             <div className={classes.center}>
               {this.state.privilege !== "student" ? (
                 <MentorClassCards
+                  search={this.state.search}
                   cohorts={this.state.cohorts}
                   openAdd={this.openAdd}
                   openDelete={this.openDelete}
                   redirect={this.redirect}
+                  openStudentList={this.openStudentList}
                 />
               ) : (
                 <StudentClassCards
@@ -347,6 +301,7 @@ class Cohorts extends React.Component {
                   members={this.state.member}
                   openEnroll={this.openEnroll}
                   openLeave={this.openLeave}
+                  openStudentList={this.openStudentList}
                 />
               )}
               <AddClass
@@ -373,7 +328,24 @@ class Cohorts extends React.Component {
                 id={this.state.selected}
                 leave={this.leave}
               />
+              {this.state.students !== undefined ? (
+                <StudentList
+                  open={this.state.studentList}
+                  close={this.closeModal}
+                  students={this.state.students}
+                  scroll={this.state.scroll}
+                  id={this.state.id}
+                />
+              ) : null}
             </div>
+            {this.state.cohorts.length !== 0 ? null : (
+              <Grid container className={classes.emptyQueue}>
+                <img alt="Classes" src={EmptyQueue} width="280" height="250" />
+                <Typography variant="overline" display="block">
+                  No Classes Found
+                </Typography>
+              </Grid>
+            )}
           </Container>
         </main>
         {this.state.cohort_id ? (
