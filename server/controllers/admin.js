@@ -170,14 +170,14 @@ function sortByMentor(req, res) {
   console.log(sortMentor);
   if (sortMentor === "true") {
     db.query(
-      `SELECT * FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name asc`
+      `SELECT cohorts.id "id", cohorts.mentor_id, cohorts.name FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name asc`
     ).then(cohorts => {
       res.status(201).send({ cohorts });
     });
   } else {
     console.log("false");
     db.query(
-      `SELECT * FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name desc`
+      `SELECT cohorts.id "id", cohorts.mentor_id, cohorts.name FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name desc`
     ).then(cohorts => {
       res.status(201).send({ cohorts });
     });
