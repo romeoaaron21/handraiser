@@ -56,13 +56,6 @@ const styles = theme => ({
 });
 
 class MentorClassCards extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: this.props.user
-    };
-  }
-
   render() {
     const {
       classes,
@@ -90,7 +83,7 @@ class MentorClassCards extends React.Component {
           </Card>
         )}
         {cohorts.map(cohort =>
-          cohort.mentor_id === this.state.user.id ? (
+          cohort.mentor_id === this.props.user.id ? (
             <Card className={classes.card} key={cohort.id}>
               <CardActionArea
                 className={classes.cardContainer}
