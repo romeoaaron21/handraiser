@@ -12,9 +12,6 @@ import AddIcon from "@material-ui/icons/Add";
 
 import cohortImage from "./../../../images/cohort_2.jpeg";
 
-//AUTH
-import AuthService from "../../../auth/AuthService";
-
 const styles = theme => ({
   card: {
     height: 275,
@@ -59,23 +56,11 @@ const styles = theme => ({
 });
 
 class MentorClassCards extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      user: ""
+      user: this.props.user
     };
-
-    this.Auth = new AuthService();
-    this.fetch = this.Auth.getFetchedTokenAPI();
-  }
-
-  componentDidMount() {
-    this.fetch.then(fetch => {
-      const user = fetch.data.user[0];
-      this.setState({
-        user
-      });
-    });
   }
 
   render() {

@@ -58,6 +58,7 @@ class Cohorts extends React.Component {
       cohorts: [],
       member: [],
       students: [],
+      user: [],
       add: false,
       delete: false,
       enroll: false,
@@ -98,6 +99,7 @@ class Cohorts extends React.Component {
         });
       }
       this.setState({
+        user,
         id: user.id,
         privilege: user.privilege
       });
@@ -327,6 +329,7 @@ class Cohorts extends React.Component {
                   openDelete={this.openDelete}
                   redirect={this.redirect}
                   openStudentList={this.openStudentList}
+                  user={this.state.user}
                 />
               ) : (
                 <StudentClassCards
