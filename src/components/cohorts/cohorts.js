@@ -67,6 +67,7 @@ class Cohorts extends React.Component {
       scroll: "paper",
       selected: "",
       cohort_id: "",
+      search: false,
       socket: null
     };
   }
@@ -213,26 +214,28 @@ class Cohorts extends React.Component {
       });
   };
 
-  search = e => {
+  search = (e) => {
     if (e.currentTarget.value === "") {
+      this.setState({ search: false })
       return this.componentDidMount();
+    } else {
+      this.setState({ search: true })
     }
     if (this.state.privilege !== "student") {
       api
-        .fetch(
-          `/api/cohorts/${e.currentTarget.value}/search/mentor/${
-            this.state.id
-          }`,
-          "get"
-        )
+        .fetch(`/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, "get")
         .then(res => {
-          this.setState({ cohorts: res.data.cohorts });
+          this.setState({ 
+            cohorts: res.data.cohorts 
+          });
         });
     } else {
       api
         .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
         .then(res => {
-          this.setState({ cohorts: res.data.cohorts });
+          this.setState({ 
+            cohorts: res.data.cohorts 
+          });
         });
     }
   };
@@ -280,6 +283,7 @@ class Cohorts extends React.Component {
             <div className={classes.center}>
               {this.state.privilege !== "student" ? (
                 <MentorClassCards
+                  search={this.state.search}
                   cohorts={this.state.cohorts}
                   openAdd={this.openAdd}
                   openDelete={this.openDelete}
