@@ -8554,6 +8554,11 @@ raf@3.4.1:
   dependencies:
     performance-now "^2.1.0"
 
+random-key@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/random-key/-/random-key-0.3.2.tgz#a2c52a1dc13bdbf598f566efdcd9cb8897c7d933"
+  integrity sha1-osUqHcE72/WY9Wbv3NnLiJfH2TM=
+
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -9522,6 +9527,11 @@ snapdragon@^0.8.1:
     source-map "^0.5.6"
     source-map-resolve "^0.5.0"
     use "^3.1.0"
+
+socker.io@^0.0.0-alpha-beta:
+  version "0.0.0-alpha-beta"
+  resolved "https://registry.yarnpkg.com/socker.io/-/socker.io-0.0.0-alpha-beta.tgz#8b7ca61cff05178c9f69acf630afa4ec17083d38"
+  integrity sha1-i3ymHP8FF4yfaaz2MK+k7BcIPTg=
 
 socket.io-adapter@~1.1.0:
   version "1.1.1"

@@ -6,6 +6,8 @@ const massive = require("massive");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const admin = require("./controllers/admin.js");
+
 const user = require("./controllers/user.js");
 const cohorts = require("./controllers/cohorts.js");
 const mentor = require("./controllers/mentor");
@@ -60,6 +62,20 @@ massive({
   });
   //WEBSOCKETS END
 
+  // ADMIN START
+  app.post("/admin-sign-in", admin.signIn);
+  app.post("/generate-key", admin.generateNewKey);
+  app.get("/keys", admin.generatedKeys);
+  app.get("/keys/:status", admin.filterByStatus);
+  app.get("/mentors", admin.mentors);
+  app.get("/cohorts/mentors/:sortMentor", admin.sortByMentor);
+  app.get("/cohorts", admin.cohorts);
+  app.get("/students", admin.students);
+  app.get("/:mentorId/cohorts", admin.cohortList);
+  app.get("/:mentorId/cohorts", admin.cohortList);
+  app.get("/:cohortId/students", admin.studentList);
+  // ADMIN END
+
   //USERS
   app.post("/validate", user.validate);
   app.post("/sign-in", user.signIn);
@@ -67,7 +83,7 @@ massive({
   app.get("/api/users/:id", user.getFromSub);
 
   // Cohorts Start
-  app.get("/api/cohorts/", cohorts.getAll);
+  app.get("/api/cohorts/api", cohorts.getAll);
   app.get("/api/student/:id/cohorts/", cohorts.getCohortsByStudentID);
   app.get("/api/mentor/:id/cohorts/", cohorts.getByMentorID);
   app.get("/api/cohorts/:id", cohorts.deleteCohort);

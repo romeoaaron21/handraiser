@@ -87,11 +87,11 @@ class Cohorts extends React.Component {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       if (user.privilege === "mentor") {
-        api.fetch(`/api/cohorts/`, "get").then(res => {
+        api.fetch(`/api/cohorts/api`, "get").then(res => {
           socket.emit("displayCohorts", res.data.cohorts.reverse());
         });
       } else {
-        api.fetch(`/api/cohorts/`, "get").then(res => {
+        api.fetch(`/api/cohorts/api`, "get").then(res => {
           socket.emit("displayCohorts", res.data.cohorts.reverse());
         });
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
@@ -188,7 +188,7 @@ class Cohorts extends React.Component {
           toast.info("Cohort Added!", {
             hideProgressBar: true,
             draggable: false
-          })
+          });
         });
     } else {
       toast.error("Class already exists!", {
@@ -204,36 +204,34 @@ class Cohorts extends React.Component {
       toast.info("Cohort Deleted!", {
         hideProgressBar: true,
         draggable: false
-      })
+      });
     });
   };
 
   enroll = (id, password) => {
     let student_id = this.state.id;
     const state = { student_id, password };
-    if(!password){
-      return (
-        toast.error("Fill up the required fields", {
-          hideProgressBar: true,
-          draggable: false
-        })
-      )
+    if (!password) {
+      return toast.error("Fill up the required fields", {
+        hideProgressBar: true,
+        draggable: false
+      });
     } else {
-      api.fetch(`/api/cohorts/${id}/students`, "post", state).then((res) => {
+      api.fetch(`/api/cohorts/${id}/students`, "post", state).then(res => {
         this.componentDidMount();
-        if(res.data.message){
+        if (res.data.message) {
           toast.error("Wrong Password!", {
             hideProgressBar: true,
             draggable: false
-          })
+          });
         } else {
           toast.info("Enrolled to Cohort!", {
             hideProgressBar: true,
             draggable: false
-          })
+          });
           this.closeModal();
         }
-      })
+      });
     }
   };
 
@@ -245,7 +243,7 @@ class Cohorts extends React.Component {
         toast.info("Left Cohort!", {
           hideProgressBar: true,
           draggable: false
-        })
+        });
       });
   };
 
