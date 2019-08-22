@@ -24,12 +24,7 @@ class Enroll extends React.Component {
   }
 
   submit = () => {
-    if(this.state.password !== ''){
-      this.props.enroll(this.props.id, this.state.password)
-      this.props.close();
-    }else{
-      console.log('Fill up required fields!');
-    }
+    this.props.enroll(this.props.id, this.state.password)
   }
 
   render(){
