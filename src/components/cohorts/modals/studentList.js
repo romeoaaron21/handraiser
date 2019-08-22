@@ -32,7 +32,7 @@ class StudentList extends React.Component {
         onClose={close}
         scroll={scroll}
         aria-labelledby="scroll-dialog-title"
-        fullWidth={'sm'}
+        fullWidth={true}
         maxWidth={'sm'}
       >
         <DialogTitle id="scroll-dialog-title">Students</DialogTitle>
