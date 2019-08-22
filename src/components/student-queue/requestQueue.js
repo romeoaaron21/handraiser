@@ -202,7 +202,7 @@ class requestQueue extends Component {
                     member.status === "waiting" &&
                     parseInt(this.props.cohort_id) ===
                       parseInt(member.cohort_id) ? (
-                      <Grid item>
+                      <Grid item style={{ width: "100%" }}>
                         <ExpansionPanel
                           expanded={this.state.expanded === "panel1"}
                         >

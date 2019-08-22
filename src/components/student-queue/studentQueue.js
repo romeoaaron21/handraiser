@@ -168,7 +168,8 @@ class Student extends Component {
       this.setState({
         helpingStudent: "",
         helpStudentModal: false,
-        button: false,
+        button: true,
+        requested: false,
         btntext: "Raise Hand"
       });
       if (this.state.helpingStudent === "") {
