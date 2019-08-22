@@ -88,7 +88,6 @@ class MentorClassCards extends React.Component {
       redirect,
       search
     } = this.props;
-
     return (
       <React.Fragment>
         {search === true ? null : (

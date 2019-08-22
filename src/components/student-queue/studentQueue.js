@@ -105,7 +105,7 @@ class Student extends Component {
     this.setState({ removeStudentReqModal: false })
   ];
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.initSocket();
   }
 

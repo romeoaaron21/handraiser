@@ -104,7 +104,7 @@ class Cohorts extends React.Component {
     });
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const socket = io(socketUrl);
     socket.on("connect", () => {
       console.log("CONNECTED");
