@@ -183,6 +183,10 @@ class Cohorts extends React.Component {
         .fetch(`/api/cohorts/mentor/${mentor_id}/add`, "post", state)
         .then(() => {
           this.componentDidMount();
+          toast.info("Cohort Added!", {
+            hideProgressBar: true,
+            draggable: false
+          })
         });
     } else {
       toast.error("Class already exists!", {
@@ -195,15 +199,40 @@ class Cohorts extends React.Component {
   delete = id => {
     api.fetch(`/api/cohorts/${id}`, "get").then(() => {
       this.componentDidMount();
+      toast.info("Cohort Deleted!", {
+        hideProgressBar: true,
+        draggable: false
+      })
     });
   };
 
   enroll = (id, password) => {
     let student_id = this.state.id;
     const state = { student_id, password };
-    api.fetch(`/api/cohorts/${id}/students`, "post", state).then(() => {
-      this.componentDidMount();
-    });
+    if(!password){
+      return (
+        toast.error("Fill up the required fields", {
+          hideProgressBar: true,
+          draggable: false
+        })
+      )
+    } else {
+      api.fetch(`/api/cohorts/${id}/students`, "post", state).then((res) => {
+        this.componentDidMount();
+        if(res.data.message){
+          toast.error("Wrong Password!", {
+            hideProgressBar: true,
+            draggable: false
+          })
+        } else {
+          toast.info("Enrolled to Cohort!", {
+            hideProgressBar: true,
+            draggable: false
+          })
+          this.closeModal();
+        }
+      })
+    }
   };
 
   leave = id => {
@@ -211,6 +240,10 @@ class Cohorts extends React.Component {
       .fetch(`/api/cohorts/${id}/students/${this.state.id}`, "get")
       .then(() => {
         this.componentDidMount();
+        toast.info("Left Cohort!", {
+          hideProgressBar: true,
+          draggable: false
+        })
       });
   };
 
