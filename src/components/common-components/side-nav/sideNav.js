@@ -29,6 +29,10 @@ const styles = theme => ({
     padding: '0 8px',
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
+  },
+  link: {
+    color: '#212121',
+    textDecoration: 'none'
   }
 });
 
@@ -58,17 +62,17 @@ class SideNav extends React.Component {
           </div>
           <Divider />
           <List>
-            <ListItem button>
+            <ListItem button onClick={() => window.location.href = '/admin/keys'} >
               <ListItemIcon><VpnKeyIcon /></ListItemIcon>
-              <ListItemText primary={'Generated Keys'} />
+              <ListItemText>Generated Keys</ListItemText>
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={() => window.location.href = '/admin/mentors'} >
               <ListItemIcon><ListIcon /></ListItemIcon>
-              <ListItemText primary={"Mentors"} />
+              <ListItemText>Mentors</ListItemText>
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={() => window.location.href = '/admin/cohorts'} >
               <ListItemIcon><SchoolIcon /></ListItemIcon>
-              <ListItemText primary={"Cohorts"} />
+              <ListItemText>Cohorts</ListItemText>
             </ListItem>
           </List>
           <Divider />

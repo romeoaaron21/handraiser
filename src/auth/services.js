@@ -2,7 +2,7 @@ import decode from "jwt-decode";
 
 export default class AuthService {
   login = (username, password) => {
-    return this.fetch(`/admin/sign-in`, {
+    return this.fetch(`/sign-in`, {
       method: "POST",
       body: JSON.stringify({
         username,

@@ -10,8 +10,6 @@ import Person from '@material-ui/icons/Person';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
-import api from '../../services/fetchApi';
-
 import AuthService from '../../auth/services';
 
 const styles = {
@@ -20,9 +18,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    '@media (max-width: 780px)' : {
-      display: 'none',
-    }
   },
   avatar: {
     margin: 2,
@@ -81,7 +76,6 @@ class signIn extends Component {
           window.location.href = '/admin/keys';
         }
       })
-
   }
 
   render() {
