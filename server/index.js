@@ -25,9 +25,12 @@ massive({
   app.post("/sign-in", admin.signIn);
   app.post("/generate-key", admin.generateNewKey);
   app.get("/keys", admin.generatedKeys);
+  app.get("/keys/:status", admin.filterByStatus);
   app.get("/mentors", admin.mentors);
+  app.get("/cohorts/mentors/:sortMentor", admin.sortByMentor);
   app.get("/cohorts", admin.cohorts);
   app.get("/students", admin.students);
+  app.get("/:mentorId/cohorts", admin.cohortList);
   app.get("/:mentorId/cohorts", admin.cohortList);
   app.get("/:cohortId/students", admin.studentList);
   // ADMIN END

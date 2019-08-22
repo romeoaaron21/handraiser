@@ -1,7 +1,7 @@
 import React from "react";
 import rand from "random-key";
 import clsx from "clsx";
-import { withStyles, fade } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TextField from "@material-ui/core/TextField";
@@ -23,123 +23,18 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
 import TableLoader from "../common-components/table/loader";
 import NavBar from "../common-components/nav-bar/navBar";
 import SideNav from "../common-components/side-nav/sideNav";
 import Auth from "../../auth/auth";
 import api from "../../services/fetchApi";
 
-const drawerWidth = 240;
-
-const styles = theme => ({
-  root: {
-    display: "flex"
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    marginLeft: -drawerWidth
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginLeft: 0
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
-  },
-  paper: {
-    width: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto"
-  },
-  table: {
-    minWidth: 650
-  },
-  cardContact: {
-    height: "804px"
-  },
-  cardHeader: {
-    backgroundColor: "#696968",
-    color: "#ffffff",
-    height: "32px"
-  },
-  search: {
-    width: "350px",
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
-    },
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "auto"
-    }
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  actionSearch: {
-    marginTop: "0%",
-    marginRight: "0%"
-  },
-  inputRoot: {
-    color: "inherit"
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: 320,
-      "&:focus": {
-        width: 400
-      }
-    }
-  },
-  inputField: {
-    textAlign: "center",
-    color: "#005406",
-    letterSpacing: "2px"
-  },
-  row: {
-    "&:hover": {
-      backgroundColor: "#f7f7f7"
-    }
-  },
-  scroll: {
-    maxHeight: "745px",
-    overflow: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.3em"
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "rgba(0,0,0,.1)",
-      borderRadius: "10px",
-      outline: "1px solid slategrey"
-    }
-  }
-});
+import styles from "./mentorKeys.component.style";
 
 class MentorKeys extends React.Component {
   constructor() {
@@ -150,6 +45,7 @@ class MentorKeys extends React.Component {
       open: false,
       generateDialog: false,
       confirmationDialog: false,
+      filter: "all",
       search: "",
       keys: [],
       mentors: [],
@@ -188,6 +84,13 @@ class MentorKeys extends React.Component {
       confirmationDialog: true,
       generateDialog: false
     });
+  };
+
+  filterStatus = e => {
+    api.fetch(`/keys/${e.target.value}`, "get").then(res => {
+      this.setState({ keys: res.data.keys });
+    });
+    this.setState({ filter: e.target.value });
   };
 
   handleSearch = e => this.setState({ search: e.target.value });
@@ -240,14 +143,30 @@ class MentorKeys extends React.Component {
             position={toast.POSITION.TOP_RIGHT}
           />
           <div className={classes.drawerHeader} />
-          <Grid item={true} xs={8} sm={12} style={{ textAlign: "right" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.openGenerateDialog}
-            >
-              Generate new key
-            </Button>
+          <Grid container>
+            <Grid item={true} xs={12} sm={6}>
+              <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="status">Filter by status</InputLabel>
+                <Select
+                  value={this.state.filter}
+                  onChange={e => this.filterStatus(e)}
+                >
+                  <MenuItem value={"all"}>All</MenuItem>
+                  <MenuItem value={"used"}>used</MenuItem>
+                  <MenuItem value={"not use"}>not use</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item={true} xs={12} sm={6}>
+              <Button
+                style={{ float: "right" }}
+                variant="contained"
+                color="primary"
+                onClick={this.openGenerateDialog}
+              >
+                Generate new key
+              </Button>
+            </Grid>
           </Grid>
           <Paper className={classes.paper}>
             <Card className={classes.cardContact}>
@@ -300,7 +219,13 @@ class MentorKeys extends React.Component {
                           ) {
                             return (
                               <TableRow key={i} className={classes.row}>
-                                <TableCell align="center">
+                                <TableCell
+                                  align="center"
+                                  style={{
+                                    color: "#8340a5",
+                                    fontWeight: "bold"
+                                  }}
+                                >
                                   {data.sign_in_key}
                                 </TableCell>
                                 <TableCell align="center">
@@ -308,8 +233,11 @@ class MentorKeys extends React.Component {
                                     ? "---"
                                     : this.getMentorName(data.sub)}
                                 </TableCell>
-                                <TableCell align="center">
-                                  {data.sub !== null ? "used" : "not used"}
+                                <TableCell
+                                  align="center"
+                                  style={{ color: "green", fontWeight: "bold" }}
+                                >
+                                  {data.sub !== null ? "used" : "not use"}
                                 </TableCell>
                               </TableRow>
                             );
@@ -317,7 +245,13 @@ class MentorKeys extends React.Component {
                         } else {
                           return (
                             <TableRow key={i} className={classes.row}>
-                              <TableCell align="center">
+                              <TableCell
+                                align="center"
+                                style={{
+                                  color: "#8340a5",
+                                  fontWeight: "bold"
+                                }}
+                              >
                                 {data.sign_in_key}
                               </TableCell>
                               <TableCell align="center">
@@ -325,8 +259,15 @@ class MentorKeys extends React.Component {
                                   ? "---"
                                   : this.getMentorName(data.sub)}
                               </TableCell>
-                              <TableCell align="center">
-                                {data.sub !== null ? "used" : "not used"}
+                              <TableCell
+                                align="center"
+                                style={
+                                  data.sub !== null
+                                    ? { color: "green", fontWeight: "bold" }
+                                    : { color: "#000000de" }
+                                }
+                              >
+                                {data.sub !== null ? "used" : "not use"}
                               </TableCell>
                             </TableRow>
                           );

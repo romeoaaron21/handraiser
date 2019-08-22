@@ -64,9 +64,9 @@ function generatedKeys(req, res) {
 function mentors(req, res) {
   const db = res.app.get("db");
 
-  const { mentorId } = req.params;
-
-  db.query(`SELECT * FROM users WHERE privilege = 'mentor' ORDER BY id desc`)
+  db.query(
+    `SELECT * FROM users WHERE privilege = 'mentor' ORDER BY first_name asc`
+  )
     .then(mentors => {
       res.status(201).send({ mentors });
     })
@@ -79,7 +79,7 @@ function mentors(req, res) {
 function cohorts(req, res) {
   const db = res.app.get("db");
 
-  db.query(`SELECT * FROM cohorts ORDER BY id desc`)
+  db.query(`SELECT * FROM cohorts ORDER BY name asc`)
     .then(cohorts => {
       res.status(201).send({ cohorts });
     })
@@ -136,6 +136,54 @@ function studentList(req, res) {
     });
 }
 
+function filterByStatus(req, res) {
+  const db = res.app.get("db");
+
+  const { status } = req.params;
+
+  if (status === "all") {
+    console.log(status);
+    db.query(`SELECT * FROM keys ORDER BY id desc`).then(keys => {
+      res.status(201).send({ keys });
+    });
+  } else if (status === "not use") {
+    console.log(status);
+    db.query(`SELECT * FROM keys WHERE sub IS NULL ORDER BY id desc`).then(
+      keys => {
+        res.status(201).send({ keys });
+      }
+    );
+  } else {
+    db.query(`SELECT * FROM keys WHERE sub IS NOT NULL ORDER BY id desc`).then(
+      keys => {
+        res.status(201).send({ keys });
+      }
+    );
+  }
+}
+
+function sortByMentor(req, res) {
+  const db = res.app.get("db");
+
+  const { sortMentor } = req.params;
+
+  console.log(sortMentor);
+  if (sortMentor === "true") {
+    db.query(
+      `SELECT * FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name asc`
+    ).then(cohorts => {
+      res.status(201).send({ cohorts });
+    });
+  } else {
+    console.log("false");
+    db.query(
+      `SELECT * FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name desc`
+    ).then(cohorts => {
+      res.status(201).send({ cohorts });
+    });
+  }
+}
+
 module.exports = {
   signIn,
   generateNewKey,
@@ -144,5 +192,7 @@ module.exports = {
   cohorts,
   students,
   cohortList,
-  studentList
+  studentList,
+  filterByStatus,
+  sortByMentor
 };
