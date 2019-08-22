@@ -167,7 +167,6 @@ function sortByMentor(req, res) {
 
   const { sortMentor } = req.params;
 
-  console.log(sortMentor);
   if (sortMentor === "true") {
     db.query(
       `SELECT cohorts.id "id", cohorts.mentor_id, cohorts.name FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name asc`
