@@ -1,7 +1,6 @@
 import React from "react";
 import clsx from "clsx";
 import { withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 
 import NavBar from "../common-components/nav-bar/navBar";
 import SideNav from "../common-components/side-nav/sideNav";

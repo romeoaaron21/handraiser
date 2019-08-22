@@ -13,7 +13,6 @@ import AddIcon from "@material-ui/icons/Add";
 import cohortImage from "./../../../images/cohort_2.jpeg";
 
 //AUTH
-import Auth from "../../../auth/Auth";
 import AuthService from "../../../auth/AuthService";
 
 const styles = theme => ({
@@ -69,7 +68,7 @@ class MentorClassCards extends React.Component {
     this.Auth = new AuthService();
     this.fetch = this.Auth.getFetchedTokenAPI();
   }
-  
+
   componentDidMount() {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
@@ -92,20 +91,20 @@ class MentorClassCards extends React.Component {
 
     return (
       <React.Fragment>
-        { search === true ? null :
-        <Card className={classes.card}>
-          <CardActionArea
-            className={classes.addCardContainer}
-            onClick={openAdd}
-          >
-            <CardContent>
-              <div className={classes.add}>
-                <AddIcon />
-              </div>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-        }
+        {search === true ? null : (
+          <Card className={classes.card}>
+            <CardActionArea
+              className={classes.addCardContainer}
+              onClick={openAdd}
+            >
+              <CardContent>
+                <div className={classes.add}>
+                  <AddIcon />
+                </div>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        )}
         {cohorts.map(cohort =>
           cohort.mentor_id === this.state.user.id ? (
             <Card className={classes.card} key={cohort.id}>

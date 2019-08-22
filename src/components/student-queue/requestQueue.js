@@ -7,7 +7,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import Avatar from "@material-ui/core/Avatar";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import Delete from "@material-ui/icons/Delete";
 import ThumbsUp from "@material-ui/icons/PanTool";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,9 +16,6 @@ import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import KeyBoardDown from "@material-ui/icons/KeyboardArrowDown";
 import EmptyQueue from "../../images/noResult.svg";
-//AUTH
-import Auth from "../../auth/Auth";
-import AuthService from "../../auth/AuthService";
 
 const styles = theme => ({
   rightNav: {
@@ -195,14 +191,14 @@ class requestQueue extends Component {
           square={true}
         >
           {insideCohort.length !== 0 ? (
-            <Box item xs={12} sm={8} mt={2}>
+            <Box item="true" xs={12} sm={8} mt={2}>
               <Grid container>
                 {this.props.members.length > 0 ? (
                   this.props.members.map(member =>
                     member.status === "waiting" &&
                     parseInt(this.props.cohort_id) ===
                       parseInt(member.cohort_id) ? (
-                      <Grid item style={{ width: "100%" }}>
+                      <Grid item style={{ width: "100%" }} key={member.id}>
                         <ExpansionPanel
                           expanded={this.state.expanded === "panel1"}
                         >
@@ -247,7 +243,6 @@ class requestQueue extends Component {
                                 <Tooltip title="See Details" placement="top">
                                   <IconButton
                                     className={classes.responsive}
-                                    className={classes.responsive}
                                     onClick={this.handleChange("panel1")}
                                   >
                                     <KeyBoardDown className={classes.icon} />
@@ -256,7 +251,6 @@ class requestQueue extends Component {
 
                                 <Tooltip title="Help Student" placement="top">
                                   <IconButton
-                                    className={classes.responsive}
                                     className={classes.responsive}
                                     onClick={() =>
                                       this.props.helpStudent(member.id)
@@ -293,7 +287,7 @@ class requestQueue extends Component {
                   )
                 ) : (
                   <Grid container className={classes.emptyQueue}>
-                    <img src={EmptyQueue} width="280" height="250" />
+                    <img src={EmptyQueue} alt="img" width="280" height="250" />
                     <Typography variant="overline" display="block">
                       No one needs help...
                     </Typography>
@@ -303,7 +297,7 @@ class requestQueue extends Component {
             </Box>
           ) : (
             <Grid container className={classes.emptyQueue}>
-              <img src={EmptyQueue} width="280" height="250" />
+              <img src={EmptyQueue} alt="img" width="280" height="250" />
               <Typography variant="overline" display="block">
                 No one needs help...
               </Typography>

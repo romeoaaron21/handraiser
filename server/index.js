@@ -89,7 +89,7 @@ massive({
   app.get("/api/doneHelp/:memberid/:cohort_id", mentor.doneHelp);
 
   app.get("/api/displayUserInfo/:sub/:cohort_id", students.displayUserInfo);
-  app.get("/api/displayStudents/:cohort_id", students.displayStudents);
+  app.get("/api/displayStudents/", students.displayStudents);
   app.post("/api/requestHelp/:sub/:cohort_id", students.requestHelp);
   app.delete(
     "/api/deleteRequest/:student_id/:cohort_id",

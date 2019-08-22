@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 
 import BeingHelped from "../being-helped/BeingHelped";
 import BeingHelpedModal from "../being-helped/beingHelpedModal";
@@ -12,11 +11,9 @@ import RequestQueue from "./requestQueue";
 import StudentNavHeader from "./navHeader";
 
 import io from "socket.io-client";
-import axios from "axios";
 import api from "../../services/fetchApi";
 
 //AUTH
-import Auth from "../../auth/Auth";
 import AuthService from "../../auth/AuthService";
 
 const styles = theme => ({
@@ -130,11 +127,13 @@ class Student extends Component {
       }
       students.map(student => {
         if (student.sub === this.state.sub) {
-          this.setState({
+          return this.setState({
             button: true,
             btntext: "Waiting for help",
             requested: true
           });
+        } else {
+          return null;
         }
       });
     });
@@ -149,10 +148,12 @@ class Student extends Component {
       }
       students.map(student => {
         if (student.sub !== this.state.sub) {
-          this.setState({
+          return this.setState({
             btntext: "Raise Hand",
             requested: false
           });
+        } else {
+          return null;
         }
       });
     });
@@ -181,6 +182,7 @@ class Student extends Component {
     });
 
     socket.on("displayStudents", students => {
+      console.log(students);
       this.setState({
         members: students
       });
@@ -191,22 +193,25 @@ class Student extends Component {
               member.sub === this.state.sub &&
               member.status === "inprogress"
             ) {
-              this.setState({
+              return this.setState({
                 helpingStudent: member,
                 button: true,
                 btntext: "Currently Helping"
               });
             } else if (member.sub === this.state.sub) {
-              this.setState({
+              return this.setState({
                 button: true,
                 btntext: "Waiting for help"
               });
-            }
-            if (member.status === "inprogress") {
-              this.setState({
+            } else if (member.status === "inprogress") {
+              return this.setState({
                 helpingStudent: member
               });
+            } else {
+              return null;
             }
+          } else {
+            return null;
           }
         });
       }

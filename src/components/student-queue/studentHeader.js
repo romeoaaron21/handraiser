@@ -58,7 +58,7 @@ class StudentHeader extends Component {
     const { classes } = this.props;
     return (
       <div>
-        <Box item xs={12} sm={12}>
+        <Box item="true" xs={12} sm={12}>
           <Typography
             variant="h5"
             component="h3"

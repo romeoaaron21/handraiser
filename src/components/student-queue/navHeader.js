@@ -6,7 +6,6 @@ import Avatar from "@material-ui/core/Avatar";
 import ClassIcon from "@material-ui/icons/Group";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import { CLIENT_RENEG_LIMIT } from "tls";
 
 const styles = {
   breadcrumbNav: {
@@ -107,12 +106,11 @@ class navHeader extends Component {
           <TextField
             value={this.state.reason}
             onChange={e => this.handleChange(e)}
-            classes={{ root: "MenuItem", classes: "selected" }}
+            classes={{ root: "MenuItem" }}
             id="outlined-full-width"
             placeholder="Ask for help"
             fullWidth
             disabled={this.state.disabled}
-            className={classes.textField}
             margin="normal"
             variant="outlined"
           />
