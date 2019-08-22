@@ -92,7 +92,7 @@ function enroll(req, res) {
     }
   }).catch(err => {
     console.log(err);
-    res.status(500).end()
+    res.status(201).send({ message: err})
   })
 }
 
