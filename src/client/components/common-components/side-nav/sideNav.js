@@ -117,7 +117,7 @@ class SideNav extends React.Component {
           }}
           variant="subtitle2"
         >
-          Enrolled
+          {this.state.user.privilege === "mentor" ? "My Classes" : "Enrolled"}
         </Typography>
         <List>
           {this.state.cohorts.map((cohort, index) =>
@@ -128,6 +128,20 @@ class SideNav extends React.Component {
                 key={cohort.name}
                 onClick={() => (window.location.href = `/queue/${cohort.id}`)}
               >
+                <ListItemIcon>
+                  <Avatar className={classes.purpleAvatar}>
+                    {cohort.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText primary={cohort.name} />
+              </ListItem>
+            ) : this.state.user.id === cohort.mentor_id ? (
+              <ListItem
+                button
+                key={cohort.name}
+                onClick={() => (window.location.href = `/queue/${cohort.id}`)}
+              >
+                {console.log(this.state.user.id, cohort.mentor_id)}
                 <ListItemIcon>
                   <Avatar className={classes.purpleAvatar}>
                     {cohort.name.charAt(0).toUpperCase()}
