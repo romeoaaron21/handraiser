@@ -12,9 +12,9 @@ import HomeIcon from "@material-ui/icons/Home";
 import MailIcon from "@material-ui/icons/Mail";
 
 //AUTH
-import Auth from "../../../auth/Auth";
 import AuthService from "../../../auth/AuthService";
 import { Typography, Avatar } from "@material-ui/core";
+import api from "../../../services/fetchApi";
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -48,13 +48,27 @@ class SideNav extends React.Component {
     this.fetch = this.Auth.getFetchedTokenAPI();
 
     this.state = {
-      user: []
+      user: [],
+      cohorts: [],
+      members: []
     };
   }
   componentDidMount() {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       this.setState({ user });
+
+      api.fetch(`/api/cohorts/api`, "get").then(res => {
+        this.setState({
+          cohorts: res.data.cohorts
+        });
+      });
+
+      api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
+        this.setState({
+          members: res.data.member
+        });
+      });
     });
   }
   handleDrawerClose = () => {
@@ -63,7 +77,6 @@ class SideNav extends React.Component {
 
   render() {
     const { classes } = this.props;
-
     return (
       <Drawer
         className={classes.drawer}
@@ -82,7 +95,11 @@ class SideNav extends React.Component {
         <Divider />
         <List>
           {["Classes"].map(text => (
-            <ListItem button key={text}>
+            <ListItem
+              button
+              key={text}
+              onClick={() => (window.location.href = `/cohorts`)}
+            >
               <ListItemIcon>
                 {text === "Classes" ? <HomeIcon /> : <MailIcon />}
               </ListItemIcon>
@@ -103,17 +120,23 @@ class SideNav extends React.Component {
           Enrolled
         </Typography>
         <List>
-          {["BoomCampSpring", "react", "Nodejs", "Php"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {" "}
-                <Avatar className={classes.purpleAvatar}>
-                  {text.charAt(0).toUpperCase()}
-                </Avatar>
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          {this.state.cohorts.map((cohort, index) =>
+            this.state.members.filter(member => member.cohort_id === cohort.id)
+              .length !== 0 ? (
+              <ListItem
+                button
+                key={cohort.name}
+                onClick={() => (window.location.href = `/queue/${cohort.id}`)}
+              >
+                <ListItemIcon>
+                  <Avatar className={classes.purpleAvatar}>
+                    {cohort.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText primary={cohort.name} />
+              </ListItem>
+            ) : null
+          )}
         </List>
         <Divider />
         <List>
