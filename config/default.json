@@ -2,7 +2,7 @@
   "db": {
     "user": "postgres",
     "password": "handraiser",
-    "host": "localhost",
+    "host": "boom-handraiser.com",
     "port": 5432,
     "database": "handraiser"
   }
