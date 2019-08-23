@@ -25,6 +25,9 @@ import MentorClassCards from "./cards/mentor";
 //API
 import api from "./../../services/fetchApi";
 
+//LOADER
+import Loader from "../common-components/loader/loader";
+
 //AUTH
 import Auth from "../../auth/Auth";
 import AuthService from "../../auth/AuthService";
@@ -54,6 +57,7 @@ class Cohorts extends React.Component {
     this.fetch = this.Auth.getFetchedTokenAPI();
 
     this.state = {
+      loader: true,
       privilege: "",
       id: 0,
       cohorts: [],
@@ -90,6 +94,7 @@ class Cohorts extends React.Component {
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
           socket.emit("displayCohorts", res.data.cohorts.reverse());
+          this.setState({ loader: false });
         });
       } else {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
@@ -97,6 +102,7 @@ class Cohorts extends React.Component {
         });
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
           socket.emit("displayMember", res.data.member);
+          this.setState({ loader: false });
         });
       }
       this.setState({
@@ -300,6 +306,7 @@ class Cohorts extends React.Component {
             [classes.contentShift]: this.state.open
           })}
         >
+<<<<<<< HEAD
           <div className={classes.drawerHeader} />
           <Container maxWidth="lg" className={classes.container}>
             <div className={classes.search}>
@@ -425,6 +432,140 @@ class Cohorts extends React.Component {
               </Grid>
             )}
           </Container>
+=======
+          {this.state.loader ? (
+            <Loader content="Loading Cohorts..." />
+          ) : (
+            <React.Fragment>
+              <div className={classes.drawerHeader} />
+              <Container maxWidth="lg" className={classes.container}>
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <InputBase
+                    placeholder="Search…"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput
+                    }}
+                    onChange={this.search}
+                    fullWidth
+                    inputProps={{ "aria-label": "search" }}
+                  />
+                </div>
+                {this.state.privilege !== "student" ? (
+                  <div className={classes.mentor}>
+                    <MentorClassCards
+                      search={this.state.search}
+                      cohorts={this.state.cohorts}
+                      openAdd={this.openAdd}
+                      openDelete={this.openDelete}
+                      redirect={this.redirect}
+                      openStudentList={this.openStudentList}
+                      user={this.state.user}
+                    />
+                  </div>
+                ) : this.state.member.length !== 0 ? (
+                  <div className={classes.student}>
+                    <Grid container>
+                      <Grid
+                        item
+                        xs={12}
+                        className={classes.header}
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-start"
+                        }}
+                      >
+                        <Typography>Enrolled Classes</Typography>
+                      </Grid>
+
+                      <StudentClassCards
+                        cohorts={this.state.cohorts}
+                        members={this.state.member}
+                        openEnroll={this.openEnroll}
+                        openLeave={this.openLeave}
+                        openStudentList={this.openStudentList}
+                      />
+                    </Grid>
+                  </div>
+                ) : null}
+                {this.state.cohorts.length !== 0 ? (
+                  <div className={classes.student}>
+                    <Grid container>
+                      <Grid
+                        item
+                        xs={12}
+                        className={classes.header}
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-start"
+                        }}
+                      >
+                        <Typography>Available Classes</Typography>
+                      </Grid>
+
+                      <AvailClass
+                        cohorts={this.state.cohorts}
+                        members={this.state.member}
+                        openEnroll={this.openEnroll}
+                        openLeave={this.openLeave}
+                        openStudentList={this.openStudentList}
+                      />
+                    </Grid>
+                  </div>
+                ) : null}
+                <AddClass
+                  open={this.state.add}
+                  close={this.closeModal}
+                  add={this.add}
+                  id={this.state.id}
+                />
+                <DeleteClass
+                  open={this.state.delete}
+                  close={this.closeModal}
+                  id={this.state.selected}
+                  delete={this.delete}
+                />
+                <EnrollToClass
+                  open={this.state.enroll}
+                  close={this.closeModal}
+                  id={this.state.selected}
+                  enroll={this.enroll}
+                />
+                <LeaveClass
+                  open={this.state.leave}
+                  close={this.closeModal}
+                  id={this.state.selected}
+                  leave={this.leave}
+                />
+                {this.state.students !== undefined ? (
+                  <StudentList
+                    open={this.state.studentList}
+                    close={this.closeModal}
+                    students={this.state.students}
+                    scroll={this.state.scroll}
+                    id={this.state.id}
+                  />
+                ) : null}
+                {this.state.cohorts.length !== 0 ? null : (
+                  <Grid container className={classes.emptyQueue}>
+                    <img
+                      alt="Classes"
+                      src={EmptyQueue}
+                      width="280"
+                      height="250"
+                    />
+                    <Typography variant="overline" display="block">
+                      No Classes Found
+                    </Typography>
+                  </Grid>
+                )}
+              </Container>
+            </React.Fragment>
+          )}
+>>>>>>> QATest_team3
         </main>
         {this.state.cohort_id ? (
           <Redirect
