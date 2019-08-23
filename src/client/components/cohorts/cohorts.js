@@ -38,6 +38,7 @@ import styles from "./cohorts-component-style";
 
 //SVG
 import EmptyQueue from "./../../images/emptyqueue.svg";
+import AvailClass from "./cards/availClass";
 
 // const socketUrl = 'http://localhost:3001/';
 // const socket = io('http://localhost:3001/');
@@ -142,9 +143,7 @@ class Cohorts extends React.Component {
   };
 
   redirect = cohort_id => {
-    //Dito ilagay redirect to classes!
     this.setState({ cohort_id });
-    // window.location.href = `/queue/${cohort_id}`;
   };
 
   openEnroll = (e, cohort_id) => {
@@ -330,13 +329,30 @@ class Cohorts extends React.Component {
                   user={this.state.user}
                 />
               ) : (
-                <StudentClassCards
-                  cohorts={this.state.cohorts}
-                  members={this.state.member}
-                  openEnroll={this.openEnroll}
-                  openLeave={this.openLeave}
-                  openStudentList={this.openStudentList}
-                />
+                <Grid container>
+                  <Grid item xs={12} style={{display: 'flex', justifyContent: 'center'}}>
+                    <Typography>Enrolled Classes</Typography>
+                  </Grid>
+
+                  <StudentClassCards
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
+                  <Grid item xs={12} style={{display: 'flex', justifyContent: 'center'}}>
+                    <Typography>Available Classes</Typography>
+                  </Grid>
+
+                  <AvailClass
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
+                </Grid>
               )}
               <AddClass
                 open={this.state.add}

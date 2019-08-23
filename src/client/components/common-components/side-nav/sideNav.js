@@ -8,9 +8,13 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
+import HomeIcon from "@material-ui/icons/Home";
 import MailIcon from "@material-ui/icons/Mail";
 
+//AUTH
+import AuthService from "../../../auth/AuthService";
+import { Typography, Avatar } from "@material-ui/core";
+import api from "../../../services/fetchApi";
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -29,17 +33,50 @@ const styles = theme => ({
     padding: "0 8px",
     ...theme.mixins.toolbar,
     justifyContent: "flex-end"
+  },
+  purpleAvatar: {
+    color: "#fff",
+    backgroundColor: "#673ab7"
   }
 });
 
 class SideNav extends React.Component {
+  constructor() {
+    super();
+
+    this.Auth = new AuthService();
+    this.fetch = this.Auth.getFetchedTokenAPI();
+
+    this.state = {
+      user: [],
+      cohorts: [],
+      members: []
+    };
+  }
+  componentDidMount() {
+    this.fetch.then(fetch => {
+      const user = fetch.data.user[0];
+      this.setState({ user });
+
+      api.fetch(`/api/cohorts/api`, "get").then(res => {
+        this.setState({
+          cohorts: res.data.cohorts
+        });
+      });
+
+      api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
+        this.setState({
+          members: res.data.member
+        });
+      });
+    });
+  }
   handleDrawerClose = () => {
     this.props.handleDrawerCloseFn();
   };
 
   render() {
     const { classes } = this.props;
-
     return (
       <Drawer
         className={classes.drawer}
@@ -57,14 +94,63 @@ class SideNav extends React.Component {
         </div>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
+          {["Classes"].map(text => (
+            <ListItem
+              button
+              key={text}
+              onClick={() => (window.location.href = `/cohorts`)}
+            >
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {text === "Classes" ? <HomeIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
+        </List>
+        <Divider />
+        <Typography
+          style={{
+            padding: "10px 0px 0px 10px",
+            color: "gray",
+            textTransform: "uppercase",
+            fontSize: "12px"
+          }}
+          variant="subtitle2"
+        >
+          {this.state.user.privilege === "mentor" ? "My Classes" : "Enrolled"}
+        </Typography>
+        <List>
+          {this.state.cohorts.map((cohort, index) =>
+            this.state.members.filter(member => member.cohort_id === cohort.id)
+              .length !== 0 ? (
+              <ListItem
+                button
+                key={cohort.name}
+                onClick={() => (window.location.href = `/queue/${cohort.id}`)}
+              >
+                <ListItemIcon>
+                  <Avatar className={classes.purpleAvatar}>
+                    {cohort.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText primary={cohort.name} />
+              </ListItem>
+            ) : this.state.user.id === cohort.mentor_id ? (
+              <ListItem
+                button
+                key={cohort.name}
+                onClick={() => (window.location.href = `/queue/${cohort.id}`)}
+              >
+                {console.log(this.state.user.id, cohort.mentor_id)}
+                <ListItemIcon>
+                  <Avatar className={classes.purpleAvatar}>
+                    {cohort.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText primary={cohort.name} />
+              </ListItem>
+            ) : null
+          )}
         </List>
         <Divider />
         <List>

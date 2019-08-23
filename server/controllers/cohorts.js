@@ -109,16 +109,22 @@ function leave(req, res) {
   const db = req.app.get("db");
   const { cid, sid } = req.params;
 
-  db.query(
-    `DELETE FROM member WHERE student_id = ${sid} AND cohort_id = ${cid}`
-  )
+  db
+    .query(`SELECT id FROM member WHERE student_id = ${sid} AND cohort_id = ${cid}`)
     .then(member => {
-      res.status(201).json({ member });
+      db.query(`
+        DELETE FROM requests WHERE member_id = ${member[0].id};
+        DELETE FROM member WHERE student_id = ${sid} AND cohort_id = ${cid};
+      `)
+        .then(member => {
+          res.status(201).json({ member });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).end();
+        });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).end();
-    });
+  
 }
 
 function getAllMentors(req, res) {
