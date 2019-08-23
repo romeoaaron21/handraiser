@@ -31,6 +31,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CopyIcon from "@material-ui/icons/FileCopy";
 
+import { Typography } from "@material-ui/core";
 import TableLoader from "../common-components/table/loader";
 import NavBar from "../common-components/nav-bar/navBar";
 import SideNav from "../common-components/side-nav/sideNav";
@@ -38,7 +39,6 @@ import Auth from "../../auth/auth";
 import api from "../../services/fetchApi";
 
 import styles from "./mentorKeys.component.style";
-
 class MentorKeys extends React.Component {
   constructor() {
     super();
@@ -345,7 +345,11 @@ class MentorKeys extends React.Component {
 
         {/* GENERATE KEY */}
         <Dialog open={this.state.generateDialog}>
-          <DialogTitle id="form-dialog-title">{"Generate Key"}</DialogTitle>
+          <DialogTitle id="form-dialog-title">
+            <Typography gutterBottom style={{ fontSize: "17px" }}>
+              {"Generate Key"}
+            </Typography>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
               {"This is your generated key"}
@@ -374,7 +378,9 @@ class MentorKeys extends React.Component {
         {/* CONFIRMATION KEY */}
         <Dialog open={this.state.confirmationDialog}>
           <DialogTitle id="form-dialog-title">
-            {"Are you sure you want to generate this key?"}
+            <Typography gutterBottom style={{ fontSize: "17px" }}>
+              {"Are you sure you want to generate this key?"}
+            </Typography>
           </DialogTitle>
           <DialogActions>
             <Button
