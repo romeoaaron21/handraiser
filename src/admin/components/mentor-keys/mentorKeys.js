@@ -153,7 +153,7 @@ class MentorKeys extends React.Component {
                 >
                   <MenuItem value={"all"}>All</MenuItem>
                   <MenuItem value={"used"}>used</MenuItem>
-                  <MenuItem value={"not use"}>not use</MenuItem>
+                  <MenuItem value={"available"}>available</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -237,7 +237,7 @@ class MentorKeys extends React.Component {
                                   align="center"
                                   style={{ color: "green", fontWeight: "bold" }}
                                 >
-                                  {data.sub !== null ? "used" : "not use"}
+                                  {data.sub !== null ? "used" : "available"}
                                 </TableCell>
                               </TableRow>
                             );
@@ -267,7 +267,7 @@ class MentorKeys extends React.Component {
                                     : { color: "#000000de" }
                                 }
                               >
-                                {data.sub !== null ? "used" : "not use"}
+                                {data.sub !== null ? "used" : "available"}
                               </TableCell>
                             </TableRow>
                           );

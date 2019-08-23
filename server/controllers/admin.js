@@ -146,7 +146,7 @@ function filterByStatus(req, res) {
     db.query(`SELECT * FROM keys ORDER BY id desc`).then(keys => {
       res.status(201).send({ keys });
     });
-  } else if (status === "not use") {
+  } else if (status === "available") {
     console.log(status);
     db.query(`SELECT * FROM keys WHERE sub IS NULL ORDER BY id desc`).then(
       keys => {
