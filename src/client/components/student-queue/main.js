@@ -6,6 +6,8 @@ import NavBar from "../common-components/nav-bar/navBar";
 import SideNav from "../common-components/side-nav/sideNav";
 import Student from "./studentQueue";
 
+import Auth from "../../auth/Auth";
+
 const styles = theme => ({
   root: {
     height: "100%",
@@ -35,7 +37,7 @@ const styles = theme => ({
   }
 });
 
-class PersistentDrawerLeft extends React.Component {
+class Main extends React.Component {
   constructor() {
     super();
 
@@ -80,4 +82,4 @@ class PersistentDrawerLeft extends React.Component {
   }
 }
 
-export default withStyles(styles)(PersistentDrawerLeft);
+export default Auth(withStyles(styles)(Main));
