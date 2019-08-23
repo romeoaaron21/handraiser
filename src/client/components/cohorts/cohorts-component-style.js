@@ -32,9 +32,18 @@ const styles = theme => ({
     justifyContent: 'center',
     flexDirection: 'column'
   },
-  center: {
+  mentor: {
     maxWidth: 1000,
     minWidth: 332,
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    margin: '0 auto'
+  },
+  student: {
+    maxWidth: 1000,
+    minWidth: 332,
+    width: '100%',
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',

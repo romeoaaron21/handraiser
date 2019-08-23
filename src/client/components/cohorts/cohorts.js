@@ -317,77 +317,82 @@ class Cohorts extends React.Component {
                 inputProps={{ "aria-label": "search" }}
               />
             </div>
-            <div className={classes.center}>
-              {this.state.privilege !== "student" ? (
-                <MentorClassCards
-                  search={this.state.search}
-                  cohorts={this.state.cohorts}
-                  openAdd={this.openAdd}
-                  openDelete={this.openDelete}
-                  redirect={this.redirect}
-                  openStudentList={this.openStudentList}
-                  user={this.state.user}
-                />
-              ) : (
-                <Grid container>
-                  <Grid item xs={12} style={{display: 'flex', justifyContent: 'center'}}>
-                    <Typography>Enrolled Classes</Typography>
-                  </Grid>
-
-                  <StudentClassCards
-                    cohorts={this.state.cohorts}
-                    members={this.state.member}
-                    openEnroll={this.openEnroll}
-                    openLeave={this.openLeave}
-                    openStudentList={this.openStudentList}
-                  />
-                  <Grid item xs={12} style={{display: 'flex', justifyContent: 'center'}}>
-                    <Typography>Available Classes</Typography>
-                  </Grid>
-
-                  <AvailClass
-                    cohorts={this.state.cohorts}
-                    members={this.state.member}
-                    openEnroll={this.openEnroll}
-                    openLeave={this.openLeave}
-                    openStudentList={this.openStudentList}
-                  />
+            { 
+            this.state.privilege !== "student" ? (
+              <div className={classes.mentor}>
+              <MentorClassCards
+                search={this.state.search}
+                cohorts={this.state.cohorts}
+                openAdd={this.openAdd}
+                openDelete={this.openDelete}
+                redirect={this.redirect}
+                openStudentList={this.openStudentList}
+                user={this.state.user}
+              />
+              </div>
+            ) : 
+            this.state.cohorts.length !== 0 ?
+              <div className={classes.student}>
+              <Grid container>
+                <Grid item xs={12} style={{display: 'flex', justifyContent: 'flex-start'}}>
+                  <Typography>Enrolled Classes</Typography>
                 </Grid>
-              )}
-              <AddClass
-                open={this.state.add}
+
+                <StudentClassCards
+                  cohorts={this.state.cohorts}
+                  members={this.state.member}
+                  openEnroll={this.openEnroll}
+                  openLeave={this.openLeave}
+                  openStudentList={this.openStudentList}
+                />
+                <Grid item xs={12} style={{display: 'flex', justifyContent: 'flex-start'}}>
+                  <Typography>Available Classes</Typography>
+                </Grid>
+
+                <AvailClass
+                  cohorts={this.state.cohorts}
+                  members={this.state.member}
+                  openEnroll={this.openEnroll}
+                  openLeave={this.openLeave}
+                  openStudentList={this.openStudentList}
+                />
+              </Grid>
+              </div>
+              : null
+            }
+            <AddClass
+              open={this.state.add}
+              close={this.closeModal}
+              add={this.add}
+              id={this.state.id}
+            />
+            <DeleteClass
+              open={this.state.delete}
+              close={this.closeModal}
+              id={this.state.selected}
+              delete={this.delete}
+            />
+            <EnrollToClass
+              open={this.state.enroll}
+              close={this.closeModal}
+              id={this.state.selected}
+              enroll={this.enroll}
+            />
+            <LeaveClass
+              open={this.state.leave}
+              close={this.closeModal}
+              id={this.state.selected}
+              leave={this.leave}
+            />
+            {this.state.students !== undefined ? (
+              <StudentList
+                open={this.state.studentList}
                 close={this.closeModal}
-                add={this.add}
+                students={this.state.students}
+                scroll={this.state.scroll}
                 id={this.state.id}
               />
-              <DeleteClass
-                open={this.state.delete}
-                close={this.closeModal}
-                id={this.state.selected}
-                delete={this.delete}
-              />
-              <EnrollToClass
-                open={this.state.enroll}
-                close={this.closeModal}
-                id={this.state.selected}
-                enroll={this.enroll}
-              />
-              <LeaveClass
-                open={this.state.leave}
-                close={this.closeModal}
-                id={this.state.selected}
-                leave={this.leave}
-              />
-              {this.state.students !== undefined ? (
-                <StudentList
-                  open={this.state.studentList}
-                  close={this.closeModal}
-                  students={this.state.students}
-                  scroll={this.state.scroll}
-                  id={this.state.id}
-                />
-              ) : null}
-            </div>
+            ) : null}
             {this.state.cohorts.length !== 0 ? null : (
               <Grid container className={classes.emptyQueue}>
                 <img alt="Classes" src={EmptyQueue} width="280" height="250" />
