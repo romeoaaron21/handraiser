@@ -34,7 +34,7 @@ export default class googleSignIn extends Component {
     };
 
     api.fetch("/sign-in", "post", data).then(res => {
-      if (res.data.privilege === "student") {
+      if (res.data.user.privilege === "student") {
         toast.error("Sorry, your a student!", {
           hideProgressBar: true,
           draggable: false

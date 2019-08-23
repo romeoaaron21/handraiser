@@ -97,7 +97,10 @@ function signIn(req, res) {
                 }
               });
             } else {
-              res.status(201).send((user = { privilege: "student" }));
+              const user = {
+                privilege: "student"
+              };
+              res.status(201).send({ user });
             }
           });
       } else {
