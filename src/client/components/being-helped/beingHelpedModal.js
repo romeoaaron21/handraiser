@@ -10,6 +10,9 @@ import Typography from "@material-ui/core/Typography";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 //api
 import api from "../../services/fetchApi";
+
+import ChatBox from "../chat-box/chatBox";
+
 const styles = theme => ({
   dialogWrapper: {
     backgroundColor: "#780aaf",
@@ -18,6 +21,40 @@ const styles = theme => ({
   text: {
     textAlign: "center",
     color: "#fff"
+  },
+  action: {
+    display: "flex",
+    justifyContent: "space-between"
+  },
+  chatStyle: {
+    "@media (max-width: 425px)": {
+      boxShadow: "none",
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0
+    }
+  },
+
+  chatField: {
+    position: "absolute",
+    bottom: "5%",
+    width: "90%"
+  },
+  chatButton: {
+    position: "absolute",
+    bottom: "6%",
+    left: "52%"
+  },
+  list: {
+    maxHeight: "52px",
+    "&:hover .actionShow": {
+      display: "inline-block"
+    },
+    "&:hover": {
+      backgroundColor: "#f1f1f1"
+    }
+  },
+  queueName: {
+    fontSize: "17px"
   }
 });
 
@@ -25,9 +62,14 @@ class BeingHelpedModal extends Component {
   constructor() {
     super();
     this.state = {
-      open: false
+      open: false,
+      chatBox: false
     };
   }
+  viewChatBox = () => {
+    this.setState({ chatBox: false });
+  };
+
   //move back student to the queue
   removeFromQueue = student => {
     const data = api.fetch(
@@ -91,7 +133,65 @@ class BeingHelpedModal extends Component {
             </Grid>
           </DialogTitle>
 
-          <DialogActions>
+          {!this.state.chatBox ? (
+            <DialogActions>
+              <Button
+                color="primary"
+                onClick={() => this.removeFromQueue(this.props.helpingStudent)}
+              >
+                Back
+              </Button>
+              <Button
+                onClick={() => this.doneHelp(this.props.helpingStudent)}
+                color="primary"
+              >
+                Done
+              </Button>
+
+              <Button
+                color="primary"
+                onClick={() => {
+                  this.setState({ chatBox: true });
+                  this.props.sendChatSubM(this.props.helpingStudent.sub);
+                }}
+              >
+                Chat
+              </Button>
+            </DialogActions>
+          ) : (
+            <React.Fragment>
+              <ChatBox
+                viewChatBox={this.viewChatBox}
+                sendChatM={this.props.sendChatM}
+                handleChatM={this.props.handleChatM}
+                chatM={this.props.chatM}
+                conversation={this.props.conversation}
+                senderInfo={this.props.senderInfo}
+                chatmateInfo={this.props.chatmateInfo}
+                privileged={this.props.previledge}
+                helpingStudent_sub={this.props.helpingStudent.sub}
+              />
+
+              <DialogActions>
+                <Button
+                  color="primary"
+                  onClick={() =>
+                    this.removeFromQueue(this.props.helpingStudent)
+                  }
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={() => this.doneHelp(this.props.helpingStudent)}
+                  color="primary"
+                >
+                  Done
+                </Button>
+              </DialogActions>
+            </React.Fragment>
+          )}
+
+          {/* <DialogActions>
             <Button
               color="primary"
               onClick={() => this.removeFromQueue(this.props.helpingStudent)}
@@ -104,7 +204,7 @@ class BeingHelpedModal extends Component {
             >
               Done
             </Button>
-          </DialogActions>
+          </DialogActions> */}
         </Dialog>
       </div>
     );

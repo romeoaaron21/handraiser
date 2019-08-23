@@ -59,6 +59,10 @@ massive({
     socket.on("displayMember", member => {
       io.emit("displayMember", member);
     });
+    socket.on("sendChat", chat => {
+      // console.log(chat)
+      io.emit("sendChat", chat);
+    });
   });
   //WEBSOCKETS END
 
@@ -111,6 +115,14 @@ massive({
     "/api/deleteRequest/:student_id/:cohort_id",
     students.deleteRequest
   );
+
+  app.get(
+    "/api/displayChatUserInfo/:student_sub/:mentor_sub",
+    students.displayChatUserInfo
+  );
+  app.post("/api/sendChat", students.sendChat);
+  app.get("/api/getChat/:sender_id/:chatmate_id", students.getChat);
+  app.get("/api/displayMentor/:cohort_id", students.displayMentor);
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

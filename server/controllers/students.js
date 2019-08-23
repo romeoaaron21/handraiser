@@ -99,9 +99,71 @@ function deleteRequest(req, res) {
     });
 }
 
+function displayChatUserInfo(req, res) {
+  const db = req.app.get("db");
+  const { student_sub, mentor_sub } = req.params;
+
+  db.query(
+    `SELECT * FROM users WHERE users.sub = '${student_sub}' OR users.sub='${mentor_sub}'`
+  ).then(user => {
+    res.status(200).json([...user]);
+  });
+}
+
+function sendChat(req, res) {
+  const db = req.app.get("db");
+  const message = req.body.message;
+  const sender_id = req.body.sender_sub;
+  const chatmate_id = req.body.chatmate_sub;
+
+  // console.log(message, sender_id, chatmate_id)
+  // console.log(req)
+
+  db.chat
+    .insert({
+      message: message,
+      sender_id: sender_id,
+      chatmate_id: chatmate_id
+    })
+    .then(() => {
+      db.query(
+        `SELECT * from chat WHERE sender_id='${sender_id}' AND chatmate_id='${chatmate_id}' OR sender_id='${chatmate_id}' AND chatmate_id='${sender_id}'`
+      ).then(chats => {
+        res.status(201).json(chats);
+      });
+    });
+}
+
+function getChat(req, res) {
+  const db = req.app.get("db");
+  const { sender_id, chatmate_id } = req.params;
+
+  db.query(
+    `SELECT * from chat WHERE sender_id='${sender_id}' AND chatmate_id='${chatmate_id}' OR sender_id='${chatmate_id}' AND chatmate_id='${sender_id}'`
+  ).then(chats => {
+    res.status(201).json(chats);
+  });
+}
+
+function displayMentor(req, res) {
+  const db = req.app.get("db");
+  const { cohort_id } = req.params;
+  // console.log(cohort_id)
+
+  db.cohorts.findOne({ id: cohort_id }).then(cohort => {
+    db.users.findOne({ id: cohort.mentor_id }).then(mentor => {
+      res.status(200).json([mentor]);
+    });
+  });
+}
+
 module.exports = {
   displayUserInfo,
   displayStudents,
   requestHelp,
-  deleteRequest
+  deleteRequest,
+  displayChatUserInfo,
+  sendChat,
+  getChat,
+  displayMentor
 };

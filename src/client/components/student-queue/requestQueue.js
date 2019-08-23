@@ -252,9 +252,10 @@ class requestQueue extends Component {
                                 <Tooltip title="Help Student" placement="top">
                                   <IconButton
                                     className={classes.responsive}
-                                    onClick={() =>
-                                      this.props.helpStudent(member.id)
-                                    }
+                                    onClick={() => {
+                                      this.props.helpStudent(member.id);
+                                      this.props.sendChatSubM(member.id);
+                                    }}
                                   >
                                     <ThumbsUp className={classes.actionIcon} />
                                   </IconButton>

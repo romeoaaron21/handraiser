@@ -3,6 +3,8 @@ import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 
+import Box from "@material-ui/core/Box";
+
 import BeingHelped from "../being-helped/BeingHelped";
 import BeingHelpedModal from "../being-helped/beingHelpedModal";
 import RemoveRequest from "../being-helped/removeRequestModal";
@@ -15,6 +17,13 @@ import api from "../../services/fetchApi";
 
 //AUTH
 import AuthService from "../../auth/AuthService";
+
+//added chatBox
+// import ChatBox from "./chatBox";
+import ChatList from "../chat-box/chatList";
+import ChatBox from "../chat-box/chatBox";
+
+//end of added chatBox
 
 const styles = theme => ({
   root: {
@@ -67,9 +76,131 @@ class Student extends Component {
       // cohort_id: this.props.cohort,
 
       value: 0,
-      open: false
+      open: false,
+
+      /*start of dded for chatBox state*/
+
+      chatBox: false,
+      mentor_sub: "",
+      chat: "",
+      conversation: [],
+      senderInfo: [],
+      chatmateInfo: [],
+      chatM: "",
+
+      mentorInfo: []
+
+      /*end of added for chatBox state*/
     };
   }
+
+  //start of methods for chat websockets
+
+  viewChatBox = () => {
+    this.setState({ chatBox: false });
+  };
+
+  handleChat = val => {
+    this.setState({ chat: val });
+  };
+
+  handleChatM = val => {
+    this.setState({ chatM: val });
+  };
+
+  sendChatSub = () => {
+    const data = api.fetch(
+      `/api/displayChatUserInfo/${this.state.sub}/${this.state.mentor_sub}`,
+      "get"
+    );
+    data
+      .then(res => {
+        res.data.map(user => {
+          if (user.sub === this.state.sub) {
+            this.setState({
+              senderInfo: user,
+              chatBox: true
+            });
+          } else {
+            this.setState({
+              chatmateInfo: user,
+              chatBox: true
+            });
+          }
+        });
+      })
+      .then(() => {
+        const data1 = api.fetch(
+          `/api/getChat/${this.state.sub}/${this.state.mentor_sub}`,
+          "get"
+        );
+        data1.then(res => {
+          socket.emit("sendChat", res.data);
+        });
+      });
+  };
+
+  sendChatSubM = chatmate_sub => {
+    const data = api.fetch(
+      `/api/displayChatUserInfo/${this.state.sub}/${chatmate_sub}`,
+      "get"
+    );
+    data
+      .then(res => {
+        res.data.map(user => {
+          if (user.sub === this.state.sub) {
+            this.setState({
+              senderInfo: user,
+              chatBox: true,
+              chatmate_sub: chatmate_sub
+            });
+          } else {
+            this.setState({
+              chatmateInfo: user,
+              chatBox: true,
+              chatmate_sub: chatmate_sub
+            });
+          }
+        });
+      })
+      .then(() => {
+        const data1 = api.fetch(
+          `/api/getChat/${this.state.sub}/${chatmate_sub}`,
+          "get"
+        );
+        data1.then(res => {
+          socket.emit("sendChat", res.data);
+        });
+      });
+  };
+
+  sendChat = () => {
+    let convo = {
+      message: this.state.chat,
+      sender_sub: this.state.sub,
+      chatmate_sub: this.state.mentor_sub
+    };
+    const data = api.fetch(`/api/sendChat`, "post", convo);
+    data.then(res => {
+      socket.emit("sendChat", res.data);
+      this.setState({ chat: "" });
+    });
+  };
+
+  sendChatM = chatmate => {
+    let convo = {
+      message: this.state.chatM,
+      sender_sub: this.state.sub,
+      chatmate_sub: chatmate
+    };
+    const data = api.fetch(`/api/sendChat`, "post", convo);
+    data.then(res => {
+      socket.emit("sendChat", res.data);
+      this.setState({ chatM: "" });
+    });
+  };
+
+  //end of methods for chat websockets
 
   handleChange = () => {
     this.setState({
@@ -115,6 +246,14 @@ class Student extends Component {
       console.log("CONECTED");
     });
     this.setState({ socket });
+
+    //start of socket chat
+    socket.on("sendChat", chat => {
+      this.setState({
+        conversation: [...chat]
+      });
+    });
+    //end of socket chat
 
     socket.on("requestHelping", students => {
       this.setState({ members: students });
@@ -220,14 +359,30 @@ class Student extends Component {
 
   fetchStudents = () => {
     const data = api.fetch(`/api/displayStudents/`, "get");
-    data.then(res => {
-      socket.emit("displayStudents", res.data);
-    });
+    data
+      .then(res => {
+        socket.emit("displayStudents", res.data);
+      })
+      .then(() => {
+        const data1 = api.fetch(
+          `/api/displayMentor/${this.props.cohort_id}`,
+          "get"
+        );
+        data1.then(res => {
+          console.log(res);
+          this.setState({ mentorInfo: res.data });
+
+          res.data.map(mentor => {
+            this.setState({ mentor_sub: mentor.sub });
+          });
+        });
+      });
   };
 
   componentDidMount() {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
+      console.log(user);
       this.setState({ sub: user.sub });
       const data = api.fetch(
         `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
@@ -328,6 +483,14 @@ class Student extends Component {
                     helpStudentClose={this.helpStudentClose}
                     helpingStudent={this.state.helpingStudent}
                     cohort_id={this.props.cohort_id}
+                    chatM={this.state.chatM}
+                    handleChatM={this.handleChatM}
+                    sendChatM={this.sendChatM}
+                    conversation={this.state.conversation}
+                    senderInfo={this.state.senderInfo}
+                    chatmateInfo={this.state.chatmateInfo}
+                    previledge={this.state.previledge}
+                    sendChatSubM={this.sendChatSubM}
                   />
 
                   <RemoveRequest
@@ -338,7 +501,22 @@ class Student extends Component {
                   />
                 </div>
               ) : (
-                <BeingHelped helpingStudent={this.state.helpingStudent} />
+                <React.Fragment>
+                  <Box order={1}>
+                    <BeingHelped helpingStudent={this.state.helpingStudent} />
+                    {/*added for chatBox onClick*/}
+                    {/* <button onClick={() => this.sendChatSub()}>Chat</button> */}
+                    <ChatList
+                      sendChatSub={this.sendChatSub}
+                      mentor={this.state.mentorInfo}
+                      allowChat={
+                        this.state.btntext === "Currently Helping"
+                          ? true
+                          : false
+                      }
+                    />
+                  </Box>
+                </React.Fragment>
               )}
 
               {this.state.previledge === "student" ? (
@@ -351,7 +529,7 @@ class Student extends Component {
               ) : null}
             </Grid>
 
-            <Grid item xs={12} sm={this.state.previledge === "mentor" ? 12 : 8}>
+            {/* <Grid item xs={12} sm={this.state.previledge === "mentor" ? 12 : 8}>
               <RequestQueue
                 cohort_id={this.props.cohort_id}
                 sub={this.state.sub}
@@ -364,7 +542,67 @@ class Student extends Component {
                 removeStudentReqClose={this.removeStudentReqClose}
                 members={this.state.members}
               />
-            </Grid>
+            </Grid> */}
+            {/* start of chatBox */}
+            {!this.state.chatBox ? (
+              <Grid
+                item
+                xs={12}
+                sm={this.state.previledge === "mentor" ? 12 : 8}
+              >
+                <RequestQueue
+                  sendChatSubM={this.sendChatSubM}
+                  cohort_id={this.props.cohort_id}
+                  sub={this.state.sub}
+                  priv={this.state.previledge}
+                  helpStudentModal={this.state.helpStudentModal}
+                  helpStudentClose={this.helpStudentClose}
+                  helpStudent={this.helpStudent}
+                  removeStudentRequest={this.removeStudentRequest}
+                  removeStudentReqModal={this.state.removeStudentReqModal}
+                  removeStudentReqClose={this.removeStudentReqClose}
+                  members={this.state.members}
+                />
+              </Grid>
+            ) : this.state.previledge === "student" ? (
+              <Grid
+                item
+                xs={12}
+                sm={this.state.previledge === "mentor" ? 12 : 8}
+              >
+                <ChatBox
+                  sendChat={this.sendChat}
+                  handleChat={this.handleChat}
+                  chat={this.state.chat}
+                  conversation={this.state.conversation}
+                  senderInfo={this.state.senderInfo}
+                  chatmateInfo={this.state.chatmateInfo}
+                  privileged={this.state.previledge}
+                  viewChatBox={this.viewChatBox}
+                />
+              </Grid>
+            ) : (
+              <Grid
+                item
+                xs={12}
+                sm={this.state.previledge === "mentor" ? 12 : 8}
+              >
+                <RequestQueue
+                  sendChatSubM={this.sendChatSubM}
+                  cohort_id={this.state.cohort_id}
+                  sub={this.state.sub}
+                  priv={this.state.previledge}
+                  helpStudentModal={this.state.helpStudentModal}
+                  helpStudentClose={this.helpStudentClose}
+                  helpStudent={this.helpStudent}
+                  removeStudentRequest={this.removeStudentRequest}
+                  removeStudentReqModal={this.state.removeStudentReqModal}
+                  removeStudentReqClose={this.removeStudentReqClose}
+                  members={this.state.members}
+                />
+              </Grid>
+            )}
+            {/* end of chatBox */}
           </Grid>
         </div>
       </div>
