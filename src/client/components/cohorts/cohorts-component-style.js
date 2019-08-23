@@ -90,6 +90,9 @@ const styles = theme => ({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column"
+  },
+  header: {
+    marginBottom: theme.spacing(1)
   }
 });
 

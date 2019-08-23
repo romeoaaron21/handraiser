@@ -116,9 +116,11 @@ class Cohorts extends React.Component {
 
     socket.on("displayCohorts", cohorts => {
       this.setState({ cohorts });
+      console.log(cohorts);
     });
     socket.on("displayMember", member => {
       this.setState({ member });
+      console.log(member);
     });
   }
 
@@ -320,43 +322,49 @@ class Cohorts extends React.Component {
             { 
             this.state.privilege !== "student" ? (
               <div className={classes.mentor}>
-              <MentorClassCards
-                search={this.state.search}
-                cohorts={this.state.cohorts}
-                openAdd={this.openAdd}
-                openDelete={this.openDelete}
-                redirect={this.redirect}
-                openStudentList={this.openStudentList}
-                user={this.state.user}
-              />
+                <MentorClassCards
+                  search={this.state.search}
+                  cohorts={this.state.cohorts}
+                  openAdd={this.openAdd}
+                  openDelete={this.openDelete}
+                  redirect={this.redirect}
+                  openStudentList={this.openStudentList}
+                  user={this.state.user}
+                />
               </div>
             ) : 
+            this.state.member.length !== 0 ?
+              <div className={classes.student}>
+                <Grid container>
+                  <Grid item xs={12} className={classes.header} style={{display: 'flex', justifyContent: 'flex-start'}}>
+                    <Typography>Enrolled Classes</Typography>
+                  </Grid>
+
+                  <StudentClassCards
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
+                </Grid>
+              </div>
+            : null }{
             this.state.cohorts.length !== 0 ?
               <div className={classes.student}>
-              <Grid container>
-                <Grid item xs={12} style={{display: 'flex', justifyContent: 'flex-start'}}>
-                  <Typography>Enrolled Classes</Typography>
-                </Grid>
+                <Grid container>
+                  <Grid item xs={12} className={classes.header} style={{display: 'flex', justifyContent: 'flex-start'}}>
+                    <Typography>Available Classes</Typography>
+                  </Grid>
 
-                <StudentClassCards
-                  cohorts={this.state.cohorts}
-                  members={this.state.member}
-                  openEnroll={this.openEnroll}
-                  openLeave={this.openLeave}
-                  openStudentList={this.openStudentList}
-                />
-                <Grid item xs={12} style={{display: 'flex', justifyContent: 'flex-start'}}>
-                  <Typography>Available Classes</Typography>
+                  <AvailClass
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
                 </Grid>
-
-                <AvailClass
-                  cohorts={this.state.cohorts}
-                  members={this.state.member}
-                  openEnroll={this.openEnroll}
-                  openLeave={this.openLeave}
-                  openStudentList={this.openStudentList}
-                />
-              </Grid>
               </div>
               : null
             }
