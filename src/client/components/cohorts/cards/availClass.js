@@ -65,7 +65,7 @@ const styles = theme => ({
   }
 });
 
-class StudentClassCards extends React.Component {
+class AvailClass extends React.Component {
   render() {
     const {
       classes,
@@ -79,14 +79,14 @@ class StudentClassCards extends React.Component {
       <React.Fragment>
         {cohorts.map(cohort => {
           return members.filter(member => member.cohort_id === cohort.id)
-            .length !== 0 ? (
+            .length !== 0 ? null : (
             <Grid xs={3} key={cohort.id}>
               <Card className={classes.card}>
                 <CardActionArea
                   id={cohort.id}
                   onClick={e => openEnroll(e, cohort.id)}
-                  name="goToClass"
-                  className={classes.cardContainer}
+                  name="enroll"
+                  className={classes.wholeCardContainer}
                 >
                   <CardMedia
                     className={classes.media}
@@ -143,11 +143,11 @@ class StudentClassCards extends React.Component {
                 }
               </Card>
             </Grid>
-          ) : null;
+          );
         })}
       </React.Fragment>
     );
   }
 }
 
-export default withStyles(styles)(StudentClassCards);
+export default withStyles(styles)(AvailClass);

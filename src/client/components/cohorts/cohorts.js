@@ -38,6 +38,7 @@ import styles from "./cohorts-component-style";
 
 //SVG
 import EmptyQueue from "./../../images/emptyqueue.svg";
+import AvailClass from "./cards/availClass";
 
 // const socketUrl = 'http://localhost:3001/';
 // const socket = io('http://localhost:3001/');
@@ -330,13 +331,30 @@ class Cohorts extends React.Component {
                   user={this.state.user}
                 />
               ) : (
-                <StudentClassCards
-                  cohorts={this.state.cohorts}
-                  members={this.state.member}
-                  openEnroll={this.openEnroll}
-                  openLeave={this.openLeave}
-                  openStudentList={this.openStudentList}
-                />
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Typography>Enrolled Classes</Typography>
+                  </Grid>
+
+                  <StudentClassCards
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
+                  <Grid item xs={12}>
+                    <Typography>Available Classes</Typography>
+                  </Grid>
+
+                  <AvailClass
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
+                </Grid>
               )}
               <AddClass
                 open={this.state.add}
