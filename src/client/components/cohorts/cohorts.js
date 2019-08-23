@@ -116,11 +116,9 @@ class Cohorts extends React.Component {
 
     socket.on("displayCohorts", cohorts => {
       this.setState({ cohorts });
-      console.log(cohorts);
     });
     socket.on("displayMember", member => {
       this.setState({ member });
-      console.log(member);
     });
   }
 
