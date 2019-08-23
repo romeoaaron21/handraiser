@@ -50,6 +50,7 @@ massive({
     });
 
     socket.on("displayStudents", students => {
+      // console.log(students);
       io.emit("displayStudents", students);
     });
 

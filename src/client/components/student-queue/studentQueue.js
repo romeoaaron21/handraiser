@@ -304,24 +304,24 @@ class Student extends Component {
       });
     });
 
-    socket.on("close", students => {
+    socket.on("close", cohort_id => {
       this.setState({
         helpingStudent: "",
         helpStudentModal: false,
         button: true,
         requested: false,
-        btntext: "Raise Hand"
+        btntext: "Raise Hand",
+        cohort_id: cohort_id
       });
       if (this.state.helpingStudent === "") {
         this.setState({
           helpStudentModal: false
         });
-        this.fetchStudents();
       }
+      this.fetchStudents();
     });
 
     socket.on("displayStudents", students => {
-      console.log(students);
       this.setState({
         members: students
       });
@@ -369,7 +369,6 @@ class Student extends Component {
           "get"
         );
         data1.then(res => {
-          console.log(res);
           this.setState({ mentorInfo: res.data });
 
           res.data.map(mentor => {
@@ -382,7 +381,6 @@ class Student extends Component {
   componentDidMount() {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
-      console.log(user);
       this.setState({ sub: user.sub });
       const data = api.fetch(
         `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
@@ -589,7 +587,7 @@ class Student extends Component {
               >
                 <RequestQueue
                   sendChatSubM={this.sendChatSubM}
-                  cohort_id={this.state.cohort_id}
+                  cohort_id={this.props.cohort_id}
                   sub={this.state.sub}
                   priv={this.state.previledge}
                   helpStudentModal={this.state.helpStudentModal}
