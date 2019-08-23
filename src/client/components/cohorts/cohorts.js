@@ -143,9 +143,7 @@ class Cohorts extends React.Component {
   };
 
   redirect = cohort_id => {
-    //Dito ilagay redirect to classes!
     this.setState({ cohort_id });
-    // window.location.href = `/queue/${cohort_id}`;
   };
 
   openEnroll = (e, cohort_id) => {
@@ -332,7 +330,7 @@ class Cohorts extends React.Component {
                 />
               ) : (
                 <Grid container>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} style={{display: 'flex', justifyContent: 'center'}}>
                     <Typography>Enrolled Classes</Typography>
                   </Grid>
 
@@ -343,7 +341,7 @@ class Cohorts extends React.Component {
                     openLeave={this.openLeave}
                     openStudentList={this.openStudentList}
                   />
-                  <Grid item xs={12}>
+                  <Grid item xs={12} style={{display: 'flex', justifyContent: 'center'}}>
                     <Typography>Available Classes</Typography>
                   </Grid>
 

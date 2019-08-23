@@ -34,6 +34,7 @@ const styles = theme => ({
   },
   center: {
     maxWidth: 1000,
+    minWidth: 332,
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
