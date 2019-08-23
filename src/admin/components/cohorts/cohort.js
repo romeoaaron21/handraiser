@@ -56,12 +56,8 @@ class Cohorts extends React.Component {
     });
 
     api.fetch("/students", "get").then(res => {
-      this.setState({ students: res.data.students });
+      this.setState({ students: res.data.students, loader: false });
     });
-
-    setTimeout(() => {
-      this.setState({ loader: false });
-    }, 500);
   }
 
   handleDrawerOpen = () => this.setState({ open: true });

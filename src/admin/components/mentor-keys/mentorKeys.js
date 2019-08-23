@@ -30,6 +30,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CopyIcon from "@material-ui/icons/FileCopy";
+import Typography from "@material-ui/core/Typography";
 
 import TableLoader from "../common-components/table/loader";
 import NavBar from "../common-components/nav-bar/navBar";
@@ -64,12 +65,8 @@ class MentorKeys extends React.Component {
     });
 
     api.fetch("/mentors", "get").then(res => {
-      this.setState({ mentors: res.data.mentors });
+      this.setState({ mentors: res.data.mentors, loader: false });
     });
-
-    setTimeout(() => {
-      this.setState({ loader: false });
-    }, 500);
   }
 
   handleDrawerOpen = () => this.setState({ open: true });
@@ -91,8 +88,9 @@ class MentorKeys extends React.Component {
   };
 
   filterStatus = e => {
+    this.setState({ loader: true });
     api.fetch(`/keys/${e.target.value}`, "get").then(res => {
-      this.setState({ keys: res.data.keys });
+      this.setState({ keys: res.data.keys, loader: false });
     });
     this.setState({ filter: e.target.value });
   };
@@ -345,7 +343,11 @@ class MentorKeys extends React.Component {
 
         {/* GENERATE KEY */}
         <Dialog open={this.state.generateDialog}>
-          <DialogTitle id="form-dialog-title">{"Generate Key"}</DialogTitle>
+          <DialogTitle id="form-dialog-title">
+            <Typography gutterBottom style={{ fontSize: "17px" }}>
+              {"Generate Key"}
+            </Typography>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
               {"This is your generated key"}
@@ -374,7 +376,9 @@ class MentorKeys extends React.Component {
         {/* CONFIRMATION KEY */}
         <Dialog open={this.state.confirmationDialog}>
           <DialogTitle id="form-dialog-title">
-            {"Are you sure you want to generate this key?"}
+            <Typography gutterBottom style={{ fontSize: "17px" }}>
+              {"Are you sure you want to generate this key?"}
+            </Typography>
           </DialogTitle>
           <DialogActions>
             <Button

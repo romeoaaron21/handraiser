@@ -50,12 +50,8 @@ class Mentor extends React.Component {
     });
 
     api.fetch("/cohorts", "get").then(res => {
-      this.setState({ cohorts: res.data.cohorts });
+      this.setState({ cohorts: res.data.cohorts, loader: false });
     });
-
-    setTimeout(() => {
-      this.setState({ loader: false });
-    }, 500);
   }
 
   handleDrawerOpen = () => this.setState({ open: true });
