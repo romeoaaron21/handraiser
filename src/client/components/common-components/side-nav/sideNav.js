@@ -8,9 +8,13 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
+import HomeIcon from "@material-ui/icons/Home";
 import MailIcon from "@material-ui/icons/Mail";
 
+//AUTH
+import Auth from "../../../auth/Auth";
+import AuthService from "../../../auth/AuthService";
+import { Typography, Avatar } from "@material-ui/core";
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -29,10 +33,30 @@ const styles = theme => ({
     padding: "0 8px",
     ...theme.mixins.toolbar,
     justifyContent: "flex-end"
+  },
+  purpleAvatar: {
+    color: "#fff",
+    backgroundColor: "#673ab7"
   }
 });
 
 class SideNav extends React.Component {
+  constructor() {
+    super();
+
+    this.Auth = new AuthService();
+    this.fetch = this.Auth.getFetchedTokenAPI();
+
+    this.state = {
+      user: []
+    };
+  }
+  componentDidMount() {
+    this.fetch.then(fetch => {
+      const user = fetch.data.user[0];
+      this.setState({ user });
+    });
+  }
   handleDrawerClose = () => {
     this.props.handleDrawerCloseFn();
   };
@@ -57,10 +81,35 @@ class SideNav extends React.Component {
         </div>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+          {["Classes"].map(text => (
             <ListItem button key={text}>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {text === "Classes" ? <HomeIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <Typography
+          style={{
+            padding: "10px 0px 0px 10px",
+            color: "gray",
+            textTransform: "uppercase",
+            fontSize: "12px"
+          }}
+          variant="subtitle2"
+        >
+          Enrolled
+        </Typography>
+        <List>
+          {["BoomCampSpring", "react", "Nodejs", "Php"].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>
+                {" "}
+                <Avatar className={classes.purpleAvatar}>
+                  {text.charAt(0).toUpperCase()}
+                </Avatar>
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
