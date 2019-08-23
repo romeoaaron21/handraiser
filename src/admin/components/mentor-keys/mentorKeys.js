@@ -32,7 +32,6 @@ import IconButton from "@material-ui/core/IconButton";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import Typography from "@material-ui/core/Typography";
 
-import { Typography } from "@material-ui/core";
 import TableLoader from "../common-components/table/loader";
 import NavBar from "../common-components/nav-bar/navBar";
 import SideNav from "../common-components/side-nav/sideNav";
