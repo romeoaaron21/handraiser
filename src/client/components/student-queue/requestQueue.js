@@ -21,8 +21,6 @@ const styles = theme => ({
   rightNav: {
     padding: theme.spacing(0, 1),
     maxWidth: "auto",
-    minHeight: "520px",
-    maxHeight: "520px",
     // boxShadow: ' 0px 0px 3px 0px rgba(176,173,176,1)',
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
@@ -35,7 +33,9 @@ const styles = theme => ({
     maxWidth: "auto",
     boxShadow: " 0px 0px 3px 0px rgba(176,173,176,1)",
     borderTopRightRadius: "5px",
-    borderTopLeftRadius: "5px"
+    borderTopLeftRadius: "5px",
+    background: "#edeeef",
+    color: "#6d6568"
   },
   scrollBar: {
     "&::-webkit-scrollbar": {
@@ -176,7 +176,7 @@ class requestQueue extends Component {
       member => member.cohort_id === parseInt(this.props.cohort_id)
     );
 
-    console.log(insideCohort, this.props.members, this.props.cohort_id);
+    console.log(this.props.priv);
     return (
       <div>
         <Paper className={classes.rightTopNav} square={true}>
@@ -191,6 +191,11 @@ class requestQueue extends Component {
         <Paper
           className={`${classes.rightNav} ${classes.scrollBar}`}
           square={true}
+          style={
+            this.props.priv === "mentor"
+              ? { minHeight: "561px", maxHeight: "561px" }
+              : { minHeight: "520px", maxHeight: "520px" }
+          }
         >
           {insideCohort.length !== 0 ? (
             <Box item="true" xs={12} sm={8} mt={2}>

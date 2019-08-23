@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const admin = require("./controllers/admin.js");
-
+const list = require("./controllers/list.js");
 const user = require("./controllers/user.js");
 const cohorts = require("./controllers/cohorts.js");
 const mentor = require("./controllers/mentor");
@@ -124,6 +124,8 @@ massive({
   app.post("/api/sendChat", students.sendChat);
   app.get("/api/getChat/:sender_id/:chatmate_id", students.getChat);
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
+
+  app.get("/api/cohort/:id/members/list", list.getAllStudents);
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);
