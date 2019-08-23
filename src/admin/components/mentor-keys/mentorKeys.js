@@ -22,11 +22,14 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
+import CopyIcon from "@material-ui/icons/FileCopy";
 
 import TableLoader from "../common-components/table/loader";
 import NavBar from "../common-components/nav-bar/navBar";
@@ -49,7 +52,8 @@ class MentorKeys extends React.Component {
       search: "",
       keys: [],
       mentors: [],
-      generatedKey: ""
+      generatedKey: "",
+      copied: false
     };
   }
 
@@ -227,6 +231,28 @@ class MentorKeys extends React.Component {
                                   }}
                                 >
                                   {data.sign_in_key}
+                                  <Tooltip title="Copy" placement="top-start">
+                                    <CopyToClipboard
+                                      text={data.sign_in_key}
+                                      onCopy={() =>
+                                        this.setState({ copied: true })
+                                      }
+                                    >
+                                      <IconButton
+                                        style={{
+                                          margin: "0 1% 1px",
+                                          padding: 0
+                                        }}
+                                      >
+                                        <CopyIcon
+                                          style={{
+                                            fontSize: "15px",
+                                            color: "#a19ba5"
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </CopyToClipboard>
+                                  </Tooltip>
                                 </TableCell>
                                 <TableCell align="center">
                                   {data.sub === null
@@ -235,7 +261,17 @@ class MentorKeys extends React.Component {
                                 </TableCell>
                                 <TableCell
                                   align="center"
-                                  style={{ color: "green", fontWeight: "bold" }}
+                                  style={
+                                    data.sub !== null
+                                      ? {
+                                          color: "#000000de",
+                                          fontWeight: "bold"
+                                        }
+                                      : {
+                                          color: "green",
+                                          fontWeight: "bold"
+                                        }
+                                  }
                                 >
                                   {data.sub !== null ? "used" : "available"}
                                 </TableCell>
@@ -253,6 +289,25 @@ class MentorKeys extends React.Component {
                                 }}
                               >
                                 {data.sign_in_key}
+                                <Tooltip title="Copy" placement="top-start">
+                                  <CopyToClipboard
+                                    text={data.sign_in_key}
+                                    onCopy={() =>
+                                      this.setState({ copied: true })
+                                    }
+                                  >
+                                    <IconButton
+                                      style={{ margin: "0 1% 1px", padding: 0 }}
+                                    >
+                                      <CopyIcon
+                                        style={{
+                                          fontSize: "15px",
+                                          color: "#a19ba5"
+                                        }}
+                                      />
+                                    </IconButton>
+                                  </CopyToClipboard>
+                                </Tooltip>
                               </TableCell>
                               <TableCell align="center">
                                 {data.sub === null
@@ -263,8 +318,14 @@ class MentorKeys extends React.Component {
                                 align="center"
                                 style={
                                   data.sub !== null
-                                    ? { color: "green", fontWeight: "bold" }
-                                    : { color: "#000000de" }
+                                    ? {
+                                        color: "#000000de",
+                                        fontWeight: "bold"
+                                      }
+                                    : {
+                                        color: "green",
+                                        fontWeight: "bold"
+                                      }
                                 }
                               >
                                 {data.sub !== null ? "used" : "available"}

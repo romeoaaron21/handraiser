@@ -17,6 +17,7 @@
     "pg": "^7.12.1",
     "random-key": "^0.3.2",
     "react": "^16.9.0",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.9.0",
     "react-google-login": "^5.0.5",
     "react-router-dom": "^5.0.1",
