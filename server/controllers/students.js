@@ -133,10 +133,9 @@ function sendChat(req, res) {
 
 function getChat(req, res) {
   const db = req.app.get("db");
-  const { sender_id, chatmate_id } = req.params;
 
   db.query(
-    `SELECT * from chat WHERE sender_id='${sender_id}' AND chatmate_id='${chatmate_id}' OR sender_id='${chatmate_id}' AND chatmate_id='${sender_id}'`
+    `SELECT * from chat`
   ).then(chats => {
     res.status(201).json(chats);
   });

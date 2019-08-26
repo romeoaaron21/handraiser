@@ -141,15 +141,6 @@ class Student extends Component {
           }
         });
       })
-      .then(() => {
-        const data1 = api.fetch(
-          `/api/getChat/${this.state.sub}/${this.state.mentor_sub}`,
-          "get"
-        );
-        data1.then(res => {
-          socket.emit("sendChat", res.data);
-        });
-      });
   };
 
   sendChatSubM = chatmate_sub => {
@@ -175,15 +166,6 @@ class Student extends Component {
           }
         });
       })
-      .then(() => {
-        const data1 = api.fetch(
-          `/api/getChat/${this.state.sub}/${chatmate_sub}`,
-          "get"
-        );
-        data1.then(res => {
-          socket.emit("sendChat", res.data);
-        });
-      });
   };
 
   sendChat = () => {
@@ -387,6 +369,15 @@ class Student extends Component {
             this.setState({ mentor_sub: mentor.sub });
           });
         });
+      }).then(() => {
+        const data2 = api.fetch(
+          `/api/getChat`,
+          "get"
+        );
+        data2.then(res => {
+          console.log(res.data)
+          socket.emit("sendChat", res.data);
+        });
       });
   };
 
@@ -551,21 +542,6 @@ class Student extends Component {
                     />
                   ) : null}
                 </Grid>
-
-                {/* <Grid item xs={12} sm={this.state.previledge === "mentor" ? 12 : 8}>
-                  <RequestQueue
-                    cohort_id={this.props.cohort_id}
-                    sub={this.state.sub}
-                    priv={this.state.previledge}
-                    helpStudentModal={this.state.helpStudentModal}
-                    helpStudentClose={this.helpStudentClose}
-                    helpStudent={this.helpStudent}
-                    removeStudentRequest={this.removeStudentRequest}
-                    removeStudentReqModal={this.state.removeStudentReqModal}
-                    removeStudentReqClose={this.removeStudentReqClose}
-                    members={this.state.members}
-                  />
-                </Grid> */}
                 {/* start of chatBox */}
                 {!this.state.chatBox ? (
                   <Grid item xs={12} sm={8}>
