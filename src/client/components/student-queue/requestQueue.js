@@ -175,8 +175,6 @@ class requestQueue extends Component {
     const insideCohort = this.props.members.filter(
       member => member.cohort_id === parseInt(this.props.cohort_id)
     );
-
-    console.log(this.props.priv);
     return (
       <div>
         <Paper className={classes.rightTopNav} square={true}>
