@@ -73,7 +73,7 @@ class AddClass extends React.Component{
             </Button>
             <Button onClick={this.submit} color="primary" autoFocus>
               Add
-            </Button>
+            </Button>    
           </DialogActions>
         </Dialog>
     )
