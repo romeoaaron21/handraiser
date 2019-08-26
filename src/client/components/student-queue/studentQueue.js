@@ -511,7 +511,12 @@ class Student extends Component {
                         previledge={this.state.previledge}
                         sendChatSubM={this.sendChatSubM}
                       />
-                      <MentorProfile />
+                      {console.log(this.state.members)}
+                      <MentorProfile
+                        user={this.state.user[0]}
+                        members={this.state.members}
+                        cohort_id={this.props.cohort_id}
+                      />
                       <StudentsList cohort_id={this.props.cohort_id} />
 
                       <RemoveRequest
