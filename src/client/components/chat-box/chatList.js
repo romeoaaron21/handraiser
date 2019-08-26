@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import EmptyQueue from "../../images/empty.svg";
-import moment from 'moment-timezone'
+import moment from "moment-timezone";
 import {
   Paper,
   Grid,
@@ -152,7 +152,6 @@ class ChatList extends PureComponent {
     return moment.tz(`${calendar} ${clock}`, "Asia/Taipei").format("LT");
   };
 
-
   render() {
     const { classes } = this.props;
     return (
@@ -181,41 +180,56 @@ class ChatList extends PureComponent {
 
           {this.props.mentor
             ? this.props.mentor.map(mentor => (
-                <ListItem
-                  className={classes.list}
-                  onClick={this.props.allowChat ? this.props.sendChatSub : null}
-                  key={mentor.sub}
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      src={mentor.avatar}
-                      className={classes.userAvatar}
-                    />
-                  </ListItemAvatar>
-                  
-                    {this.props.conversation.map(convo => (
-                      convo === this.props.conversation[this.props.conversation.length-1]?
-                      <React.Fragment>
-                      <div className={classes.multiline}>
-                      <Typography className={classes.chatName}>
-                        {mentor.first_name} {mentor.last_name}
-                      </Typography>
-                        <Typography className={classes.chatDetails}>
-                          {convo.message}
-                        </Typography>
-                        </div>
-                        <div classname={classes.chatAction}>
-                          <Typography className={classes.chatTime}>
-                          {" "}
-                          {this.timeDisplay(convo.time)}{" "}
-                          </Typography>
-                        </div>
+                <React.Fragment>
+                  {this.props.conversation.length !== 0 ? (
+                    this.props.conversation.map(convo =>
+                      convo ===
+                      this.props.conversation[
+                        this.props.conversation.length - 1
+                      ] ? (
+                        <React.Fragment>
+                          <ListItem
+                            className={classes.list}
+                            onClick={
+                              this.props.allowChat
+                                ? this.props.sendChatSub
+                                : null
+                            }
+                            key={mentor.sub}
+                          >
+                            <ListItemAvatar>
+                              <Avatar
+                                src={mentor.avatar}
+                                className={classes.userAvatar}
+                              />
+                            </ListItemAvatar>
+                            <div className={classes.multiline}>
+                              <Typography className={classes.chatName}>
+                                {mentor.first_name} {mentor.last_name}
+                              </Typography>
+                              <Typography className={classes.chatDetails}>
+                                {convo.message}
+                              </Typography>
+                            </div>
+                            <div classname={classes.chatAction}>
+                              <Typography className={classes.chatTime}>
+                                {" "}
+                                {this.timeDisplay(convo.time)}{" "}
+                              </Typography>
+                            </div>
+                          </ListItem>
                         </React.Fragment>
-                      :
-                      null
-                    ))}
-                  
-                </ListItem>
+                      ) : null
+                    )
+                  ) : (
+                    <Grid container className={classes.emptyQueue}>
+                      <img src={EmptyQueue} width="200" height="180" />
+                      <Typography variant="overline" display="block">
+                        No message available...
+                      </Typography>
+                    </Grid>
+                  )}
+                </React.Fragment>
               ))
             : null}
         </Paper>
