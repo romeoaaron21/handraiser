@@ -441,7 +441,8 @@ class Student extends Component {
   };
 
   handleChangeReasons = e => {
-    if (e.target.value !== "") {
+    const reasonValue = e.target.value.replace(/^\s+/, "").replace(/\s+$/, "");
+    if (reasonValue !== "") {
       this.setState({
         button: false,
         studentsReason: e.target.value
