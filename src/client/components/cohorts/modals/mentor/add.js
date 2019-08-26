@@ -26,6 +26,10 @@ class AddClass extends React.Component{
 
   submit = () => {
     this.props.add(this.state.name, this.state.password, this.props.id)
+    this.setState({
+      name: '',
+      password: '',
+    })
   }
 
   handleChange = (e) => {
@@ -48,6 +52,7 @@ class AddClass extends React.Component{
               margin="dense"
               id="name"
               label="Class Name"
+              value={this.state.name}
               type="name"
               onChange={this.onType}
               fullWidth
@@ -57,6 +62,7 @@ class AddClass extends React.Component{
               margin="dense"
               id="password"
               label="Password"
+              value={this.state.password}
               type="pass"
               onChange={this.onType}
               fullWidth
@@ -66,7 +72,7 @@ class AddClass extends React.Component{
             <Button onClick={close} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.submit} color="primary" autoFocus>
+            <Button onClick={this.submit} color="primary" disabled={this.state.password === '' && this.state.name ? true : false}>
               Add
             </Button>    
           </DialogActions>

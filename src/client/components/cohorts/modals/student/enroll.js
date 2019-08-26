@@ -25,6 +25,9 @@ class Enroll extends React.Component {
 
   submit = () => {
     this.props.enroll(this.props.id, this.state.password)
+    this.setState({
+      password: ''
+    })
   }
 
   render(){
@@ -40,6 +43,7 @@ class Enroll extends React.Component {
             autoFocus
             margin="dense"
             id="password"
+            value={this.state.password}
             label="Class Password"
             type="text"
             fullWidth
@@ -50,7 +54,7 @@ class Enroll extends React.Component {
           <Button onClick={close} color="primary">
             Cancel
           </Button>
-          <Button onClick={this.submit} color="primary">
+          <Button onClick={this.submit} color="primary" disabled={this.state.password === '' ? true : false}>
             Enroll
           </Button>
         </DialogActions>
