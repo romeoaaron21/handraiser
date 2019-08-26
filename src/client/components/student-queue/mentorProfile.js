@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import cohortImage from "../../images/cohort_1.jpeg";
+import api from "../../services/fetchApi";
 import {
   Card,
   CardMedia,
@@ -63,11 +64,23 @@ class MentorProfile extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      students: []
+    };
+  }
+  componentDidMount() {
+    api
+      .fetch(`/api/cohort/${this.props.cohort_id}/members/list`, "get")
+      .then(res => {
+        this.setState({
+          students: res.data.students
+        });
+      });
   }
 
   render() {
     const { classes } = this.props;
+    console.log(this.state.students);
     return (
       <React.Fragment>
         <Card className={classes.card}>
@@ -76,15 +89,21 @@ class MentorProfile extends PureComponent {
             <CardContent className={classes.cardContent}>
               <div className={classes.class}>
                 <Typography gutterBottom variant="h6" component="h2">
-                  BoomCamp Spring 2019
+                  {this.props.user.name}
                 </Typography>
                 <Avatar
-                  src="https://lh6.googleusercontent.com/-_OuXadnBbqs/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfEr_FE92jf3RrOO98KilrRcrinvw/s96-c/photo.jpg"
+                  src={this.props.user.avatar}
                   className={classes.userAvatar}
                 />
               </div>
               <Typography variant="body2" color="textSecondary" component="p">
-                Aodhan Hayter
+                {this.props.user.first_name.charAt(0).toUpperCase() +
+                  this.props.user.first_name.slice(1)}{" "}
+                {this.props.user.last_name.charAt(0).toUpperCase() +
+                  this.props.user.last_name.slice(1)}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" component="p">
+                Students: {this.state.students.length}
               </Typography>
             </CardContent>
           </CardActions>
