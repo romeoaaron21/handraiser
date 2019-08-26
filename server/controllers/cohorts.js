@@ -31,7 +31,7 @@ function addCohort(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
   const { name, password } = req.body;
-  console.log(req.body);
+  
   db.query(
     `INSERT INTO cohorts (mentor_id, name, password) VALUES (${id}, '${name}', '${password}')`
   )
