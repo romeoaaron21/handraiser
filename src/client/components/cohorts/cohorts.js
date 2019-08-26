@@ -43,9 +43,6 @@ import styles from "./cohorts-component-style";
 import EmptyQueue from "./../../images/emptyqueue.svg";
 import AvailClass from "./cards/availClass";
 
-// const socketUrl = 'http://localhost:3001/';
-// const socket = io('http://localhost:3001/');
-
 const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
 
@@ -73,6 +70,7 @@ class Cohorts extends React.Component {
       scroll: "paper",
       selected: "",
       cohort_id: "",
+      searchValue: "",
       search: false,
       socket: null
     };
@@ -178,7 +176,8 @@ class Cohorts extends React.Component {
       delete: false,
       enroll: false,
       leave: false,
-      studentList: false
+      studentList: false,
+      searchValue: ''
     });
   };
 
@@ -262,32 +261,28 @@ class Cohorts extends React.Component {
 
   search = e => {
     if (e.currentTarget.value === "") {
-      this.setState({ search: false });
+      this.setState({ searchValue: e.currentTarget.value, search: false });
       return this.componentDidMount();
     } else {
-      this.setState({ search: true });
-    }
-    if (this.state.privilege !== "student") {
-      api
-        .fetch(
-          `/api/cohorts/${e.currentTarget.value}/search/mentor/${
-            this.state.id
-          }`,
-          "get"
-        )
-        .then(res => {
-          this.setState({
-            cohorts: res.data.cohorts
+      this.setState({ searchValue: e.currentTarget.value, search: true });
+      if (this.state.privilege !== "student") {
+        api
+          .fetch(
+            `/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, "get")
+          .then(res => {
+            this.setState({
+              cohorts: res.data.cohorts
+            });
           });
-        });
-    } else {
-      api
-        .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
-        .then(res => {
-          this.setState({
-            cohorts: res.data.cohorts
+      } else {
+        api
+          .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
+          .then(res => {
+            this.setState({
+              cohorts: res.data.cohorts
+            });
           });
-        });
+      }
     }
   };
 
@@ -330,6 +325,7 @@ class Cohorts extends React.Component {
                       input: classes.inputInput
                     }}
                     onChange={this.search}
+                    value={this.state.searchValue}
                     fullWidth
                     inputProps={{ "aria-label": "search" }}
                   />
