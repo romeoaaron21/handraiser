@@ -507,7 +507,6 @@ class Student extends Component {
                         previledge={this.state.previledge}
                         sendChatSubM={this.sendChatSubM}
                       />
-                      {console.log(this.state.members)}
                       <MentorProfile
                         user={this.state.user[0]}
                         members={this.state.members}
@@ -538,6 +537,8 @@ class Student extends Component {
                               ? true
                               : false
                           }
+                          conversation={this.state.conversation}
+                          sub={this.state.sub}
                         />
                       </Box>
                     </React.Fragment>

@@ -168,7 +168,6 @@ class ChatList extends PureComponent {
 
   render() {
     const { classes } = this.props;
-
     return (
       <React.Fragment>
         {/* Chat List Header*/}

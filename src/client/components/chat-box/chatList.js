@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import EmptyQueue from "../../images/empty.svg";
+import moment from 'moment-timezone'
 import {
   Paper,
   Grid,
@@ -131,9 +132,26 @@ const styles = theme => ({
 class ChatList extends PureComponent {
   constructor(props) {
     super(props);
-
     this.state = {};
   }
+
+  timeDisplay = times => {
+    let date = moment(times).format("L");
+    let time = moment(times).format("LT");
+
+    let hour = time.split(":")[0];
+    let minute = time.split(":")[1].split(" ");
+    let minutes = minute[0];
+    let month = date.split("/")[0];
+    let dates = date.split("/")[1];
+    let year = date.split("/")[2];
+
+    let calendar = `${year}-${month}-${dates}`;
+    let clock = `${hour}:${minutes}`;
+
+    return moment.tz(`${calendar} ${clock}`, "Asia/Taipei").format("LT");
+  };
+
 
   render() {
     const { classes } = this.props;
@@ -174,20 +192,29 @@ class ChatList extends PureComponent {
                       className={classes.userAvatar}
                     />
                   </ListItemAvatar>
-                  <div className={classes.multiline}>
-                    <Typography className={classes.chatName}>
-                      {mentor.first_name} {mentor.last_name}
-                    </Typography>
-                    <Typography className={classes.chatDetails}>
-                      Test message
-                    </Typography>
-                  </div>
-                  <div classname={classes.chatAction}>
-                    <Typography className={classes.chatTime}>
-                      {" "}
-                      10:25 AM{" "}
-                    </Typography>
-                  </div>
+                  
+                    {this.props.conversation.map(convo => (
+                      convo === this.props.conversation[this.props.conversation.length-1]?
+                      <React.Fragment>
+                      <div className={classes.multiline}>
+                      <Typography className={classes.chatName}>
+                        {mentor.first_name} {mentor.last_name}
+                      </Typography>
+                        <Typography className={classes.chatDetails}>
+                          {convo.message}
+                        </Typography>
+                        </div>
+                        <div classname={classes.chatAction}>
+                          <Typography className={classes.chatTime}>
+                          {" "}
+                          {this.timeDisplay(convo.time)}{" "}
+                          </Typography>
+                        </div>
+                        </React.Fragment>
+                      :
+                      null
+                    ))}
+                  
                 </ListItem>
               ))
             : null}
