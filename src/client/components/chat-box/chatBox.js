@@ -60,7 +60,7 @@ class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      openMenu: null,
+      openMenu: null
     };
   }
 
@@ -105,7 +105,8 @@ class ChatBox extends PureComponent {
 
   render() {
     const { classes } = this.props;
-    console.log(this.props.cohort_id)
+    console.log(this.props.cohort_id);
+    console.log(this.props.conversation);
     return (
       <React.Fragment>
         <Paper elevation={1} className={classes.rightTopNav} square={true}>
@@ -166,49 +167,50 @@ class ChatBox extends PureComponent {
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
               >
                 {this.props.conversation.map(convo =>
-                    (this.props.senderInfo.sub === convo.sender_id &&
-                      this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                  (this.props.senderInfo.sub === convo.sender_id &&
+                    this.props.chatmateInfo.sub === convo.chatmate_id) ||
                   (this.props.senderInfo.sub === convo.chatmate_id &&
-                    this.props.chatmateInfo.sub === convo.sender_id)
-                    ? (
+                    this.props.chatmateInfo.sub === convo.sender_id) ? (
                     <React.Fragment>
-                      <Box
-                        item
-                        className={
-                          this.props.senderInfo.sub === convo.chatmate_id
-                            ? classes.chatContent
-                            : classes.chatContent2
-                        }
-                      >
-                        {this.props.senderInfo.sub === convo.chatmate_id ? (
-                          <Avatar
-                            src={this.props.chatmateInfo.avatar}
-                            className={classes.chatAvatar}
-                          />
-                        ) : null}
+                      {parseInt(this.props.cohort_id) === convo.cohort_id ? (
                         <Box
                           item
                           className={
                             this.props.senderInfo.sub === convo.chatmate_id
-                              ? classes.chatDetails
-                              : classes.chatDetails2
+                              ? classes.chatContent
+                              : classes.chatContent2
                           }
                         >
-                          <div className={classes.chatText}>
-                            <Typography
-                              variant="subtitle1"
-                              className={classes.chatText}
-                            >
-                              {convo.message}
-                            </Typography>
-                          </div>
-                          <div className={classes.chatTime}>
-                            <Typography variant="caption">
-                              {this.timeDisplay(convo.time)}
-                            </Typography>
-                          </div>
+                          {this.props.senderInfo.sub === convo.chatmate_id ? (
+                            <Avatar
+                              src={this.props.chatmateInfo.avatar}
+                              className={classes.chatAvatar}
+                            />
+                          ) : null}
+                          <Box
+                            item
+                            className={
+                              this.props.senderInfo.sub === convo.chatmate_id
+                                ? classes.chatDetails
+                                : classes.chatDetails2
+                            }
+                          >
+                            <div className={classes.chatText}>
+                              <Typography
+                                variant="subtitle1"
+                                className={classes.chatText}
+                              >
+                                {convo.message}
+                              </Typography>
+                            </div>
+                            <div className={classes.chatTime}>
+                              <Typography variant="caption">
+                                {this.timeDisplay(convo.time)}
+                              </Typography>
+                            </div>
+                          </Box>
                         </Box>
-                      </Box>
+                      ) : null}
                     </React.Fragment>
                   ) : (
                     <React.Fragment />
@@ -244,7 +246,7 @@ class ChatBox extends PureComponent {
                   <IconButton
                     className={classes.sendIcon}
                     onClick={this.props.sendChat}
-                    disabled={this.props.chat.length===0? true:false}
+                    disabled={this.props.chat.length === 0 ? true : false}
                   >
                     <SendIcon />
                   </IconButton>
@@ -278,7 +280,7 @@ class ChatBox extends PureComponent {
                     onClick={() =>
                       this.props.sendChatM(this.props.helpingStudent_sub)
                     }
-                    disabled={this.props.chatM.length===0? true:false}
+                    disabled={this.props.chatM.length === 0 ? true : false}
                   >
                     <SendIcon />
                   </IconButton>
