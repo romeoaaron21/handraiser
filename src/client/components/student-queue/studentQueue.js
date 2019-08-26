@@ -119,7 +119,7 @@ class Student extends Component {
 
   handleChatM = val => {
     const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
-    this.setState({ chat: userText });
+    this.setState({ chatM: userText });
   };
 
   sendChatSub = () => {
