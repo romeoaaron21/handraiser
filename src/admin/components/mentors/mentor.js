@@ -191,7 +191,29 @@ class Mentor extends React.Component {
                                 <TableCell align="left">
                                   {mentor.first_name + " " + mentor.last_name}
                                 </TableCell>
-                                <TableCell align="center">{"12"}</TableCell>
+                                {this.getNoOfClasses(mentor.id) === 0 ? (
+                                  <TableCell align="center">
+                                    {this.getNoOfClasses(mentor.id)}
+                                  </TableCell>
+                                ) : (
+                                  <Tooltip
+                                    title="View classes"
+                                    placement="top-start"
+                                  >
+                                    <TableCell
+                                      align="center"
+                                      onClick={() =>
+                                        this.setState({
+                                          cohortListDialog: true,
+                                          mentorId: mentor.id
+                                        })
+                                      }
+                                      style={{ cursor: "pointer" }}
+                                    >
+                                      {this.getNoOfClasses(mentor.id)}
+                                    </TableCell>
+                                  </Tooltip>
+                                )}
                               </TableRow>
                             );
                           }
@@ -204,23 +226,30 @@ class Mentor extends React.Component {
                               <TableCell align="left">
                                 {mentor.first_name + " " + mentor.last_name}
                               </TableCell>
-                              <Tooltip
-                                title="View classes"
-                                placement="top-start"
-                              >
-                                <TableCell
-                                  align="center"
-                                  onClick={() =>
-                                    this.setState({
-                                      cohortListDialog: true,
-                                      mentorId: mentor.id
-                                    })
-                                  }
-                                  style={{ cursor: "pointer" }}
-                                >
+
+                              {this.getNoOfClasses(mentor.id) === 0 ? (
+                                <TableCell align="center">
                                   {this.getNoOfClasses(mentor.id)}
                                 </TableCell>
-                              </Tooltip>
+                              ) : (
+                                <Tooltip
+                                  title="View classes"
+                                  placement="top-start"
+                                >
+                                  <TableCell
+                                    align="center"
+                                    onClick={() =>
+                                      this.setState({
+                                        cohortListDialog: true,
+                                        mentorId: mentor.id
+                                      })
+                                    }
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    {this.getNoOfClasses(mentor.id)}
+                                  </TableCell>
+                                </Tooltip>
+                              )}
                             </TableRow>
                           );
                         }

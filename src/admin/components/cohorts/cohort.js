@@ -243,22 +243,29 @@ class Cohorts extends React.Component {
                                 <TableCell align="center">
                                   {this.getMentorName(cohort.mentor_id)}
                                 </TableCell>
-                                <Tooltip
-                                  title="View students"
-                                  placement="top-start"
-                                >
-                                  <TableCell
-                                    align="center"
-                                    onClick={() =>
-                                      this.setState({
-                                        studentListDialog: true,
-                                        cohortId: cohort.id
-                                      })
-                                    }
-                                  >
+                                {this.getNoOfStudents(cohort.id) === 0 ? (
+                                  <TableCell align="center">
                                     {this.getNoOfStudents(cohort.id)}
                                   </TableCell>
-                                </Tooltip>
+                                ) : (
+                                  <Tooltip
+                                    title="View students"
+                                    placement="top-start"
+                                  >
+                                    <TableCell
+                                      align="center"
+                                      onClick={() =>
+                                        this.setState({
+                                          studentListDialog: true,
+                                          cohortId: cohort.id
+                                        })
+                                      }
+                                      style={{ cursor: "pointer" }}
+                                    >
+                                      {this.getNoOfStudents(cohort.id)}
+                                    </TableCell>
+                                  </Tooltip>
+                                )}
                               </TableRow>
                             );
                           }
@@ -272,23 +279,29 @@ class Cohorts extends React.Component {
                                 {this.getMentorName(cohort.mentor_id)}
                               </TableCell>
 
-                              <Tooltip
-                                title="View students"
-                                placement="top-start"
-                              >
-                                <TableCell
-                                  align="center"
-                                  onClick={() =>
-                                    this.setState({
-                                      studentListDialog: true,
-                                      cohortId: cohort.id
-                                    })
-                                  }
-                                  style={{ cursor: "pointer" }}
-                                >
+                              {this.getNoOfStudents(cohort.id) === 0 ? (
+                                <TableCell align="center">
                                   {this.getNoOfStudents(cohort.id)}
                                 </TableCell>
-                              </Tooltip>
+                              ) : (
+                                <Tooltip
+                                  title="View students"
+                                  placement="top-start"
+                                >
+                                  <TableCell
+                                    align="center"
+                                    onClick={() =>
+                                      this.setState({
+                                        studentListDialog: true,
+                                        cohortId: cohort.id
+                                      })
+                                    }
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    {this.getNoOfStudents(cohort.id)}
+                                  </TableCell>
+                                </Tooltip>
+                              )}
                             </TableRow>
                           );
                         }
