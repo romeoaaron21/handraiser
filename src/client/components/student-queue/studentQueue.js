@@ -127,22 +127,21 @@ class Student extends Component {
       `/api/displayChatUserInfo/${this.state.sub}/${this.state.mentor_sub}`,
       "get"
     );
-    data
-      .then(res => {
-        res.data.map(user => {
-          if (user.sub === this.state.sub) {
-            this.setState({
-              senderInfo: user,
-              chatBox: true
-            });
-          } else {
-            this.setState({
-              chatmateInfo: user,
-              chatBox: true
-            });
-          }
-        });
-      })
+    data.then(res => {
+      res.data.map(user => {
+        if (user.sub === this.state.sub) {
+          this.setState({
+            senderInfo: user,
+            chatBox: true
+          });
+        } else {
+          this.setState({
+            chatmateInfo: user,
+            chatBox: true
+          });
+        }
+      });
+    });
   };
 
   sendChatSubM = chatmate_sub => {
@@ -150,25 +149,26 @@ class Student extends Component {
       `/api/displayChatUserInfo/${this.state.sub}/${chatmate_sub}`,
       "get"
     );
-    data
-      .then(res => {
-        res.data.map(user => {
-          if (user.sub === this.state.sub) {
-            this.setState({
-              senderInfo: user,
-              chatBox: true,
-              chatmate_sub: chatmate_sub
-            });
-          } else {
-            this.setState({
-              chatmateInfo: user,
-              chatBox: true,
-              chatmate_sub: chatmate_sub
-            });
-          }
-        });
-      })
+    data.then(res => {
+      res.data.map(user => {
+        if (user.sub === this.state.sub) {
+          this.setState({
+            senderInfo: user,
+            chatBox: true,
+            chatmate_sub: chatmate_sub
+          });
+        } else {
+          this.setState({
+            chatmateInfo: user,
+            chatBox: true,
+            chatmate_sub: chatmate_sub
+          });
+        }
+      });
+    });
   };
+
+  messagesEndRef = React.createRef();
 
   sendChat = () => {
     let convo = {
@@ -259,7 +259,7 @@ class Student extends Component {
         this.setState({
           button: true,
           btntext: "Waiting for help",
-          requested: true,
+          requested: true
         });
       }
       students.map(student => {
@@ -267,7 +267,7 @@ class Student extends Component {
           return this.setState({
             button: true,
             btntext: "Waiting for help",
-            requested: true,
+            requested: true
           });
         } else {
           return null;
@@ -374,11 +374,9 @@ class Student extends Component {
             this.setState({ mentor_sub: mentor.sub });
           });
         });
-      }).then(() => {
-        const data2 = api.fetch(
-          `/api/getChat`,
-          "get"
-        );
+      })
+      .then(() => {
+        const data2 = api.fetch(`/api/getChat`, "get");
         data2.then(res => {
           socket.emit("sendChat", res.data);
         });

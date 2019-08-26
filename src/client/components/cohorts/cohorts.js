@@ -177,7 +177,7 @@ class Cohorts extends React.Component {
       enroll: false,
       leave: false,
       studentList: false,
-      searchValue: ''
+      searchValue: ""
     });
     this.componentDidMount();
   };
@@ -269,7 +269,11 @@ class Cohorts extends React.Component {
       if (this.state.privilege !== "student") {
         api
           .fetch(
-            `/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, "get")
+            `/api/cohorts/${e.currentTarget.value}/search/mentor/${
+              this.state.id
+            }`,
+            "get"
+          )
           .then(res => {
             this.setState({
               cohorts: res.data.cohorts
@@ -387,25 +391,29 @@ class Cohorts extends React.Component {
                           <Typography>Available Classes</Typography>
                         </Grid>
 
-                        {this.state.member.length !== 0 ? (
+                        {this.state.member.length !== 0 &&
+                        this.state.search === false ? (
                           this.state.member.filter(
                             member => member.student_id === this.state.id
                           ).length === this.state.cohorts.length ? (
-                            <Grid
-                              container
-                              className={classes.emptyQueue}
-                              style={{ padding: 50 }}
-                            >
-                              <img
-                                alt="Classes"
-                                src={EmptyQueue}
-                                width="280"
-                                height="250"
-                              />
-                              <Typography variant="overline" display="block">
-                                No Available Classes
-                              </Typography>
-                            </Grid>
+                            (console.log(this.state.cohorts.length),
+                            (
+                              <Grid
+                                container
+                                className={classes.emptyQueue}
+                                style={{ padding: 50 }}
+                              >
+                                <img
+                                  alt="Classes"
+                                  src={EmptyQueue}
+                                  width="280"
+                                  height="250"
+                                />
+                                <Typography variant="overline" display="block">
+                                  No Available Classes
+                                </Typography>
+                              </Grid>
+                            ))
                           ) : (
                             <AvailClass
                               cohorts={this.state.cohorts}
