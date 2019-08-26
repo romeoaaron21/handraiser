@@ -122,7 +122,7 @@ massive({
     students.displayChatUserInfo
   );
   app.post("/api/sendChat", students.sendChat);
-  app.get("/api/getChat/:sender_id/:chatmate_id", students.getChat);
+  app.get("/api/getChat", students.getChat);
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
 
   app.get("/api/cohort/:id/members/list", list.getAllStudents);

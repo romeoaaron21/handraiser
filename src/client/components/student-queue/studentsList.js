@@ -163,7 +163,6 @@ class ChatList extends PureComponent {
       this.setState({
         students: res.data.students
       });
-      console.log(res.data.students);
     });
   }
 

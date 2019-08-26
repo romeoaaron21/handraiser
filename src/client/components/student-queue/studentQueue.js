@@ -113,11 +113,13 @@ class Student extends Component {
   };
 
   handleChat = val => {
-    this.setState({ chat: val });
+    const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
+    this.setState({ chat: userText });
   };
 
   handleChatM = val => {
-    this.setState({ chatM: val });
+    const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
+    this.setState({ chatM: userText });
   };
 
   sendChatSub = () => {
@@ -141,15 +143,6 @@ class Student extends Component {
           }
         });
       })
-      .then(() => {
-        const data1 = api.fetch(
-          `/api/getChat/${this.state.sub}/${this.state.mentor_sub}`,
-          "get"
-        );
-        data1.then(res => {
-          socket.emit("sendChat", res.data);
-        });
-      });
   };
 
   sendChatSubM = chatmate_sub => {
@@ -175,22 +168,14 @@ class Student extends Component {
           }
         });
       })
-      .then(() => {
-        const data1 = api.fetch(
-          `/api/getChat/${this.state.sub}/${chatmate_sub}`,
-          "get"
-        );
-        data1.then(res => {
-          socket.emit("sendChat", res.data);
-        });
-      });
   };
 
   sendChat = () => {
     let convo = {
       message: this.state.chat,
       sender_sub: this.state.sub,
-      chatmate_sub: this.state.mentor_sub
+      chatmate_sub: this.state.mentor_sub,
+      cohort_id: this.props.cohort_id
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
@@ -203,7 +188,8 @@ class Student extends Component {
     let convo = {
       message: this.state.chatM,
       sender_sub: this.state.sub,
-      chatmate_sub: chatmate
+      chatmate_sub: chatmate,
+      cohort_id: this.props.cohort_id
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
@@ -273,7 +259,7 @@ class Student extends Component {
         this.setState({
           button: true,
           btntext: "Waiting for help",
-          requested: true
+          requested: true,
         });
       }
       students.map(student => {
@@ -281,7 +267,7 @@ class Student extends Component {
           return this.setState({
             button: true,
             btntext: "Waiting for help",
-            requested: true
+            requested: true,
           });
         } else {
           return null;
@@ -352,7 +338,8 @@ class Student extends Component {
             } else if (member.sub === this.state.sub) {
               return this.setState({
                 button: true,
-                btntext: "Waiting for help"
+                btntext: "Waiting for help",
+                chatBox: false
               });
             } else if (member.status === "inprogress") {
               return this.setState({
@@ -386,6 +373,14 @@ class Student extends Component {
           res.data.map(mentor => {
             this.setState({ mentor_sub: mentor.sub });
           });
+        });
+      }).then(() => {
+        const data2 = api.fetch(
+          `/api/getChat`,
+          "get"
+        );
+        data2.then(res => {
+          socket.emit("sendChat", res.data);
         });
       });
   };
@@ -557,21 +552,6 @@ class Student extends Component {
                     />
                   ) : null}
                 </Grid>
-
-                {/* <Grid item xs={12} sm={this.state.previledge === "mentor" ? 12 : 8}>
-                  <RequestQueue
-                    cohort_id={this.props.cohort_id}
-                    sub={this.state.sub}
-                    priv={this.state.previledge}
-                    helpStudentModal={this.state.helpStudentModal}
-                    helpStudentClose={this.helpStudentClose}
-                    helpStudent={this.helpStudent}
-                    removeStudentRequest={this.removeStudentRequest}
-                    removeStudentReqModal={this.state.removeStudentReqModal}
-                    removeStudentReqClose={this.removeStudentReqClose}
-                    members={this.state.members}
-                  />
-                </Grid> */}
                 {/* start of chatBox */}
                 {!this.state.chatBox ? (
                   <Grid item xs={12} sm={8}>
@@ -596,6 +576,7 @@ class Student extends Component {
                     sm={this.state.previledge === "mentor" ? 12 : 8}
                   >
                     <ChatBox
+                      cohort_id={this.props.cohort_id}
                       sendChat={this.sendChat}
                       handleChat={this.handleChat}
                       chat={this.state.chat}

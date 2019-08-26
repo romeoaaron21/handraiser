@@ -21,6 +21,11 @@ exports.up = pgm => {
     time: {
       type: "timestamp",
       default: pgm.func("current_timestamp")
+    },
+    cohort_id: {
+      type: 'integer',
+      notNull: true,
+      references: '"cohorts"'
     }
   });
 };

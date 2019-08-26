@@ -115,16 +115,18 @@ function sendChat(req, res) {
   const message = req.body.message;
   const sender_id = req.body.sender_sub;
   const chatmate_id = req.body.chatmate_sub;
+  const cohort_id = req.body.cohort_id;
 
   db.chat
     .insert({
       message: message,
       sender_id: sender_id,
-      chatmate_id: chatmate_id
+      chatmate_id: chatmate_id,
+      cohort_id: cohort_id
     })
     .then(() => {
       db.query(
-        `SELECT * from chat WHERE sender_id='${sender_id}' AND chatmate_id='${chatmate_id}' OR sender_id='${chatmate_id}' AND chatmate_id='${sender_id}'`
+        `SELECT * from chat`
       ).then(chats => {
         res.status(201).json(chats);
       });
@@ -133,10 +135,9 @@ function sendChat(req, res) {
 
 function getChat(req, res) {
   const db = req.app.get("db");
-  const { sender_id, chatmate_id } = req.params;
 
   db.query(
-    `SELECT * from chat WHERE sender_id='${sender_id}' AND chatmate_id='${chatmate_id}' OR sender_id='${chatmate_id}' AND chatmate_id='${sender_id}'`
+    `SELECT * from chat`
   ).then(chats => {
     res.status(201).json(chats);
   });
