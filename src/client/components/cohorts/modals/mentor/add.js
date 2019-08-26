@@ -25,12 +25,7 @@ class AddClass extends React.Component{
   }
 
   submit = () => {
-    if(this.state.name !== '' || this.state.password !== ''){
-      this.props.add(this.state.name, this.state.password, this.props.id)
-      this.props.close();
-    }else{
-      console.log('Fill up required fields!');
-    }
+    this.props.add(this.state.name, this.state.password, this.props.id)
   }
 
   handleChange = (e) => {

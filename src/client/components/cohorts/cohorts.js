@@ -183,24 +183,33 @@ class Cohorts extends React.Component {
   };
 
   add = (name, password, mentor_id) => {
-    const state = { name, password };
-    let check = this.state.cohorts.find(cohorts => cohorts.name === name);
-    if (!check) {
-      api
-        .fetch(`/api/cohorts/mentor/${mentor_id}/add`, "post", state)
-        .then(() => {
-          this.componentDidMount();
-          toast.info("Cohort Added!", {
-            hideProgressBar: true,
-            draggable: false
+    if(name && password){
+      const state = { name, password };
+      let check = this.state.cohorts.find(cohorts => cohorts.name === name);
+      if (!check) {
+        api
+          .fetch(`/api/cohorts/mentor/${mentor_id}/add`, "post", state)
+          .then(() => {
+            this.componentDidMount();
+            this.closeModal();
+            toast.info("Cohort Added!", {
+              hideProgressBar: true,
+              draggable: false
+            });
           });
+      } else {
+        toast.error("Class already exists!", {
+          hideProgressBar: true,
+          draggable: false
         });
+      }
     } else {
-      toast.error("Class already exists!", {
+      toast.error("Please fill up Required Fields!", {
         hideProgressBar: true,
         draggable: false
       });
     }
+    
   };
 
   delete = id => {
@@ -285,7 +294,6 @@ class Cohorts extends React.Component {
 
   render() {
     const { classes } = this.props;
-
     return (
       <div className={classes.root}>
         <NavBar
@@ -364,8 +372,9 @@ class Cohorts extends React.Component {
                       />
                     </Grid>
                   </div>
-                ) : null}
-                {this.state.cohorts.length !== 0 ? (
+                ) : null }{
+                  this.state.privilege === 'student' ?
+                  this.state.cohorts.length !== 0 ? (
                   <div className={classes.student}>
                     <Grid container>
                       <Grid
@@ -391,7 +400,7 @@ class Cohorts extends React.Component {
                       />
                     </Grid>
                   </div>
-                ) : null}
+                ) : null : null}
                 <AddClass
                   open={this.state.add}
                   close={this.closeModal}
