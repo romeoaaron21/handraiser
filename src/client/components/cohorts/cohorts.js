@@ -179,6 +179,7 @@ class Cohorts extends React.Component {
       studentList: false,
       searchValue: ''
     });
+    this.componentDidMount();
   };
 
   add = (name, password, mentor_id) => {
