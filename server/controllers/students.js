@@ -116,9 +116,6 @@ function sendChat(req, res) {
   const sender_id = req.body.sender_sub;
   const chatmate_id = req.body.chatmate_sub;
 
-  // console.log(message, sender_id, chatmate_id)
-  // console.log(req)
-
   db.chat
     .insert({
       message: message,
@@ -148,7 +145,6 @@ function getChat(req, res) {
 function displayMentor(req, res) {
   const db = req.app.get("db");
   const { cohort_id } = req.params;
-  // console.log(cohort_id)
 
   db.cohorts.findOne({ id: cohort_id }).then(cohort => {
     db.users.findOne({ id: cohort.mentor_id }).then(mentor => {
