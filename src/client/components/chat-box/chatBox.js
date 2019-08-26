@@ -56,6 +56,8 @@ const StyledMenuItem = withStyles(theme => ({
   }
 }))(MenuItem);
 
+// let messagesEndRef = React.createRef()
+
 class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
@@ -63,10 +65,35 @@ class ChatBox extends PureComponent {
       openMenu: null
     };
   }
+  
 
-  componentDidMount(){
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  //Start of Added Scroll Bottom
+  // scrollToBottom = () => {
+  //   this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  // }
+  
+  // componentDidMount() {
+  //   this.scrollToBottom();
+  // }
+  
+  // componentDidUpdate() {
+  //   this.scrollToBottom();
+  // }
+  messagesEndRef = React.createRef()
+
+  componentDidMount () {
+    this.scrollToBottom()
   }
+  componentDidUpdate () {
+    this.scrollToBottom()
+  }
+  scrollToBottom = () => {
+    this.messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+  }
+  //End of Added Scroll Bottom
+
+
+  
 
   handleClick = e => {
     this.setState({ openMenu: e.currentTarget });
@@ -95,9 +122,6 @@ class ChatBox extends PureComponent {
 
   render() {
     const { classes } = this.props;
-    console.log(this.props.senderInfo);
-    console.log(this.props.chatmateInfo);
-
     return (
       <React.Fragment>
         <Paper elevation={1} className={classes.rightTopNav} square={true}>
@@ -162,6 +186,7 @@ class ChatBox extends PureComponent {
                     this.props.chatmateInfo.sub === convo.chatmate_id) ||
                   (this.props.senderInfo.sub === convo.chatmate_id &&
                     this.props.chatmateInfo.sub === convo.sender_id) ? (
+                      <React.Fragment>
                     <Box
                       item
                       className={
@@ -199,16 +224,18 @@ class ChatBox extends PureComponent {
                         </div>
                       </Box>
                     </Box>
+                    </React.Fragment>
                   ) : (
                     <React.Fragment />
                   )
                 )}
+                <div ref={this.messagesEndRef} />
               </Grid>
             </div>
           </Grid>
 
           {this.props.privileged === "student" ? (
-            <React.Fragment>
+            <React.Fragment >
               <Box item xs={12} sm={8}>
                 <div className={classes.footerInput}>
                   <Avatar
