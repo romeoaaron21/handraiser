@@ -348,7 +348,8 @@ class Cohorts extends React.Component {
                         className={classes.header}
                         style={{
                           display: "flex",
-                          justifyContent: "flex-start"
+                          justifyContent: "flex-start",
+                          borderBottom: "2px solid gainsboro"
                         }}
                       >
                         <Typography>Enrolled Classes</Typography>
@@ -373,7 +374,9 @@ class Cohorts extends React.Component {
                         className={classes.header}
                         style={{
                           display: "flex",
-                          justifyContent: "flex-start"
+                          justifyContent: "flex-start",
+                          borderBottom: "2px solid gainsboro",
+                          paddingTop: "2%"
                         }}
                       >
                         <Typography>Available Classes</Typography>
