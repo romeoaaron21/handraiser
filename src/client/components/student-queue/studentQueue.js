@@ -259,7 +259,7 @@ class Student extends Component {
         this.setState({
           button: true,
           btntext: "Waiting for help",
-          requested: true
+          requested: true,
         });
       }
       students.map(student => {
@@ -267,7 +267,7 @@ class Student extends Component {
           return this.setState({
             button: true,
             btntext: "Waiting for help",
-            requested: true
+            requested: true,
           });
         } else {
           return null;
@@ -338,7 +338,8 @@ class Student extends Component {
             } else if (member.sub === this.state.sub) {
               return this.setState({
                 button: true,
-                btntext: "Waiting for help"
+                btntext: "Waiting for help",
+                chatBox: false
               });
             } else if (member.status === "inprogress") {
               return this.setState({
