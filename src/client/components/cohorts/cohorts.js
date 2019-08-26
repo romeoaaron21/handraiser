@@ -183,7 +183,7 @@ class Cohorts extends React.Component {
   };
 
   add = (name, password, mentor_id) => {
-    if(name && password){
+    if (name && password) {
       const state = { name, password };
       let check = this.state.cohorts.find(cohorts => cohorts.name === name);
       if (!check) {
@@ -209,7 +209,6 @@ class Cohorts extends React.Component {
         draggable: false
       });
     }
-    
   };
 
   delete = id => {
@@ -372,35 +371,66 @@ class Cohorts extends React.Component {
                       />
                     </Grid>
                   </div>
-                ) : null }{
-                  this.state.privilege === 'student' ?
+                ) : null}
+                {this.state.privilege === "student" ? (
                   this.state.cohorts.length !== 0 ? (
-                  <div className={classes.student}>
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={12}
-                        className={classes.header}
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          borderBottom: "2px solid gainsboro",
-                          paddingTop: "2%"
-                        }}
-                      >
-                        <Typography>Available Classes</Typography>
-                      </Grid>
+                    <div className={classes.student}>
+                      <Grid container>
+                        <Grid
+                          item
+                          xs={12}
+                          className={classes.header}
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            borderBottom: "2px solid gainsboro",
+                            paddingTop: "2%"
+                          }}
+                        >
+                          <Typography>Available Classes</Typography>
+                        </Grid>
 
-                      <AvailClass
-                        cohorts={this.state.cohorts}
-                        members={this.state.member}
-                        openEnroll={this.openEnroll}
-                        openLeave={this.openLeave}
-                        openStudentList={this.openStudentList}
-                      />
-                    </Grid>
-                  </div>
-                ) : null : null}
+                        {this.state.member.length !== 0 ? (
+                          this.state.member.filter(
+                            member => member.student_id === this.state.id
+                          ).length === this.state.cohorts.length ? (
+                            <Grid
+                              container
+                              className={classes.emptyQueue}
+                              style={{ padding: 50 }}
+                            >
+                              <img
+                                alt="Classes"
+                                src={EmptyQueue}
+                                width="280"
+                                height="250"
+                              />
+                              <Typography variant="overline" display="block">
+                                No Available Classes
+                              </Typography>
+                            </Grid>
+                          ) : (
+                            <AvailClass
+                              cohorts={this.state.cohorts}
+                              members={this.state.member}
+                              openEnroll={this.openEnroll}
+                              openLeave={this.openLeave}
+                              openStudentList={this.openStudentList}
+                            />
+                          )
+                        ) : (
+                          <AvailClass
+                            cohorts={this.state.cohorts}
+                            members={this.state.member}
+                            openEnroll={this.openEnroll}
+                            openLeave={this.openLeave}
+                            openStudentList={this.openStudentList}
+                          />
+                        )}
+                      </Grid>
+                    </div>
+                  ) : null
+                ) : null}
                 <AddClass
                   open={this.state.add}
                   close={this.closeModal}
