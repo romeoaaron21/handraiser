@@ -78,6 +78,7 @@ class BeingHelpedModal extends Component {
     );
     data.then(res => {
       this.props.helpStudentClose();
+      this.setState({ chatBox: false });
     });
   };
   //done helping student

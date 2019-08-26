@@ -64,6 +64,10 @@ class ChatBox extends PureComponent {
     };
   }
 
+  componentDidMount(){
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  }
+
   handleClick = e => {
     this.setState({ openMenu: e.currentTarget });
   };
