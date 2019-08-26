@@ -170,6 +170,7 @@ class BeingHelpedModal extends Component {
                 chatmateInfo={this.props.chatmateInfo}
                 privileged={this.props.previledge}
                 helpingStudent_sub={this.props.helpingStudent.sub}
+                cohort_id={this.props.cohort_id}
               />
 
               <DialogActions>
@@ -190,21 +191,6 @@ class BeingHelpedModal extends Component {
               </DialogActions>
             </React.Fragment>
           )}
-
-          {/* <DialogActions>
-            <Button
-              color="primary"
-              onClick={() => this.removeFromQueue(this.props.helpingStudent)}
-            >
-              Back
-            </Button>
-            <Button
-              onClick={() => this.doneHelp(this.props.helpingStudent)}
-              color="primary"
-            >
-              Done
-            </Button>
-          </DialogActions> */}
         </Dialog>
       </div>
     );

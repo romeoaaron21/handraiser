@@ -113,11 +113,13 @@ class Student extends Component {
   };
 
   handleChat = val => {
-    this.setState({ chat: val });
+    const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
+    this.setState({ chat: userText });
   };
 
   handleChatM = val => {
-    this.setState({ chatM: val });
+    const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
+    this.setState({ chat: userText });
   };
 
   sendChatSub = () => {
@@ -172,7 +174,8 @@ class Student extends Component {
     let convo = {
       message: this.state.chat,
       sender_sub: this.state.sub,
-      chatmate_sub: this.state.mentor_sub
+      chatmate_sub: this.state.mentor_sub,
+      cohort_id: this.props.cohort_id
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
@@ -185,7 +188,8 @@ class Student extends Component {
     let convo = {
       message: this.state.chatM,
       sender_sub: this.state.sub,
-      chatmate_sub: chatmate
+      chatmate_sub: chatmate,
+      cohort_id: this.props.cohort_id
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
@@ -375,7 +379,6 @@ class Student extends Component {
           "get"
         );
         data2.then(res => {
-          console.log(res.data)
           socket.emit("sendChat", res.data);
         });
       });
@@ -566,6 +569,7 @@ class Student extends Component {
                     sm={this.state.previledge === "mentor" ? 12 : 8}
                   >
                     <ChatBox
+                      cohort_id={this.props.cohort_id}
                       sendChat={this.sendChat}
                       handleChat={this.handleChat}
                       chat={this.state.chat}
