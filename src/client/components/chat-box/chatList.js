@@ -128,9 +128,6 @@ const styles = theme => ({
     }
   },
 
-
-
-
   chatBadge: {
     float: "right",
     marginRight: "12px",
@@ -142,27 +139,30 @@ class ChatList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      count: 0,
+      count: 0
     };
   }
 
-  timeDisplay = (time) => {
-    let display = time.split(' ');
-    return (`${display[3]} ${display[4]}`)
-  }
+  timeDisplay = time => {
+    let display = time.split(" ");
+    return `${display[3]} ${display[4]}`;
+  };
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     let count = 0;
-    this.props.mentor.map(mentor => {
+    this.props.mentor.map(mentor =>
       this.props.conversation.map(convo => {
-        if((this.props.sub === convo.chatmate_id && mentor.sub === convo.sender_id)){
-            if(convo.seen === 0){
-              count=count+1
-            }
+        if (
+          this.props.sub === convo.chatmate_id &&
+          mentor.sub === convo.sender_id
+        ) {
+          if (convo.seen === 0) {
+            count = count + 1;
           }
+        }
       })
-    })
-    return this.setState({count: count})
+    );
+    return this.setState({ count: count });
   }
 
   timeDisplay = time => {
@@ -203,19 +203,19 @@ class ChatList extends PureComponent {
                   {this.props.conversation.length !== 0 ? (
                     this.props.conversation.map((convo, i) =>
                       convo ===
-                      this.props.conversation[
-                        this.props.conversation.length - 1
-                      ] && convo.chatmate_id !== parseInt(mentor.sub)? (
+                        this.props.conversation[
+                          this.props.conversation.length - 1
+                        ] &&
+                      convo.cohort_id === parseInt(this.props.cohort_id) ? (
                         <React.Fragment key={i}>
                           <ListItem
                             className={classes.list}
-                            onClick={()=>{
-                              if(this.props.allowChat){
+                            onClick={() => {
+                              if (this.props.allowChat) {
                                 this.props.sendChatSub();
-                                this.props.displayBadge('student')
+                                this.props.displayBadge("student");
                               }
-                            }
-                            }
+                            }}
                           >
                             <ListItemAvatar>
                               <Avatar
@@ -240,9 +240,13 @@ class ChatList extends PureComponent {
                                 <Badge
                                   color="secondary"
                                   badgeContent={this.state.count}
-                                  invisible={this.props.priv === 'student'?this.props.badge:true}
+                                  invisible={
+                                    this.props.priv === "student"
+                                      ? this.props.badge
+                                      : true
+                                  }
                                   className={classes.margin}
-                                ></Badge> 
+                                ></Badge>
                               </Typography>
                             </div>
                           </ListItem>
