@@ -46,7 +46,19 @@ const styles = theme => ({
     backgroundImage: `radial-gradient(25rem 18.75rem ellipse at bottom right, #883dca, transparent), url(${ClassroomBg})`
   },
   main: {
-    marginTop: 4
+    marginTop: 4,
+    "@media (max-width: 425px)": {
+      display: "flex",
+      flexFlow: "column"
+    }
+  },
+  chatList: {
+    "@media (max-width: 425px)": {
+      order: "2"
+    }
+  },
+  requestQue: {
+    order: "1"
   },
   navHeader: {
     display: "flex",
@@ -541,7 +553,7 @@ class Student extends Component {
               )}
 
               <Grid container className={classes.main} spacing={1}>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4} className={classes.chatList}>
                   {this.state.previledge === "mentor" ? (
                     <div>
                       <BeingHelpedModal
@@ -607,7 +619,7 @@ class Student extends Component {
                 </Grid>
                 {/* start of chatBox */}
                 {!this.state.chatBox ? (
-                  <Grid item xs={12} sm={8}>
+                  <Grid item xs={12} sm={8} className={classes.requestQue}>
                     <RequestQueue
                       sendChatSubM={this.sendChatSubM}
                       cohort_id={this.props.cohort_id}

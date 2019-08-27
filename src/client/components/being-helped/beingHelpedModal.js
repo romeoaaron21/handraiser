@@ -106,6 +106,7 @@ class BeingHelpedModal extends Component {
       <div>
         <Dialog
           fullWidth
+          fullScreen={window.innerWidth < "425" ? true : false}
           open={
             this.props.helpingStudent.length !== 0
               ? true

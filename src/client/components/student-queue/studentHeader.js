@@ -17,16 +17,14 @@ const styles = theme => ({
     "&:hover": {
       backgroundColor: "#780aaf"
     },
-    "@media (max-width: 425px)": {
+    "@media (max-width: 599px)": {
       display: "none"
     }
   },
   raiseHand: {
     cursor: "pointer",
-    color: "#cc98ff",
     fontSize: "35px",
-    marginRight: -12,
-    "@media (min-width: 425px)": {
+    "@media (min-width: 600px)": {
       display: "none"
     }
   },
@@ -47,6 +45,7 @@ const styles = theme => ({
     }
   },
   responsive: {
+    marginRight: -12,
     "@media (max-width: 425px)": {
       fontSize: "17px"
     }
@@ -118,7 +117,14 @@ class StudentHeader extends Component {
                     disabled={this.props.btn}
                     onClick={this.props.requestHelp}
                   >
-                    <Handraise className={classes.raiseHand} />
+                    <Handraise
+                      className={classes.raiseHand}
+                      style={
+                        this.props.btn
+                          ? { color: "#f6edff3d" }
+                          : { color: "#cc98ff" }
+                      }
+                    />
                   </IconButton>
                 </Tooltip>
               </div>
