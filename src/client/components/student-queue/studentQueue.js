@@ -634,6 +634,7 @@ class Student extends Component {
                               priv={this.state.previledge}
                      /*BADGE*/ badge={this.state.badge}
                      /*BADGE*/ displayBadge={this.displayBadge}
+                              cohort_id = {this.props.cohort_id}
                             />
                           </Box>
                         </React.Fragment>

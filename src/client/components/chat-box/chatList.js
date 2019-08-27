@@ -205,7 +205,7 @@ class ChatList extends PureComponent {
                       convo ===
                       this.props.conversation[
                         this.props.conversation.length - 1
-                      ] ? (
+                      ] && convo.chatmate_id !== parseInt(mentor.sub)? (
                         <React.Fragment key={i}>
                           <ListItem
                             className={classes.list}
