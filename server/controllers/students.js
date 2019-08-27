@@ -122,7 +122,8 @@ function sendChat(req, res) {
       sender_id: sender_id,
       chatmate_id: chatmate_id,
       cohort_id: cohort_id,
-      time: time
+      time: time,
+      seen: 0
     })
     .then(() => {
       db.query(`SELECT * from chat`).then(chats => {
@@ -150,6 +151,18 @@ function displayMentor(req, res) {
   });
 }
 
+function seenChat(req, res){
+  const db = req.app.get("db");
+  const student = req.body.student;
+  const mentor = req.body.mentor;
+
+  db.query(`UPDATE chat SET seen=1 WHERE sender_id='${student}' AND chatmate_id='${mentor}' OR chatmate_id='${student}' AND sender_id='${mentor}'`).then(()=> {
+    db.query(`SELECT * from chat`).then(chats => {
+      res.status(201).json(chats);
+    });
+  })
+}
+
 module.exports = {
   displayUserInfo,
   displayStudents,
@@ -158,5 +171,6 @@ module.exports = {
   displayChatUserInfo,
   sendChat,
   getChat,
-  displayMentor
+  displayMentor,
+  seenChat
 };

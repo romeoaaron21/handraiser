@@ -104,17 +104,22 @@ class Student extends Component {
 
       /*end of added for chatBox state*/
 
-      badge:true
+      badge: true
     };
   }
 
   displayBadge = (priv) => {
-    if(priv === 'mentor'){
+    if (priv === 'mentor') {
       socket.emit("displayBadge");
-    }else{
-      this.setState({badge:true})
+    } else if(priv === 'student'){
+      let sub = { student: this.state.sub, mentor: this.state.mentor_sub }
+      const data = api.fetch(`/api/seenChat`, "patch", sub);
+      data.then(res => {
+        this.setState({ badge: true })
+        socket.emit("seenChat", res.data);
+      });
     }
-    
+
   }
 
   //start of methods for chat websockets
@@ -124,11 +129,11 @@ class Student extends Component {
   };
 
   handleChat = val => {
-    this.setState({ chat: val });
+    socket.emit("handleChat", val);
   };
 
   handleChatM = val => {
-    this.setState({ chatM: val });
+    socket.emit("handleChatM", val);
   };
 
   sendChatSub = () => {
@@ -219,7 +224,6 @@ class Student extends Component {
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
       socket.emit("sendChat", res.data);
-      this.setState({ chat: "" });
     });
   };
 
@@ -260,8 +264,7 @@ class Student extends Component {
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
-      socket.emit("sendChat", res.data);
-      this.setState({ chatM: "" });
+      socket.emit("sendChatM", res.data);
     });
   };
 
@@ -307,19 +310,38 @@ class Student extends Component {
 
   initSocket = () => {
     const socket = io(socketUrl);
-    socket.on("connect", () => {});
+    socket.on("connect", () => { });
     this.setState({ socket });
 
     //START OF BADGE
     socket.on("displayBadge", () => {
-      this.setState({badge:false})
+      this.setState({ badge: false })
     });
+
+    socket.on("handleChat", (priv) => {
+        this.setState({chat:priv})
+    });
+    socket.on("handleChatM", (priv) => {
+      this.setState({chatM:priv})
+  });
     // END OF BADGE
 
     //start of socket chat
+    socket.on("seenChat", chat => {
+      this.setState({
+        conversation: [...chat],
+      });
+    });
     socket.on("sendChat", chat => {
       this.setState({
-        conversation: [...chat]
+        conversation: [...chat],
+        chat: ''
+      });
+    });
+    socket.on("sendChatM", chat => {
+      this.setState({
+        conversation: [...chat],
+        chatM: ''
       });
     });
     //end of socket chat
@@ -526,165 +548,167 @@ class Student extends Component {
         {this.state.loader ? (
           <Loader content="Loading Queue..." />
         ) : (
-          <div>
-            <div className={classes.root}>
-              {this.state.user.length !== 0 ? (
-                <React.Fragment>
-                  {this.state.previledge === "mentor" ? (
-                    <div className={classes.headerSpacer} />
-                  ) : (
-                    <Paper className={classes.header}>
-                      <StudentHeader
-                        user={this.state.user[0]}
-                        raise={this.state.btntext}
-                        btn={this.state.button}
-                        requestHelp={this.requestHelp}
-                        privilege={this.state.previledge}
-                      />
-                    </Paper>
+            <div>
+              <div className={classes.root}>
+                {this.state.user.length !== 0 ? (
+                  <React.Fragment>
+                    {this.state.previledge === "mentor" ? (
+                      <div className={classes.headerSpacer} />
+                    ) : (
+                        <Paper className={classes.header}>
+                          <StudentHeader
+                            user={this.state.user[0]}
+                            raise={this.state.btntext}
+                            btn={this.state.button}
+                            requestHelp={this.requestHelp}
+                            privilege={this.state.previledge}
+                          />
+                        </Paper>
+                      )}
+
+                    <Grid container className={classes.navHeader}>
+                      {this.state.previledge === "mentor" ? null : (
+                        <StudentNavHeader
+                          raise={this.state.btntext}
+                          requested={this.state.requested}
+                          handleChangeReasons={this.handleChangeReasons}
+                        />
+                      )}
+                    </Grid>
+                  </React.Fragment>
+                ) : (
+                    <React.Fragment />
                   )}
 
-                  <Grid container className={classes.navHeader}>
-                    {this.state.previledge === "mentor" ? null : (
-                      <StudentNavHeader
-                        raise={this.state.btntext}
-                        requested={this.state.requested}
-                        handleChangeReasons={this.handleChangeReasons}
-                      />
-                    )}
-                  </Grid>
-                </React.Fragment>
-              ) : (
-                <React.Fragment />
-              )}
+                <Grid container className={classes.main} spacing={1}>
+                  <Grid item xs={12} sm={4}>
+                    {this.state.previledge === "mentor" ? (
+                      <div>
+                        <BeingHelpedModal
+                          fetchStudents={this.fetchStudents}
+                          helpStudentModal={this.state.helpStudentModal}
+                          helpStudentClose={this.helpStudentClose}
+                          helpingStudent={this.state.helpingStudent}
+                          cohort_id={this.props.cohort_id}
+                          chatM={this.state.chatM}
+                          handleChatM={this.handleChatM}
+                          sendChatM={this.sendChatM}
+                          conversation={this.state.conversation}
+                          senderInfo={this.state.senderInfo}
+                          chatmateInfo={this.state.chatmateInfo}
+                          previledge={this.state.previledge}
+                          sendChatSubM={this.sendChatSubM}
+                   /*BADGE*/ displayBadge={this.displayBadge}
+                          chat={this.state.chat}
+                        />
+                        <MentorProfile
+                          user={this.state.user[0]}
+                          members={this.state.members}
+                          cohort_id={this.props.cohort_id}
+                        />
+                        <StudentsList cohort_id={this.props.cohort_id} />
 
-              <Grid container className={classes.main} spacing={1}>
-                <Grid item xs={12} sm={4}>
-                  {this.state.previledge === "mentor" ? (
-                    <div>
-                      <BeingHelpedModal
-                        fetchStudents={this.fetchStudents}
-                        helpStudentModal={this.state.helpStudentModal}
-                        helpStudentClose={this.helpStudentClose}
-                        helpingStudent={this.state.helpingStudent}
-                        cohort_id={this.props.cohort_id}
-                        chatM={this.state.chatM}
-                        handleChatM={this.handleChatM}
-                        sendChatM={this.sendChatM}
-                        conversation={this.state.conversation}
-                        senderInfo={this.state.senderInfo}
-                        chatmateInfo={this.state.chatmateInfo}
-                        previledge={this.state.previledge}
-                        sendChatSubM={this.sendChatSubM}
-                   /*BADGE*/     displayBadge={this.displayBadge}
-                      />
-                      <MentorProfile
-                        user={this.state.user[0]}
-                        members={this.state.members}
-                        cohort_id={this.props.cohort_id}
-                      />
-                      <StudentsList cohort_id={this.props.cohort_id} />
+                        <RemoveRequest
+                          deleteRequest={this.deleteRequest}
+                          member={this.state.member}
+                          removeStudentReqModal={this.state.removeStudentReqModal}
+                          removeStudentReqClose={this.removeStudentReqClose}
+                        />
+                      </div>
+                    ) : (
+                        <React.Fragment>
+                          <Box order={1}>
+                            <BeingHelped
+                              helpingStudent={this.state.helpingStudent}
+                            />
+                            {/*added for chatBox onClick*/}
+                            {/* <button onClick={() => this.sendChatSub()}>Chat</button> */}
+                            <ChatList
+                              sendChatSub={this.sendChatSub}
+                              mentor={this.state.mentorInfo}
+                              allowChat={
+                                this.state.btntext === "Currently Helping"
+                                  ? true
+                                  : false
+                              }
+                              conversation={this.state.conversation}
+                              sub={this.state.sub}
+                              priv={this.state.previledge}
+                     /*BADGE*/ badge={this.state.badge}
+                     /*BADGE*/ displayBadge={this.displayBadge}
+                            />
+                          </Box>
+                        </React.Fragment>
+                      )}
 
+                    {this.state.previledge === "student" ? (
                       <RemoveRequest
-                        deleteRequest={this.deleteRequest}
                         member={this.state.member}
                         removeStudentReqModal={this.state.removeStudentReqModal}
                         removeStudentReqClose={this.removeStudentReqClose}
+                        deleteRequest={this.deleteRequest}
                       />
-                    </div>
+                    ) : null}
+                  </Grid>
+                  {/* start of chatBox */}
+                  {!this.state.chatBox ? (
+                    <Grid item xs={12} sm={8}>
+                      <RequestQueue
+                        sendChatSubM={this.sendChatSubM}
+                        cohort_id={this.props.cohort_id}
+                        sub={this.state.sub}
+                        priv={this.state.previledge}
+                        helpStudentModal={this.state.helpStudentModal}
+                        helpStudentClose={this.helpStudentClose}
+                        helpStudent={this.helpStudent}
+                        removeStudentRequest={this.removeStudentRequest}
+                        removeStudentReqModal={this.state.removeStudentReqModal}
+                        removeStudentReqClose={this.removeStudentReqClose}
+                        members={this.state.members}
+                      />
+                    </Grid>
+                  ) : this.state.previledge === "student" ? (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={this.state.previledge === "mentor" ? 12 : 8}
+                    >
+                      <ChatBox
+                        cohort_id={this.props.cohort_id}
+                        sendChat={this.sendChat}
+                        handleChat={this.handleChat}
+                        chat={this.state.chat}
+                        chatM={this.state.chatM}
+                        conversation={this.state.conversation}
+                        senderInfo={this.state.senderInfo}
+                        chatmateInfo={this.state.chatmateInfo}
+                        privileged={this.state.previledge}
+                        viewChatBox={this.viewChatBox}
+                      /*BADGE*/ displayBadge={this.displayBadge}
+                      />
+                    </Grid>
                   ) : (
-                    <React.Fragment>
-                      <Box order={1}>
-                        <BeingHelped
-                          helpingStudent={this.state.helpingStudent}
-                        />
-                        {/*added for chatBox onClick*/}
-                        {/* <button onClick={() => this.sendChatSub()}>Chat</button> */}
-                        <ChatList
-                          sendChatSub={this.sendChatSub}
-                          mentor={this.state.mentorInfo}
-                          allowChat={
-                            this.state.btntext === "Currently Helping"
-                              ? true
-                              : false
-                          }
-                          conversation={this.state.conversation}
-                          sub={this.state.sub}
-                          priv={this.state.previledge}
-                     /*BADGE*/     badge={this.state.badge}
-                     /*BADGE*/     displayBadge={this.displayBadge}
-                        />
-                      </Box>
-                    </React.Fragment>
-                  )}
-
-                  {this.state.previledge === "student" ? (
-                    <RemoveRequest
-                      member={this.state.member}
-                      removeStudentReqModal={this.state.removeStudentReqModal}
-                      removeStudentReqClose={this.removeStudentReqClose}
-                      deleteRequest={this.deleteRequest}
-                    />
-                  ) : null}
+                        <Grid item xs={12} sm={8}>
+                          <RequestQueue
+                            sendChatSubM={this.sendChatSubM}
+                            cohort_id={this.props.cohort_id}
+                            sub={this.state.sub}
+                            priv={this.state.previledge}
+                            helpStudentModal={this.state.helpStudentModal}
+                            helpStudentClose={this.helpStudentClose}
+                            helpStudent={this.helpStudent}
+                            removeStudentRequest={this.removeStudentRequest}
+                            removeStudentReqModal={this.state.removeStudentReqModal}
+                            removeStudentReqClose={this.removeStudentReqClose}
+                            members={this.state.members}
+                          />
+                        </Grid>
+                      )}
+                  {/* end of chatBox */}
                 </Grid>
-                {/* start of chatBox */}
-                {!this.state.chatBox ? (
-                  <Grid item xs={12} sm={8}>
-                    <RequestQueue
-                      sendChatSubM={this.sendChatSubM}
-                      cohort_id={this.props.cohort_id}
-                      sub={this.state.sub}
-                      priv={this.state.previledge}
-                      helpStudentModal={this.state.helpStudentModal}
-                      helpStudentClose={this.helpStudentClose}
-                      helpStudent={this.helpStudent}
-                      removeStudentRequest={this.removeStudentRequest}
-                      removeStudentReqModal={this.state.removeStudentReqModal}
-                      removeStudentReqClose={this.removeStudentReqClose}
-                      members={this.state.members}
-                    />
-                  </Grid>
-                ) : this.state.previledge === "student" ? (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={this.state.previledge === "mentor" ? 12 : 8}
-                  >
-                    <ChatBox
-                      cohort_id={this.props.cohort_id}
-                      sendChat={this.sendChat}
-                      handleChat={this.handleChat}
-                      chat={this.state.chat}
-                      conversation={this.state.conversation}
-                      senderInfo={this.state.senderInfo}
-                      chatmateInfo={this.state.chatmateInfo}
-                      privileged={this.state.previledge}
-                      viewChatBox={this.viewChatBox}
-                      /*BADGE*/     displayBadge={this.displayBadge}
-                    />
-                  </Grid>
-                ) : (
-                  <Grid item xs={12} sm={8}>
-                    <RequestQueue
-                      sendChatSubM={this.sendChatSubM}
-                      cohort_id={this.props.cohort_id}
-                      sub={this.state.sub}
-                      priv={this.state.previledge}
-                      helpStudentModal={this.state.helpStudentModal}
-                      helpStudentClose={this.helpStudentClose}
-                      helpStudent={this.helpStudent}
-                      removeStudentRequest={this.removeStudentRequest}
-                      removeStudentReqModal={this.state.removeStudentReqModal}
-                      removeStudentReqClose={this.removeStudentReqClose}
-                      members={this.state.members}
-                    />
-                  </Grid>
-                )}
-                {/* end of chatBox */}
-              </Grid>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </React.Fragment>
     );
   }

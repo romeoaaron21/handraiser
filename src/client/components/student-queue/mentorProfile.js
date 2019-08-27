@@ -80,7 +80,6 @@ class MentorProfile extends PureComponent {
 
   render() {
     const { classes } = this.props;
-    console.log(this.state.students);
     return (
       <React.Fragment>
         <Card className={classes.card}>

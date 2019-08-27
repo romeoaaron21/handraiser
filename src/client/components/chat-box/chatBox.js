@@ -4,6 +4,7 @@ import MoreSettings from "@material-ui/icons/MoreVert";
 import SendIcon from "@material-ui/icons/Send";
 import ArrowBack from "@material-ui/icons/ArrowBack";
 import styles from "./chatBoxStyle";
+import TypingEffect from "./typingEffect";
 
 import {
   Paper,
@@ -18,6 +19,7 @@ import {
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
+
 
 const StyledMenu = withStyles({
   paper: {
@@ -183,6 +185,15 @@ class ChatBox extends PureComponent {
                       <React.Fragment key={i} />
                     )
                 )}
+                {this.props.chatM.length > 0 && this.props.privileged === 'student'?
+                <TypingEffect />
+                :
+                this.props.chat.length > 0 && this.props.privileged === 'mentor'?
+                <TypingEffect />
+                :
+                null
+                }
+                
                 <div ref={this.messagesEndRef} />
               </Grid>
             </div>

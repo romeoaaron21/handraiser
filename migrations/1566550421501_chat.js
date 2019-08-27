@@ -26,6 +26,10 @@ exports.up = pgm => {
       type: "integer",
       notNull: true,
       references: '"cohorts"'
+    },
+    seen: {
+      type: "integer",
+      notNull: true,
     }
   });
 };

@@ -141,7 +141,9 @@ const styles = theme => ({
 class ChatList extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      count: 0,
+    };
   }
 
   timeDisplay = (time) => {
@@ -149,8 +151,23 @@ class ChatList extends PureComponent {
     return (`${display[3]} ${display[4]}`)
   }
 
+  componentDidUpdate(){
+    let count = 0;
+    this.props.mentor.map(mentor => {
+      this.props.conversation.map(convo => {
+        if((this.props.sub === convo.chatmate_id && mentor.sub === convo.sender_id)){
+            if(convo.seen === 0){
+              count=count+1
+            }
+          }
+      })
+    })
+    return this.setState({count: count})
+  }
+
   render() {
     const { classes } = this.props;
+
     return (
       <React.Fragment>
         {/* Chat List Header*/}
@@ -217,7 +234,7 @@ class ChatList extends PureComponent {
                               <Typography className={classes.chatBadge}>
                                 <Badge
                                   color="secondary"
-                                  badgeContent={'message'}
+                                  badgeContent={this.state.count}
                                   invisible={this.props.priv === 'student'?this.props.badge:true}
                                   className={classes.margin}
                                 ></Badge>
