@@ -25,11 +25,11 @@ import AuthService from "../../auth/AuthService";
 
 //added chatBox
 // import ChatBox from "./chatBox";
+import ClassroomBg from "../../images/classroomBg.jpg";
 import ChatList from "../chat-box/chatList";
 import ChatBox from "../chat-box/chatBox";
 
 //end of added chatBox
-
 const styles = theme => ({
   root: {
     height: "100%",
@@ -42,7 +42,8 @@ const styles = theme => ({
     maxWidth: "1200px",
     margin: "0 auto",
     boxShadow:
-      "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)"
+      "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
+    backgroundImage: `radial-gradient(25rem 18.75rem ellipse at bottom right, #883dca, transparent), url(${ClassroomBg})`
   },
   main: {
     marginTop: 4
@@ -85,13 +86,10 @@ class Student extends Component {
       sub: "",
       requested: false,
       studentsReason: "",
-      // cohort_id: this.props.cohort,
-
       value: 0,
       open: false,
 
       /*start of dded for chatBox state*/
-
       chatBox: false,
       mentor_sub: "",
       chat: "",
@@ -99,9 +97,7 @@ class Student extends Component {
       senderInfo: [],
       chatmateInfo: [],
       chatM: "",
-
       mentorInfo: [],
-
       /*end of added for chatBox state*/
 
       badge: true
@@ -492,7 +488,9 @@ class Student extends Component {
         });
         data.then(() => {
           this.fetchStudents();
-          this.setState({ loader: false });
+          setTimeout(() => {
+            this.setState({ loader: false });
+          }, 1000);
         });
       });
     });

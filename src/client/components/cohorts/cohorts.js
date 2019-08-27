@@ -92,7 +92,9 @@ class Cohorts extends React.Component {
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
           socket.emit("displayCohorts", res.data.cohorts.reverse());
-          this.setState({ loader: false });
+          setTimeout(() => {
+            this.setState({ loader: false });
+          }, 1000);
         });
       } else {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
@@ -100,7 +102,9 @@ class Cohorts extends React.Component {
         });
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
           socket.emit("displayMember", res.data.member);
-          this.setState({ loader: false });
+          setTimeout(() => {
+            this.setState({ loader: false });
+          }, 1000);
         });
       }
       this.setState({
@@ -267,9 +271,7 @@ class Cohorts extends React.Component {
       if (this.state.privilege !== "student") {
         api
           .fetch(
-            `/api/cohorts/${e.currentTarget.value}/search/mentor/${
-              this.state.id
-            }`,
+            `/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`,
             "get"
           )
           .then(res => {

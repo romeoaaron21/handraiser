@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import cohortImage from "../../images/cohort_1.jpeg";
+import CardBackground from "../../images/cardBg.jpg";
 import api from "../../services/fetchApi";
 import {
   Card,
@@ -84,7 +84,7 @@ class MentorProfile extends PureComponent {
       <React.Fragment>
         <Card className={classes.card}>
           <CardActions className={classes.cardContainer}>
-            <CardMedia className={classes.media} image={cohortImage} />
+            <CardMedia className={classes.media} image={CardBackground} />
             <CardContent className={classes.cardContent}>
               <div className={classes.class}>
                 <Typography gutterBottom variant="h6" component="h2">

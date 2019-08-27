@@ -165,6 +165,11 @@ class ChatList extends PureComponent {
     return this.setState({count: count})
   }
 
+  timeDisplay = time => {
+    let display = time.split(" ");
+    return `${display[3]} ${display[4]}`;
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -237,7 +242,7 @@ class ChatList extends PureComponent {
                                   badgeContent={this.state.count}
                                   invisible={this.props.priv === 'student'?this.props.badge:true}
                                   className={classes.margin}
-                                ></Badge>
+                                ></Badge> 
                               </Typography>
                             </div>
                           </ListItem>
