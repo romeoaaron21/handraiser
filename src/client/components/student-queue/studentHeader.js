@@ -23,7 +23,7 @@ const styles = theme => ({
   },
   raiseHand: {
     cursor: "pointer",
-    color: "#91a1af",
+    color: "#cc98ff",
     fontSize: "35px",
     marginRight: -12,
     "@media (min-width: 425px)": {
