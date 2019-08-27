@@ -512,7 +512,9 @@ class Student extends Component {
               {this.state.user.length !== 0 ? (
                 <React.Fragment>
                   {this.state.previledge === "mentor" ? (
-                    <div className={classes.headerSpacer} />
+                    <Paper className={classes.header}>
+                      <StudentHeader user={this.state.user[0]} />
+                    </Paper>
                   ) : (
                     <Paper className={classes.header}>
                       <StudentHeader
@@ -524,7 +526,6 @@ class Student extends Component {
                       />
                     </Paper>
                   )}
-
                   <Grid container className={classes.navHeader}>
                     {this.state.previledge === "mentor" ? null : (
                       <StudentNavHeader
