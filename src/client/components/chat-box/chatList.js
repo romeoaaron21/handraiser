@@ -9,7 +9,8 @@ import {
   Avatar,
   ListItem,
   ListItemAvatar,
-  InputBase
+  InputBase,
+  Badge
 } from "@material-ui/core";
 
 const styles = theme => ({
@@ -125,6 +126,15 @@ const styles = theme => ({
     "@media (max-width: 425px)": {
       fontSize: "12px"
     }
+  },
+
+
+
+
+  chatBadge: {
+    float: "right",
+    marginRight: "12px",
+    marginTop: "0px"
   }
 });
 
@@ -132,6 +142,11 @@ class ChatList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  timeDisplay = (time) => {
+    let display = time.split(' ');
+    return (`${display[3]} ${display[4]}`)
   }
 
   render() {
@@ -172,10 +187,12 @@ class ChatList extends PureComponent {
                         <React.Fragment key={i}>
                           <ListItem
                             className={classes.list}
-                            onClick={
-                              this.props.allowChat
-                                ? this.props.sendChatSub
-                                : null
+                            onClick={()=>{
+                              if(this.props.allowChat){
+                                this.props.sendChatSub();
+                                this.props.displayBadge('student')
+                              }
+                            }
                             }
                           >
                             <ListItemAvatar>
@@ -195,7 +212,15 @@ class ChatList extends PureComponent {
                             <div className={classes.chatAction}>
                               <Typography className={classes.chatTime}>
                                 {" "}
-                                {convo.time}{" "}
+                                {this.timeDisplay(convo.time)}{" "}
+                              </Typography>
+                              <Typography className={classes.chatBadge}>
+                                <Badge
+                                  color="secondary"
+                                  badgeContent={'message'}
+                                  invisible={this.props.priv === 'student'?this.props.badge:true}
+                                  className={classes.margin}
+                                ></Badge>
                               </Typography>
                             </div>
                           </ListItem>

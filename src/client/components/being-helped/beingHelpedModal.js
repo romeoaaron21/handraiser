@@ -171,6 +171,7 @@ class BeingHelpedModal extends Component {
                 privileged={this.props.previledge}
                 helpingStudent_sub={this.props.helpingStudent.sub}
                 cohort_id={this.props.cohort_id}
+           /*BADGE*/     displayBadge={this.props.displayBadge}
               />
 
               <DialogActions>

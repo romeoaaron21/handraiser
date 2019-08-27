@@ -100,10 +100,21 @@ class Student extends Component {
       chatmateInfo: [],
       chatM: "",
 
-      mentorInfo: []
+      mentorInfo: [],
 
       /*end of added for chatBox state*/
+
+      badge:true
     };
+  }
+
+  displayBadge = (priv) => {
+    if(priv === 'mentor'){
+      socket.emit("displayBadge");
+    }else{
+      this.setState({badge:true})
+    }
+    
   }
 
   //start of methods for chat websockets
@@ -298,6 +309,12 @@ class Student extends Component {
     const socket = io(socketUrl);
     socket.on("connect", () => {});
     this.setState({ socket });
+
+    //START OF BADGE
+    socket.on("displayBadge", () => {
+      this.setState({badge:false})
+    });
+    // END OF BADGE
 
     //start of socket chat
     socket.on("sendChat", chat => {
@@ -559,6 +576,7 @@ class Student extends Component {
                         chatmateInfo={this.state.chatmateInfo}
                         previledge={this.state.previledge}
                         sendChatSubM={this.sendChatSubM}
+                   /*BADGE*/     displayBadge={this.displayBadge}
                       />
                       <MentorProfile
                         user={this.state.user[0]}
@@ -592,6 +610,9 @@ class Student extends Component {
                           }
                           conversation={this.state.conversation}
                           sub={this.state.sub}
+                          priv={this.state.previledge}
+                     /*BADGE*/     badge={this.state.badge}
+                     /*BADGE*/     displayBadge={this.displayBadge}
                         />
                       </Box>
                     </React.Fragment>
@@ -639,6 +660,7 @@ class Student extends Component {
                       chatmateInfo={this.state.chatmateInfo}
                       privileged={this.state.previledge}
                       viewChatBox={this.viewChatBox}
+                      /*BADGE*/     displayBadge={this.displayBadge}
                     />
                   </Grid>
                 ) : (

@@ -64,6 +64,10 @@ massive({
       // console.log(chat)
       io.emit("sendChat", chat);
     });
+
+/*BADGE*/    socket.on("displayBadge", () => {
+      io.emit("displayBadge");
+    });
   });
   //WEBSOCKETS END
 
