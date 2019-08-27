@@ -52,13 +52,27 @@ const styles = theme => ({
       flexFlow: "column"
     }
   },
+  beingHelpMobile: {
+    display: "none",
+    "@media (max-width: 425px)": {
+      order: "1",
+      display: "block"
+    }
+  },
+  beingHelp: {
+    "@media (max-width: 425px)": {
+      display: "none"
+    }
+  },
   chatList: {
     "@media (max-width: 425px)": {
-      order: "2"
+      order: "3"
     }
   },
   requestQue: {
-    order: "1"
+    "@media (max-width: 425px)": {
+      order: "2"
+    }
   },
   navHeader: {
     display: "flex",
@@ -553,6 +567,17 @@ class Student extends Component {
               )}
 
               <Grid container className={classes.main} spacing={1}>
+                <Grid item xs={12} sm={4} className={classes.beingHelpMobile}>
+                  {this.state.previledge === "mentor" ? null : (
+                    <React.Fragment>
+                      <Box order={1}>
+                        <BeingHelped
+                          helpingStudent={this.state.helpingStudent}
+                        />
+                      </Box>
+                    </React.Fragment>
+                  )}
+                </Grid>
                 <Grid item xs={12} sm={4} className={classes.chatList}>
                   {this.state.previledge === "mentor" ? (
                     <div>
@@ -588,11 +613,12 @@ class Student extends Component {
                   ) : (
                     <React.Fragment>
                       <Box order={1}>
-                        <BeingHelped
-                          helpingStudent={this.state.helpingStudent}
-                        />
-                        {/*added for chatBox onClick*/}
-                        {/* <button onClick={() => this.sendChatSub()}>Chat</button> */}
+                        <div className={classes.beingHelp}>
+                          <BeingHelped
+                            helpingStudent={this.state.helpingStudent}
+                          />
+                        </div>
+
                         <ChatList
                           sendChatSub={this.sendChatSub}
                           mentor={this.state.mentorInfo}
