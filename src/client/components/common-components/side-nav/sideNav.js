@@ -9,7 +9,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import HomeIcon from "@material-ui/icons/Home";
-import MailIcon from "@material-ui/icons/Mail";
+import SettingIcon from "@material-ui/icons/SettingsApplications";
 
 //AUTH
 import AuthService from "../../../auth/AuthService";
@@ -100,9 +100,7 @@ class SideNav extends React.Component {
               key={text}
               onClick={() => (window.location.href = `/cohorts`)}
             >
-              <ListItemIcon>
-                {text === "Classes" ? <HomeIcon /> : <MailIcon />}
-              </ListItemIcon>
+              <ListItemIcon>{<HomeIcon />}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
@@ -153,8 +151,21 @@ class SideNav extends React.Component {
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
+          <Typography
+            style={{
+              padding: "10px 0px 0px 10px",
+              color: "gray",
+              textTransform: "uppercase",
+              fontSize: "12px"
+            }}
+            variant="subtitle2"
+          >
+            {"Settings"}
+          </Typography>
+
+          {["Cohorts", "Classes"].map((text, index) => (
             <ListItem button key={text}>
+              <ListItemIcon>{<SettingIcon />}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}

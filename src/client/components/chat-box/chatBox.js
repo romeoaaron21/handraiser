@@ -228,14 +228,14 @@ class ChatBox extends PureComponent {
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <Box item xs={12} sm={8}>
+              <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
                   <Avatar
                     src={this.props.senderInfo.avatar}
                     className={classes.userAvatar}
                   />
                   <TextField
-                    classes={{ root: "MenuItem", classes: "selected" }}
+                    classes={{ root: "MenuItem" }}
                     id="outlined-full-width"
                     placeholder="Send message"
                     className={classes.textField}

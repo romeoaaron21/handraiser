@@ -134,6 +134,11 @@ class ChatList extends PureComponent {
     this.state = {};
   }
 
+  timeDisplay = time => {
+    let display = time.split(" ");
+    return `${display[3]} ${display[4]}`;
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -195,7 +200,7 @@ class ChatList extends PureComponent {
                             <div className={classes.chatAction}>
                               <Typography className={classes.chatTime}>
                                 {" "}
-                                {convo.time}{" "}
+                                {this.timeDisplay(convo.time)}{" "}
                               </Typography>
                             </div>
                           </ListItem>

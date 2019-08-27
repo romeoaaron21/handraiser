@@ -51,6 +51,10 @@ class PersistentDrawerLeft extends React.Component {
     this.setState({ open: false });
   };
 
+  componentDidMount() {
+    document.title = "Student Queues";
+  }
+
   render() {
     const { classes } = this.props;
     return (

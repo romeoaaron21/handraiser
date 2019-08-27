@@ -12,6 +12,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import api from "../../services/fetchApi";
 
 import ChatBox from "../chat-box/chatBox";
+import ConfirmationDialog from "./doneCofirmationmodal";
 
 const styles = theme => ({
   dialogWrapper: {
@@ -63,12 +64,17 @@ class BeingHelpedModal extends Component {
     super();
     this.state = {
       open: false,
-      chatBox: false
+      chatBox: false,
+      confirmationDialog: false
     };
   }
+
   viewChatBox = () => {
     this.setState({ chatBox: false });
   };
+
+  openConfirmationDialog = () => this.setState({ confirmationDialog: true });
+  closeConfirmationDialog = () => this.setState({ confirmationDialog: false });
 
   //move back student to the queue
   removeFromQueue = student => {
@@ -81,6 +87,7 @@ class BeingHelpedModal extends Component {
       this.setState({ chatBox: false });
     });
   };
+
   //done helping student
   doneHelp = student => {
     const data = api.fetch(
@@ -89,8 +96,10 @@ class BeingHelpedModal extends Component {
     );
     data.then(res => {
       this.props.helpStudentClose();
+      this.setState({ confirmationDialog: false });
     });
   };
+
   render() {
     const { classes } = this.props;
     return (
@@ -141,10 +150,7 @@ class BeingHelpedModal extends Component {
               >
                 Back
               </Button>
-              <Button
-                onClick={() => this.doneHelp(this.props.helpingStudent)}
-                color="primary"
-              >
+              <Button onClick={this.openConfirmationDialog} color="primary">
                 Done
               </Button>
 
@@ -173,7 +179,9 @@ class BeingHelpedModal extends Component {
                 cohort_id={this.props.cohort_id}
               />
 
-              <DialogActions>
+              <DialogActions
+                style={{ display: "flex", justifyContent: "flex-start" }}
+              >
                 <Button
                   color="primary"
                   onClick={() =>
@@ -182,15 +190,24 @@ class BeingHelpedModal extends Component {
                 >
                   Back
                 </Button>
-                <Button
-                  onClick={() => this.doneHelp(this.props.helpingStudent)}
-                  color="primary"
-                >
+                <Button onClick={this.openConfirmationDialog} color="primary">
                   Done
                 </Button>
               </DialogActions>
             </React.Fragment>
           )}
+        </Dialog>
+
+        <Dialog
+          fullWidth
+          open={this.state.confirmationDialog}
+          aria-labelledby="alert-dialog-title"
+        >
+          <ConfirmationDialog
+            cancel={this.closeConfirmationDialog}
+            doneHelp={this.doneHelp}
+            helpingStudent={this.props.helpingStudent}
+          />
         </Dialog>
       </div>
     );

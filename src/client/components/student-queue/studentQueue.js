@@ -85,13 +85,10 @@ class Student extends Component {
       sub: "",
       requested: false,
       studentsReason: "",
-      // cohort_id: this.props.cohort,
-
       value: 0,
       open: false,
 
       /*start of dded for chatBox state*/
-
       chatBox: false,
       mentor_sub: "",
       chat: "",
@@ -99,9 +96,7 @@ class Student extends Component {
       senderInfo: [],
       chatmateInfo: [],
       chatM: "",
-
       mentorInfo: []
-
       /*end of added for chatBox state*/
     };
   }
@@ -453,7 +448,9 @@ class Student extends Component {
         });
         data.then(() => {
           this.fetchStudents();
-          this.setState({ loader: false });
+          setTimeout(() => {
+            this.setState({ loader: false });
+          }, 1000);
         });
       });
     });
