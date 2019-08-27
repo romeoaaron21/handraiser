@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 
+import CardBackground from "../../../images/cardBg.jpg";
 import { Grid } from "semantic-ui-react";
 
 const styles = theme => ({
@@ -89,9 +90,7 @@ class StudentClassCards extends React.Component {
                 >
                   <CardMedia
                     className={classes.media}
-                    image={
-                      "https://www.gstatic.com/classroom/themes/Writing.jpg"
-                    }
+                    image={CardBackground}
                     title={cohort.name}
                   />
                   <CardContent className={classes.cardContent}>

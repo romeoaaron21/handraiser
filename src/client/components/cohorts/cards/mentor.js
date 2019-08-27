@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 
 import AddIcon from "@material-ui/icons/Add";
 
-import cohortImage from "./../../../images/cohort_2.jpeg";
+import CardBackground from "../../../images/cardBg.jpg";
 
 const styles = theme => ({
   card: {
@@ -91,7 +91,7 @@ class MentorClassCards extends React.Component {
               >
                 <CardMedia
                   className={classes.media}
-                  image={cohortImage}
+                  image={CardBackground}
                   title={cohort.name}
                 />
                 <CardContent className={classes.cardContent}>
