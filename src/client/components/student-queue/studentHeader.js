@@ -113,7 +113,11 @@ class StudentHeader extends Component {
                   placement="top"
                   className={classes.raiseHand}
                 >
-                  <IconButton className={classes.responsive}>
+                  <IconButton
+                    className={classes.responsive}
+                    disabled={this.props.btn}
+                    onClick={this.props.requestHelp}
+                  >
                     <Handraise className={classes.raiseHand} />
                   </IconButton>
                 </Tooltip>
