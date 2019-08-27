@@ -63,7 +63,11 @@ const styles = theme => ({
   },
   noQues: {
     color: "#fff",
-    margin: "24px 0px 0px 49px"
+    margin: "24px 0px 0px 49px",
+    "@media (max-width: 425px)": {
+      fontSize: "38px",
+      margin: "37px 0px 0px 49px"
+    }
   },
   labelQues: {
     color: "#fff",
