@@ -141,7 +141,6 @@ class SideNav extends React.Component {
                 key={cohort.name}
                 onClick={() => (window.location.href = `/queue/${cohort.id}`)}
               >
-                {console.log(this.state.user.id, cohort.mentor_id)}
                 <ListItemIcon>
                   <Avatar className={classes.purpleAvatar}>
                     {cohort.name.charAt(0).toUpperCase()}

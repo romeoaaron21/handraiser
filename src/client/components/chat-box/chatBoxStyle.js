@@ -102,7 +102,6 @@ const styles = theme => ({
     }
   },
   chatBoxBody: {
-    minHeight: "41vh",
     minHeight: "520px",
     maxWidth: "auto",
     maxHeight: "520px",

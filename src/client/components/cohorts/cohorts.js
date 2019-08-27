@@ -113,9 +113,7 @@ class Cohorts extends React.Component {
 
   UNSAFE_componentWillMount() {
     const socket = io(socketUrl);
-    socket.on("connect", () => {
-      console.log("CONNECTED");
-    });
+    socket.on("connect", () => {});
     this.setState({ socket });
 
     socket.on("displayCohorts", cohorts => {
@@ -396,24 +394,21 @@ class Cohorts extends React.Component {
                           this.state.member.filter(
                             member => member.student_id === this.state.id
                           ).length === this.state.cohorts.length ? (
-                            (console.log(this.state.cohorts.length),
-                            (
-                              <Grid
-                                container
-                                className={classes.emptyQueue}
-                                style={{ padding: 50 }}
-                              >
-                                <img
-                                  alt="Classes"
-                                  src={EmptyQueue}
-                                  width="280"
-                                  height="250"
-                                />
-                                <Typography variant="overline" display="block">
-                                  No Available Classes
-                                </Typography>
-                              </Grid>
-                            ))
+                            <Grid
+                              container
+                              className={classes.emptyQueue}
+                              style={{ padding: 50 }}
+                            >
+                              <img
+                                alt="Classes"
+                                src={EmptyQueue}
+                                width="280"
+                                height="250"
+                              />
+                              <Typography variant="overline" display="block">
+                                No Available Classes
+                              </Typography>
+                            </Grid>
                           ) : (
                             <AvailClass
                               cohorts={this.state.cohorts}

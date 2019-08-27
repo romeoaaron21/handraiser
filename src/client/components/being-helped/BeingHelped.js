@@ -58,24 +58,39 @@ class BeingHelped extends Component {
             Being helped
           </Typography>
           <ListItem className={classes.list}>
-            <ListItemAvatar>
-              <Avatar
-                src={this.props.helpingStudent.avatar}
-                className={classes.userAvatar}
-              />
-            </ListItemAvatar>
             {this.props.helpingStudent ? (
+              <React.Fragment>
+                <ListItemAvatar>
+                  <Avatar
+                    src={this.props.helpingStudent.avatar}
+                    className={classes.userAvatar}
+                  />
+                </ListItemAvatar>
+                <ListItemText>
+                  <Typography component="p" className={classes.queueName}>
+                    {this.props.helpingStudent.first_name
+                      .charAt(0)
+                      .toUpperCase() +
+                      this.props.helpingStudent.first_name.slice(1)}{" "}
+                    {this.props.helpingStudent.last_name
+                      .charAt(0)
+                      .toUpperCase() +
+                      this.props.helpingStudent.last_name.slice(1)}
+                  </Typography>
+                </ListItemText>
+              </React.Fragment>
+            ) : (
               <ListItemText>
-                <Typography component="p" className={classes.queueName}>
-                  {this.props.helpingStudent.first_name
-                    .charAt(0)
-                    .toUpperCase() +
-                    this.props.helpingStudent.first_name.slice(1)}{" "}
-                  {this.props.helpingStudent.last_name.charAt(0).toUpperCase() +
-                    this.props.helpingStudent.last_name.slice(1)}
+                <Typography
+                  style={{
+                    color: "#9e9e9e",
+                    textAlign: "center"
+                  }}
+                >
+                  {"None"}
                 </Typography>
               </ListItemText>
-            ) : null}
+            )}
           </ListItem>
         </Paper>
       </div>

@@ -60,9 +60,7 @@ function requestHelp(req, res) {
                     .then(mem => {
                       db.member.findOne({ id: mem.member_id }).then(memb => {
                         db.query(
-                          `SELECT users.*, requests.status,reasons.reason, member.cohort_id FROM reasons, users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND requests.id = reasons.request_id AND member.cohort_id=${
-                            memb.cohort_id
-                          }  order by requests.id asc`
+                          `SELECT users.*, requests.status,reasons.reason, member.cohort_id FROM reasons, users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND requests.id = reasons.request_id AND member.cohort_id=${memb.cohort_id}  order by requests.id asc`
                         ).then(result => {
                           res.status(201).json([...result]);
                         });
@@ -116,18 +114,18 @@ function sendChat(req, res) {
   const sender_id = req.body.sender_sub;
   const chatmate_id = req.body.chatmate_sub;
   const cohort_id = req.body.cohort_id;
+  const time = req.body.time;
 
   db.chat
     .insert({
       message: message,
       sender_id: sender_id,
       chatmate_id: chatmate_id,
-      cohort_id: cohort_id
+      cohort_id: cohort_id,
+      time: time
     })
     .then(() => {
-      db.query(
-        `SELECT * from chat`
-      ).then(chats => {
+      db.query(`SELECT * from chat`).then(chats => {
         res.status(201).json(chats);
       });
     });
@@ -136,9 +134,7 @@ function sendChat(req, res) {
 function getChat(req, res) {
   const db = req.app.get("db");
 
-  db.query(
-    `SELECT * from chat`
-  ).then(chats => {
+  db.query(`SELECT * from chat`).then(chats => {
     res.status(201).json(chats);
   });
 }

@@ -3,10 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import MoreSettings from "@material-ui/icons/MoreVert";
 import SendIcon from "@material-ui/icons/Send";
 import ArrowBack from "@material-ui/icons/ArrowBack";
-import DeleteIcon from "@material-ui/icons/Delete";
 import styles from "./chatBoxStyle";
-
-import moment from "moment-timezone";
 
 import {
   Paper,
@@ -14,9 +11,6 @@ import {
   Typography,
   Box,
   Avatar,
-  ListItem,
-  ListItemAvatar,
-  InputBase,
   IconButton,
   TextField,
   Menu,
@@ -86,27 +80,8 @@ class ChatBox extends PureComponent {
     this.setState({ openMenu: null });
   };
 
-  timeDisplay = times => {
-    let date = moment(times).format("L");
-    let time = moment(times).format("LT");
-
-    let hour = time.split(":")[0];
-    let minute = time.split(":")[1].split(" ");
-    let minutes = minute[0];
-    let month = date.split("/")[0];
-    let dates = date.split("/")[1];
-    let year = date.split("/")[2];
-
-    let calendar = `${year}-${month}-${dates}`;
-    let clock = `${hour}:${minutes}`;
-
-    return moment.tz(`${calendar} ${clock}`, "Asia/Taipei").format("lll");
-  };
-
   render() {
     const { classes } = this.props;
-    console.log(this.props.cohort_id);
-    console.log(this.props.conversation);
     return (
       <React.Fragment>
         <Paper elevation={1} className={classes.rightTopNav} square={true}>
@@ -138,12 +113,6 @@ class ChatBox extends PureComponent {
                 </ListItemIcon>
                 <ListItemText primary="Back" />
               </StyledMenuItem>
-              <StyledMenuItem>
-                <ListItemIcon>
-                  <DeleteIcon />
-                </ListItemIcon>
-                <ListItemText primary="Delete" />
-              </StyledMenuItem>
             </StyledMenu>
           </Box>
         </Paper>
@@ -166,15 +135,14 @@ class ChatBox extends PureComponent {
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
               >
-                {this.props.conversation.map(convo =>
+                {this.props.conversation.map((convo, i) =>
                   (this.props.senderInfo.sub === convo.sender_id &&
                     this.props.chatmateInfo.sub === convo.chatmate_id) ||
                   (this.props.senderInfo.sub === convo.chatmate_id &&
                     this.props.chatmateInfo.sub === convo.sender_id) ? (
-                    <React.Fragment>
+                    <React.Fragment key={i}>
                       {parseInt(this.props.cohort_id) === convo.cohort_id ? (
                         <Box
-                          item
                           className={
                             this.props.senderInfo.sub === convo.chatmate_id
                               ? classes.chatContent
@@ -188,7 +156,6 @@ class ChatBox extends PureComponent {
                             />
                           ) : null}
                           <Box
-                            item
                             className={
                               this.props.senderInfo.sub === convo.chatmate_id
                                 ? classes.chatDetails
@@ -205,7 +172,7 @@ class ChatBox extends PureComponent {
                             </div>
                             <div className={classes.chatTime}>
                               <Typography variant="caption">
-                                {this.timeDisplay(convo.time)}
+                                {convo.time}
                               </Typography>
                             </div>
                           </Box>
@@ -213,7 +180,7 @@ class ChatBox extends PureComponent {
                       ) : null}
                     </React.Fragment>
                   ) : (
-                    <React.Fragment />
+                    <React.Fragment key={i} />
                   )
                 )}
                 <div ref={this.messagesEndRef} />
@@ -223,14 +190,14 @@ class ChatBox extends PureComponent {
 
           {this.props.privileged === "student" ? (
             <React.Fragment>
-              <Box item xs={12} sm={8}>
+              <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
                   <Avatar
                     src={this.props.senderInfo.avatar}
                     className={classes.userAvatar}
                   />
                   <TextField
-                    classes={{ root: "MenuItem", classes: "selected" }}
+                    classes={{ root: "MenuItem" }}
                     id="outlined-full-width"
                     placeholder="Send message"
                     className={classes.textField}
@@ -246,7 +213,13 @@ class ChatBox extends PureComponent {
                   <IconButton
                     className={classes.sendIcon}
                     onClick={this.props.sendChat}
-                    disabled={this.props.chat.length === 0 ? true : false}
+                    disabled={
+                      this.props.chat
+                        .replace(/^\s+/, "")
+                        .replace(/\s+$/, "") === ""
+                        ? true
+                        : false
+                    }
                   >
                     <SendIcon />
                   </IconButton>
@@ -280,7 +253,13 @@ class ChatBox extends PureComponent {
                     onClick={() =>
                       this.props.sendChatM(this.props.helpingStudent_sub)
                     }
-                    disabled={this.props.chatM.length === 0 ? true : false}
+                    disabled={
+                      this.props.chatM
+                        .replace(/^\s+/, "")
+                        .replace(/\s+$/, "") === ""
+                        ? true
+                        : false
+                    }
                   >
                     <SendIcon />
                   </IconButton>

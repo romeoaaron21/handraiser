@@ -2,10 +2,8 @@ import React, { PureComponent } from "react";
 
 import { withStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
-import EmptyQueue from "../../images/empty.svg";
 import {
   Paper,
-  Grid,
   Typography,
   Avatar,
   ListItem,

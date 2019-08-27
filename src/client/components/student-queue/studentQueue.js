@@ -113,13 +113,11 @@ class Student extends Component {
   };
 
   handleChat = val => {
-    const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
-    this.setState({ chat: userText });
+    this.setState({ chat: val });
   };
 
   handleChatM = val => {
-    const userText = val.replace(/^\s+/, "").replace(/\s+$/, "");
-    this.setState({ chatM: userText });
+    this.setState({ chatM: val });
   };
 
   sendChatSub = () => {
@@ -140,6 +138,7 @@ class Student extends Component {
             chatBox: true
           });
         }
+        return null;
       });
     });
   };
@@ -164,6 +163,7 @@ class Student extends Component {
             chatmate_sub: chatmate_sub
           });
         }
+        return null;
       });
     });
   };
@@ -171,11 +171,39 @@ class Student extends Component {
   messagesEndRef = React.createRef();
 
   sendChat = () => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
     let convo = {
       message: this.state.chat,
       sender_sub: this.state.sub,
       chatmate_sub: this.state.mentor_sub,
-      cohort_id: this.props.cohort_id
+      cohort_id: this.props.cohort_id,
+      time: datetime
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
@@ -185,11 +213,39 @@ class Student extends Component {
   };
 
   sendChatM = chatmate => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
     let convo = {
       message: this.state.chatM,
       sender_sub: this.state.sub,
       chatmate_sub: chatmate,
-      cohort_id: this.props.cohort_id
+      cohort_id: this.props.cohort_id,
+      time: datetime
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
@@ -240,9 +296,7 @@ class Student extends Component {
 
   initSocket = () => {
     const socket = io(socketUrl);
-    socket.on("connect", () => {
-      console.log("CONECTED");
-    });
+    socket.on("connect", () => {});
     this.setState({ socket });
 
     //start of socket chat
@@ -372,6 +426,7 @@ class Student extends Component {
 
           res.data.map(mentor => {
             this.setState({ mentor_sub: mentor.sub });
+            return null;
           });
         });
       })

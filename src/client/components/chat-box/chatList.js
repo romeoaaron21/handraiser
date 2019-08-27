@@ -2,7 +2,6 @@ import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import EmptyQueue from "../../images/empty.svg";
-import moment from "moment-timezone";
 import {
   Paper,
   Grid,
@@ -135,23 +134,6 @@ class ChatList extends PureComponent {
     this.state = {};
   }
 
-  timeDisplay = times => {
-    let date = moment(times).format("L");
-    let time = moment(times).format("LT");
-
-    let hour = time.split(":")[0];
-    let minute = time.split(":")[1].split(" ");
-    let minutes = minute[0];
-    let month = date.split("/")[0];
-    let dates = date.split("/")[1];
-    let year = date.split("/")[2];
-
-    let calendar = `${year}-${month}-${dates}`;
-    let clock = `${hour}:${minutes}`;
-
-    return moment.tz(`${calendar} ${clock}`, "Asia/Taipei").format("LT");
-  };
-
   render() {
     const { classes } = this.props;
     return (
@@ -179,15 +161,15 @@ class ChatList extends PureComponent {
           {/* Chat List */}
 
           {this.props.mentor
-            ? this.props.mentor.map(mentor => (
-                <React.Fragment>
+            ? this.props.mentor.map((mentor, i) => (
+                <React.Fragment key={i}>
                   {this.props.conversation.length !== 0 ? (
-                    this.props.conversation.map(convo =>
+                    this.props.conversation.map((convo, i) =>
                       convo ===
                       this.props.conversation[
                         this.props.conversation.length - 1
                       ] ? (
-                        <React.Fragment>
+                        <React.Fragment key={i}>
                           <ListItem
                             className={classes.list}
                             onClick={
@@ -195,7 +177,6 @@ class ChatList extends PureComponent {
                                 ? this.props.sendChatSub
                                 : null
                             }
-                            key={mentor.sub}
                           >
                             <ListItemAvatar>
                               <Avatar
@@ -211,10 +192,10 @@ class ChatList extends PureComponent {
                                 {convo.message}
                               </Typography>
                             </div>
-                            <div classname={classes.chatAction}>
+                            <div className={classes.chatAction}>
                               <Typography className={classes.chatTime}>
                                 {" "}
-                                {this.timeDisplay(convo.time)}{" "}
+                                {convo.time}{" "}
                               </Typography>
                             </div>
                           </ListItem>
@@ -223,7 +204,12 @@ class ChatList extends PureComponent {
                     )
                   ) : (
                     <Grid container className={classes.emptyQueue}>
-                      <img src={EmptyQueue} width="200" height="180" />
+                      <img
+                        alt={"empty queue"}
+                        src={EmptyQueue}
+                        width="200"
+                        height="180"
+                      />
                       <Typography variant="overline" display="block">
                         No message available...
                       </Typography>
