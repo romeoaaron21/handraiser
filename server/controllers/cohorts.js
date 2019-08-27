@@ -31,7 +31,7 @@ function addCohort(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
   const { name, password } = req.body;
-  
+
   db.query(
     `INSERT INTO cohorts (mentor_id, name, password) VALUES (${id}, '${name}', '${password}')`
   )
@@ -87,7 +87,7 @@ function enroll(req, res) {
     })
     .then(cohort => {
       if (!cohort) {
-        throw new Error("Wrong Password!");
+        res.status(201).send({ message: "error" });
       } else {
         db.member
           .insert({
@@ -109,22 +109,23 @@ function leave(req, res) {
   const db = req.app.get("db");
   const { cid, sid } = req.params;
 
-  db
-    .query(`SELECT id FROM member WHERE student_id = ${sid} AND cohort_id = ${cid}`)
-    .then(member => {
-      db.query(`
+  db.query(
+    `SELECT id FROM member WHERE student_id = ${sid} AND cohort_id = ${cid}`
+  ).then(member => {
+    db.query(
+      `
         DELETE FROM requests WHERE member_id = ${member[0].id};
         DELETE FROM member WHERE student_id = ${sid} AND cohort_id = ${cid};
-      `)
-        .then(member => {
-          res.status(201).json({ member });
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(500).end();
-        });
-    })
-  
+      `
+    )
+      .then(member => {
+        res.status(201).json({ member });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).end();
+      });
+  });
 }
 
 function getAllMentors(req, res) {

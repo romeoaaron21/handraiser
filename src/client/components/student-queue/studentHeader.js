@@ -50,6 +50,11 @@ const styles = theme => ({
     "@media (max-width: 425px)": {
       fontSize: "17px"
     }
+  },
+  btnDisabled: {
+    "&.Mui-disabled": {
+      backgroundColor: "rgba(255, 255, 255, 0.46)"
+    }
   }
 });
 
@@ -64,6 +69,7 @@ class StudentHeader extends Component {
             component="h3"
             align="center"
             className={classes.responsive}
+            style={{ color: "whitesmoke" }}
           >
             {this.props.user.name.charAt(0).toUpperCase() +
               this.props.user.name.slice(1)}
@@ -80,6 +86,7 @@ class StudentHeader extends Component {
                 variant="h6"
                 component="h3"
                 className={classes.responsiveHeader}
+                style={{ color: "whitesmoke" }}
               >
                 {this.props.user.first_name.charAt(0).toUpperCase() +
                   this.props.user.first_name.slice(1)}{" "}
@@ -89,15 +96,18 @@ class StudentHeader extends Component {
             </ListItemText>
             {this.props.privilege === "student" ? (
               <div>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.raiseBtn}
-                  disabled={this.props.btn}
-                  onClick={this.props.requestHelp}
-                >
-                  {this.props.raise}
-                </Button>
+                <Tooltip title="Send Raise" placement="top">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.raiseBtn}
+                    disabled={this.props.btn}
+                    onClick={this.props.requestHelp}
+                    classes={{ contained: classes.btnDisabled }}
+                  >
+                    {this.props.raise}
+                  </Button>
+                </Tooltip>
                 <Tooltip
                   title="Help Student"
                   placement="top"
