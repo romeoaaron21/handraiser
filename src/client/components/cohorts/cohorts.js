@@ -43,7 +43,6 @@ import styles from "./cohorts-component-style";
 import EmptyQueue from "./../../images/emptyqueue.svg";
 import AvailClass from "./cards/availClass";
 
-const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
 
 class Cohorts extends React.Component {
@@ -116,10 +115,6 @@ class Cohorts extends React.Component {
   }
 
   UNSAFE_componentWillMount() {
-    const socket = io(socketUrl);
-    socket.on("connect", () => {});
-    this.setState({ socket });
-
     socket.on("displayCohorts", cohorts => {
       this.setState({ cohorts });
     });
@@ -303,6 +298,7 @@ class Cohorts extends React.Component {
         <SideNav
           open={this.state.open}
           handleDrawerCloseFn={this.handleDrawerClose}
+          cohorts={this.state.cohorts}
         />
         <ToastContainer
           enableMultiContainer

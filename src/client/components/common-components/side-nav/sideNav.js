@@ -63,7 +63,6 @@ class SideNav extends React.Component {
 
     this.state = {
       user: [],
-      cohorts: [],
       members: []
     };
   }
@@ -71,12 +70,6 @@ class SideNav extends React.Component {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       this.setState({ user });
-
-      api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
-        this.setState({
-          cohorts: res.data.cohorts
-        });
-      });
 
       api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
         this.setState({
@@ -132,7 +125,7 @@ class SideNav extends React.Component {
           {this.state.user.privilege === "mentor" ? "My Classes" : "Enrolled"}
         </Typography>
         <List className={classes.classList}>
-          {this.state.cohorts.map((cohort, index) =>
+          {this.props.cohorts.map((cohort, index) =>
             this.state.members.filter(member => member.cohort_id === cohort.id)
               .length !== 0 ? (
               <ListItem
