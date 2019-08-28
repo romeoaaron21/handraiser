@@ -91,7 +91,7 @@ class Cohorts extends React.Component {
       const user = fetch.data.user[0];
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
-          socket.emit("displayCohorts", res.data.cohorts.reverse());
+          socket.emit("displayCohorts", res.data.cohorts);
           setTimeout(() => {
             this.setState({ loader: false });
           }, 1000);
@@ -102,7 +102,7 @@ class Cohorts extends React.Component {
         });
       } else {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
-          socket.emit("displayCohorts", res.data.cohorts.reverse());
+          socket.emit("displayCohorts", res.data.cohorts);
         });
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
           socket.emit("displayMember", res.data.member);
@@ -121,6 +121,9 @@ class Cohorts extends React.Component {
 
   UNSAFE_componentWillMount() {
     socket.on("displayCohorts", cohorts => {
+      if(this.state.privilege === 'student'){
+        cohorts = cohorts.filter(cohorts =>  cohorts.status === 'active')
+      }
       this.setState({ cohorts });
     });
 
@@ -309,6 +312,14 @@ class Cohorts extends React.Component {
     }
   };
 
+  changeStatus = (id, status) => {
+    api
+      .fetch(`/api/cohorts/${id}/status/${status}`, "get")
+      .then(() => {
+        this.componentDidMount()
+      });
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -365,6 +376,7 @@ class Cohorts extends React.Component {
                       redirect={this.redirect}
                       openStudentList={this.openStudentList}
                       user={this.state.user}
+                      changeStatus={this.changeStatus}
                     />
                   </div>
                 ) : this.state.member.length !== 0 &&

@@ -18,6 +18,10 @@ exports.up = (pgm) => {
     password: {
       type: 'text',
       notNull: true
+    },
+    status: {
+      type: 'text',
+      notNull: true
     }
   })
 };

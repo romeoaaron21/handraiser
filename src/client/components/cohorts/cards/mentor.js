@@ -6,9 +6,12 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 
 import AddIcon from "@material-ui/icons/Add";
+import LockIcon from "@material-ui/icons/Lock";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
 
 import CardBackground from "../../../images/cardBg.jpg";
 
@@ -16,6 +19,9 @@ const styles = theme => ({
   card: {
     height: 275,
     width: 300,
+    '@media: (max-width: 425px)':{
+      margin: '16px 0'
+    },
     margin: theme.spacing(2)
   },
   cardContainer: {
@@ -64,7 +70,8 @@ class MentorClassCards extends React.Component {
       openDelete,
       openStudentList,
       redirect,
-      search
+      search,
+      changeStatus
     } = this.props;
     return (
       <React.Fragment>
@@ -135,6 +142,19 @@ class MentorClassCards extends React.Component {
                     Students
                   </Button>
                 ) : null}
+                {cohort.status === 'active' ?
+                  <span>
+                    <IconButton onClick={() => {changeStatus(cohort.id, 'notactive')}}>
+                      <LockOpenIcon/>
+                    </IconButton>
+                  </span>
+                :
+                  <span>
+                    <IconButton onClick={() => {changeStatus(cohort.id, 'active')}} >
+                      <LockIcon/>
+                    </IconButton>
+                  </span>
+                }
               </CardActions>
             </Card>
           ) : null

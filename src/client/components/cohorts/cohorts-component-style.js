@@ -27,6 +27,8 @@ const styles = theme => ({
   },
   container: {
     paddingTop: theme.spacing(2),
+    paddingLeft: 0,
+    paddingRight: 0,
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
@@ -34,7 +36,7 @@ const styles = theme => ({
   },
   mentor: {
     maxWidth: 1000,
-    minWidth: 332,
+    minWidth: 300,
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
@@ -42,7 +44,7 @@ const styles = theme => ({
   },
   student: {
     maxWidth: 1000,
-    minWidth: 332,
+    minWidth: 300,
     width: '100%',
     display: 'flex',
     flexWrap: 'wrap',

@@ -16,6 +16,9 @@ const styles = theme => ({
   card: {
     height: 275,
     width: 300,
+    '@media: (max-width: 425px)':{
+      margin: '16px 0'
+    },
     margin: theme.spacing(2)
   },
   wholeCardContainer: {

@@ -119,12 +119,10 @@ massive({
   app.get("/api/cohorts/:id", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
-  app.get(
-    "/api/cohorts/:value/search/mentor/:id",
-    cohorts.getMentorCohortsByName
-  );
+  app.get("/api/cohorts/:value/search/mentor/:id", cohorts.getMentorCohortsByName);
   app.get("/api/cohorts/:value/search", cohorts.getAllCohortsByName);
   app.get("/api/cohorts/:id/students", cohorts.getStudentsByClass);
+  app.get("/api/cohorts/:id/status/:status", cohorts.changeStatus);
 
   app.post("/api/cohorts/mentor/:id/add", cohorts.addCohort);
   app.post("/api/cohorts/:id/students", cohorts.enroll);
