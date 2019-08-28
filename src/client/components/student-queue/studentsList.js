@@ -175,7 +175,8 @@ class ChatList extends PureComponent {
 
     this.state = {
       id: this.props.cohort_id,
-      students: []
+      students: [],
+      search: ""
     };
   }
 
@@ -200,6 +201,7 @@ class ChatList extends PureComponent {
               placeholder="Search Students"
               inputProps={{ "aria-label": "naked" }}
               fullWidth
+              onChange={e => this.setState({ search: e.target.value })}
             />
             <SearchIcon style={{ color: "#8c929c" }} />
           </div>
@@ -213,25 +215,64 @@ class ChatList extends PureComponent {
         >
           {/* Chat List */}
 
-          {this.state.students.map(student => (
-            <ListItem className={classes.list} key={student.id}>
-              <ListItemAvatar>
-                <Avatar src={student.avatar} className={classes.userAvatar} />
-              </ListItemAvatar>
-              <div className={classes.multiline}>
-                <Typography className={classes.chatName}>
-                  {student.first_name + " " + student.last_name}
-                </Typography>
-              </div>
-              <div className={`${classes.queueAction} actionShow`}>
-                <Tooltip title="Move To Queue" placement="top">
-                  <IconButton className={classes.responsive}>
-                    <MoveToQueue className={classes.actionIcon} />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            </ListItem>
-          ))}
+          {this.state.students.map(student => {
+            if (this.state.search) {
+              if (
+                student.first_name
+                  .toLowerCase()
+                  .includes(this.state.search.toLowerCase()) ||
+                student.last_name
+                  .toLowerCase()
+                  .includes(this.state.search.toLowerCase())
+              ) {
+                return (
+                  <ListItem className={classes.list} key={student.id}>
+                    <ListItemAvatar>
+                      <Avatar
+                        src={student.avatar}
+                        className={classes.userAvatar}
+                      />
+                    </ListItemAvatar>
+                    <div className={classes.multiline}>
+                      <Typography className={classes.chatName}>
+                        {student.first_name + " " + student.last_name}
+                      </Typography>
+                    </div>
+                    <div className={`${classes.queueAction} actionShow`}>
+                      <Tooltip title="Move To Queue" placement="top">
+                        <IconButton className={classes.responsive}>
+                          <MoveToQueue className={classes.actionIcon} />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
+                  </ListItem>
+                );
+              }
+            } else {
+              return (
+                <ListItem className={classes.list} key={student.id}>
+                  <ListItemAvatar>
+                    <Avatar
+                      src={student.avatar}
+                      className={classes.userAvatar}
+                    />
+                  </ListItemAvatar>
+                  <div className={classes.multiline}>
+                    <Typography className={classes.chatName}>
+                      {student.first_name + " " + student.last_name}
+                    </Typography>
+                  </div>
+                  <div className={`${classes.queueAction} actionShow`}>
+                    <Tooltip title="Move To Queue" placement="top">
+                      <IconButton className={classes.responsive}>
+                        <MoveToQueue className={classes.actionIcon} />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                </ListItem>
+              );
+            }
+          })}
           {/* End Chat List */}
 
           {/* End No Message Display */}
