@@ -2,13 +2,16 @@ import React, { PureComponent } from "react";
 
 import { withStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
+import MoveToQueue from "@material-ui/icons/AddToQueue";
 import {
   Paper,
   Typography,
   Avatar,
   ListItem,
   ListItemAvatar,
-  InputBase
+  InputBase,
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 
 import api from "../../services/fetchApi";
@@ -42,6 +45,26 @@ const styles = theme => ({
     "&:hover": {
       backgroundColor: "#f1f1f1",
       minHeight: 51
+    },
+    "&:hover .actionShow": {
+      display: "inline-block"
+    }
+  },
+  queueAction: {
+    display: "none"
+  },
+  responsive: {
+    "@media (max-width: 425px)": {
+      padding: "3px",
+      fontSize: "14px"
+    }
+  },
+  actionIcon: {
+    cursor: "pointer",
+    color: "#91a1af",
+    fontSize: "18px",
+    "@media (max-width: 425px)": {
+      fontSize: "14px"
     }
   },
   chatList: {
@@ -200,10 +223,12 @@ class ChatList extends PureComponent {
                   {student.first_name + " " + student.last_name}
                 </Typography>
               </div>
-              <div className={classes.chatAction}>
-                <span
-                  className={`${classes.ab} ${classes.cd} ${classes.online}`}
-                />
+              <div className={`${classes.queueAction} actionShow`}>
+                <Tooltip title="Move To Queue" placement="top">
+                  <IconButton className={classes.responsive}>
+                    <MoveToQueue className={classes.actionIcon} />
+                  </IconButton>
+                </Tooltip>
               </div>
             </ListItem>
           ))}
