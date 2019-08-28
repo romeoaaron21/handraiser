@@ -360,7 +360,9 @@ class Cohorts extends React.Component {
                           borderBottom: "2px solid gainsboro"
                         }}
                       >
-                        <Typography>Enrolled Classes</Typography>
+                        <Typography style={{ color: "#6f6f6f" }}>
+                          Enrolled Classes
+                        </Typography>
                       </Grid>
 
                       <StudentClassCards
@@ -388,7 +390,9 @@ class Cohorts extends React.Component {
                             paddingTop: "2%"
                           }}
                         >
-                          <Typography>Available Classes</Typography>
+                          <Typography style={{ color: "#6f6f6f" }}>
+                            Available Classes
+                          </Typography>
                         </Grid>
 
                         {this.state.member.length !== 0 &&

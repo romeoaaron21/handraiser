@@ -1,14 +1,12 @@
 import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import CardBackground from "../../images/cardBg.jpg";
 import api from "../../services/fetchApi";
 import {
   Card,
   CardMedia,
   CardContent,
   Typography,
-  CardActions,
-  Avatar
+  CardActions
 } from "@material-ui/core";
 
 const styles = theme => ({

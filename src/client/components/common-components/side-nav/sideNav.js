@@ -9,7 +9,6 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import HomeIcon from "@material-ui/icons/Home";
-import SettingIcon from "@material-ui/icons/SettingsApplications";
 
 //AUTH
 import AuthService from "../../../auth/AuthService";

@@ -160,6 +160,7 @@ class ChatList extends PureComponent {
             count = count + 1;
           }
         }
+        return null;
       })
     );
     return this.setState({ count: count });
