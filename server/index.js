@@ -50,13 +50,17 @@ massive({
     });
 
     socket.on("displayStudents", students => {
-      // console.log(students);
       io.emit("displayStudents", students);
     });
 
     socket.on("displayCohorts", cohorts => {
       io.emit("displayCohorts", cohorts);
     });
+
+    socket.on("displayCohortsSideNav", cohorts => {
+      io.emit("displayCohortsSideNav", cohorts);
+    });
+
     socket.on("displayMember", member => {
       io.emit("displayMember", member);
     });
@@ -65,13 +69,12 @@ massive({
       io.emit("sendChat", chat);
     });
 
-
     socket.on("sendChatM", chat => {
       // console.log(chat)
       io.emit("sendChatM", chat);
     });
 
-/*BADGE*/    socket.on("displayBadge", () => {
+    /*BADGE*/ socket.on("displayBadge", () => {
       io.emit("displayBadge");
     });
     socket.on("handleChat", priv => {
@@ -86,8 +89,6 @@ massive({
       // console.log(priv)
       io.emit("sendChat", chat);
     });
-
-
   });
   //WEBSOCKETS END
 
@@ -153,11 +154,7 @@ massive({
 
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
 
-
-
   app.patch("/api/seenChat", students.seenChat);
-
-
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

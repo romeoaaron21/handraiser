@@ -63,13 +63,21 @@ class SideNav extends React.Component {
 
     this.state = {
       user: [],
-      members: []
+      members: [],
+      cohorts: []
     };
   }
+
   componentDidMount() {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       this.setState({ user });
+
+      api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
+        this.setState({
+          cohorts: res.data.cohorts
+        });
+      });
 
       api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
         this.setState({
@@ -125,36 +133,77 @@ class SideNav extends React.Component {
           {this.state.user.privilege === "mentor" ? "My Classes" : "Enrolled"}
         </Typography>
         <List className={classes.classList}>
-          {this.props.cohorts.map((cohort, index) =>
-            this.state.members.filter(member => member.cohort_id === cohort.id)
-              .length !== 0 ? (
-              <ListItem
-                button
-                key={cohort.name}
-                onClick={() => (window.location.href = `/queue/${cohort.id}`)}
-              >
-                <ListItemIcon>
-                  <Avatar className={classes.purpleAvatar}>
-                    {cohort.name.charAt(0).toUpperCase()}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={cohort.name} />
-              </ListItem>
-            ) : this.state.user.id === cohort.mentor_id ? (
-              <ListItem
-                button
-                key={cohort.name}
-                onClick={() => (window.location.href = `/queue/${cohort.id}`)}
-              >
-                <ListItemIcon>
-                  <Avatar className={classes.purpleAvatar}>
-                    {cohort.name.charAt(0).toUpperCase()}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={cohort.name} />
-              </ListItem>
-            ) : null
-          )}
+          {this.props.socket
+            ? this.props.cohorts.map((cohort, index) =>
+                this.state.members.filter(
+                  member => member.cohort_id === cohort.id
+                ).length !== 0 ? (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                ) : this.state.user.id === cohort.mentor_id ? (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                ) : null
+              )
+            : this.state.cohorts.map((cohort, index) =>
+                this.state.members.filter(
+                  member => member.cohort_id === cohort.id
+                ).length !== 0 ? (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                ) : this.state.user.id === cohort.mentor_id ? (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                ) : null
+              )}
         </List>
         <Divider />
       </Drawer>

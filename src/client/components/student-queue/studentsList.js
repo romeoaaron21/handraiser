@@ -272,6 +272,7 @@ class ChatList extends PureComponent {
                 </ListItem>
               );
             }
+            return null;
           })}
           {/* End Chat List */}
 

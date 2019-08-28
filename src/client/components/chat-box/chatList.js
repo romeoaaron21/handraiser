@@ -355,6 +355,7 @@ class ChatList extends PureComponent {
                     </React.Fragment>
                   );
                 }
+                return null;
               })
             : null}
         </Paper>

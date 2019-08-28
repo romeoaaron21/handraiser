@@ -57,6 +57,7 @@ class Cohorts extends React.Component {
       privilege: "",
       id: 0,
       cohorts: [],
+      cohortsSideNav: [],
       member: [],
       students: [],
       user: [],
@@ -95,6 +96,10 @@ class Cohorts extends React.Component {
             this.setState({ loader: false });
           }, 1000);
         });
+
+        api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
+          socket.emit("displayCohortsSideNav", res.data.cohorts);
+        });
       } else {
         api.fetch(`/api/cohorts/api`, "get").then(res => {
           socket.emit("displayCohorts", res.data.cohorts.reverse());
@@ -118,6 +123,11 @@ class Cohorts extends React.Component {
     socket.on("displayCohorts", cohorts => {
       this.setState({ cohorts });
     });
+
+    socket.on("displayCohortsSideNav", cohorts => {
+      this.setState({ cohortsSideNav: cohorts });
+    });
+
     socket.on("displayMember", member => {
       this.setState({ member });
     });
@@ -298,7 +308,8 @@ class Cohorts extends React.Component {
         <SideNav
           open={this.state.open}
           handleDrawerCloseFn={this.handleDrawerClose}
-          cohorts={this.state.cohorts}
+          cohorts={this.state.cohortsSideNav}
+          socket={true}
         />
         <ToastContainer
           enableMultiContainer
