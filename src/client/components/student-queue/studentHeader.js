@@ -96,36 +96,40 @@ class StudentHeader extends Component {
             {this.props.privilege === "student" ? (
               <div>
                 <Tooltip title="Send Raise" placement="top">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.raiseBtn}
-                    disabled={this.props.btn}
-                    onClick={this.props.requestHelp}
-                    classes={{ contained: classes.btnDisabled }}
-                  >
-                    {this.props.raise}
-                  </Button>
+                  <div>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.raiseBtn}
+                      disabled={this.props.btn}
+                      onClick={this.props.requestHelp}
+                      classes={{ contained: classes.btnDisabled }}
+                    >
+                      {this.props.raise}
+                    </Button>
+                  </div>
                 </Tooltip>
                 <Tooltip
                   title="Help Student"
                   placement="top"
                   className={classes.raiseHand}
                 >
-                  <IconButton
-                    className={classes.responsive}
-                    disabled={this.props.btn}
-                    onClick={this.props.requestHelp}
-                  >
-                    <Handraise
-                      className={classes.raiseHand}
-                      style={
-                        this.props.btn
-                          ? { color: "#f6edff3d" }
-                          : { color: "#cc98ff" }
-                      }
-                    />
-                  </IconButton>
+                  <div>
+                    <IconButton
+                      className={classes.responsive}
+                      disabled={this.props.btn}
+                      onClick={this.props.requestHelp}
+                    >
+                      <Handraise
+                        className={classes.raiseHand}
+                        style={
+                          this.props.btn
+                            ? { color: "#f6edff3d" }
+                            : { color: "#cc98ff" }
+                        }
+                      />
+                    </IconButton>
+                  </div>
                 </Tooltip>
               </div>
             ) : null}

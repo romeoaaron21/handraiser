@@ -20,7 +20,6 @@ import {
   ListItemText
 } from "@material-ui/core";
 
-
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5"
@@ -140,60 +139,59 @@ class ChatBox extends PureComponent {
                 {this.props.conversation.map((convo, i) =>
                   (this.props.senderInfo.sub === convo.sender_id &&
                     this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                    (this.props.senderInfo.sub === convo.chatmate_id &&
-                      this.props.chatmateInfo.sub === convo.sender_id) ? (
-                      <React.Fragment key={i}>
-                        {parseInt(this.props.cohort_id) === convo.cohort_id ? (
+                  (this.props.senderInfo.sub === convo.chatmate_id &&
+                    this.props.chatmateInfo.sub === convo.sender_id) ? (
+                    <React.Fragment key={i}>
+                      {parseInt(this.props.cohort_id) === convo.cohort_id ? (
+                        <Box
+                          className={
+                            this.props.senderInfo.sub === convo.chatmate_id
+                              ? classes.chatContent
+                              : classes.chatContent2
+                          }
+                        >
+                          {this.props.senderInfo.sub === convo.chatmate_id ? (
+                            <Avatar
+                              src={this.props.chatmateInfo.avatar}
+                              className={classes.chatAvatar}
+                            />
+                          ) : null}
                           <Box
                             className={
                               this.props.senderInfo.sub === convo.chatmate_id
-                                ? classes.chatContent
-                                : classes.chatContent2
+                                ? classes.chatDetails
+                                : classes.chatDetails2
                             }
                           >
-                            {this.props.senderInfo.sub === convo.chatmate_id ? (
-                              <Avatar
-                                src={this.props.chatmateInfo.avatar}
-                                className={classes.chatAvatar}
-                              />
-                            ) : null}
-                            <Box
-                              className={
-                                this.props.senderInfo.sub === convo.chatmate_id
-                                  ? classes.chatDetails
-                                  : classes.chatDetails2
-                              }
-                            >
-                              <div className={classes.chatText}>
-                                <Typography
-                                  variant="subtitle1"
-                                  className={classes.chatText}
-                                >
-                                  {convo.message}
-                                </Typography>
-                              </div>
-                              <div className={classes.chatTime}>
-                                <Typography variant="caption">
-                                  {convo.time}
-                                </Typography>
-                              </div>
-                            </Box>
+                            <div className={classes.chatText}>
+                              <Typography
+                                variant="subtitle1"
+                                className={classes.chatText}
+                              >
+                                {convo.message}
+                              </Typography>
+                            </div>
+                            <div className={classes.chatTime}>
+                              <Typography variant="caption">
+                                {convo.time}
+                              </Typography>
+                            </div>
                           </Box>
-                        ) : null}
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment key={i} />
-                    )
+                        </Box>
+                      ) : null}
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment key={i} />
+                  )
                 )}
-                {this.props.chatM.length > 0 && this.props.privileged === 'student'?
-                <TypingEffect />
-                :
-                this.props.chat.length > 0 && this.props.privileged === 'mentor'?
-                <TypingEffect />
-                :
-                null
-                }
-                
+                {this.props.chatM.length > 0 &&
+                this.props.privileged === "student" ? (
+                  <TypingEffect />
+                ) : this.props.chat.length > 0 &&
+                  this.props.privileged === "mentor" ? (
+                  <TypingEffect />
+                ) : null}
+
                 <div ref={this.messagesEndRef} />
               </Grid>
             </div>
@@ -220,7 +218,7 @@ class ChatBox extends PureComponent {
                     onChange={e => {
                       this.props.handleChat(e.target.value);
                     }}
-                    onClick={()=>this.props.displayBadge('student')}
+                    onClick={() => this.props.displayBadge("student")}
                   />
                   <IconButton
                     className={classes.sendIcon}
@@ -239,48 +237,47 @@ class ChatBox extends PureComponent {
               </Box>
             </React.Fragment>
           ) : (
-              <React.Fragment>
-                <Box item xs={12} sm={8}>
-                  <div className={classes.footerInput}>
-                    <Avatar
-                      src={this.props.senderInfo.avatar}
-                      className={classes.userAvatar}
-                    />
-                    <TextField
-                      classes={{ root: "MenuItem", classes: "selected" }}
-                      id="outlined-full-width"
-                      placeholder="Send message"
-                      className={classes.textField}
-                      InputProps={{ classes: { root: classes.custom } }}
-                      margin="normal"
-                      fullWidth
-                      variant="outlined"
-                      value={this.props.chatM}
-                      onChange={e => {
-                        this.props.handleChatM(e.target.value);
-                      }}
-                    />
-                    <IconButton
-                      className={classes.sendIcon}
-                      onClick={() => {
-                        this.props.sendChatM(this.props.helpingStudent_sub);
-            /*BADGE*/            this.props.displayBadge('mentor')
-                      }
-                      }
-                      disabled={
-                        this.props.chatM
-                          .replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === ""
-                          ? true
-                          : false
-                      }
-                    >
-                      <SendIcon />
-                    </IconButton>
-                  </div>
-                </Box>
-              </React.Fragment>
-            )}
+            <React.Fragment>
+              <Box xs={12} sm={8}>
+                <div className={classes.footerInput}>
+                  <Avatar
+                    src={this.props.senderInfo.avatar}
+                    className={classes.userAvatar}
+                  />
+                  <TextField
+                    classes={{ root: "MenuItem" }}
+                    id="outlined-full-width"
+                    placeholder="Send message"
+                    className={classes.textField}
+                    InputProps={{ classes: { root: classes.custom } }}
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                    value={this.props.chatM}
+                    onChange={e => {
+                      this.props.handleChatM(e.target.value);
+                    }}
+                  />
+                  <IconButton
+                    className={classes.sendIcon}
+                    onClick={() => {
+                      this.props.sendChatM(this.props.helpingStudent_sub);
+                      /*BADGE*/ this.props.displayBadge("mentor");
+                    }}
+                    disabled={
+                      this.props.chatM
+                        .replace(/^\s+/, "")
+                        .replace(/\s+$/, "") === ""
+                        ? true
+                        : false
+                    }
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </div>
+              </Box>
+            </React.Fragment>
+          )}
         </Paper>
       </React.Fragment>
     );
