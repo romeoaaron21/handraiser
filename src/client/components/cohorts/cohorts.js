@@ -266,6 +266,19 @@ class Cohorts extends React.Component {
         });
       });
   };
+  removeStudent = (id, student_id) => {
+    api.fetch(`/api/cohorts/${id}/students/${student_id}`, "get").then(() => {
+      this.componentDidMount();
+      this.closeModal();
+      api.fetch(`/api/student/${student_id}/cohorts/`, "get").then(res => {
+        socket.emit("displayMember", res.data.member);
+      });
+      toast.info("Remove Student!", {
+        hideProgressBar: true,
+        draggable: false
+      });
+    });
+  };
 
   search = e => {
     if (e.currentTarget.value === "") {
@@ -354,7 +367,10 @@ class Cohorts extends React.Component {
                       user={this.state.user}
                     />
                   </div>
-                ) : this.state.member.length !== 0 ? (
+                ) : this.state.member.length !== 0 &&
+                  this.state.member.filter(
+                    member => member.student_id === this.state.id
+                  ).length !== 0 ? (
                   <div className={classes.student}>
                     <Grid container>
                       <Grid
@@ -373,6 +389,7 @@ class Cohorts extends React.Component {
                       </Grid>
 
                       <StudentClassCards
+                        user_id={this.state.id}
                         cohorts={this.state.cohorts}
                         members={this.state.member}
                         openEnroll={this.openEnroll}
@@ -424,6 +441,7 @@ class Cohorts extends React.Component {
                             </Grid>
                           ) : (
                             <AvailClass
+                              user_id={this.state.id}
                               cohorts={this.state.cohorts}
                               members={this.state.member}
                               openEnroll={this.openEnroll}
@@ -470,6 +488,8 @@ class Cohorts extends React.Component {
                 />
                 {this.state.students !== undefined ? (
                   <StudentList
+                    removeStudent={this.removeStudent}
+                    privilege={this.state.privilege}
                     open={this.state.studentList}
                     close={this.closeModal}
                     students={this.state.students}

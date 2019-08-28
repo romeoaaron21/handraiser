@@ -25,11 +25,12 @@ exports.up = pgm => {
     cohort_id: {
       type: "integer",
       notNull: true,
-      references: '"cohorts"'
+      references: '"cohorts"',
+      onDelete: "cascade"
     },
     seen: {
       type: "integer",
-      notNull: true,
+      notNull: true
     }
   });
 };
