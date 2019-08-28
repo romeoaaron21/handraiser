@@ -126,9 +126,9 @@ class MentorClassCards extends React.Component {
                   size="small"
                   color="primary"
                   id={cohort.id}
-                  onClick={openDelete}
+                  onClick={() => (window.location.href = `/settings`)}
                 >
-                  Delete
+                  Settings
                 </Button>
                 {cohort.members !== "0" ? (
                   <Button

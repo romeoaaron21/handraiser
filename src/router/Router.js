@@ -9,7 +9,7 @@ import AdminSignIn from "../admin/components/sign-in/signIn";
 import MentorKeys from "../admin/components/mentor-keys/mentorKeys";
 import Mentor from "../admin/components/mentors/mentor";
 import AdminCohorts from "../admin/components/cohorts/cohort";
-
+import Settings from "../client/components/common-components/settings/settings";
 function Router() {
   return (
     <BrowserRouter>
@@ -17,6 +17,7 @@ function Router() {
       <Route path="/sign-in" component={SignIn} />
       <Route path="/cohorts" component={Cohorts} />
       <Route path="/queue/:cid" component={Queue} />
+      <Route path="/settings" component={Settings} />
       <Route path="/admin/keys" component={MentorKeys} />
       <Route path="/admin/mentors" component={Mentor} />
       <Route path="/admin/cohorts" component={AdminCohorts} />
