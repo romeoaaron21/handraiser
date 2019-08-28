@@ -127,6 +127,8 @@ massive({
 
   app.post("/api/cohorts/mentor/:id/add", cohorts.addCohort);
   app.post("/api/cohorts/:id/students", cohorts.enroll);
+
+  app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
   // Cohorts End
 
   app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);

@@ -189,6 +189,20 @@ function getStudentsByClass(req, res) {
     });
 }
 
+function getAllSideNav(req, res) {
+  const db = req.app.get("db");
+  db.query(
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON cohorts.mentor_id = users.id ORDER by cohorts.name asc`
+  )
+    .then(cohorts => {
+      res.status(201).json({ cohorts });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
 module.exports = {
   getAll,
   getByMentorID,
@@ -200,5 +214,6 @@ module.exports = {
   getAllMentors,
   getMentorCohortsByName,
   getAllCohortsByName,
-  getStudentsByClass
+  getStudentsByClass,
+  getAllSideNav
 };

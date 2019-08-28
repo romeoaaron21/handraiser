@@ -37,6 +37,21 @@ const styles = theme => ({
   purpleAvatar: {
     color: "#fff",
     backgroundColor: "#673ab7"
+  },
+  classList: {
+    maxHeight: "804px",
+    overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.3em"
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+      borderRadius: "10px",
+      outline: "1px solid slategrey"
+    }
   }
 });
 
@@ -58,7 +73,7 @@ class SideNav extends React.Component {
       const user = fetch.data.user[0];
       this.setState({ user });
 
-      api.fetch(`/api/cohorts/api`, "get").then(res => {
+      api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
         this.setState({
           cohorts: res.data.cohorts
         });
@@ -117,7 +132,7 @@ class SideNav extends React.Component {
         >
           {this.state.user.privilege === "mentor" ? "My Classes" : "Enrolled"}
         </Typography>
-        <List>
+        <List className={classes.classList}>
           {this.state.cohorts.map((cohort, index) =>
             this.state.members.filter(member => member.cohort_id === cohort.id)
               .length !== 0 ? (
@@ -150,26 +165,6 @@ class SideNav extends React.Component {
           )}
         </List>
         <Divider />
-        <List>
-          <Typography
-            style={{
-              padding: "10px 0px 0px 10px",
-              color: "gray",
-              textTransform: "uppercase",
-              fontSize: "12px"
-            }}
-            variant="subtitle2"
-          >
-            {"Settings"}
-          </Typography>
-
-          {["Cohorts", "Classes"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{<SettingIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
       </Drawer>
     );
   }
