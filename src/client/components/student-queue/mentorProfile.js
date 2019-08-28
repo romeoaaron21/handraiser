@@ -80,7 +80,8 @@ class MentorProfile extends PureComponent {
     super(props);
 
     this.state = {
-      students: []
+      students: [],
+      cohort_pass: ""
     };
   }
   componentDidMount() {
@@ -88,7 +89,8 @@ class MentorProfile extends PureComponent {
       .fetch(`/api/cohort/${this.props.cohort_id}/members/list`, "get")
       .then(res => {
         this.setState({
-          students: res.data.students
+          students: res.data.students,
+          cohort_pass: res.data.students[0].password
         });
       });
   }
@@ -112,7 +114,7 @@ class MentorProfile extends PureComponent {
                 Students Enrolled: {this.state.students.length}
               </Typography>
               <Typography variant="overline" color="textSecondary">
-                Cohort Password: 1425658
+                Cohort Password: {this.state.cohort_pass}
               </Typography>
             </CardContent>
           </CardActions>
