@@ -261,6 +261,19 @@ class Cohorts extends React.Component {
         });
       });
   };
+  removeStudent = (id, student_id) => {
+    api.fetch(`/api/cohorts/${id}/students/${student_id}`, "get").then(() => {
+      this.componentDidMount();
+      this.closeModal();
+      api.fetch(`/api/student/${student_id}/cohorts/`, "get").then(res => {
+        socket.emit("displayMember", res.data.member);
+      });
+      toast.info("Remove Student!", {
+        hideProgressBar: true,
+        draggable: false
+      });
+    });
+  };
 
   search = e => {
     if (e.currentTarget.value === "") {
@@ -459,6 +472,8 @@ class Cohorts extends React.Component {
                 />
                 {this.state.students !== undefined ? (
                   <StudentList
+                    removeStudent={this.removeStudent}
+                    privilege={this.state.privilege}
                     open={this.state.studentList}
                     close={this.closeModal}
                     students={this.state.students}
