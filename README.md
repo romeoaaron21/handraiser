@@ -36,4 +36,6 @@ _this is configured so that google login will work if you access this App to oth
    `yarn start`
 
 _for admin users sign in page: [Sign-in](boom-handraiser.com:3000/admin/sign-in)_
-_default admin account:_ \***_username: admin_** \***_password: Admin123_**
+_default admin account:_
+**_username: admin_**
+**_password: Admin123_**
