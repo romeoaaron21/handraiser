@@ -9,7 +9,8 @@ exports.up = (pgm) => {
     member_id: {
       type: 'integer',
       notNull: true,
-      references: '"member"'
+      references: '"member"',
+      onDelete: "cascade"
     },
     status: {
       type: 'text',
