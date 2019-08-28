@@ -298,6 +298,22 @@ class requestQueue extends Component {
                           </ExpansionPanelDetails>
                         </ExpansionPanel>
                       </Grid>
+                    ) : this.props.members.filter(
+                        member =>
+                          member.status === "waiting" &&
+                          member.cohort_id === parseInt(this.props.cohort_id)
+                      ).length === 0 ? (
+                      <Grid container className={classes.emptyQueue}>
+                        <img
+                          src={EmptyQueue}
+                          alt="img"
+                          width="280"
+                          height="250"
+                        />
+                        <Typography variant="overline" display="block">
+                          No one needs help...
+                        </Typography>
+                      </Grid>
                     ) : null
                   )
                 ) : (

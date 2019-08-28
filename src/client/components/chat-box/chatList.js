@@ -174,7 +174,6 @@ class ChatList extends PureComponent {
 
   render() {
     const { classes } = this.props;
-
     return (
       <React.Fragment>
         {/* Chat List Header*/}
@@ -215,12 +214,12 @@ class ChatList extends PureComponent {
                       <React.Fragment key={i}>
                         {this.props.conversation.length !== 0 ? (
                           this.props.conversation.map((convo, i) =>
-                            convo ===
-                              this.props.conversation[
-                                this.props.conversation.length - 1
-                              ] &&
-                            convo.cohort_id ===
-                              parseInt(this.props.cohort_id) ? (
+                            (convo.sender_id === this.props.sub &&
+                              convo.chatmate_id === this.props.mentor[0].sub) ||
+                            (convo.chatmate_id === this.props.sub &&
+                              convo.sender_id === this.props.mentor[0].sub &&
+                              convo.cohort_id ===
+                                parseInt(this.props.cohort_id)) ? (
                               <React.Fragment key={i}>
                                 <ListItem
                                   className={classes.list}
@@ -289,53 +288,69 @@ class ChatList extends PureComponent {
                       {this.props.conversation.length !== 0 ? (
                         this.props.conversation.map((convo, i) =>
                           convo ===
-                            this.props.conversation[
-                              this.props.conversation.length - 1
-                            ] &&
-                          convo.cohort_id === parseInt(this.props.cohort_id) ? (
+                          this.props.conversation[
+                            this.props.conversation.length - 1
+                          ] ? (
                             <React.Fragment key={i}>
-                              <ListItem
-                                className={classes.list}
-                                onClick={() => {
-                                  if (this.props.allowChat) {
-                                    this.props.sendChatSub();
-                                    this.props.displayBadge("student");
-                                  }
-                                }}
-                              >
-                                <ListItemAvatar>
-                                  <Avatar
-                                    src={mentor.avatar}
-                                    className={classes.userAvatar}
-                                  />
-                                </ListItemAvatar>
-                                <div className={classes.multiline}>
-                                  <Typography className={classes.chatName}>
-                                    {mentor.first_name} {mentor.last_name}
-                                  </Typography>
-                                  <Typography className={classes.chatDetails}>
-                                    {convo.message}
-                                  </Typography>
-                                </div>
-                                <div className={classes.chatAction}>
-                                  <Typography className={classes.chatTime}>
-                                    {" "}
-                                    {this.timeDisplay(convo.time)}{" "}
-                                  </Typography>
-                                  <Typography className={classes.chatBadge}>
-                                    <Badge
-                                      color="secondary"
-                                      badgeContent={this.state.count}
-                                      invisible={
-                                        this.props.priv === "student"
-                                          ? this.props.badge
-                                          : true
-                                      }
-                                      className={classes.margin}
-                                    ></Badge>
-                                  </Typography>
-                                </div>
-                              </ListItem>
+                              {convo.cohort_id ===
+                              parseInt(this.props.cohort_id) ? (
+                                <ListItem
+                                  className={classes.list}
+                                  onClick={() => {
+                                    if (this.props.allowChat) {
+                                      this.props.sendChatSub();
+                                      this.props.displayBadge("student");
+                                    }
+                                  }}
+                                >
+                                  <ListItemAvatar>
+                                    <Avatar
+                                      src={mentor.avatar}
+                                      className={classes.userAvatar}
+                                    />
+                                  </ListItemAvatar>
+                                  <div className={classes.multiline}>
+                                    <Typography className={classes.chatName}>
+                                      {mentor.first_name} {mentor.last_name}
+                                    </Typography>
+                                    <Typography className={classes.chatDetails}>
+                                      {(convo.sender_id === this.props.sub &&
+                                        convo.chatmate_id ===
+                                          this.props.mentor[0].sub) ||
+                                      (convo.chatmate_id === this.props.sub &&
+                                        convo.sender_id ===
+                                          this.props.mentor[0].sub)
+                                        ? convo.message
+                                        : null}
+                                    </Typography>
+                                  </div>
+                                  <div className={classes.chatAction}>
+                                    <Typography className={classes.chatTime}>
+                                      {" "}
+                                      {this.timeDisplay(convo.time)}{" "}
+                                    </Typography>
+                                    <Typography className={classes.chatBadge}>
+                                      {(convo.sender_id === this.props.sub &&
+                                        convo.chatmate_id ===
+                                          this.props.mentor[0].sub) ||
+                                      (convo.chatmate_id === this.props.sub &&
+                                        convo.sender_id ===
+                                          this.props.mentor[0].sub) ? (
+                                        <Badge
+                                          color="secondary"
+                                          badgeContent={this.state.count}
+                                          invisible={
+                                            this.props.priv === "student"
+                                              ? this.props.badge
+                                              : true
+                                          }
+                                          className={classes.margin}
+                                        ></Badge>
+                                      ) : null}
+                                    </Typography>
+                                  </div>
+                                </ListItem>
+                              ) : null}
                             </React.Fragment>
                           ) : null
                         )
