@@ -42,6 +42,36 @@ class navHeader extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.props.raise === "Waiting for help") {
+      if (this.state.clearText === "") {
+        this.setState({
+          disabled: true,
+          reason: "",
+          clearText: "cleared"
+        });
+      }
+    } else {
+      if (this.props.requested) {
+        if (this.state.clearText === "") {
+          this.setState({
+            disabled: true,
+            reason: "",
+            clearText: "cleared"
+          });
+        }
+      } else {
+        if (this.state.clearText !== "") {
+          this.setState({
+            disabled: false,
+            reason: "",
+            clearText: ""
+          });
+        }
+      }
+    }
+  }
+
   componentDidUpdate() {
     if (this.props.raise === "Waiting for help") {
       if (this.state.clearText === "") {

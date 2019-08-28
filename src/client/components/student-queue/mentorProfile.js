@@ -101,7 +101,14 @@ class MentorProfile extends PureComponent {
           <CardActions className={classes.cardContainer}>
             <CardMedia className={classes.media}>
               <Typography variant="h2" className={classes.noQues}>
-                {this.props.members.length}
+                {
+                  this.props.members.filter(
+                    member =>
+                      member.status === "waiting" &&
+                      parseInt(this.props.cohort_id) ===
+                        parseInt(member.cohort_id)
+                  ).length
+                }
               </Typography>
               <Typography variant="subtitle1" className={classes.labelQues}>
                 Student on Queue

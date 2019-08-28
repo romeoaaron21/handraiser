@@ -231,7 +231,10 @@ class ChatList extends PureComponent {
                     <IconButton
                       disabled={
                         this.props.members.filter(
-                          requested => requested.sub === student.sub
+                          requested =>
+                            requested.sub === student.sub &&
+                            parseInt(this.props.cohort_id) ===
+                              parseInt(requested.cohort_id)
                         ).length !== 0
                           ? true
                           : false
