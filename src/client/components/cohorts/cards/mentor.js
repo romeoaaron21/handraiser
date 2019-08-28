@@ -1,4 +1,5 @@
 import React from "react";
+
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -6,12 +7,10 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 
 import AddIcon from "@material-ui/icons/Add";
 import LockIcon from "@material-ui/icons/Lock";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
 
 import CardBackground from "../../../images/cardBg.jpg";
 
@@ -69,8 +68,7 @@ class MentorClassCards extends React.Component {
       openAdd,
       openStudentList,
       redirect,
-      search,
-      changeStatus
+      search
     } = this.props;
     return (
       <React.Fragment>
@@ -101,8 +99,11 @@ class MentorClassCards extends React.Component {
                   title={cohort.name}
                 />
                 <CardContent className={classes.cardContent}>
-                  <Typography gutterBottom variant="h5" component="h2">
+                  <Typography gutterBottom variant="h5" component="h2" style={{display: 'flex', alignItems: 'center'}}>
                     {cohort.name}
+                    {cohort.status === 'active' ? null :
+                      <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
+                    }
                   </Typography>
                   <Typography
                     variant="body2"
@@ -125,7 +126,9 @@ class MentorClassCards extends React.Component {
                   size="small"
                   color="primary"
                   id={cohort.id}
-                  onClick={() => (window.location.href = `/settings/${cohort.id}`)}
+                  onClick={() => (
+                    window.location.href = `/settings/${cohort.id}`
+                  )}
                 >
                   Settings
                 </Button>
@@ -141,19 +144,6 @@ class MentorClassCards extends React.Component {
                     Students
                   </Button>
                 ) : null}
-                {cohort.status === 'active' ?
-                  <span>
-                    <IconButton onClick={() => {changeStatus(cohort.id, 'notactive')}}>
-                      <LockOpenIcon/>
-                    </IconButton>
-                  </span>
-                :
-                  <span>
-                    <IconButton onClick={() => {changeStatus(cohort.id, 'active')}} >
-                      <LockIcon/>
-                    </IconButton>
-                  </span>
-                }
               </CardActions>
             </Card>
           ) : null

@@ -219,7 +219,7 @@ class Cohorts extends React.Component {
   };
 
   delete = id => {
-    api.fetch(`/api/cohorts/${id}`, "get").then(() => {
+    api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
       this.componentDidMount();
       toast.info("Cohort Deleted!", {
         hideProgressBar: true,
@@ -307,14 +307,6 @@ class Cohorts extends React.Component {
     }
   };
 
-  changeStatus = (id, status) => {
-    api
-      .fetch(`/api/cohorts/${id}/status/${status}`, "get")
-      .then(() => {
-        this.componentDidMount()
-      });
-  }
-
   render() {
     const { classes } = this.props;
     return (
@@ -371,7 +363,6 @@ class Cohorts extends React.Component {
                       redirect={this.redirect}
                       openStudentList={this.openStudentList}
                       user={this.state.user}
-                      changeStatus={this.changeStatus}
                     />
                   </div>
                 ) : this.state.member.length !== 0 &&
