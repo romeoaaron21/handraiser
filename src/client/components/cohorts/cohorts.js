@@ -360,7 +360,10 @@ class Cohorts extends React.Component {
                       user={this.state.user}
                     />
                   </div>
-                ) : this.state.member.length !== 0 ? (
+                ) : this.state.member.length !== 0 &&
+                  this.state.member.filter(
+                    member => member.student_id === this.state.id
+                  ).length !== 0 ? (
                   <div className={classes.student}>
                     <Grid container>
                       <Grid
@@ -377,6 +380,7 @@ class Cohorts extends React.Component {
                       </Grid>
 
                       <StudentClassCards
+                        user_id={this.state.id}
                         cohorts={this.state.cohorts}
                         members={this.state.member}
                         openEnroll={this.openEnroll}
@@ -426,6 +430,7 @@ class Cohorts extends React.Component {
                             </Grid>
                           ) : (
                             <AvailClass
+                              user_id={this.state.id}
                               cohorts={this.state.cohorts}
                               members={this.state.member}
                               openEnroll={this.openEnroll}

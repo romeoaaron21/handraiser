@@ -63,9 +63,8 @@ function deleteCohort(req, res) {
 
 function getCohortsByStudentID(req, res) {
   const db = req.app.get("db");
-  const { id } = req.params;
 
-  db.query(`SELECT * from member WHERE student_id = ${id}`)
+  db.query(`SELECT * from member`)
     .then(member => {
       res.status(201).json({ member });
     })
