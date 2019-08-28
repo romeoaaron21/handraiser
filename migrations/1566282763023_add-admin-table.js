@@ -1,22 +1,22 @@
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {
-  pgm.createTable('admin', {
+exports.up = pgm => {
+  pgm.createTable("admin", {
     id: {
-      type: 'serial',
+      type: "serial",
       primaryKey: true
     },
     username: {
-      type: 'text',
-      notNull: true,
+      type: "text",
+      notNull: true
     },
     password: {
-      type: 'text',
+      type: "text",
       notNull: true
     }
-  })
+  });
+
+  pgm.sql("insert into admin (username,password) values('admin','Admin123')");
 };
 
-exports.down = (pgm) => {
-
-};
+exports.down = pgm => {};
