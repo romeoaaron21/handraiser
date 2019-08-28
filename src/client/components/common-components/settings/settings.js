@@ -1,13 +1,14 @@
 import React, { PureComponent } from "react";
 import clsx from "clsx";
+import { ToastContainer, toast } from "react-toastify";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
 import {
   withStyles,
   Paper,
   Typography,
   Divider,
-  List,
   TextField,
   Grid,
   IconButton,
@@ -19,6 +20,14 @@ import {
 //NAVIGATION
 import NavBar from "../nav-bar/navBar";
 import SideNav from "../side-nav/sideNav";
+
+//API
+import api from "./../../../services/fetchApi";
+
+//LOADER
+import Loader from "../loader/loader";
+
+import DeleteClass from "./modal/delete";
 
 const styles = theme => ({
   root: {
@@ -63,9 +72,6 @@ const styles = theme => ({
   header: {
     marginTop: 30
   },
-  //   custom: {
-  //     height: 45
-  //   },
   textField: {
     margin: "11px 5px",
     "@media (max-width: 425px)": {
@@ -85,13 +91,20 @@ const styles = theme => ({
     letterSpacing: "-0.05px"
   },
   itemSettings: {
-    //  padding: theme.spacing(3, 1),
     display: "flex",
     alignItems: "center",
     marginBottom: 18
   },
   button: {
     margin: theme.spacing(1)
+  },
+  deleteBtn: {
+    margin: theme.spacing(1),
+    color: 'white',
+    backgroundColor: '#b31010',
+    '&:hover': {
+      backgroundColor: '#a91111'
+    }
   },
   settingsBtn: {
     marginTop: 90,
@@ -111,11 +124,41 @@ class Settings extends PureComponent {
     super(props);
 
     this.state = {
+      loader: true,
+      id: this.props.match.params.cid,
+      status: false,
+      modal: false,
+      oldStatus: false,
+      oldname: "",
+      name: "",
+      newpassword: "",
       password: "",
-      Newpassword: "",
+      oldpassword: "",
       showOldPassword: false,
       showNewPassword: false
     };
+  }
+
+  componentDidMount(){
+    document.title = "Settings";
+    api
+      .fetch(`/api/cohort/${this.state.id}/details`, 'get')
+      .then(res => {
+        if(res.data.cohort[0].status !== 'active'){
+          this.setState({
+            status: true,
+            oldStatus: true
+          })
+        }
+        this.setState({
+          oldname: res.data.cohort[0].name,
+          name: res.data.cohort[0].name,
+          password: res.data.cohort[0].password
+        })
+        setTimeout(() => {
+          this.setState({ loader: false });
+        }, 1000);
+      })
   }
 
   //NAVIGATION
@@ -128,7 +171,7 @@ class Settings extends PureComponent {
   };
 
   handleChange = () => event => {
-    this.setState({ password: event.target.value });
+    this.setState({ [event.target.getAttribute('name')]: event.target.value });
   };
 
   handleClickShowOldPassword = () => {
@@ -142,6 +185,64 @@ class Settings extends PureComponent {
   handleMouseDownPassword = event => {
     event.preventDefault();
   };
+
+  delete = (id) => {
+    api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
+      window.location.href = `/cohorts`;
+    });
+  }
+
+  openModal = () => {
+    this.setState({
+      modal: true
+    })
+  }
+
+  closeModal = () => {
+    this.setState({
+      modal: false
+    })
+  }
+
+  submit = (name, oldpassword, newpassword, status) => {
+    if(status !== true){
+      status = 'active'
+    } else {
+      status = 'nonactive'
+    }
+    if(name && oldpassword && newpassword){
+      const state = {
+        name, newpassword, status
+      }
+      if(oldpassword !== this.state.password){
+        toast.error("Wrong Old Password!", {
+          hideProgressBar: true,
+          draggable: false
+        });
+      } else {
+        api
+          .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
+          .then(() => {
+            window.location.href = `/cohorts`;
+          })
+      }
+    } else if(name){
+      const newpassword = this.state.password
+      const state = {
+        name, newpassword, status
+      }
+      api
+        .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
+        .then(() => {
+          window.location.href = `/cohorts`;
+        })
+    } else {
+      toast.error("Please fill up all fields!", {
+        hideProgressBar: true,
+        draggable: false
+      });
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -162,12 +263,14 @@ class Settings extends PureComponent {
           })}
         >
           <div className={classes.drawerHeader} />
+        {this.state.loader ? 
+          <Loader content="Loading Details..." /> 
+        :
           <Paper className={classes.mainContent}>
-            <Typography variant="subtitle" style={{ fontWeight: "bold" }}>
+            <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
               Cohort Settings
             </Typography>
             <Divider className={classes.divider} />
-
             <div className={classes.header} />
             <Grid container className={classes.itemSettings}>
               <Grid item xs={12} sm={4}>
@@ -175,38 +278,37 @@ class Settings extends PureComponent {
                   Change Cohort Name
                 </Typography>
               </Grid>
-
               <Grid item xs={12} sm={8} className={classes.responsive}>
                 <TextField
                   id="outlined-name"
                   label="Cohort Name"
-                  defaultValue="BoomCampSpring 2019"
+                  name="name"
                   className={classes.textField}
                   InputProps={{ classes: { root: classes.custom } }}
                   fullWidth
+                  defaultValue={this.state.name}
                   margin="normal"
                   variant="outlined"
+                  onChange={this.handleChange()}
                 />
               </Grid>
             </Grid>
-
             <Grid container className={classes.itemSettings}>
               <Grid item xs={12} sm={4}>
                 <Typography variant="h6" className={classes.name}>
                   Change Password
                 </Typography>
               </Grid>
-
               <Grid item xs={12} sm={8} className={classes.responsive}>
                 <TextField
-                  id="outlined-adornment-password"
+                  id="outlined-adornment-oldpassword"
                   className={clsx(classes.margin, classes.textField)}
                   variant="outlined"
                   type={this.state.showOldPassword ? "text" : "password"}
                   label="Old Password"
-                  defaultValue="fakepassword123"
-                  // InputProps={{ classes: { root: classes.custom } }}
-                  onChange={this.handleChange("password")}
+                  name="oldpassword"
+                  defaultValue={this.state.oldpassword}
+                  onChange={this.handleChange()}
                   InputProps={{
                     classes: { root: classes.custom },
                     endAdornment: (
@@ -229,20 +331,18 @@ class Settings extends PureComponent {
                 />
               </Grid>
             </Grid>
-
             <Grid container className={classes.itemSettings}>
               <Grid item xs={12} sm={4}></Grid>
-
               <Grid item xs={12} sm={8} className={classes.responsive}>
                 <TextField
-                  id="outlined-adornment-password"
+                  id="outlined-adornment-newpassword"
                   className={clsx(classes.margin, classes.textField)}
                   variant="outlined"
                   type={this.state.showNewPassword ? "text" : "password"}
                   label="New Password"
-                  defaultValue="enrollme123"
-                  // InputProps={{ classes: { root: classes.custom } }}
-                  onChange={this.handleChange("password")}
+                  name="newpassword"
+                  defaultValue={this.state.newpassword}
+                  onChange={this.handleChange()}
                   InputProps={{
                     classes: { root: classes.custom },
                     endAdornment: (
@@ -265,44 +365,68 @@ class Settings extends PureComponent {
                 />
               </Grid>
             </Grid>
-
             <Grid container className={classes.itemSettings}>
               <Grid item xs={12} sm={4}>
                 <Typography variant="h6" className={classes.name}>
                   Lock this Cohort
                 </Typography>
               </Grid>
-
               <Grid item xs={12} sm={2} className={classes.responsive}>
                 <Switch
-                  checked={this.state.checkedB}
-                  value="checkedB"
+                  checked={this.state.status}
+                  value={this.state.status}
+                  onClick={() => { this.setState({
+                    status: !this.state.status
+                  })}}
                   color="primary"
                   inputProps={{ "aria-label": "primary checkbox" }}
                 />
               </Grid>
             </Grid>
-
-            {/* <Divider className={classes.divider} /> */}
-
             <Grid container className={classes.settingsBtn}>
               <Button
                 variant="contained"
                 size="small"
                 className={classes.button}
+                onClick={() => (
+                  window.location.href = `/cohorts`
+                )}
               >
-                Discard
+                cancel
               </Button>
+              <Button
+                variant="contained"
+                size="small"
+                className={classes.deleteBtn}
+                onClick={() => {this.openModal()}}
+              >
+                delete
+              </Button>
+              {
+                this.state.name !== this.state.oldname || this.state.newpassword !== '' || this.state.status !== this.state.oldStatus ?
               <Button
                 variant="contained"
                 color="primary"
                 size="small"
                 className={classes.button}
+                onClick={() => {this.submit(this.state.name, this.state.oldpassword, this.state.newpassword, this.state.status)}}
               >
                 save
               </Button>
+              : null }
             </Grid>
           </Paper>
+        }
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
+        />
+        <DeleteClass
+          open={this.state.modal}
+          close={this.closeModal}
+          id={this.state.id}
+          delete={this.delete}
+        />
         </main>
       </div>
     );
