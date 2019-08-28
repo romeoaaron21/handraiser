@@ -14,7 +14,9 @@ import {
 const styles = theme => ({
   card: {
     height: 245,
-    maxWidth: "auto"
+    maxWidth: "auto",
+    borderTopLeftRadius: "5px",
+    borderTopRightRadius: "5px"
   },
   cardContainer: {
     height: "100%",
@@ -35,8 +37,9 @@ const styles = theme => ({
     flexDirection: "column"
   },
   media: {
+    backgroundColor: "#775aa5",
     height: "115%",
-    width: 420
+    width: "100%"
   },
   bigAvatar: {
     margin: 10,
@@ -57,6 +60,18 @@ const styles = theme => ({
       width: 50,
       height: 50
     }
+  },
+  noQues: {
+    color: "#fff",
+    margin: "24px 0px 0px 49px",
+    "@media (max-width: 425px)": {
+      fontSize: "38px",
+      margin: "37px 0px 0px 49px"
+    }
+  },
+  labelQues: {
+    color: "#fff",
+    marginLeft: "51px"
   }
 });
 
@@ -84,25 +99,20 @@ class MentorProfile extends PureComponent {
       <React.Fragment>
         <Card className={classes.card}>
           <CardActions className={classes.cardContainer}>
-            <CardMedia className={classes.media} image={CardBackground} />
-            <CardContent className={classes.cardContent}>
-              <div className={classes.class}>
-                <Typography gutterBottom variant="h6" component="h2">
-                  {this.props.user.name}
-                </Typography>
-                <Avatar
-                  src={this.props.user.avatar}
-                  className={classes.userAvatar}
-                />
-              </div>
-              <Typography variant="body2" color="textSecondary" component="p">
-                {this.props.user.first_name.charAt(0).toUpperCase() +
-                  this.props.user.first_name.slice(1)}{" "}
-                {this.props.user.last_name.charAt(0).toUpperCase() +
-                  this.props.user.last_name.slice(1)}
+            <CardMedia className={classes.media}>
+              <Typography variant="h2" className={classes.noQues}>
+                10
               </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Students: {this.state.students.length}
+              <Typography variant="subtitle1" className={classes.labelQues}>
+                Student on Queue
+              </Typography>
+            </CardMedia>
+            <CardContent className={classes.cardContent}>
+              <Typography variant="overline" color="textSecondary">
+                Students Enrolled: {this.state.students.length}
+              </Typography>
+              <Typography variant="overline" color="textSecondary">
+                Cohort Password: 1425658
               </Typography>
             </CardContent>
           </CardActions>

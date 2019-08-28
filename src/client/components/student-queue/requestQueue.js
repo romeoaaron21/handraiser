@@ -86,10 +86,19 @@ const styles = theme => ({
     }
   },
   emptyQueue: {
-    marginTop: 100,
+    marginTop: 140,
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "column"
+    flexDirection: "column",
+    "@media (max-width: 425px)": {
+      marginTop: 160
+    }
+  },
+  emptyImgSize: {
+    "@media (max-width: 425px)": {
+      width: 220,
+      height: 200
+    }
   },
   responsive: {
     "@media (max-width: 425px)": {
@@ -303,7 +312,13 @@ class requestQueue extends Component {
             </Box>
           ) : (
             <Grid container className={classes.emptyQueue}>
-              <img src={EmptyQueue} alt="img" width="280" height="250" />
+              <img
+                src={EmptyQueue}
+                className={classes.emptyImgSize}
+                alt="img"
+                width="280"
+                height="250"
+              />
               <Typography variant="overline" display="block">
                 No one needs help...
               </Typography>

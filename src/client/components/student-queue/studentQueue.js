@@ -46,7 +46,33 @@ const styles = theme => ({
     backgroundImage: `radial-gradient(25rem 18.75rem ellipse at bottom right, #883dca, transparent), url(${ClassroomBg})`
   },
   main: {
-    marginTop: 4
+    marginTop: 4,
+    "@media (max-width: 425px)": {
+      display: "flex",
+      flexFlow: "column"
+    }
+  },
+  beingHelpMobile: {
+    display: "none",
+    "@media (max-width: 425px)": {
+      order: "1",
+      display: "block"
+    }
+  },
+  beingHelp: {
+    "@media (max-width: 425px)": {
+      display: "none"
+    }
+  },
+  chatList: {
+    "@media (max-width: 425px)": {
+      order: "3"
+    }
+  },
+  requestQue: {
+    "@media (max-width: 425px)": {
+      order: "2"
+    }
   },
   navHeader: {
     display: "flex",
@@ -551,7 +577,9 @@ class Student extends Component {
               {this.state.user.length !== 0 ? (
                 <React.Fragment>
                   {this.state.previledge === "mentor" ? (
-                    <div className={classes.headerSpacer} />
+                    <Paper className={classes.header}>
+                      <StudentHeader user={this.state.user[0]} />
+                    </Paper>
                   ) : (
                     <Paper className={classes.header}>
                       <StudentHeader
@@ -563,7 +591,6 @@ class Student extends Component {
                       />
                     </Paper>
                   )}
-
                   <Grid container className={classes.navHeader}>
                     {this.state.previledge === "mentor" ? null : (
                       <StudentNavHeader
@@ -579,7 +606,18 @@ class Student extends Component {
               )}
 
               <Grid container className={classes.main} spacing={1}>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4} className={classes.beingHelpMobile}>
+                  {this.state.previledge === "mentor" ? null : (
+                    <React.Fragment>
+                      <Box order={1}>
+                        <BeingHelped
+                          helpingStudent={this.state.helpingStudent}
+                        />
+                      </Box>
+                    </React.Fragment>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.chatList}>
                   {this.state.previledge === "mentor" ? (
                     <div>
                       <BeingHelpedModal
@@ -616,11 +654,12 @@ class Student extends Component {
                   ) : (
                     <React.Fragment>
                       <Box order={1}>
-                        <BeingHelped
-                          helpingStudent={this.state.helpingStudent}
-                        />
-                        {/*added for chatBox onClick*/}
-                        {/* <button onClick={() => this.sendChatSub()}>Chat</button> */}
+                        <div className={classes.beingHelp}>
+                          <BeingHelped
+                            helpingStudent={this.state.helpingStudent}
+                          />
+                        </div>
+
                         <ChatList
                           sendChatSub={this.sendChatSub}
                           mentor={this.state.mentorInfo}
@@ -651,7 +690,7 @@ class Student extends Component {
                 </Grid>
                 {/* start of chatBox */}
                 {!this.state.chatBox ? (
-                  <Grid item xs={12} sm={8}>
+                  <Grid item xs={12} sm={8} className={classes.requestQue}>
                     <RequestQueue
                       sendChatSubM={this.sendChatSubM}
                       cohort_id={this.props.cohort_id}
