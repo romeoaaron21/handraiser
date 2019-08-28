@@ -189,6 +189,7 @@ class ChatList extends PureComponent {
 
   render() {
     const { classes } = this.props;
+    console.log(this.state.students, this.props.members);
     return (
       <React.Fragment>
         {/* Chat List Header*/}
@@ -225,7 +226,17 @@ class ChatList extends PureComponent {
               </div>
               <div className={`${classes.queueAction} actionShow`}>
                 <Tooltip title="Move To Queue" placement="top">
-                  <IconButton className={classes.responsive}>
+                  <IconButton
+                    disabled={
+                      this.props.members.filter(
+                        requested => requested.sub === student.sub
+                      ).length !== 0
+                        ? true
+                        : false
+                    }
+                    className={classes.responsive}
+                    onClick={() => this.props.moveToQueue(student.sub)}
+                  >
                     <MoveToQueue className={classes.actionIcon} />
                   </IconButton>
                 </Tooltip>
