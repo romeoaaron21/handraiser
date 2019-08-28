@@ -73,13 +73,19 @@ class AvailClass extends React.Component {
       openEnroll,
       openLeave,
       openStudentList,
-      members
+      members,
+      user_id
     } = this.props;
+
     return (
       <React.Fragment>
         {cohorts.map(cohort => {
-          return members.filter(member => member.cohort_id === cohort.id)
-            .length !== 0 ? null : (
+          return members.filter(
+            member =>
+              member.cohort_id === cohort.id && member.student_id === user_id
+          ).length !== 0 ? (
+            console.log(members, cohorts)
+          ) : (
             <Grid xs={3} key={cohort.id}>
               <Card className={classes.card}>
                 <CardActionArea

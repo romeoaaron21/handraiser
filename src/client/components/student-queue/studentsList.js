@@ -190,6 +190,7 @@ class ChatList extends PureComponent {
 
   render() {
     const { classes } = this.props;
+    console.log(this.state.students, this.props.members);
     return (
       <React.Fragment>
         {/* Chat List Header*/}
@@ -215,64 +216,35 @@ class ChatList extends PureComponent {
         >
           {/* Chat List */}
 
-          {this.state.students.map(student => {
-            if (this.state.search) {
-              if (
-                student.first_name
-                  .toLowerCase()
-                  .includes(this.state.search.toLowerCase()) ||
-                student.last_name
-                  .toLowerCase()
-                  .includes(this.state.search.toLowerCase())
-              ) {
-                return (
-                  <ListItem className={classes.list} key={student.id}>
-                    <ListItemAvatar>
-                      <Avatar
-                        src={student.avatar}
-                        className={classes.userAvatar}
-                      />
-                    </ListItemAvatar>
-                    <div className={classes.multiline}>
-                      <Typography className={classes.chatName}>
-                        {student.first_name + " " + student.last_name}
-                      </Typography>
-                    </div>
-                    <div className={`${classes.queueAction} actionShow`}>
-                      <Tooltip title="Move To Queue" placement="top">
-                        <IconButton className={classes.responsive}>
-                          <MoveToQueue className={classes.actionIcon} />
-                        </IconButton>
-                      </Tooltip>
-                    </div>
-                  </ListItem>
-                );
-              }
-            } else {
-              return (
-                <ListItem className={classes.list} key={student.id}>
-                  <ListItemAvatar>
-                    <Avatar
-                      src={student.avatar}
-                      className={classes.userAvatar}
-                    />
-                  </ListItemAvatar>
-                  <div className={classes.multiline}>
-                    <Typography className={classes.chatName}>
-                      {student.first_name + " " + student.last_name}
-                    </Typography>
-                  </div>
-                  <div className={`${classes.queueAction} actionShow`}>
-                    <Tooltip title="Move To Queue" placement="top">
-                      <IconButton className={classes.responsive}>
-                        <MoveToQueue className={classes.actionIcon} />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                </ListItem>
-              );
-            }
-          })}
+          {this.state.students.map(student => (
+            <ListItem className={classes.list} key={student.id}>
+              <ListItemAvatar>
+                <Avatar src={student.avatar} className={classes.userAvatar} />
+              </ListItemAvatar>
+              <div className={classes.multiline}>
+                <Typography className={classes.chatName}>
+                  {student.first_name + " " + student.last_name}
+                </Typography>
+              </div>
+              <div className={`${classes.queueAction} actionShow`}>
+                <Tooltip title="Move To Queue" placement="top">
+                  <IconButton
+                    disabled={
+                      this.props.members.filter(
+                        requested => requested.sub === student.sub
+                      ).length !== 0
+                        ? true
+                        : false
+                    }
+                    className={classes.responsive}
+                    onClick={() => this.props.moveToQueue(student.sub)}
+                  >
+                    <MoveToQueue className={classes.actionIcon} />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </ListItem>
+          ))}
           {/* End Chat List */}
 
           {/* End No Message Display */}

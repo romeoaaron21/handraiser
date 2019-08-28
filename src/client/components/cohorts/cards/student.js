@@ -78,8 +78,11 @@ class StudentClassCards extends React.Component {
     return (
       <React.Fragment>
         {cohorts.map(cohort => {
-          return members.filter(member => member.cohort_id === cohort.id)
-            .length !== 0 ? (
+          return members.filter(
+            member =>
+              member.cohort_id === cohort.id &&
+              member.student_id === this.props.user_id
+          ).length !== 0 ? (
             <Grid xs={3} key={cohort.id}>
               <Card className={classes.card}>
                 <CardActionArea

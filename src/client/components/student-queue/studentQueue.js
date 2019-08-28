@@ -537,6 +537,21 @@ class Student extends Component {
       });
   };
 
+  moveToQueue = sub => {
+    const data = api.fetch(
+      `/api/requestHelp/${sub}/${this.props.cohort_id}`,
+      "post",
+      { reason: "" }
+    );
+    data
+      .then(res => {
+        socket.emit("requestHelp", res.data);
+      })
+      .then(() => {
+        this.fetchStudents();
+      });
+  };
+
   deleteRequest = id => {
     const data = api.fetch(
       `/api/deleteRequest/${id}/${this.props.cohort_id}`,
@@ -642,7 +657,11 @@ class Student extends Component {
                         members={this.state.members}
                         cohort_id={this.props.cohort_id}
                       />
-                      <StudentsList cohort_id={this.props.cohort_id} />
+                      <StudentsList
+                        cohort_id={this.props.cohort_id}
+                        members={this.state.members}
+                        moveToQueue={this.moveToQueue}
+                      />
 
                       <RemoveRequest
                         deleteRequest={this.deleteRequest}
