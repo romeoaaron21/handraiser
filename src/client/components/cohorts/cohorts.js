@@ -89,21 +89,17 @@ class Cohorts extends React.Component {
     document.title = "Cohorts";
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
+      api.fetch(`/api/cohorts/api`, "get").then(res => {
+        socket.emit("displayCohorts", res.data.cohorts);
+      });
       if (user.privilege === "mentor") {
-        api.fetch(`/api/cohorts/api`, "get").then(res => {
-          socket.emit("displayCohorts", res.data.cohorts);
+        api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
+          socket.emit("displayCohortsSideNav", res.data.cohorts);
           setTimeout(() => {
             this.setState({ loader: false });
           }, 1000);
         });
-
-        api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
-          socket.emit("displayCohortsSideNav", res.data.cohorts);
-        });
       } else {
-        api.fetch(`/api/cohorts/api`, "get").then(res => {
-          socket.emit("displayCohorts", res.data.cohorts);
-        });
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
           socket.emit("displayMember", res.data.member);
           setTimeout(() => {
@@ -122,8 +118,9 @@ class Cohorts extends React.Component {
   UNSAFE_componentWillMount() {
     socket.on("displayCohorts", cohorts => {
       if(this.state.privilege === 'student'){
-        cohorts = cohorts.filter(cohorts =>  cohorts.status === 'active')
+        cohorts = cohorts.filter(cohorts => cohorts.status === 'active')
       }
+      console.log(cohorts);
       this.setState({ cohorts });
     });
 
@@ -291,10 +288,7 @@ class Cohorts extends React.Component {
       this.setState({ searchValue: e.currentTarget.value, search: true });
       if (this.state.privilege !== "student") {
         api
-          .fetch(
-            `/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`,
-            "get"
-          )
+          .fetch(`/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, "get")
           .then(res => {
             this.setState({
               cohorts: res.data.cohorts
@@ -304,6 +298,7 @@ class Cohorts extends React.Component {
         api
           .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
           .then(res => {
+            res.data.cohorts = res.data.cohorts.filter(cohorts => cohorts.status === 'active')
             this.setState({
               cohorts: res.data.cohorts
             });

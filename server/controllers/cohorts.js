@@ -163,7 +163,7 @@ function getAllCohortsByName(req, res) {
   const { value } = req.params;
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON cohorts.mentor_id = users.id WHERE LOWER(cohorts.name) LIKE LOWER('%${value}%') AND cohorts.status = 'active'`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON cohorts.mentor_id = users.id WHERE LOWER(cohorts.name) LIKE LOWER('%${value}%') ORDER BY cohorts.id DESC`
   )
     .then(cohorts => {
       res.status(201).json({ cohorts });

@@ -17,7 +17,7 @@ function Router() {
       <Route path="/sign-in" component={SignIn} />
       <Route path="/cohorts" component={Cohorts} />
       <Route path="/queue/:cid" component={Queue} />
-      <Route path="/settings" component={Settings} />
+      <Route path="/settings/:cid" component={Settings} />
       <Route path="/admin/keys" component={MentorKeys} />
       <Route path="/admin/mentors" component={Mentor} />
       <Route path="/admin/cohorts" component={AdminCohorts} />

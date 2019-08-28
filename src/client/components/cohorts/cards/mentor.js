@@ -67,7 +67,6 @@ class MentorClassCards extends React.Component {
       classes,
       cohorts,
       openAdd,
-      openDelete,
       openStudentList,
       redirect,
       search,
@@ -126,7 +125,7 @@ class MentorClassCards extends React.Component {
                   size="small"
                   color="primary"
                   id={cohort.id}
-                  onClick={() => (window.location.href = `/settings`)}
+                  onClick={() => (window.location.href = `/settings/${cohort.id}`)}
                 >
                   Settings
                 </Button>
