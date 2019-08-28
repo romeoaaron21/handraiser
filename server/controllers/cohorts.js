@@ -219,6 +219,37 @@ function changeStatus(req, res) {
   });
 }
 
+function getCohortDetails(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`SELECT * FROM cohorts WHERE id = ${id}`)
+    .then(cohort => {
+      res.status(201).json({ cohort });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function updateCohortDetails(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+  const { name, newpassword, status } = req.body;
+
+  db.query(
+    `UPDATE cohorts SET name = '${name}', password = '${newpassword}', status = '${status}' WHERE id = '${id}'`
+  ).then(status => {
+    res.status(201).json({ status });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
 module.exports = {
   getAll,
   getByMentorID,
@@ -232,5 +263,7 @@ module.exports = {
   getAllCohortsByName,
   getStudentsByClass,
   getAllSideNav,
-  changeStatus
+  changeStatus,
+  updateCohortDetails,
+  getCohortDetails
 };

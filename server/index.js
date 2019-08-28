@@ -116,16 +116,18 @@ massive({
   app.get("/api/cohorts/api", cohorts.getAll);
   app.get("/api/student/:id/cohorts/", cohorts.getCohortsByStudentID);
   app.get("/api/mentor/:id/cohorts/", cohorts.getByMentorID);
-  app.get("/api/cohorts/:id", cohorts.deleteCohort);
+  app.get("/api/cohorts/:id/delete", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
   app.get("/api/cohorts/:value/search/mentor/:id", cohorts.getMentorCohortsByName);
   app.get("/api/cohorts/:value/search", cohorts.getAllCohortsByName);
   app.get("/api/cohorts/:id/students", cohorts.getStudentsByClass);
   app.get("/api/cohorts/:id/status/:status", cohorts.changeStatus);
+  app.get("/api/cohort/:id/details", cohorts.getCohortDetails);
 
   app.post("/api/cohorts/mentor/:id/add", cohorts.addCohort);
   app.post("/api/cohorts/:id/students", cohorts.enroll);
+  app.post("/api/cohort/:id/editDetails", cohorts.updateCohortDetails);
 
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
   // Cohorts End
