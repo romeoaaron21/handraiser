@@ -107,7 +107,7 @@ const styles = theme => ({
     }
   },
   settingsBtn: {
-    marginTop: 90,
+    marginTop: 40,
     justifyContent: "flex-end",
     "@media (max-width: 599px)": {
       marginTop: 20
@@ -140,6 +140,7 @@ class Settings extends PureComponent {
       errorOldPass: false,
       errorNewPass: false,
       passwordMatch: true,
+      newpasswordDisable: true
     };
   }
 
@@ -234,11 +235,13 @@ class Settings extends PureComponent {
       })
       if(e.target.value !== this.state.password){
         this.setState({
-          passwordMatch: false
+          passwordMatch: false,
+          newpasswordDisable: true
         })
       }else{
         this.setState({
-          passwordMatch: true
+          passwordMatch: true,
+          newpasswordDisable: false
         })
       }
     } else {
@@ -305,22 +308,15 @@ class Settings extends PureComponent {
           })
       }
     } else if(name){
-      if(oldpassword === '' && newpassword !== this.state.password) {
-        toast.error("Please enter old password!", {
-          hideProgressBar: true,
-          draggable: false
-        });
-      } else {
-        const newpassword = this.state.password
-        const state = {
-          name, newpassword, status
-        }
-        api
-          .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
-          .then(() => {
-            window.location.href = `/cohorts`;
-          })
+      const newpassword = this.state.password
+      const state = {
+        name, newpassword, status
       }
+      api
+        .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
+        .then(() => {
+          window.location.href = `/cohorts`;
+        })
     } else {
       toast.error("Please fill up all the necessary fields!", {
         hideProgressBar: true,
@@ -376,7 +372,7 @@ class Settings extends PureComponent {
                   variant="outlined"
                   onKeyUp={this.handleNameChange}
                   error={this.state.errorNewName}
-                  helperText={this.state.errorNewName ? "Name is required" : ''}
+                  helperText={this.state.errorNewName ? "Name is required" : ' '}
                   onBlur={this.checkNewNameBlur}
                 />
               </Grid>
@@ -398,7 +394,7 @@ class Settings extends PureComponent {
                   defaultValue={this.state.oldpassword}
                   onKeyUp={this.checkOldPass}
                   error={this.state.errorOldPass || !this.state.passwordMatch}
-                  helperText={this.state.errorOldPass ? "Password is required" : !this.state.passwordMatch ? "Password incorrect" : ''}
+                  helperText={this.state.errorOldPass ? "Password is required" : !this.state.passwordMatch ? "Password incorrect" : ' '}
                   onBlur={this.checkOldPassBlur}
                   InputProps={{
                     classes: { root: classes.custom },
@@ -433,9 +429,10 @@ class Settings extends PureComponent {
                   label="New Password"
                   name="newpassword"
                   defaultValue={this.state.newpassword}
+                  disabled={this.state.newpasswordDisable}
                   onKeyUp={this.checkNewPass}
                   error={this.state.errorNewPass}
-                  helperText={this.state.errorNewPass ? "Password is required" : ''}
+                  helperText={this.state.errorNewPass ? "Password is required" : ' '}
                   onBlur={this.checkNewPassBlur}
                   InputProps={{
                     classes: { root: classes.custom },
