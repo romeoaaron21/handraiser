@@ -72,7 +72,7 @@ class MentorClassCards extends React.Component {
     } = this.props;
     return (
       <React.Fragment>
-        {search === true ? null : (
+        {search !== '' ? null : (
           <Card className={classes.card}>
             <CardActionArea
               className={classes.addCardContainer}
@@ -86,68 +86,136 @@ class MentorClassCards extends React.Component {
             </CardActionArea>
           </Card>
         )}
-        {cohorts.map(cohort =>
-          cohort.mentor_id === this.props.user.id ? (
-            <Card className={classes.card} key={cohort.id}>
-              <CardActionArea
-                className={classes.cardContainer}
-                onClick={() => redirect(cohort.id)}
-              >
-                <CardMedia
-                  className={classes.media}
-                  image={CardBackground}
-                  title={cohort.name}
-                />
-                <CardContent className={classes.cardContent}>
-                  <Typography gutterBottom variant="h5" component="h2" style={{display: 'flex', alignItems: 'center'}}>
-                    {cohort.name}
-                    {cohort.status === 'active' ? null :
-                      <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
-                    }
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
+        {cohorts.map(cohort => {
+          if (cohort.mentor_id === this.props.user.id) {
+            if (search) {
+              if(cohort.name.toLowerCase().includes(search.toLowerCase())) {
+                return (
+                  <Card className={classes.card} key={cohort.id}>
+                    <CardActionArea
+                      className={classes.cardContainer}
+                      onClick={() => redirect(cohort.id)}
+                    >
+                      <CardMedia
+                        className={classes.media}
+                        image={CardBackground}
+                        title={cohort.name}
+                      />
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2" style={{display: 'flex', alignItems: 'center'}}>
+                          {cohort.name}
+                          {cohort.status === 'active' ? null :
+                            <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
+                          }
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          Password: {cohort.password}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          Students: {cohort.members}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions className={classes.buttonContainer}>
+                      <Button
+                        size="small"
+                        color="primary"
+                        id={cohort.id}
+                        onClick={() => (
+                          window.location.href = `/settings/${cohort.id}`
+                        )}
+                      >
+                        Settings
+                      </Button>
+                      {cohort.members !== "0" ? (
+                        <Button
+                          size="small"
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => {
+                            openStudentList(cohort.id);
+                          }}
+                        >
+                          Students
+                        </Button>
+                      ) : null}
+                    </CardActions>
+                  </Card>
+                );
+              }
+            } else {
+              return (
+                <Card className={classes.card} key={cohort.id}>
+                  <CardActionArea
+                    className={classes.cardContainer}
+                    onClick={() => redirect(cohort.id)}
                   >
-                    Password: {cohort.password}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                  >
-                    Students: {cohort.members}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              <CardActions className={classes.buttonContainer}>
-                <Button
-                  size="small"
-                  color="primary"
-                  id={cohort.id}
-                  onClick={() => (
-                    window.location.href = `/settings/${cohort.id}`
-                  )}
-                >
-                  Settings
-                </Button>
-                {cohort.members !== "0" ? (
-                  <Button
-                    size="small"
-                    color="primary"
-                    id={cohort.id}
-                    onClick={() => {
-                      openStudentList(cohort.id);
-                    }}
-                  >
-                    Students
-                  </Button>
-                ) : null}
-              </CardActions>
-            </Card>
-          ) : null
-        )}
+                    <CardMedia
+                      className={classes.media}
+                      image={CardBackground}
+                      title={cohort.name}
+                    />
+                    <CardContent className={classes.cardContent}>
+                      <Typography gutterBottom variant="h5" component="h2" style={{display: 'flex', alignItems: 'center'}}>
+                        {cohort.name}
+                        {cohort.status === 'active' ? null :
+                          <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
+                        }
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        Password: {cohort.password}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        Students: {cohort.members}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                  <CardActions className={classes.buttonContainer}>
+                    <Button
+                      size="small"
+                      color="primary"
+                      id={cohort.id}
+                      onClick={() => (
+                        window.location.href = `/settings/${cohort.id}`
+                      )}
+                    >
+                      Settings
+                    </Button>
+                    {cohort.members !== "0" ? (
+                      <Button
+                        size="small"
+                        color="primary"
+                        id={cohort.id}
+                        onClick={() => {
+                          openStudentList(cohort.id);
+                        }}
+                      >
+                        Students
+                      </Button>
+                    ) : null}
+                  </CardActions>
+                </Card>
+              );
+            }
+          }
+          return null;
+        })}
       </React.Fragment>
     );
   }

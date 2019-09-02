@@ -134,7 +134,7 @@ class NavBar extends React.Component {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap style={{flexGrow: 1}}>
+            <Typography variant="h6" noWrap style={{flexGrow: 1, cursor: 'pointer'}} onClick={() => window.location.href='/cohorts'}>
               {this.props.title}
             </Typography>
 

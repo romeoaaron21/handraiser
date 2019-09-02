@@ -57,6 +57,8 @@ class Cohorts extends React.Component {
       privilege: "",
       id: 0,
       cohorts: [],
+      enrolledClasses: [],
+      availableClasses: [],
       cohortsSideNav: [],
       member: [],
       students: [],
@@ -70,8 +72,7 @@ class Cohorts extends React.Component {
       scroll: "paper",
       selected: "",
       cohort_id: "",
-      searchValue: "",
-      search: false,
+      search: "",
       socket: null
     };
   }
@@ -90,8 +91,19 @@ class Cohorts extends React.Component {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       api.fetch(`/api/cohorts/api`, "get").then(res => {
-        socket.emit("displayCohorts", res.data.cohorts);
+        if(this.state.privilege === 'student'){
+          this.setState({ availableClasses: res.data.cohorts });
+          var cohorts = res.data.cohorts.filter(cohorts => cohorts.status === 'active')
+          this.setState({ cohorts })
+        } else {
+          this.setState({ cohorts: res.data.cohorts});
+        }
       });
+
+      api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
+        this.setState({ enrolledClasses: res.data.cohorts });
+      });
+
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
           socket.emit("displayCohortsSideNav", res.data.cohorts);
@@ -116,12 +128,8 @@ class Cohorts extends React.Component {
   }
 
   UNSAFE_componentWillMount() {
-    socket.on("displayCohorts", cohorts => {
-      if(this.state.privilege === 'student'){
-        cohorts = cohorts.filter(cohorts => cohorts.status === 'active')
-      }
-      console.log(cohorts);
-      this.setState({ cohorts });
+    socket.on("displayEnrolledClasses", cohorts => {
+      this.setState({ enrolledClasses: cohorts });
     });
 
     socket.on("displayCohortsSideNav", cohorts => {
@@ -184,9 +192,7 @@ class Cohorts extends React.Component {
       enroll: false,
       leave: false,
       studentList: false,
-      searchValue: ""
     });
-    this.componentDidMount();
   };
 
   add = (name, password, mentor_id) => {
@@ -238,7 +244,6 @@ class Cohorts extends React.Component {
       });
     } else {
       api.fetch(`/api/cohorts/${id}/students`, "post", state).then(res => {
-        this.componentDidMount();
         if (res.data.message) {
           toast.error("Wrong Password!", {
             hideProgressBar: true,
@@ -249,7 +254,9 @@ class Cohorts extends React.Component {
             hideProgressBar: true,
             draggable: false
           });
+          this.setState({ search: ''})
           this.closeModal();
+          this.componentDidMount();
         }
       });
     }
@@ -264,6 +271,7 @@ class Cohorts extends React.Component {
           hideProgressBar: true,
           draggable: false
         });
+        this.setState({ search: ''})
       });
   };
   removeStudent = (id, student_id) => {
@@ -280,33 +288,6 @@ class Cohorts extends React.Component {
     });
   };
 
-  search = e => {
-    if (e.currentTarget.value === "") {
-      this.setState({ searchValue: e.currentTarget.value, search: false });
-      return this.componentDidMount();
-    } else {
-      this.setState({ searchValue: e.currentTarget.value, search: true });
-      if (this.state.privilege !== "student") {
-        api
-          .fetch(`/api/cohorts/${e.currentTarget.value}/search/mentor/${this.state.id}`, "get")
-          .then(res => {
-            this.setState({
-              cohorts: res.data.cohorts
-            });
-          });
-      } else {
-        api
-          .fetch(`/api/cohorts/${e.currentTarget.value}/search`, "get")
-          .then(res => {
-            res.data.cohorts = res.data.cohorts.filter(cohorts => cohorts.status === 'active')
-            this.setState({
-              cohorts: res.data.cohorts
-            });
-          });
-      }
-    }
-  };
-
   render() {
     const { classes } = this.props;
     return (
@@ -319,7 +300,7 @@ class Cohorts extends React.Component {
         <SideNav
           open={this.state.open}
           handleDrawerCloseFn={this.handleDrawerClose}
-          cohorts={this.state.cohortsSideNav}
+          cohorts={this.state.privilege === 'student' ? this.state.enrolledClasses : this.state.cohortsSideNav}
           socket={true}
         />
         <ToastContainer
@@ -347,8 +328,8 @@ class Cohorts extends React.Component {
                       root: classes.inputRoot,
                       input: classes.inputInput
                     }}
-                    onChange={this.search}
-                    value={this.state.searchValue}
+                    onChange={e => this.setState({ search: e.target.value})}
+                    value={this.state.search}
                     fullWidth
                     inputProps={{ "aria-label": "search" }}
                   />
@@ -388,7 +369,8 @@ class Cohorts extends React.Component {
 
                       <StudentClassCards
                         user_id={this.state.id}
-                        cohorts={this.state.cohorts}
+                        search={this.state.search}
+                        cohorts={this.state.enrolledClasses}
                         members={this.state.member}
                         openEnroll={this.openEnroll}
                         openLeave={this.openLeave}
@@ -418,10 +400,12 @@ class Cohorts extends React.Component {
                         </Grid>
 
                         {this.state.member.length !== 0 &&
-                        this.state.search === false ? (
-                          this.state.member.filter(
-                            member => member.student_id === this.state.id
-                          ).length === this.state.cohorts.length ? (
+                        this.state.search === '' ? (
+                          ((this.state.enrolledClasses.length === this.state.availableClasses.length) || 
+                          (this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length === this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length) || (this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length === this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length)) ? (
+                            console.log(this.state.enrolledClasses.length + ' === ' + this.state.availableClasses.length),
+                            console.log(this.state.enrolledClasses.length + ' === ' + this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length),
+                            console.log(this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length + ' === ' + this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length),
                             <Grid
                               container
                               className={classes.emptyQueue}
@@ -440,6 +424,7 @@ class Cohorts extends React.Component {
                           ) : (
                             <AvailClass
                               user_id={this.state.id}
+                              enrolledClasses={this.state.enrolledClasses}
                               cohorts={this.state.cohorts}
                               members={this.state.member}
                               openEnroll={this.openEnroll}
@@ -449,6 +434,8 @@ class Cohorts extends React.Component {
                           )
                         ) : (
                           <AvailClass
+                            search={this.state.search}
+                            enrolledClasses={this.state.enrolledClasses}
                             cohorts={this.state.cohorts}
                             members={this.state.member}
                             openEnroll={this.openEnroll}
