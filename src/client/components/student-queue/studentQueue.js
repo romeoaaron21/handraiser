@@ -126,7 +126,7 @@ class Student extends Component {
       mentorInfo: [],
       /*end of added for chatBox state*/
 
-      badge: true
+      badge: false,
     };
   }
 
@@ -137,8 +137,8 @@ class Student extends Component {
       let sub = { student: this.state.sub, mentor: this.state.mentor_sub };
       const data = api.fetch(`/api/seenChat`, "patch", sub);
       data.then(res => {
-        this.setState({ badge: true });
         socket.emit("seenChat", res.data);
+        this.setState({badge:true})
       });
     }
   };
