@@ -46,7 +46,10 @@ const styles = theme => ({
 class BeingHelped extends Component {
   render() {
     const { classes } = this.props;
-
+    console.log(
+      parseInt(this.props.helpingStudent.cohort_id),
+      parseInt(this.props.cohort_id)
+    );
     return (
       <div>
         <Paper className={classes.leftNav}>
@@ -58,7 +61,8 @@ class BeingHelped extends Component {
             Being helped
           </Typography>
           <ListItem className={classes.list}>
-            {this.props.helpingStudent ? (
+            {parseInt(this.props.helpingStudent.cohort_id) ===
+            parseInt(this.props.cohort_id) ? (
               <React.Fragment>
                 <ListItemAvatar>
                   <Avatar

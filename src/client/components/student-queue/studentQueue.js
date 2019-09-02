@@ -627,6 +627,7 @@ class Student extends Component {
                       <Box order={1}>
                         <BeingHelped
                           helpingStudent={this.state.helpingStudent}
+                          cohort_id={this.props.cohort_id}
                         />
                       </Box>
                     </React.Fragment>
@@ -676,6 +677,7 @@ class Student extends Component {
                         <div className={classes.beingHelp}>
                           <BeingHelped
                             helpingStudent={this.state.helpingStudent}
+                            cohort_id={this.props.cohort_id}
                           />
                         </div>
 
