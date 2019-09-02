@@ -81,75 +81,150 @@ class StudentClassCards extends React.Component {
     return (
       <React.Fragment>
         {cohorts.map(cohort => {
-          return members.filter(
-            member =>
-              member.cohort_id === cohort.id &&
-              member.student_id === this.props.user_id
-          ).length !== 0 ? (
-            <Grid xs={3} key={cohort.id}>
-              <Card className={classes.card}>
-                <CardActionArea
-                  id={cohort.id}
-                  onClick={e => openEnroll(e, cohort.id)}
-                  name="goToClass"
-                  className={classes.cardContainer}
-                >
-                  <CardMedia
-                    className={classes.media}
-                    image={CardBackground}
-                    title={cohort.name}
-                  />
-                  <CardContent className={classes.cardContent}>
-                    <div className={classes.class}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {cohort.name}
-                      </Typography>
-                      <Avatar
-                        alt={cohort.first_name + " " + cohort.last_name}
-                        src={cohort.avatar}
-                        className={classes.bigAvatar}
+          if(this.props.search) {
+            if(cohort.name.toLowerCase().includes(this.props.search.toLowerCase())) {
+              return members.filter(
+                member =>
+                  member.cohort_id === cohort.id &&
+                  member.student_id === this.props.user_id
+              ).length !== 0 ? (
+                <Grid xs={3} key={cohort.id}>
+                  <Card className={classes.card}>
+                    <CardActionArea
+                      id={cohort.id}
+                      onClick={e => openEnroll(e, cohort.id)}
+                      name="goToClass"
+                      className={classes.cardContainer}
+                    >
+                      <CardMedia
+                        className={classes.media}
+                        image={CardBackground}
+                        title={cohort.name}
                       />
-                    </div>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      Mentor: {cohort.first_name + " " + cohort.last_name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      Students: {cohort.members}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-                <CardActions className={classes.buttonContainer}>
-                  <Button
-                    size="small"
-                    color="primary"
+                      <CardContent className={classes.cardContent}>
+                        <div className={classes.class}>
+                          <Typography gutterBottom variant="h5" component="h2">
+                            {cohort.name}
+                          </Typography>
+                          <Avatar
+                            alt={cohort.first_name + " " + cohort.last_name}
+                            src={cohort.avatar}
+                            className={classes.bigAvatar}
+                          />
+                        </div>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          Mentor: {cohort.first_name + " " + cohort.last_name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          Students: {cohort.members}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions className={classes.buttonContainer}>
+                      <Button
+                        size="small"
+                        color="primary"
+                        id={cohort.id}
+                        onClick={openLeave}
+                      >
+                        Leave
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        id={cohort.id}
+                        onClick={() => {
+                          openStudentList(cohort.id);
+                        }}
+                      >
+                        Students
+                      </Button>
+                    </CardActions>
+                    }
+                  </Card>
+                </Grid>
+              ) : null;
+            }
+          } else {
+            return members.filter(
+              member =>
+                member.cohort_id === cohort.id &&
+                member.student_id === this.props.user_id
+            ).length !== 0 ? (
+              <Grid xs={3} key={cohort.id}>
+                <Card className={classes.card}>
+                  <CardActionArea
                     id={cohort.id}
-                    onClick={openLeave}
+                    onClick={e => openEnroll(e, cohort.id)}
+                    name="goToClass"
+                    className={classes.cardContainer}
                   >
-                    Leave
-                  </Button>
-                  <Button
-                    size="small"
-                    color="primary"
-                    id={cohort.id}
-                    onClick={() => {
-                      openStudentList(cohort.id);
-                    }}
-                  >
-                    Students
-                  </Button>
-                </CardActions>
-                }
-              </Card>
-            </Grid>
-          ) : null;
+                    <CardMedia
+                      className={classes.media}
+                      image={CardBackground}
+                      title={cohort.name}
+                    />
+                    <CardContent className={classes.cardContent}>
+                      <div className={classes.class}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {cohort.name}
+                        </Typography>
+                        <Avatar
+                          alt={cohort.first_name + " " + cohort.last_name}
+                          src={cohort.avatar}
+                          className={classes.bigAvatar}
+                        />
+                      </div>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        Mentor: {cohort.first_name + " " + cohort.last_name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        Students: {cohort.members}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                  <CardActions className={classes.buttonContainer}>
+                    <Button
+                      size="small"
+                      color="primary"
+                      id={cohort.id}
+                      onClick={openLeave}
+                    >
+                      Leave
+                    </Button>
+                    <Button
+                      size="small"
+                      color="primary"
+                      id={cohort.id}
+                      onClick={() => {
+                        openStudentList(cohort.id);
+                      }}
+                    >
+                      Students
+                    </Button>
+                  </CardActions>
+                  }
+                </Card>
+              </Grid>
+            ) : null;
+          }
+          return null;
         })}
       </React.Fragment>
     );

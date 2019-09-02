@@ -2,7 +2,7 @@ function getAll(req, res) {
   const db = req.app.get("db");
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON cohorts.mentor_id = users.id ORDER BY cohorts.id DESC`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY cohorts.id DESC`
   )
   .then(cohorts => {
     res.status(201).json({ cohorts });
@@ -19,6 +19,23 @@ function getByMentorID(req, res) {
   
   db.query(
     `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id}`
+  )
+  .then(cohorts => {
+    res.status(201).json({ cohorts });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
+function getEnrolledClasses(req, res) {
+  const db = req.app.get("db");
+  const { studentId } = req.params;
+  
+  db.query(
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.status, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    AS members FROM cohorts, users, member WHERE cohorts.mentor_id = users.id AND member.cohort_id = cohorts.id AND member.student_id = '${studentId}' ORDER BY cohorts.id DESC;`
   )
   .then(cohorts => {
     res.status(201).json({ cohorts });
@@ -265,5 +282,6 @@ module.exports = {
   getAllSideNav,
   changeStatus,
   updateCohortDetails,
-  getCohortDetails
+  getCohortDetails,
+  getEnrolledClasses
 };

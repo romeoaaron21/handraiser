@@ -52,5 +52,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://boom-handraiser.com:3001"
+  "proxy": "http://boom-handraiser.com:3001",
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
 }

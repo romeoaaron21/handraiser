@@ -34,7 +34,6 @@ class StudentList extends React.Component {
       id,
       privilege
     } = this.props;
-    console.log(students);
     return (
       <Dialog
         open={open}

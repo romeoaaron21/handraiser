@@ -53,8 +53,8 @@ massive({
       io.emit("displayStudents", students);
     });
 
-    socket.on("displayCohorts", cohorts => {
-      io.emit("displayCohorts", cohorts);
+    socket.on("displayEnrolledClasses", cohorts => {
+      io.emit("displayEnrolledClasses", cohorts);
     });
 
     socket.on("displayCohortsSideNav", cohorts => {
@@ -124,6 +124,8 @@ massive({
   app.get("/api/cohorts/:id/students", cohorts.getStudentsByClass);
   app.get("/api/cohorts/:id/status/:status", cohorts.changeStatus);
   app.get("/api/cohort/:id/details", cohorts.getCohortDetails);
+
+  app.get("/api/cohorts/enrolled/:studentId", cohorts.getEnrolledClasses);
 
   app.post("/api/cohorts/mentor/:id/add", cohorts.addCohort);
   app.post("/api/cohorts/:id/students", cohorts.enroll);
