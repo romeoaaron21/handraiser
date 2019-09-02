@@ -92,8 +92,7 @@ const styles = theme => ({
   },
   itemSettings: {
     display: "flex",
-    alignItems: "center",
-    marginBottom: 18
+    alignItems: "center"
   },
   button: {
     margin: theme.spacing(1)
@@ -107,7 +106,8 @@ const styles = theme => ({
     }
   },
   settingsBtn: {
-    marginTop: 40,
+    marginTop: theme.spacing(10),
+    alignItems: "flex-end",
     justifyContent: "flex-end",
     "@media (max-width: 599px)": {
       marginTop: 20
