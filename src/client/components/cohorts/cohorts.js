@@ -100,10 +100,6 @@ class Cohorts extends React.Component {
         }
       });
 
-      api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
-        this.setState({ enrolledClasses: res.data.cohorts });
-      });
-
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
           socket.emit("displayCohortsSideNav", res.data.cohorts);
@@ -118,6 +114,10 @@ class Cohorts extends React.Component {
             this.setState({ loader: false });
           }, 1000);
         });
+
+        api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
+          socket.emit("displayEnrolledClasses", res.data.cohorts);
+        });
       }
       this.setState({
         user,
@@ -126,6 +126,14 @@ class Cohorts extends React.Component {
       });
     });
   }
+
+  //SORT CLASSES SIDE NAV STUDENT START
+  ascLastName = (a, b) => {
+    if(a.name < b.name) return -1;
+    if(a.name > b.name) return 1;
+  }
+  //SORT CLASSES SIDE NAV STUDENT END
+
 
   UNSAFE_componentWillMount() {
     socket.on("displayEnrolledClasses", cohorts => {
@@ -254,8 +262,8 @@ class Cohorts extends React.Component {
             hideProgressBar: true,
             draggable: false
           });
-          this.setState({ search: ''})
           this.closeModal();
+          this.setState({ search: ''})
           this.componentDidMount();
         }
       });
@@ -274,6 +282,7 @@ class Cohorts extends React.Component {
         this.setState({ search: ''})
       });
   };
+
   removeStudent = (id, student_id) => {
     api.fetch(`/api/cohorts/${id}/students/${student_id}`, "get").then(() => {
       this.componentDidMount();
@@ -300,7 +309,7 @@ class Cohorts extends React.Component {
         <SideNav
           open={this.state.open}
           handleDrawerCloseFn={this.handleDrawerClose}
-          cohorts={this.state.privilege === 'student' ? this.state.enrolledClasses : this.state.cohortsSideNav}
+          cohorts={this.state.privilege === 'student' ? this.state.enrolledClasses.sort(this.ascLastName) : this.state.cohortsSideNav}
           socket={true}
         />
         <ToastContainer
@@ -403,9 +412,6 @@ class Cohorts extends React.Component {
                         this.state.search === '' ? (
                           ((this.state.enrolledClasses.length === this.state.availableClasses.length) || 
                           (this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length === this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length) || (this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length === this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length)) ? (
-                            console.log(this.state.enrolledClasses.length + ' === ' + this.state.availableClasses.length),
-                            console.log(this.state.enrolledClasses.length + ' === ' + this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length),
-                            console.log(this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length + ' === ' + this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length),
                             <Grid
                               container
                               className={classes.emptyQueue}
