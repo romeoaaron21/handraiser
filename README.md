@@ -11,11 +11,11 @@ requesting assistance if Mentors forget who is next in the queue.
 
 1. Copy & paste the command:
 
-   `echo "<IP ADDRESS OF LOCAL SERVER> boom-handraiser.com" >> /etc/hosts`
+   `sudo echo '<IP ADDRESS OF LOCAL SERVER> boom-handraiser.com' | sudo tee -a /etc/hosts`
 
    example:
 
-   `echo "172.60.61.95 boom-handraiser.com" >> /etc/hosts`
+   `sudo echo '172.60.61.95 boom-handraiser.com' | sudo tee -a /etc/hosts`
 
    to setup the fakedomain in your machine.
 
