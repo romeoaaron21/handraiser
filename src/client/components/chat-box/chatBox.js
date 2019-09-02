@@ -135,6 +135,12 @@ class ChatBox extends PureComponent {
               <Grid
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
+                style={
+                  this.props.privileged === "mentor"
+                    ? { minHeight: "443px", maxHeight: "443px" }
+                    : { minHeight: "443px", maxHeight: "443px" }
+                }
+               
               >
                 {this.props.conversation.map((convo, i) =>
                   (this.props.senderInfo.sub === convo.sender_id &&

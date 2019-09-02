@@ -113,7 +113,11 @@ const styles = theme => ({
   chatContentWrapper: {
     padding: 15,
     overflowY: "auto",
-    maxHeight: "435px"
+    maxHeight: "435px",
+    "@media (max-height: 425px)":{
+      maxHeight: '485px',
+      minHeight: '485px'
+    }
   },
   chatContent: {
     display: "flex",
@@ -185,7 +189,7 @@ const styles = theme => ({
     bottom: 0,
     width: "100%",
     position: "absolute",
-    height: "43px",
+    height: "70px",
     "@media (max-width: 425px)": {
       height: "35px"
     }
@@ -193,7 +197,7 @@ const styles = theme => ({
   chatInfo: {
     color: '#f7f7f7',
     textTransform: 'uppercase',
-    fontSize: 13,
+    fontSize: 14,
     "@media (max-width: 425px)": {
       height: "40px",
       fontSize: 9.8,

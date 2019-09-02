@@ -11,8 +11,8 @@ const styles = theme => ({
   leftNav: {
     padding: theme.spacing(2, 3),
     maxWidth: "auto",
-    maxheigth: "310px",
-    // boxShadow: ' 0px 0px 3px 0px rgba(176,173,176,1)',
+    maxHeigth: "98px",
+    minHeight: '98px',
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)"
   },

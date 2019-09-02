@@ -424,7 +424,6 @@ class Student extends Component {
         requested: false,
         btntext: "Raise Hand",
         cohort_id: cohort_id,
-        chatBox: false
       });
       if (this.state.helpingStudent === "") {
         this.setState({
@@ -454,7 +453,6 @@ class Student extends Component {
               return this.setState({
                 button: true,
                 btntext: "Waiting for help",
-                chatBox: false
               });
             } else if (member.status === "inprogress") {
               return this.setState({
