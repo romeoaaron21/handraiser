@@ -199,6 +199,7 @@ class ChatBox extends PureComponent {
 
           {this.props.privileged === "student" ? (
             <React.Fragment>
+              {this.props.allowChat?
               <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
                   <Avatar
@@ -206,7 +207,7 @@ class ChatBox extends PureComponent {
                     className={classes.userAvatar}
                   />
 
-                  {this.props.allowChat?
+                  
                   <React.Fragment>
                     <TextField
                     classes={{ root: "MenuItem" }}
@@ -237,12 +238,17 @@ class ChatBox extends PureComponent {
                     <SendIcon />
                   </IconButton>
                   </React.Fragment>
-                  :
-                  <div>YOU CAN ONLY CHAT IF YOU'RE CURRENTLY BEING HELPED!</div>
-                  }
-                  
                 </div>
               </Box>
+              :
+              <Box xs={12} sm={8}>
+                <div className={classes.footerDone}>
+                  <Typography variant="subtitle1" className={classes.chatInfo}>
+                    You can only chat if you're being helped...
+                  </Typography>
+                </div>
+              </Box>
+              }
             </React.Fragment>
           ) : (
             <React.Fragment>

@@ -140,7 +140,7 @@ class ChatList extends PureComponent {
     super(props);
     this.state = {
       count: 0,
-      search: ""
+      search: "",
     };
   }
 
@@ -157,7 +157,7 @@ class ChatList extends PureComponent {
           this.props.sub === convo.chatmate_id &&
           mentor.sub === convo.sender_id
         ) {
-          if (convo.seen === 0) {
+          if (convo.seen === 0 && convo.cohort_id === parseInt(this.props.cohort_id)) {
             count = count + 1;
           }
         }
@@ -167,10 +167,9 @@ class ChatList extends PureComponent {
     return this.setState({ count: count });
   }
 
-  timeDisplay = time => {
-    let display = time.split(" ");
-    return `${display[3]} ${display[4]}`;
-  };
+  componentDidMount(){
+    this.componentDidUpdate();
+  }
 
   render() {
     const { classes } = this.props;
@@ -199,8 +198,7 @@ class ChatList extends PureComponent {
         >
           {/* Chat List */}
 
-          {this.props.mentor
-            ? this.props.mentor.map((mentor, i) => {
+          {this.props.mentor.map((mentor, i) => {
                 if (this.state.search) {
                   if (
                     mentor.first_name
@@ -252,7 +250,7 @@ class ChatList extends PureComponent {
                                         color="secondary"
                                         badgeContent={this.state.count}
                                         invisible={
-                                          this.props.priv === "student"
+                                          this.props.priv === "student" && this.state.count !== 0
                                             ? this.props.badge
                                             : true
                                         }
@@ -336,7 +334,7 @@ class ChatList extends PureComponent {
                                           color="secondary"
                                           badgeContent={this.state.count}
                                           invisible={
-                                            this.props.priv === "student"
+                                            this.props.priv === "student" && this.state.count !==0
                                               ? this.props.badge
                                               : true
                                           }
@@ -368,7 +366,7 @@ class ChatList extends PureComponent {
                 }
                 return null;
               })
-            : null}
+              }
         </Paper>
       </React.Fragment>
     );

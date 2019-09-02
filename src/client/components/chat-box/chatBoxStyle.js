@@ -174,7 +174,33 @@ const styles = theme => ({
   mentorStyle1: {
     boxShadow: 0,
     elavation: 0
-  }
+  },
+  footerDone:{
+    borderBottomRightRadius: "5px",
+    borderBottomLeftRadius: "5px",
+    backgroundColor: "#983cac",
+    display: "flex",
+    justifyContent:'center',
+    alignItems: "center",
+    bottom: 0,
+    width: "100%",
+    position: "absolute",
+    height: "43px",
+    "@media (max-width: 425px)": {
+      height: "35px"
+    }
+  },
+  chatInfo: {
+    color: '#f7f7f7',
+    textTransform: 'uppercase',
+    fontSize: 13,
+    "@media (max-width: 425px)": {
+      height: "40px",
+      fontSize: 9.8,
+      alignItems: 'center',
+      display: 'flex'
+    }
+  },
 });
 
 export default styles;
