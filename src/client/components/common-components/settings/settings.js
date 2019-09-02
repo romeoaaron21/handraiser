@@ -227,15 +227,23 @@ class Settings extends PureComponent {
           })
       }
     } else if(name){
-      const newpassword = this.state.password
-      const state = {
-        name, newpassword, status
+      if(oldpassword === '' && newpassword !== this.state.password) {
+        toast.error("Please enter old password!", {
+          hideProgressBar: true,
+          draggable: false
+        });
+      } else {
+        const newpassword = this.state.password
+        const state = {
+          name, newpassword, status
+        }
+        api
+          .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
+          .then(() => {
+            window.location.href = `/cohorts`;
+          })
       }
-      api
-        .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
-        .then(() => {
-          window.location.href = `/cohorts`;
-        })
+      
     } else {
       toast.error("Please fill up all fields!", {
         hideProgressBar: true,
