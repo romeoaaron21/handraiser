@@ -684,11 +684,6 @@ class Student extends Component {
                         <ChatList
                           sendChatSub={this.sendChatSub}
                           mentor={this.state.mentorInfo}
-                          allowChat={
-                            this.state.btntext === "Currently Helping"
-                              ? true
-                              : false
-                          }
                           conversation={this.state.conversation}
                           sub={this.state.sub}
                           priv={this.state.previledge}
@@ -744,6 +739,11 @@ class Student extends Component {
                       privileged={this.state.previledge}
                       viewChatBox={this.viewChatBox}
                       /*BADGE*/ displayBadge={this.displayBadge}
+                      allowChat={
+                        this.state.btntext === "Currently Helping"
+                          ? true
+                          : false
+                      }
                     />
                   </Grid>
                 ) : (

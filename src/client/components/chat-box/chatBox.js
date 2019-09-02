@@ -185,10 +185,10 @@ class ChatBox extends PureComponent {
                   )
                 )}
                 {this.props.chatM.length > 0 &&
-                this.props.privileged === "student" ? (
+                this.props.privileged === "student"  && this.props.allowChat? (
                   <TypingEffect />
                 ) : this.props.chat.length > 0 &&
-                  this.props.privileged === "mentor" ? (
+                  this.props.privileged === "mentor"? (
                   <TypingEffect />
                 ) : null}
 
@@ -205,7 +205,10 @@ class ChatBox extends PureComponent {
                     src={this.props.senderInfo.avatar}
                     className={classes.userAvatar}
                   />
-                  <TextField
+
+                  {this.props.allowChat?
+                  <React.Fragment>
+                    <TextField
                     classes={{ root: "MenuItem" }}
                     id="outlined-full-width"
                     placeholder="Send message"
@@ -233,6 +236,11 @@ class ChatBox extends PureComponent {
                   >
                     <SendIcon />
                   </IconButton>
+                  </React.Fragment>
+                  :
+                  <div>YOU CAN ONLY CHAT IF YOU'RE CURRENTLY BEING HELPED!</div>
+                  }
+                  
                 </div>
               </Box>
             </React.Fragment>
