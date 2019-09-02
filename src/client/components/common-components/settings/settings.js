@@ -135,7 +135,11 @@ class Settings extends PureComponent {
       password: "",
       oldpassword: "",
       showOldPassword: false,
-      showNewPassword: false
+      showNewPassword: false,
+      errorNewName: false,
+      errorOldPass: false,
+      errorNewPass: false,
+      passwordMatch: true,
     };
   }
 
@@ -170,10 +174,6 @@ class Settings extends PureComponent {
     this.setState({ open: false });
   };
 
-  handleChange = () => event => {
-    this.setState({ [event.target.getAttribute('name')]: event.target.value });
-  };
-
   handleClickShowOldPassword = () => {
     this.setState({ showOldPassword: !this.state.showOldPassword });
   };
@@ -202,6 +202,84 @@ class Settings extends PureComponent {
     this.setState({
       modal: false
     })
+  }
+
+  handleNameChange = (e) => {
+    if(e.target.value !== "") {
+      this.setState({
+        errorNewName: false
+      })
+    } else {
+      this.setState({
+        errorNewName: true
+      })
+    }
+    this.setState({
+      name: e.target.value
+    })
+  }
+
+  checkNewNameBlur = (e) => {
+    if(e.target.value === ""){
+      this.setState({
+        errorNewName: true
+      })
+    }
+  }
+
+  checkOldPass = (e) => {
+    if(e.target.value !== "") {
+      this.setState({
+        errorOldPass: false
+      })
+      if(e.target.value !== this.state.password){
+        this.setState({
+          passwordMatch: false
+        })
+      }else{
+        this.setState({
+          passwordMatch: true
+        })
+      }
+    } else {
+      this.setState({
+        errorOldPass: true
+      })
+    }
+    this.setState({
+      oldpassword: e.target.value
+    })
+  }
+
+  checkOldPassBlur = (e) => {
+    if(e.target.value === ""){
+      this.setState({
+        errorOldPass: true
+      })
+    }
+  }
+
+  checkNewPass = (e) => {
+    if(e.target.value !== "") {
+      this.setState({
+        errorNewPass: false
+      })
+    } else {
+      this.setState({
+        errorNewPass: true
+      })
+    }
+    this.setState({
+      newpassword: e.target.value
+    })
+  }
+
+  checkNewPassBlur = (e) => {
+    if(e.target.value === ""){
+      this.setState({
+        errorNewPass: true
+      })
+    }
   }
 
   submit = (name, oldpassword, newpassword, status) => {
@@ -243,9 +321,8 @@ class Settings extends PureComponent {
             window.location.href = `/cohorts`;
           })
       }
-      
     } else {
-      toast.error("Please fill up all fields!", {
+      toast.error("Please fill up all the necessary fields!", {
         hideProgressBar: true,
         draggable: false
       });
@@ -297,7 +374,10 @@ class Settings extends PureComponent {
                   defaultValue={this.state.name}
                   margin="normal"
                   variant="outlined"
-                  onChange={this.handleChange()}
+                  onKeyUp={this.handleNameChange}
+                  error={this.state.errorNewName}
+                  helperText={this.state.errorNewName ? "Name is required" : ''}
+                  onBlur={this.checkNewNameBlur}
                 />
               </Grid>
             </Grid>
@@ -316,7 +396,10 @@ class Settings extends PureComponent {
                   label="Old Password"
                   name="oldpassword"
                   defaultValue={this.state.oldpassword}
-                  onChange={this.handleChange()}
+                  onKeyUp={this.checkOldPass}
+                  error={this.state.errorOldPass || !this.state.passwordMatch}
+                  helperText={this.state.errorOldPass ? "Password is required" : !this.state.passwordMatch ? "Password incorrect" : ''}
+                  onBlur={this.checkOldPassBlur}
                   InputProps={{
                     classes: { root: classes.custom },
                     endAdornment: (
@@ -350,7 +433,10 @@ class Settings extends PureComponent {
                   label="New Password"
                   name="newpassword"
                   defaultValue={this.state.newpassword}
-                  onChange={this.handleChange()}
+                  onKeyUp={this.checkNewPass}
+                  error={this.state.errorNewPass}
+                  helperText={this.state.errorNewPass ? "Password is required" : ''}
+                  onBlur={this.checkNewPassBlur}
                   InputProps={{
                     classes: { root: classes.custom },
                     endAdornment: (
