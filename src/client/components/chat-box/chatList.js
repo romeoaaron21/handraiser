@@ -224,10 +224,8 @@ class ChatList extends PureComponent {
                                 <ListItem
                                   className={classes.list}
                                   onClick={() => {
-                                    if (this.props.allowChat) {
                                       this.props.sendChatSub();
                                       this.props.displayBadge("student");
-                                    }
                                   }}
                                 >
                                   <ListItemAvatar>
@@ -297,10 +295,8 @@ class ChatList extends PureComponent {
                                 <ListItem
                                   className={classes.list}
                                   onClick={() => {
-                                    if (this.props.allowChat) {
                                       this.props.sendChatSub();
                                       this.props.displayBadge("student");
-                                    }
                                   }}
                                 >
                                   <ListItemAvatar>
