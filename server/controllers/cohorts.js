@@ -98,29 +98,37 @@ function enroll(req, res) {
   const { id } = req.params;
   const { student_id, password } = req.body;
 
-  db.cohorts
-    .findOne({
-      id,
-      password
-    })
-    .then(cohort => {
-      if (!cohort) {
-        res.status(201).send({ message: "error" });
-      } else {
-        db.member
-          .insert({
-            student_id: student_id,
-            cohort_id: id
-          })
-          .then(member => {
-            res.status(201).json({ member });
-          });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(201).send({ message: err });
-    });
+  db.query(`SELECT status FROM cohorts WHERE id = '${id}'`).then(cohort => {
+    if(cohort[0].status === 'active'){
+      db.cohorts
+        .findOne({
+          id,
+          password
+        })
+        .then(cohort => {
+          if (!cohort) {
+            res.status(201).send({ message: "error" });
+          } else {
+            db.member
+              .insert({
+                student_id: student_id,
+                cohort_id: id
+              })
+              .then(member => {
+                res.status(201).json({ member });
+              });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(201).send({ message: err });
+        });
+    } else {
+      res.status(201).send({ message: "Locked" });
+    }
+  })
+
+  
 }
 
 function leave(req, res) {

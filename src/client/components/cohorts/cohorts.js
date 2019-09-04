@@ -252,11 +252,17 @@ class Cohorts extends React.Component {
       });
     } else {
       api.fetch(`/api/cohorts/${id}/students`, "post", state).then(res => {
-        if (res.data.message) {
+        if (res.data.message === 'error') {
           toast.error("Wrong Password!", {
             hideProgressBar: true,
             draggable: false
           });
+        } else if(res.data.message === 'Locked'){
+          toast.error("Cohort Locked!", {
+            hideProgressBar: true,
+            draggable: false
+          });
+          this.componentDidMount();
         } else {
           toast.info("Enrolled to Cohort!", {
             hideProgressBar: true,
