@@ -214,7 +214,7 @@ class requestQueue extends Component {
                       parseInt(member.cohort_id) ? (
                       <Grid item style={{ width: "100%" }} key={member.id}>
                         <ExpansionPanel
-                          expanded={this.state.expanded === "panel1"}
+                          expanded={this.state.expanded === member.id}
                         >
                           <ExpansionPanelSummary>
                             <ListItemAvatar>
@@ -257,7 +257,7 @@ class requestQueue extends Component {
                                 <Tooltip title="See Details" placement="top">
                                   <IconButton
                                     className={classes.responsive}
-                                    onClick={this.handleChange("panel1")}
+                                    onClick={this.handleChange(member.id)}
                                   >
                                     <KeyBoardDown className={classes.icon} />
                                   </IconButton>
