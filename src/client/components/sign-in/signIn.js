@@ -34,9 +34,9 @@ class SignInSide extends Component {
 
   componentDidMount() {
     document.title = "Welcome to Handraiser";
-    if (this.Auth.loggedIn()) {
-      window.location.href = "/cohorts";
-    }
+    // if (this.Auth.loggedIn()) {
+    //   window.location.href = "/cohorts";
+    // }
   }
 
   openValidateKeyDialog = () => this.setState({ validateKeyDialog: true });
@@ -48,27 +48,35 @@ class SignInSide extends Component {
   openSignInGoogle = key => this.setState({ signInGoogleDialog: true });
   closeSignInGoogle = () => this.setState({ signInGoogleDialog: false });
 
-  responseGoogleStudent = res => {
-    localStorage.setItem("id_token", res.tokenId);
-    const user = decode(res.tokenId);
-    const data = {
-      first_name: user.given_name,
-      last_name: user.family_name,
-      sub: user.sub,
-      privilege: "student",
-      avatar: user.picture
-    };
-
-    api.fetch("/sign-in", "post", data).then(res => {
-      if (res.data.user.privilege !== "student") {
-        toast.error("Sorry, you're not a student", {
-          hideProgressBar: true,
-          draggable: false
-        });
-      } else {
-        window.location.href = "/cohorts";
-      }
-    });
+  responseGoogleStudent = google => {
+    if(google.expectedDomain === 'boom.camp') {
+      toast.error("Sorry, invalid email!", {
+        hideProgressBar: true,
+        draggable: false
+      });
+    } else {
+      const user = decode(google.tokenId);
+      const data = {
+        first_name: user.given_name,
+        last_name: user.family_name,
+        sub: user.sub,
+        privilege: "student",
+        avatar: user.picture
+      };
+  
+      api.fetch("/sign-in", "post", data).then(res => {
+        console.log(res.data.user);
+        if (res.data.user.privilege !== "student") {
+          toast.error("Sorry, you're not a student", {
+            hideProgressBar: true,
+            draggable: false
+          });
+        } else {
+          localStorage.setItem("id_token", google.tokenId);
+          window.location.href = "/cohorts";
+        }
+      });
+    }
   };
 
   render() {
@@ -92,6 +100,7 @@ class SignInSide extends Component {
                 <Grid item xs={12}>
                   <GoogleLogin
                     clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
+                    hostedDomain="boom.camp"
                     onSuccess={this.responseGoogleStudent}
                     onFailure={this.responseGoogleStudent}
                     cookiePolicy={"single_host_origin"}

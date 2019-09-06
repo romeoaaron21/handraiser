@@ -257,6 +257,7 @@ class ChatList extends PureComponent {
                             ) : null
                           );
                         }
+                        return null;
                       })
                     ) : (
                       <Grid container className={classes.emptyQueue}>
@@ -360,7 +361,6 @@ class ChatList extends PureComponent {
                 </React.Fragment>
               );
             }
-            return null;
           })}
         </Paper>
       </React.Fragment>
