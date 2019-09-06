@@ -25,7 +25,7 @@ export default class AuthService {
     try {
       return localStorage.getItem("id_token");
     } catch (err) {
-      return (window.location.href = "/");
+      return (window.location.href = "/sign-in");
     }
   };
 

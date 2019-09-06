@@ -35,7 +35,11 @@ export default class AuthService {
   };
 
   getToken = () => {
-    return localStorage.getItem("id_token");
+    try {
+      return localStorage.getItem("id_token");
+    } catch (err) {
+      return (window.location.href = "/admin/sign-in");
+    }
   };
 
   logout = () => {

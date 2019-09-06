@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import SignIn from "../client/components/sign-in/signIn";
 import Cohorts from "../client/components/cohorts/cohorts";
@@ -10,18 +10,27 @@ import MentorKeys from "../admin/components/mentor-keys/mentorKeys";
 import Mentor from "../admin/components/mentors/mentor";
 import AdminCohorts from "../admin/components/cohorts/cohort";
 import Settings from "../client/components/common-components/settings/settings";
+
+import NotFound from "../404";
+
 function Router() {
   return (
     <BrowserRouter>
-      {window.location.pathname === "/" ? <Redirect to="/sign-in" /> : null}
-      <Route path="/sign-in" component={SignIn} />
-      <Route path="/cohorts" component={Cohorts} />
-      <Route path="/queue/:cid" component={Queue} />
-      <Route path="/settings/:cid" component={Settings} />
-      <Route path="/admin/keys" component={MentorKeys} />
-      <Route path="/admin/mentors" component={Mentor} />
-      <Route path="/admin/cohorts" component={AdminCohorts} />
-      <Route path="/admin/sign-in" component={AdminSignIn} />
+      <Switch>
+        {window.location.pathname === "/"
+          ? (window.location.href = "/sign-in")
+          : null}
+        <Route path="/sign-in" component={SignIn} />
+        <Route exact path="/cohorts" component={Cohorts} />
+        <Route path="/queue/:cid" component={Queue} />
+        <Route path="/settings/:cid" component={Settings} />
+        <Route path="/admin/keys" component={MentorKeys} />
+        <Route path="/admin/mentors" component={Mentor} />
+        <Route path="/admin/cohorts" component={AdminCohorts} />
+        <Route path="/admin/sign-in" component={AdminSignIn} />
+
+        <Route component={NotFound} />
+      </Switch>
     </BrowserRouter>
   );
 }
