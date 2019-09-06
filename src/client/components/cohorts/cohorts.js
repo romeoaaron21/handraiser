@@ -406,7 +406,12 @@ class Cohorts extends React.Component {
                         <Tab label="Enrolled Classes" />
                         <Tab label="Available Classes" />
                     </Tabs>
-                    <Grid container>
+                    <Grid container  style={{
+                        textAlign: 'center',
+                        alignItems: 'center',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}>
                       <TabPanel value={this.state.tabValue} index={0}>
                       <Grid container>
                       <StudentClassCards
@@ -420,11 +425,11 @@ class Cohorts extends React.Component {
                       />
                       </Grid>
                       </TabPanel>
-                      <TabPanel value={this.state.tabValue} index={1}>
+                      <TabPanel value={this.state.tabValue} index={1} >
                       {this.state.privilege === "student" ? (
                       this.state.cohorts.length !== 0 ? (
                       <div className={classes.student}> 
-                      <Grid container justify="center">
+                      <Grid container>
                         {this.state.member.length !== 0 &&
                         this.state.search === '' ? (
                           ((this.state.enrolledClasses.length === this.state.availableClasses.length) || 
@@ -433,7 +438,7 @@ class Cohorts extends React.Component {
                             <Grid
                               container
                               className={classes.emptyQueue}
-                              style={{ padding: 50, width:'1000px'}}
+                              style={{ padding: 50}}
                             >
                               <img
                                 alt="Classes"
