@@ -132,6 +132,10 @@ massive({
   app.post("/api/cohort/:id/editDetails", cohorts.updateCohortDetails);
 
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
+    //History
+  app.get("/api/cohorts/history/:id", cohorts.getHistory);
+    //History Details
+  app.get("/api/cohorts/history/details/:id", cohorts.getHistoryDetails);
   // Cohorts End
 
   app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);
