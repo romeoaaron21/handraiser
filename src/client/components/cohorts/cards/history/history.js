@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 import Transition from './transition'
 import ConcernItem from './concernItem';
-import EmptyQueue from "../../../../images/noResult.svg";
+import EmptyQueue from "../../../../images/emptyqueue.svg";
 
 
 
