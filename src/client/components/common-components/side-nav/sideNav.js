@@ -64,7 +64,7 @@ class SideNav extends React.Component {
     this.state = {
       user: [],
       members: [],
-      cohorts: [],
+      cohorts: []
     };
   }
 
@@ -73,7 +73,7 @@ class SideNav extends React.Component {
       const user = fetch.data.user[0];
       this.setState({ user });
 
-      api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
+      api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
         this.setState({
           cohorts: res.data.cohorts
         });
@@ -134,8 +134,8 @@ class SideNav extends React.Component {
         </Typography>
         <List className={classes.classList}>
           {this.props.socket
-            ? this.props.cohorts.map((cohort) =>
-                this.state.user.privilege === "mentor" ? 
+            ? this.props.cohorts.map(cohort =>
+                this.state.user.privilege === "mentor" ? (
                   this.state.user.id === cohort.mentor_id ? (
                     <ListItem
                       button
@@ -152,24 +152,25 @@ class SideNav extends React.Component {
                       <ListItemText primary={cohort.name} />
                     </ListItem>
                   ) : null
-                :
-                <ListItem
-                  button
-                  key={cohort.name}
-                  onClick={() =>
-                    (window.location.href = `/queue/${cohort.id}`)
-                  }
-                >
-                <ListItemIcon>
-                  <Avatar className={classes.purpleAvatar}>
-                    {cohort.name.charAt(0).toUpperCase()}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={cohort.name} />
-              </ListItem>
+                ) : (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                )
               )
-            : this.state.cohorts.map((cohort) =>
-                this.state.user.privilege === "mentor" ? 
+            : this.state.cohorts.map(cohort =>
+                this.state.user.privilege === "mentor" ? (
                   this.state.user.id === cohort.mentor_id ? (
                     <ListItem
                       button
@@ -186,23 +187,23 @@ class SideNav extends React.Component {
                       <ListItemText primary={cohort.name} />
                     </ListItem>
                   ) : null
-                :
-                <ListItem
-                  button
-                  key={cohort.name}
-                  onClick={() =>
-                    (window.location.href = `/queue/${cohort.id}`)
-                  }
-                >
-                <ListItemIcon>
-                  <Avatar className={classes.purpleAvatar}>
-                    {cohort.name.charAt(0).toUpperCase()}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={cohort.name} />
-              </ListItem>
-            )
-          }
+                ) : (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                )
+              )}
         </List>
         <Divider />
       </Drawer>
