@@ -2,7 +2,8 @@ function getAll(req, res) {
   const db = req.app.get("db");
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY cohorts.id DESC`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id GROUP BY cohorts.status = 'nonactive', cohorts.id, users.first_name, users.last_name, users.avatar`
   )
     .then(cohorts => {
       res.status(201).json({ cohorts });
