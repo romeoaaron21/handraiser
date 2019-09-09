@@ -15,9 +15,6 @@ const styles = theme => ({
     margin: 'auto',
     maxWidth: 500,
   },
-  container: {
-    maxHeight: 100
-  },
   img: {
     width: 50,
     height: 50
@@ -32,55 +29,62 @@ class ConcernItem extends React.Component {
         super(props)
         this.state = {
             dataLoaded: false,
+            helpedBy: null,
             details: null
         }
     }
 
     componentDidMount(){
         api.fetch(`api/cohorts/history/details/${this.props.concern.id}`, "get").then(res => {
-            this.setState({
-                details: res.data.history[0],
-                dataLoaded: true
+            api.fetch(`api/cohorts/helpedby/${this.props.concern.mentor_id}`, "get").then(resp => {
+                this.setState({
+                    details: res.data.history[0],
+                    helpedBy: resp.data.mentor[0],
+                    dataLoaded: true
+                })
             })
         });
-    }
+    } 
 
     render(){
         const { classes, concern } = this.props;
-        const { details } = this.state;
-        if (this.state.dataLoaded){
+        const { details, dataLoaded, helpedBy } = this.state;
+        if (dataLoaded){
             return (
                 <React.Fragment>
                     <Box className={classes.paper}>
-                        <Grid container spacing={2} className={classes.container}>
-                        <Grid item className={classes.avatar}>
-                            <Avatar alt="" className={classes.img} src={details.avatar} />
-                        </Grid>
-                        <Grid item xs={12} sm container>
-                            <Grid item xs container direction="column" spacing={2}>
-                            <Grid item xs>
-                                <Typography gutterBottom variant="subtitle1">
-                                {details.first_name + " " + details.last_name}
-                                </Typography>
-                                <Typography variant="overline" color="textSecondary" gutterBottom>
-                                Concern:
-                                </Typography>
-                                <Typography variant="body2">
-                                    {concern.reason ? concern.reason : "No concern specified."}
-                                </Typography>
+                        <Grid container spacing={2}>
+                            <Grid item className={classes.avatar}>
+                                <Avatar alt="" className={classes.img} src={details.avatar} />
                             </Grid>
-                                <Grid item xs={6} sm={6}>
-                                    <Typography variant="body2" color="textSecondary">
-                                    Helped by:
+                            <Grid item xs={12} sm container>
+                                <Grid item xs container direction="column" spacing={2}>
+                                <Grid item xs>
+                                    <Typography gutterBottom variant="subtitle1">
+                                    {details.first_name + " " + details.last_name}
                                     </Typography>
-                                    <Chip
-                                        className={classes.chip}
-                                        avatar={<Avatar alt="" src="https://lh5.googleusercontent.com/-u9Uu95tVtzw/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rf5_LF9EOCVM7EWDPxjDe1jn94inw/s96-c/photo.jpg" />}
-                                        label="Mentor Sell"
-                                    />
+                                    <Typography variant="overline" color="textSecondary" gutterBottom>
+                                    Concern:
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {concern.reason ? concern.reason : "No concern specified."}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Helped by:
+                                        </Typography>
+                                        <Chip
+                                            className={classes.chip}
+                                            avatar={<Avatar alt="" src={helpedBy.avatar} />}
+                                            label={helpedBy.first_name + " " + helpedBy.last_name}
+                                        />
+                                        <Typography variant="overline" color="textSecondary" gutterBottom>
+                                            {details.time}
+                                        </Typography>
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
                         </Grid>
                     </Box>
                     <Divider light />

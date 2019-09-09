@@ -1,13 +1,13 @@
 import React from 'react';
 import { withStyles } from "@material-ui/core/styles";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import {
+  Button, Dialog, DialogActions, DialogContent, DialogTitle,
+  Typography, Grid
+} from '@material-ui/core';
 import Transition from './transition'
-import { Typography } from '@material-ui/core';
 import ConcernItem from './concernItem';
+import EmptyQueue from "../../../../images/noResult.svg";
+
 
 
 const styles = theme => ({
@@ -47,6 +47,18 @@ const styles = theme => ({
     },
     logBtn: {
       marginLeft: 'auto'
+    },
+    emptyQueue: {
+      marginTop: 45,
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+      "@media (max-width: 425px)": {
+        marginTop: 160
+      }
+    },
+    subtitle: {
+      marginTop: 20
     }
 });
 
@@ -75,9 +87,18 @@ class History extends React.Component {
                     <Typography variant="overline">Activity Log</Typography>
                 </DialogTitle>
                 <DialogContent>
-                {history.map(concern => (
+                {history.length ?
+                  history.map(concern => (
                     <ConcernItem key={concern.id} concern={concern}/>
-                ))}
+                ))
+                :  
+                <Grid container className={classes.emptyQueue}>
+                <img src={EmptyQueue} alt="img" width="280" height="250" />
+                <Typography className={classes.subtitle} variant="overline" color="textSecondary">
+                  Nothing here...
+                </Typography>
+                </Grid>
+                }
                 </DialogContent>
                 <DialogActions>
                 <Button onClick={handleClose} color="primary">

@@ -305,6 +305,21 @@ function getHistoryDetails(req, res){
     });
 }
 
+function getHelpedBy(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`select * from users where id = ${id}`)
+    .then(mentor => {
+      res.status(201).json({ mentor });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
 module.exports = {
   getAll,
   getByMentorID,
@@ -323,5 +338,6 @@ module.exports = {
   getCohortDetails,
   getEnrolledClasses,
   getHistory,
-  getHistoryDetails
+  getHistoryDetails,
+  getHelpedBy
 };
