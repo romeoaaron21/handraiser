@@ -21,9 +21,61 @@ const styles = {
 };
 
 export default class googleSignIn extends Component {
-  responseGoogleMentor = res => {
-    const token = res.tokenId;
-    const user = decode(res.tokenId);
+  // responseGoogleMentor = google => {
+  //   if(google.expectedDomain === 'boom.camp') {
+  //     toast.error("Sorry, invalid email!", {
+  //       hideProgressBar: true,
+  //       draggable: false
+  //     });
+  //   } else {
+  //     const token = google.tokenId;
+  //     const user = decode(google.tokenId);
+  //     const data = {
+  //       key: this.props.validatedKey,
+  //       first_name: user.given_name,
+  //       last_name: user.family_name,
+  //       sub: user.sub,
+  //       privilege: "mentor",
+  //       avatar: user.picture
+  //     };
+  
+  //     api.fetch("/sign-in", "post", data).then(res => {
+  //       if (res.data.user.privilege === "student") {
+  //         toast.error("Sorry, your a student!", {
+  //           hideProgressBar: true,
+  //           draggable: false
+  //         });
+  //       } else {
+  //         if (res.data.user.key !== undefined) {
+  //           if (
+  //             res.data.user.key !== this.props.validatedKey ||
+  //             res.data.user.sub !== user.sub
+  //           ) {
+  //             toast.error("Sorry, its not your key", {
+  //               hideProgressBar: true,
+  //               draggable: false
+  //             });
+  //           } else {
+  //             if (res.data.user.privilege !== "mentor") {
+  //               toast.error("Sorry, you're not a mentor", {
+  //                 hideProgressBar: true,
+  //                 draggable: false
+  //               });
+  //             } else {
+  //               localStorage.setItem("id_token", token);
+  //               window.location.href = "/cohorts";
+  //             }
+  //           }
+  //         } else {
+  //           localStorage.setItem("id_token", token);
+  //           window.location.href = "/cohorts";
+  //         }
+  //       }
+  //     });
+  //   }
+  responseGoogleMentor = google => {
+    const token = google.tokenId;
+    const user = decode(google.tokenId);
     const data = {
       key: this.props.validatedKey,
       first_name: user.given_name,

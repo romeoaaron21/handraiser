@@ -88,7 +88,7 @@ class StudentClassCards extends React.Component {
                   member.cohort_id === cohort.id &&
                   member.student_id === this.props.user_id
               ).length !== 0 ? (
-                <Grid xs={3} key={cohort.id}>
+                <Grid item lg={4} xs={12} key={cohort.id}>
                   <Card className={classes.card}>
                     <CardActionArea
                       id={cohort.id}

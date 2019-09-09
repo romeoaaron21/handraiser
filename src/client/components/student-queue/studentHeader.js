@@ -10,6 +10,8 @@ import Typography from "@material-ui/core/Typography";
 import Handraise from "@material-ui/icons/PanTool";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import Link from "@material-ui/core/Link";
+import ImageUploader from "react-images-upload";
 
 const styles = theme => ({
   raiseBtn: {
@@ -58,6 +60,18 @@ const styles = theme => ({
 });
 
 class StudentHeader extends Component {
+  constructor() {
+    super();
+
+    this.state = { pictures: [] };
+  }
+
+  onDrop = picture => {
+    this.setState({
+      pictures: this.state.pictures.concat(picture)
+    });
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -132,7 +146,13 @@ class StudentHeader extends Component {
                   </div>
                 </Tooltip>
               </div>
-            ) : null}
+            ) : (
+              <div style={{ marginTop: "auto" }}>
+                <Link style={{ color: "#f3f3f3", fontSize: "13px" }}>
+                  Upload photo
+                </Link>
+              </div>
+            )}
           </ListItem>
         </Box>
       </div>
