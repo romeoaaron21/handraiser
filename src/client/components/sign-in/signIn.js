@@ -34,9 +34,16 @@ class SignInSide extends Component {
 
   componentDidMount() {
     document.title = "Welcome to Handraiser";
-    // if (this.Auth.loggedIn()) {
-    //   window.location.href = "/cohorts";
-    // }
+    if (this.Auth.getToken() !== null) {
+      const decodedToken = decode(this.Auth.getToken());
+      if (decodedToken.sub !== undefined) {
+        if (this.Auth.loggedIn()) {
+          window.location.href = "/cohorts";
+        }
+      } else {
+        window.location.href = "/404";
+      }
+    }
   }
 
   openValidateKeyDialog = () => this.setState({ validateKeyDialog: true });
@@ -63,7 +70,7 @@ class SignInSide extends Component {
   //       privilege: "student",
   //       avatar: user.picture
   //     };
-  
+
   //     api.fetch("/sign-in", "post", data).then(res => {
   //       console.log(res.data.user);
   //       if (res.data.user.privilege !== "student") {

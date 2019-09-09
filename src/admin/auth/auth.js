@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import AuthService from "./services";
+import decode from "jwt-decode";
 
 export default function Auth(AuthComponent) {
   const Auth = new AuthService();
@@ -11,18 +12,40 @@ export default function Auth(AuthComponent) {
     };
 
     componentDidMount() {
-      if (!Auth.loggedIn()) {
-         window.location.href = '/admin/sign-in';
+      if (Auth.getToken() !== null) {
+        const decodedToken = decode(Auth.getToken());
+        if (decodedToken.adminId !== undefined) {
+          if (!Auth.loggedIn()) {
+            window.location.href = "/admin/sign-in";
+          } else {
+            try {
+              const confirm = Auth.getConfirm();
+              this.setState({
+                confirm: confirm,
+                loaded: true
+              });
+            } catch (err) {
+              Auth.logout();
+              window.location.href = "/admin/sign-in";
+            }
+          }
+        } else {
+          window.location.href = "/404";
+        }
       } else {
-        try {
-          const confirm = Auth.getConfirm();
-          this.setState({
-            confirm: confirm,
-            loaded: true
-          });
-        } catch (err) {
-          Auth.logout();
-          window.location.href = '/admin/sign-in';
+        if (!Auth.loggedIn()) {
+          window.location.href = "/admin/sign-in";
+        } else {
+          try {
+            const confirm = Auth.getConfirm();
+            this.setState({
+              confirm: confirm,
+              loaded: true
+            });
+          } catch (err) {
+            Auth.logout();
+            window.location.href = "/admin/sign-in";
+          }
         }
       }
     }
@@ -31,7 +54,7 @@ export default function Auth(AuthComponent) {
       if (!this.state.loaded || !this.state.confirm) {
         return null;
       }
-      return (<AuthComponent />);
+      return <AuthComponent />;
     }
   };
 }
