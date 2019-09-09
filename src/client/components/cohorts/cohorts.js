@@ -43,8 +43,31 @@ import styles from "./cohorts-component-style";
 import EmptyQueue from "./../../images/emptyqueue.svg";
 import AvailClass from "./cards/availClass";
 
+//TABS
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button'
+
+
 const socket = io("http://boom-handraiser.com:3001/");
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      <Box>{children}</Box>
+    </Typography>
+  );
+}
 class Cohorts extends React.Component {
   constructor() {
     super();
@@ -73,7 +96,8 @@ class Cohorts extends React.Component {
       selected: "",
       cohort_id: "",
       search: "",
-      socket: null
+      socket: null,
+      tabValue: 0
     };
   }
 
@@ -86,6 +110,12 @@ class Cohorts extends React.Component {
     this.setState({ open: false });
   };
   //NAVIGATION END
+
+  handleTabValue = (event, newValue) => {
+    this.setState({tabValue: newValue})
+  }
+
+  
 
   componentDidMount() {
     document.title = "Cohorts";
@@ -381,6 +411,19 @@ class Cohorts extends React.Component {
                     inputProps={{ "aria-label": "search" }}
                   />
                 </div>
+                {this.state.privilege === "student"?
+                <Tabs
+                      value={this.state.tabValue}
+                      onChange={this.handleTabValue}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      style={{width:'100%'}}
+                      centered
+                >
+                  <Tab label="Enrolled Classes" />
+                  <Tab label="Available Classes" />
+                </Tabs> : null
+                }
                 {this.state.privilege !== "student" ? (
                   <div className={classes.mentor}>
                     <MentorClassCards
@@ -393,27 +436,21 @@ class Cohorts extends React.Component {
                       user={this.state.user}
                     />
                   </div>
-                ) : this.state.member.length !== 0 &&
+                ) : 
+                this.state.member.length !== 0 &&
                   this.state.member.filter(
                     member => member.student_id === this.state.id
                   ).length !== 0 ? (
                   <div className={classes.student}>
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={12}
-                        className={classes.header}
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          borderBottom: "2px solid gainsboro"
-                        }}
-                      >
-                        <Typography style={{ color: "#6f6f6f" }}>
-                          Enrolled Classes
-                        </Typography>
-                      </Grid>
-
+                    
+                    <Grid container  style={{
+                        textAlign: 'center',
+                        alignItems: 'center',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}>
+                      <TabPanel value={this.state.tabValue} index={0}>
+                      <Grid container>
                       <StudentClassCards
                         user_id={this.state.id}
                         search={this.state.search}
@@ -423,29 +460,13 @@ class Cohorts extends React.Component {
                         openLeave={this.openLeave}
                         openStudentList={this.openStudentList}
                       />
-                    </Grid>
-                  </div>
-                ) : null}
-                {this.state.privilege === "student" ? (
-                  this.state.cohorts.length !== 0 ? (
-                    <div className={classes.student}>
+                      </Grid>
+                      </TabPanel>
+                      <TabPanel value={this.state.tabValue} index={1} >
+                      {this.state.privilege === "student" ? (
+                      this.state.cohorts.length !== 0 ? (
+                      <div className={classes.student}> 
                       <Grid container>
-                        <Grid
-                          item
-                          xs={12}
-                          className={classes.header}
-                          style={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            borderBottom: "2px solid gainsboro",
-                            paddingTop: "2%"
-                          }}
-                        >
-                          <Typography style={{ color: "#6f6f6f" }}>
-                            Available Classes
-                          </Typography>
-                        </Grid>
-
                         {this.state.member.length !== 0 &&
                         this.state.search === "" ? (
                           this.state.enrolledClasses.length ===
@@ -465,7 +486,7 @@ class Cohorts extends React.Component {
                             <Grid
                               container
                               className={classes.emptyQueue}
-                              style={{ padding: 50 }}
+                              style={{ padding: 50}}
                             >
                               <img
                                 alt="Classes"
@@ -502,7 +523,53 @@ class Cohorts extends React.Component {
                       </Grid>
                     </div>
                   ) : null
-                ) : null}
+                  ) : null}
+                  </TabPanel>
+                  </Grid>
+                  </div>
+                ) : 
+                ( 
+                  <React.Fragment>
+                  <TabPanel value={this.state.tabValue} index={0}>
+                  <Grid container className={classes.emptyQueue}>
+                    <img
+                      alt="Classes"
+                      src={EmptyQueue}
+                      width="280"
+                      height="250"
+                    />
+                    <Typography variant="overline" display="block">
+                      No Enrolled Classes
+                    </Typography>
+                    <Button onClick={()=>{this.setState({tabValue:1})}} variant='contained' color='primary'>See Available Classes</Button>
+                  </Grid>
+                  </TabPanel>
+                  <TabPanel value={this.state.tabValue} index={1} >
+                  <div className={classes.student}>    
+                    <Grid container  style={{
+                        textAlign: 'center',
+                        alignItems: 'center',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}>
+                  <Grid container>
+                  <AvailClass
+                    user_id={this.state.id}
+                    enrolledClasses={this.state.enrolledClasses}
+                    cohorts={this.state.cohorts}
+                    members={this.state.member}
+                    openEnroll={this.openEnroll}
+                    openLeave={this.openLeave}
+                    openStudentList={this.openStudentList}
+                  />
+                  </Grid>
+                  </Grid>
+                  </div>
+                  </TabPanel>
+                  </React.Fragment>
+                )
+                }
+                 
                 <AddClass
                   open={this.state.add}
                   close={this.closeModal}
@@ -539,6 +606,7 @@ class Cohorts extends React.Component {
                   />
                 ) : null}
                 {this.state.cohorts.length !== 0 ? null : (
+                  <TabPanel value={this.state.tabValue} index={1} >
                   <Grid container className={classes.emptyQueue}>
                     <img
                       alt="Classes"
@@ -550,6 +618,7 @@ class Cohorts extends React.Component {
                       No Classes Found
                     </Typography>
                   </Grid>
+                  </TabPanel>
                 )}
               </Container>
             </React.Fragment>

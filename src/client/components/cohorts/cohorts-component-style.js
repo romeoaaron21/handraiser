@@ -88,7 +88,7 @@ const styles = theme => ({
     },
   },
   emptyQueue: {
-    paddingTop: theme.spacing(15),
+    paddingTop: theme.spacing(8),
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column"
