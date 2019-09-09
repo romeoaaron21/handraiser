@@ -101,7 +101,7 @@ class Cohorts extends React.Component {
     };
   }
 
-  //NAVIGATION
+  //NAVIGATION START
   handleDrawerOpen = () => {
     this.setState({ open: true });
   };
@@ -109,6 +109,7 @@ class Cohorts extends React.Component {
   handleDrawerClose = () => {
     this.setState({ open: false });
   };
+  //NAVIGATION END
 
   handleTabValue = (event, newValue) => {
     this.setState({tabValue: newValue})
@@ -121,12 +122,14 @@ class Cohorts extends React.Component {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       api.fetch(`/api/cohorts/api`, "get").then(res => {
-        if(this.state.privilege === 'student'){
+        if (this.state.privilege === "student") {
           this.setState({ availableClasses: res.data.cohorts });
-          var cohorts = res.data.cohorts.filter(cohorts => cohorts.status === 'active')
-          this.setState({ cohorts })
+          var cohorts = res.data.cohorts.filter(
+            cohorts => cohorts.status === "active"
+          );
+          this.setState({ cohorts });
         } else {
-          this.setState({ cohorts: res.data.cohorts});
+          this.setState({ cohorts: res.data.cohorts });
         }
       });
 
@@ -159,11 +162,10 @@ class Cohorts extends React.Component {
 
   //SORT CLASSES SIDE NAV STUDENT START
   ascLastName = (a, b) => {
-    if(a.name < b.name) return -1;
-    if(a.name > b.name) return 1;
-  }
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+  };
   //SORT CLASSES SIDE NAV STUDENT END
-
 
   UNSAFE_componentWillMount() {
     socket.on("displayEnrolledClasses", cohorts => {
@@ -179,6 +181,7 @@ class Cohorts extends React.Component {
     });
   }
 
+  // MODALS START
   openStudentList = cohort_id => {
     api.fetch(`/api/cohorts/${cohort_id}/students/`, "get").then(res => {
       this.setState({
@@ -229,10 +232,14 @@ class Cohorts extends React.Component {
       delete: false,
       enroll: false,
       leave: false,
-      studentList: false,
+      studentList: false
     });
   };
+  // MODALS END
 
+  //MENTOR FUNCTIONS START
+
+  //ADD CLASS
   add = (name, password, mentor_id) => {
     if (name && password) {
       const state = { name, password };
@@ -262,6 +269,7 @@ class Cohorts extends React.Component {
     }
   };
 
+  // DELETE CLASS
   delete = id => {
     api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
       this.componentDidMount();
@@ -272,53 +280,7 @@ class Cohorts extends React.Component {
     });
   };
 
-  enroll = (id, password) => {
-    let student_id = this.state.id;
-    const state = { student_id, password };
-    if (!password) {
-      return toast.error("Fill up the required fields", {
-        hideProgressBar: true,
-        draggable: false
-      });
-    } else {
-      api.fetch(`/api/cohorts/${id}/students`, "post", state).then(res => {
-        if (res.data.message === 'error') {
-          toast.error("Wrong Password!", {
-            hideProgressBar: true,
-            draggable: false
-          });
-        } else if(res.data.message === 'Locked'){
-          toast.error("Cohort Locked!", {
-            hideProgressBar: true,
-            draggable: false
-          });
-          this.componentDidMount();
-        } else {
-          toast.info("Enrolled to Cohort!", {
-            hideProgressBar: true,
-            draggable: false
-          });
-          this.closeModal();
-          this.setState({ search: ''})
-          this.componentDidMount();
-        }
-      });
-    }
-  };
-
-  leave = id => {
-    api
-      .fetch(`/api/cohorts/${id}/students/${this.state.id}`, "get")
-      .then(() => {
-        this.componentDidMount();
-        toast.info("Left Cohort!", {
-          hideProgressBar: true,
-          draggable: false
-        });
-        this.setState({ search: ''})
-      });
-  };
-
+  //REMOVE STUDENT IN CLASS
   removeStudent = (id, student_id) => {
     api.fetch(`/api/cohorts/${id}/students/${student_id}`, "get").then(() => {
       this.componentDidMount();
@@ -332,6 +294,72 @@ class Cohorts extends React.Component {
       });
     });
   };
+  //MENTOR FUNCTIONS END
+
+  //STUDENT FUNCTIONS START
+
+  //ENROLL IN AVAILABLE CLASSES
+  enroll = (id, password) => {
+    let student_id = this.state.id;
+    const state = { student_id, password };
+    if (!password) {
+      return toast.error("Fill up the required fields", {
+        hideProgressBar: true,
+        draggable: false
+      });
+    } else {
+      api.fetch(`/api/cohorts/${id}/students`, "post", state).then(res => {
+        if (res.data.message === "Deleted") {
+          toast.error("Sorry, the class was deleted.", {
+            hideProgressBar: true,
+            draggable: false
+          });
+          this.closeModal();
+          this.componentDidMount();
+        } else if (res.data.message === "error") {
+          toast.error("Oops, wrong password!", {
+            hideProgressBar: true,
+            draggable: false
+          });
+        } else if (res.data.message === "Locked") {
+          toast.error(
+            "Sorry, you can not enroll anymore. The mentor already locked this class.",
+            {
+              hideProgressBar: true,
+              draggable: false
+            }
+          );
+          this.closeModal();
+          this.componentDidMount();
+        } else {
+          toast.info("Enrolled to Cohort!", {
+            hideProgressBar: true,
+            draggable: false
+          });
+          this.closeModal();
+          this.setState({ search: "" });
+          this.componentDidMount();
+        }
+      });
+    }
+  };
+
+  //LEAVE IN CLASSES ENROLLED
+
+  leave = id => {
+    api
+      .fetch(`/api/cohorts/${id}/students/${this.state.id}`, "get")
+      .then(() => {
+        this.componentDidMount();
+        toast.info("Left Cohort!", {
+          hideProgressBar: true,
+          draggable: false
+        });
+        this.setState({ search: "" });
+      });
+  };
+
+  //STUDENT FUNCTIONS END
 
   render() {
     const { classes } = this.props;
@@ -345,7 +373,11 @@ class Cohorts extends React.Component {
         <SideNav
           open={this.state.open}
           handleDrawerCloseFn={this.handleDrawerClose}
-          cohorts={this.state.privilege === 'student' ? this.state.enrolledClasses.sort(this.ascLastName) : this.state.cohortsSideNav}
+          cohorts={
+            this.state.privilege === "student"
+              ? this.state.enrolledClasses.sort(this.ascLastName)
+              : this.state.cohortsSideNav
+          }
           socket={true}
         />
         <ToastContainer
@@ -373,7 +405,7 @@ class Cohorts extends React.Component {
                       root: classes.inputRoot,
                       input: classes.inputInput
                     }}
-                    onChange={e => this.setState({ search: e.target.value})}
+                    onChange={e => this.setState({ search: e.target.value })}
                     value={this.state.search}
                     fullWidth
                     inputProps={{ "aria-label": "search" }}
@@ -436,10 +468,21 @@ class Cohorts extends React.Component {
                       <div className={classes.student}> 
                       <Grid container>
                         {this.state.member.length !== 0 &&
-                        this.state.search === '' ? (
-                          ((this.state.enrolledClasses.length === this.state.availableClasses.length) || 
-                          (this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length === this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length) 
-                          || (this.state.enrolledClasses.filter(cohorts => cohorts.status === 'active').length === this.state.availableClasses.filter(cohorts => cohorts.status === 'active').length)) ? (
+                        this.state.search === "" ? (
+                          this.state.enrolledClasses.length ===
+                            this.state.availableClasses.length ||
+                          this.state.enrolledClasses.filter(
+                            cohorts => cohorts.status === "active"
+                          ).length ===
+                            this.state.availableClasses.filter(
+                              cohorts => cohorts.status === "active"
+                            ).length ||
+                          this.state.enrolledClasses.filter(
+                            cohorts => cohorts.status === "active"
+                          ).length ===
+                            this.state.availableClasses.filter(
+                              cohorts => cohorts.status === "active"
+                            ).length ? (
                             <Grid
                               container
                               className={classes.emptyQueue}
