@@ -15,7 +15,7 @@ import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import KeyBoardDown from "@material-ui/icons/KeyboardArrowDown";
-import EmptyQueue from "../../images/noResult.svg";
+import EmptyQueue from "../../images/student-svg.png";
 
 const styles = theme => ({
   rightNav: {
@@ -86,12 +86,12 @@ const styles = theme => ({
     }
   },
   emptyQueue: {
-    marginTop: 140,
+    marginTop: 120,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
     "@media (max-width: 425px)": {
-      marginTop: 160
+      marginTop: 130
     }
   },
   emptyImgSize: {
