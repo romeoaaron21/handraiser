@@ -22,10 +22,10 @@ class DeleteClass extends React.Component {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Delete"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Confirmation</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete class?
+            Are you sure you want to delete this class?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

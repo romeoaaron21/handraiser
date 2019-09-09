@@ -132,11 +132,17 @@ massive({
   app.post("/api/cohort/:id/editDetails", cohorts.updateCohortDetails);
 
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
+    //History
+  app.get("/api/cohorts/history/:id", cohorts.getHistory);
+    //History Details
+  app.get("/api/cohorts/history/details/:id", cohorts.getHistoryDetails);
+    //Mentor Details
+  app.get("/api/cohorts/helpedby/:id", cohorts.getHelpedBy);
   // Cohorts End
 
   app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);
   app.get("/api/removebeinghelped/:memberid/:cohort_id", mentor.movebacktoqueu);
-  app.get("/api/doneHelp/:memberid/:cohort_id", mentor.doneHelp);
+  app.post("/api/doneHelp/:memberid/:cohort_id/:mentor_id", mentor.doneHelp);
 
   app.get("/api/displayUserInfo/:sub/:cohort_id", students.displayUserInfo);
   app.get("/api/displayStudents/", students.displayStudents);

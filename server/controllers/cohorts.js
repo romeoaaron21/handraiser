@@ -277,6 +277,51 @@ function updateCohortDetails(req, res) {
     });
 }
 
+function getHistory(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`SELECT * FROM history WHERE cohort_id = ${id}`)
+    .then(history => {
+      res.status(201).json({ history });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function getHistoryDetails(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`select * from users, history where history.id = ${id} and history.member_id = users.id`)
+    .then(history => {
+      res.status(201).json({ history });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function getHelpedBy(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`select * from users where id = ${id}`)
+    .then(mentor => {
+      res.status(201).json({ mentor });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
 module.exports = {
   getAll,
   getByMentorID,
@@ -293,5 +338,8 @@ module.exports = {
   changeStatus,
   updateCohortDetails,
   getCohortDetails,
-  getEnrolledClasses
+  getEnrolledClasses,
+  getHistory,
+  getHistoryDetails,
+  getHelpedBy
 };
