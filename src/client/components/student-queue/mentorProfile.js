@@ -88,7 +88,7 @@ class MentorProfile extends PureComponent {
       .then(res => {
         this.setState({
           students: res.data.students,
-          cohort_pass: res.data.students.password
+          cohort_pass: res.data.students[0].password
         });
       });
   }

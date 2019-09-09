@@ -217,6 +217,7 @@ class ChatList extends PureComponent {
                                   onClick={() => {
                                     this.props.sendChatSub();
                                     this.props.displayBadge("student");
+                                    this.props.chatmateSub(mentor.sub)
                                   }}
                                 >
                                   <ListItemAvatar>
@@ -288,7 +289,7 @@ class ChatList extends PureComponent {
                             <ListItem
                               className={classes.list}
                               onClick={() => {
-                                this.props.sendChatSub();
+                                this.props.sendChatSub(mentor.sub);
                                 this.props.displayBadge("student");
                               }}
                             >

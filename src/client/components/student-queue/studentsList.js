@@ -216,7 +216,9 @@ class ChatList extends PureComponent {
           {/* Chat List */}
 
           {this.state.students.map(student => (
-            <ListItem className={classes.list} key={student.id}>
+            <ListItem className={classes.list} key={student.id} onClick={()=>{
+              this.props.sendChatSubM(student.sub)
+              }}>
               <ListItemAvatar>
                 <Avatar src={student.avatar} className={classes.userAvatar} />
               </ListItemAvatar>
@@ -240,7 +242,10 @@ class ChatList extends PureComponent {
                           : false
                       }
                       className={classes.responsive}
-                      onClick={() => this.props.moveToQueue(student.sub)}
+                      onClick={(e) =>{ 
+                        this.props.moveToQueue(student.sub)
+                        e.stopPropagation()
+                      }}
                     >
                       <MoveToQueue className={classes.actionIcon} />
                     </IconButton>

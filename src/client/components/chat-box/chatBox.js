@@ -191,7 +191,7 @@ class ChatBox extends PureComponent {
                   )
                 )}
                 {this.props.chatM.length > 0 &&
-                this.props.privileged === "student"  && this.props.allowChat? (
+                this.props.privileged === "student" ? (
                   <TypingEffect />
                 ) : this.props.chat.length > 0 &&
                   this.props.privileged === "mentor"? (
@@ -205,7 +205,6 @@ class ChatBox extends PureComponent {
 
           {this.props.privileged === "student" ? (
             <React.Fragment>
-              {this.props.allowChat?
               <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
                   <Avatar
@@ -246,15 +245,6 @@ class ChatBox extends PureComponent {
                   </React.Fragment>
                 </div>
               </Box>
-              :
-              <Box xs={12} sm={8}>
-                <div className={classes.footerDone}>
-                  <Typography variant="subtitle1" className={classes.chatInfo}>
-                    You can only chat if you're being helped...
-                  </Typography>
-                </div>
-              </Box>
-              }
             </React.Fragment>
           ) : (
             <React.Fragment>
@@ -282,7 +272,7 @@ class ChatBox extends PureComponent {
                     className={classes.sendIcon}
                     onClick={() => {
                       this.props.sendChatM(this.props.helpingStudent_sub);
-                      /*BADGE*/ this.props.displayBadge("mentor");
+                      this.props.displayBadge("mentor")
                     }}
                     disabled={
                       this.props.chatM
