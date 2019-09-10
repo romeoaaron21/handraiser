@@ -14,6 +14,10 @@ import LockIcon from "@material-ui/icons/Lock";
 
 import CardBackground from "../../../images/cardBg.jpg";
 
+import History from './history/history';
+//API
+import api from "../../../services/fetchApi";
+
 const styles = theme => ({
   card: {
     height: 275,
@@ -57,11 +61,38 @@ const styles = theme => ({
   media: {
     height: "45%",
     width: 300
+  },
+  logBtn: {
+    marginLeft: 'auto'
   }
 });
 
 class MentorClassCards extends React.Component {
-  
+  constructor(){
+    super();
+    this.state = {
+      openHistory: false,
+      history: [],
+      selectedCohort: []
+    }
+  }
+
+  openHistory = cohort => {
+    api.fetch(`/api/cohorts/history/${cohort.id}`, "get").then(res => {
+      this.setState({
+        openHistory: true,
+        history: res.data.history,
+        selectedCohort: cohort
+      });
+    });
+  };
+
+  handleCloseHistory = () => {
+    this.setState({
+      openHistory: false
+    })
+  }
+
   render() {
     const {
       classes,
@@ -149,6 +180,16 @@ class MentorClassCards extends React.Component {
                           Students
                         </Button>
                       ) : null}
+                       <Button
+                        size="small"
+                        color="primary"
+                        id={cohort.id}
+                        onClick={() => (
+                          window.location.href = `/settings/${cohort.id}`
+                        )}
+                      >
+                        Logs
+                      </Button>
                     </CardActions>
                   </Card>
                 );
@@ -211,6 +252,15 @@ class MentorClassCards extends React.Component {
                         Students
                       </Button>
                     ) : null}
+                      <Button
+                          size="small"
+                          className={classes.logBtn}
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => this.openHistory(cohort)}
+                      >
+                          Logs
+                      </Button>
                   </CardActions>
                 </Card>
               );
@@ -351,6 +401,14 @@ class MentorClassCards extends React.Component {
           }
           return null;
         })}
+
+        <History 
+          open={this.state.openHistory}
+          cohort={this.state.selectedCohort}
+          handleClose={this.handleCloseHistory}
+          history={this.state.history}
+        />
+
       </React.Fragment>
     );
   }

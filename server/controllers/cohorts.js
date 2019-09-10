@@ -2,48 +2,49 @@ function getAll(req, res) {
   const db = req.app.get("db");
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY cohorts.id DESC`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id GROUP BY cohorts.status = 'nonactive', cohorts.id, users.first_name, users.last_name, users.avatar`
   )
-  .then(cohorts => {
-    res.status(201).json({ cohorts });
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).end();
-  });
+    .then(cohorts => {
+      res.status(201).json({ cohorts });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
 }
 
 function getByMentorID(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
-  
+
   db.query(
     `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id}`
   )
-  .then(cohorts => {
-    res.status(201).json({ cohorts });
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).end();
-  });
+    .then(cohorts => {
+      res.status(201).json({ cohorts });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
 }
 
 function getEnrolledClasses(req, res) {
   const db = req.app.get("db");
   const { studentId } = req.params;
-  
+
   db.query(
     `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.status, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
     AS members FROM cohorts, users, member WHERE cohorts.mentor_id = users.id AND member.cohort_id = cohorts.id AND member.student_id = '${studentId}' ORDER BY cohorts.id DESC;`
   )
-  .then(cohorts => {
-    res.status(201).json({ cohorts });
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).end();
-  });
+    .then(cohorts => {
+      res.status(201).json({ cohorts });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
 }
 
 function addCohort(req, res) {
@@ -99,36 +100,38 @@ function enroll(req, res) {
   const { student_id, password } = req.body;
 
   db.query(`SELECT status FROM cohorts WHERE id = '${id}'`).then(cohort => {
-    if(cohort[0].status === 'active'){
-      db.cohorts
-        .findOne({
-          id,
-          password
-        })
-        .then(cohort => {
-          if (!cohort) {
-            res.status(201).send({ message: "error" });
-          } else {
-            db.member
-              .insert({
-                student_id: student_id,
-                cohort_id: id
-              })
-              .then(member => {
-                res.status(201).json({ member });
-              });
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(201).send({ message: err });
-        });
+    if (cohort[0] === undefined) {
+      res.status(201).send({ message: "Deleted" });
     } else {
-      res.status(201).send({ message: "Locked" });
+      if (cohort[0].status === "active") {
+        db.cohorts
+          .findOne({
+            id,
+            password
+          })
+          .then(cohort => {
+            if (!cohort) {
+              res.status(201).send({ message: "error" });
+            } else {
+              db.member
+                .insert({
+                  student_id: student_id,
+                  cohort_id: id
+                })
+                .then(member => {
+                  res.status(201).json({ member });
+                });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            res.status(201).send({ message: err });
+          });
+      } else {
+        res.status(201).send({ message: "Locked" });
+      }
     }
-  })
-
-  
+  });
 }
 
 function leave(req, res) {
@@ -228,28 +231,26 @@ function getAllSideNav(req, res) {
       res.status(500).end();
     });
 }
-    
+
 function changeStatus(req, res) {
   const db = req.app.get("db");
   const { id, status } = req.params;
 
-  db.query(
-    `UPDATE cohorts SET status = '${status}' WHERE id = '${id}'`
-  ).then(status => {
-    res.status(201).json({ status });
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).end();
-  });
+  db.query(`UPDATE cohorts SET status = '${status}' WHERE id = '${id}'`)
+    .then(status => {
+      res.status(201).json({ status });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
 }
 
-function getCohortDetails(req, res){
+function getCohortDetails(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
 
-  db
-    .query(`SELECT * FROM cohorts WHERE id = ${id}`)
+  db.query(`SELECT * FROM cohorts WHERE id = ${id}`)
     .then(cohort => {
       res.status(201).json({ cohort });
     })
@@ -259,20 +260,66 @@ function getCohortDetails(req, res){
     });
 }
 
-function updateCohortDetails(req, res){
+function updateCohortDetails(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
   const { name, newpassword, status } = req.body;
 
   db.query(
     `UPDATE cohorts SET name = '${name}', password = '${newpassword}', status = '${status}' WHERE id = '${id}'`
-  ).then(status => {
-    res.status(201).json({ status });
-  })
-  .catch(err => {
-    console.log(err);
-    res.status(500).end();
-  });
+  )
+    .then(status => {
+      res.status(201).json({ status });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function getHistory(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`SELECT * FROM history WHERE cohort_id = ${id}`)
+    .then(history => {
+      res.status(201).json({ history });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function getHistoryDetails(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`select * from users, history where history.id = ${id} and history.member_id = users.id`)
+    .then(history => {
+      res.status(201).json({ history });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function getHelpedBy(req, res){
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db
+    .query(`select * from users where id = ${id}`)
+    .then(mentor => {
+      res.status(201).json({ mentor });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
 }
 
 module.exports = {
@@ -291,5 +338,8 @@ module.exports = {
   changeStatus,
   updateCohortDetails,
   getCohortDetails,
-  getEnrolledClasses
+  getEnrolledClasses,
+  getHistory,
+  getHistoryDetails,
+  getHelpedBy
 };
