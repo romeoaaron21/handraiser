@@ -64,7 +64,8 @@ class SideNav extends React.Component {
     this.state = {
       user: [],
       members: [],
-      cohorts: []
+      cohorts: [],
+      subCohorts:[],
     };
   }
 
@@ -79,11 +80,17 @@ class SideNav extends React.Component {
         });
       });
 
+      api.fetch(`/api/fetchCoMentorCohorts`, "get").then(data => {
+        this.setState({subCohorts: data.data})
+      })
+      
       api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
         this.setState({
           members: res.data.member
         });
       });
+
+
     });
   }
   handleDrawerClose = () => {
@@ -151,23 +158,47 @@ class SideNav extends React.Component {
                       </ListItemIcon>
                       <ListItemText primary={cohort.name} />
                     </ListItem>
-                  ) : null
-                ) : (
-                  <ListItem
-                    button
-                    key={cohort.name}
-                    onClick={() =>
-                      (window.location.href = `/queue/${cohort.id}`)
-                    }
-                  >
-                    <ListItemIcon>
-                      <Avatar className={classes.purpleAvatar}>
-                        {cohort.name.charAt(0).toUpperCase()}
-                      </Avatar>
-                    </ListItemIcon>
-                    <ListItemText primary={cohort.name} />
-                  </ListItem>
-                )
+                  ) 
+                  : (()=>{
+                      return this.state.subCohorts.map(row=>{
+                        if (row.user_id === this.state.user.id && row.id === cohort.id ){
+                          return (
+                            <ListItem
+                              button
+                              key={cohort.name}
+                              onClick={() =>
+                                (window.location.href = `/queue/${cohort.id}`)
+                              }
+                            >
+                              <ListItemIcon>
+                                <Avatar className={classes.purpleAvatar}>
+                                  {cohort.name.charAt(0).toUpperCase()}
+                                </Avatar>
+                              </ListItemIcon>
+                              <ListItemText primary={cohort.name} />
+                            </ListItem>
+                          )
+                        }
+                      })
+                    })()
+                  
+                  
+                  
+                :
+                <ListItem
+                  button
+                  key={cohort.name}
+                  onClick={() =>
+                    (window.location.href = `/queue/${cohort.id}`)
+                  }
+                >
+                <ListItemIcon>
+                  <Avatar className={classes.purpleAvatar}>
+                    {cohort.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText primary={cohort.name} />
+              </ListItem>
               )
             : this.state.cohorts.map(cohort =>
                 this.state.user.privilege === "mentor" ? (
@@ -187,23 +218,25 @@ class SideNav extends React.Component {
                       <ListItemText primary={cohort.name} />
                     </ListItem>
                   ) : null
-                ) : (
-                  <ListItem
-                    button
-                    key={cohort.name}
-                    onClick={() =>
-                      (window.location.href = `/queue/${cohort.id}`)
-                    }
-                  >
-                    <ListItemIcon>
-                      <Avatar className={classes.purpleAvatar}>
-                        {cohort.name.charAt(0).toUpperCase()}
-                      </Avatar>
-                    </ListItemIcon>
-                    <ListItemText primary={cohort.name} />
-                  </ListItem>
-                )
-              )}
+                :
+                <ListItem
+                  button
+                  key={cohort.name}
+                  onClick={() =>
+                    (window.location.href = `/queue/${cohort.id}`)
+                  }
+                >
+                <ListItemIcon>
+                  <Avatar className={classes.purpleAvatar}>
+                    {cohort.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText primary={cohort.name} />
+              </ListItem>
+            )
+          }
+
+        {/* ADD LIST HERE -sam- for comentor*/}
         </List>
         <Divider />
       </Drawer>

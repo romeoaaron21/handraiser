@@ -12,6 +12,7 @@ const user = require("./controllers/user.js");
 const cohorts = require("./controllers/cohorts.js");
 const mentor = require("./controllers/mentor");
 const students = require("./controllers/students");
+const comentor = require("./controllers/comentor")
 
 massive({
   host: "boom-handraiser.com",
@@ -163,6 +164,13 @@ massive({
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
 
   app.patch("/api/seenChat", students.seenChat);
+
+  //comentors
+  app.post("/api/addCoMentor", comentor.addCoMentor);
+  app.get("/api/fetchMentors", comentor.fetchMentors);
+  app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
+  app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
+
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

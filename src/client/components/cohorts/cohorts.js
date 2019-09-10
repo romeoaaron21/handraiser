@@ -29,7 +29,7 @@ import api from "./../../services/fetchApi";
 import Loader from "../common-components/loader/loader";
 
 //AUTH
-import Auth from "../../auth/Auth";
+import Auth from "../../auth/Auth";                                                                                                                      
 import AuthService from "../../auth/AuthService";
 
 //NAVIGATION
@@ -79,6 +79,7 @@ class Cohorts extends React.Component {
       privilege: "",
       id: 0,
       cohorts: [],
+      subCohorts:[],
       enrolledClasses: [],
       availableClasses: [],
       cohortsSideNav: [],
@@ -129,7 +130,7 @@ class Cohorts extends React.Component {
           this.setState({ cohorts: res.data.cohorts });
         }
       });
-
+ 
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
           socket.emit("displayCohortsSideNav", res.data.cohorts);
@@ -137,6 +138,10 @@ class Cohorts extends React.Component {
             this.setState({ loader: false });
           }, 1000);
         });
+        api.fetch(`/api/fetchCoMentorCohorts`, "get").then(data => {
+          this.setState({subCohorts: data.data})
+        })
+
       } else {
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
           socket.emit("displayMember", res.data.member);
@@ -168,7 +173,7 @@ class Cohorts extends React.Component {
     socket.on("displayEnrolledClasses", cohorts => {
       this.setState({ enrolledClasses: cohorts });
     });
-
+    
     socket.on("displayCohortsSideNav", cohorts => {
       this.setState({ cohortsSideNav: cohorts });
     });
@@ -339,7 +344,7 @@ class Cohorts extends React.Component {
         }
       });
     }
-  };
+  }; 
 
   //LEAVE IN CLASSES ENROLLED
 
@@ -359,6 +364,7 @@ class Cohorts extends React.Component {
   //STUDENT FUNCTIONS END
 
   render() {
+    
     const { classes } = this.props;
     return (
       <div className={classes.root}>
@@ -437,6 +443,7 @@ class Cohorts extends React.Component {
                       redirect={this.redirect}
                       openStudentList={this.openStudentList}
                       user={this.state.user}
+                      subCohorts={this.state.subCohorts}
                     />
                   </div>
                 ) : this.state.member.length !== 0 &&
