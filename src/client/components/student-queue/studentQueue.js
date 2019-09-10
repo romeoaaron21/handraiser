@@ -690,7 +690,7 @@ class Student extends Component {
                        senderInfo={this.state.senderInfo}
                        chatmateInfo={this.state.chatmateInfo}
                        privileged={this.state.previledge}
-                       helpingStudent_sub={this.state.chatmateSub}
+                       helpingStudent_sub={this.state.helpingStudent.sub}
                        cohort_id={this.props.cohort_id}
                        chat={this.state.studentChatText}
                        displayBadge={this.displayBadge}

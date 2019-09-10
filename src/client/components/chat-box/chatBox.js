@@ -83,8 +83,17 @@ class ChatBox extends PureComponent {
 
   render() {
     const { classes } = this.props;
+    console.log(this.props.chatmateInfo)
     return (
       <React.Fragment>
+
+        {/* {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub? */}
+        <Paper className={classes.helpStatus}>
+          <Typography variant="subtitle4">Currently Helping....</Typography>
+        </Paper>
+        {/* : null } */}
+
+
         <Paper elevation={1} className={classes.rightTopNav} square={true}>
           <Typography variant="subtitle1" className={classes.chatName}>
             {this.props.chatmateInfo.first_name}{" "}

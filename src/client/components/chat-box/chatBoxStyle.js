@@ -9,6 +9,18 @@ const styles = theme => ({
     borderTopRightRadius: "5px",
     borderTopLeftRadius: "5px"
   },
+  helpStatus: {
+    padding: theme.spacing(2, 3),
+    maxWidth: "auto",
+    display: "flex",
+    alignItems: "center",
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    backgroundColor: "#802695",
+    color: "white",
+    justifyContent: "center"
+  },
+
   rightNav: {
     position: "relative",
     boxShadow:
