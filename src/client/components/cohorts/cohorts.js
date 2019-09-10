@@ -96,7 +96,8 @@ class Cohorts extends React.Component {
       cohort_id: "",
       search: "",
       socket: null,
-      tabValue: 0
+      tabValue: 0,
+      user: []
     };
   }
 
@@ -120,7 +121,7 @@ class Cohorts extends React.Component {
       const user = fetch.data.user[0];
       api.fetch(`/api/cohorts/api`, "get").then(res => {
         if (this.state.privilege === "student") {
-          this.setState({ availableClasses: res.data.cohorts });
+          this.setState({ availableClasses: res.data.cohorts, user});
           var cohorts = res.data.cohorts.filter(
             cohorts => cohorts.status === "active"
           );
@@ -146,7 +147,7 @@ class Cohorts extends React.Component {
         });
 
         api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
-          socket.emit("displayEnrolledClasses", res.data.cohorts);
+            this.setState({ enrolledClasses: res.data.cohorts });
         });
       }
       this.setState({
@@ -165,10 +166,6 @@ class Cohorts extends React.Component {
   //SORT CLASSES SIDE NAV STUDENT END
 
   UNSAFE_componentWillMount() {
-    socket.on("displayEnrolledClasses", cohorts => {
-      this.setState({ enrolledClasses: cohorts });
-    });
-
     socket.on("displayCohortsSideNav", cohorts => {
       this.setState({ cohortsSideNav: cohorts });
     });

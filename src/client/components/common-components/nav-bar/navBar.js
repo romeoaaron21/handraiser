@@ -16,6 +16,11 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 
 import AuthService from '../../../auth/AuthService';
+import api from "../../../services/fetchApi";
+import io from "socket.io-client";
+
+const socket = io("http://boom-handraiser.com:3001/");
+
 
 const drawerWidth = 240;
 
@@ -92,9 +97,12 @@ const HtmlTooltip = withStyles(theme => ({
   },
 }))(Tooltip);
 
-const logout = (response) => {
-  localStorage.removeItem("id_token");
-  window.location.href = '/sign-in';
+const logout = (sub) => {
+  api.fetch(`/status/${sub}/inactive`, "patch").then(res => {
+    socket.emit("inactive", res.data.user);
+    localStorage.removeItem("id_token");
+    window.location.href = '/sign-in';  
+  });
 }
 
 class NavBar extends React.Component {
@@ -180,8 +188,8 @@ class NavBar extends React.Component {
                       Logout
                     </Button>
                   )}
-                  onLogoutSuccess={logout}
-                  onFailure={logout}
+                  onLogoutSuccess={() => logout(this.profile.sub)}
+                  onFailure={() => logout(this.profile.sub)}
                 >
                 </GoogleLogout>
               </Grid>

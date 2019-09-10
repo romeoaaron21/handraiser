@@ -89,6 +89,14 @@ massive({
       // console.log(priv)
       io.emit("sendChat", chat);
     });
+
+    // active attempt
+    socket.on("active", user => {
+      io.emit("active", user);
+    });
+    socket.on("inactive", user => {
+      io.emit("inactive", user);
+    });
   });
   //WEBSOCKETS END
 
@@ -109,7 +117,10 @@ massive({
   //USERS
   app.post("/validate", user.validate);
   app.post("/sign-in", user.signIn);
-
+    //logout
+  app.patch("/status/:sub/:status", user.updateStatus);
+    //getonline
+  app.get("/online", user.getOnline);
   app.get("/api/users/:id", user.getFromSub);
 
   // Cohorts Start
