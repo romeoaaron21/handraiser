@@ -9,7 +9,7 @@ function displayUserInfo(req, res) {
       res.status(200).json([user]);
     } else {
       db.query(
-        `SELECT users.*, cohorts.name FROM users, cohorts WHERE users.id=cohorts.mentor_id  AND users.sub = '${sub}' and cohorts.id = ${cohort_id}`
+        `SELECT users.*, cohorts.name FROM users, cohorts,comentor WHERE (users.id=cohorts.mentor_id OR users.id=comentor.mentor_id)  AND users.sub = '${sub}' and cohorts.id = ${cohort_id}`
       ).then(mentor => {
         res.status(200).json([mentor]);
       });
