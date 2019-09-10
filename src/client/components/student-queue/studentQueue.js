@@ -166,7 +166,7 @@ class Student extends Component {
   };
 
 
-  selectChatmate = (chatmate_sub, priv) => {
+  selectChatmate = (chatmate_sub) => {
     const data = api.fetch(
       `/api/displayChatUserInfo/${this.state.sub}/${chatmate_sub}`,
       "get"
@@ -611,7 +611,7 @@ class Student extends Component {
                           members={this.state.members}
                           moveToQueue={this.moveToQueue}
 
-                          sendChatSubM={this.selectChatmate}
+                          sendChatSub={this.selectChatmate}
                         />
 
                         <RemoveRequest
@@ -640,6 +640,8 @@ class Student extends Component {
                           /*BADGE*/ badge={this.state.badge}
                           /*BADGE*/ displayBadge={this.displayBadge}
                               cohort_id={this.props.cohort_id}
+
+                              sendChatSub={this.selectChatmate}
 
                             />
                           </Box>

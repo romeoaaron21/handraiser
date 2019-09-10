@@ -217,7 +217,7 @@ class ChatList extends PureComponent {
 
           {this.state.students.map(student => (
             <ListItem className={classes.list} key={student.id} onClick={()=>{
-              this.props.sendChatSubM(student.sub)
+              this.props.sendChatSub(student.sub)
               }}>
               <ListItemAvatar>
                 <Avatar src={student.avatar} className={classes.userAvatar} />

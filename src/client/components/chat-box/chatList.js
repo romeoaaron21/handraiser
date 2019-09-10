@@ -140,7 +140,8 @@ class ChatList extends PureComponent {
     super(props);
     this.state = {
       count: 0,
-      search: ""
+      search: "",
+      conversation: [],
     };
   }
 
@@ -172,6 +173,17 @@ class ChatList extends PureComponent {
 
   componentDidMount() {
     this.componentDidUpdate();
+
+    this.props.conversation.map(convo => {
+      if (convo.cohort_id === parseInt(this.props.cohort_id)) {
+        if ((convo.sender_id === this.props.sub && convo.chatmate_id === this.props.mentor[0].sub) ||
+          (convo.chatmate_id === this.props.sub && convo.sender_id === this.props.mentor[0].sub)) {
+          this.setState(prevState => ({
+            conversation: [...prevState.conversation, convo]
+          }))
+        }
+      }
+    })
   }
 
   render() {
@@ -203,95 +215,19 @@ class ChatList extends PureComponent {
 
           {this.props.mentor.map((mentor, i) => {
             if (this.state.search) {
-                return (
-                  <React.Fragment key={i}>
-                    {this.props.conversation.length !== 0 ? (
-                      this.props.conversation.map((convo, i) => {
-                        if (convo.message.toLowerCase().includes(this.state.search.toLowerCase())) {
-                          return (
-                            (convo.sender_id === this.props.sub && convo.chatmate_id === this.props.mentor[0].sub) ||
-                            (convo.chatmate_id === this.props.sub && convo.sender_id === this.props.mentor[0].sub && convo.cohort_id === parseInt(this.props.cohort_id)) ? (
-                              <React.Fragment key={i}>
-                                <ListItem
-                                  className={classes.list}
-                                  onClick={() => {
-                                    this.props.sendChatSub();
-                                    this.props.displayBadge("student");
-                                    this.props.chatmateSub(mentor.sub)
-                                  }}
-                                >
-                                  <ListItemAvatar>
-                                    <Avatar
-                                      src={mentor.avatar}
-                                      className={classes.userAvatar}
-                                    />
-                                  </ListItemAvatar>
-                                  <div className={classes.multiline}>
-                                    <Typography className={classes.chatName}>
-                                      {mentor.first_name} {mentor.last_name}
-                                    </Typography>
-                                    <Typography className={classes.chatDetails}>
-                                      {convo.message}
-                                    </Typography>
-                                  </div>
-                                  <div className={classes.chatAction}>
-                                    <Typography className={classes.chatTime}>
-                                      {" "}
-                                      {this.timeDisplay(convo.time)}{" "}
-                                    </Typography>
-                                    <Typography className={classes.chatBadge}>
-                                      <Badge
-                                        color="secondary"
-                                        badgeContent={this.state.count}
-                                        invisible={
-                                          this.props.priv === "student" &&
-                                          this.state.count !== 0
-                                            ? this.props.badge
-                                            : true
-                                        }
-                                        className={classes.margin}
-                                      ></Badge>
-                                    </Typography>
-                                  </div>
-                                </ListItem>
-                              </React.Fragment>
-                            ) : null
-                          );
-                        }
-                        return null;
-                      })
-                    ) : (
-                      <Grid container className={classes.emptyQueue}>
-                        <img
-                          alt={"empty queue"}
-                          src={EmptyQueue}
-                          width="200"
-                          height="180"
-                        />
-                        <Typography variant="overline" display="block">
-                          No message available...
-                        </Typography>
-                      </Grid>
-                    )}
-                  </React.Fragment>
-                );
-            } else {
               return (
                 <React.Fragment key={i}>
                   {this.props.conversation.length !== 0 ? (
-                    this.props.conversation.map((convo, i) =>
-                      convo ===
-                      this.props.conversation[
-                        this.props.conversation.length - 1
-                      ] ? (
-                        <React.Fragment key={i}>
-                          {convo.cohort_id ===
-                          parseInt(this.props.cohort_id) ? (
+                    this.state.conversation.map((convo, i) => {
+                      if (convo.message.toLowerCase().includes(this.state.search.toLowerCase())) {
+                        return (
+                          <React.Fragment key={i}>
                             <ListItem
                               className={classes.list}
                               onClick={() => {
-                                this.props.sendChatSub(mentor.sub);
+                                this.props.sendChatSub();
                                 this.props.displayBadge("student");
+                                this.props.chatmateSub(mentor.sub)
                               }}
                             >
                               <ListItemAvatar>
@@ -305,14 +241,7 @@ class ChatList extends PureComponent {
                                   {mentor.first_name} {mentor.last_name}
                                 </Typography>
                                 <Typography className={classes.chatDetails}>
-                                  {(convo.sender_id === this.props.sub &&
-                                    convo.chatmate_id ===
-                                      this.props.mentor[0].sub) ||
-                                  (convo.chatmate_id === this.props.sub &&
-                                    convo.sender_id ===
-                                      this.props.mentor[0].sub)
-                                    ? convo.message
-                                    : null}
+                                  {convo.message}
                                 </Typography>
                               </div>
                               <div className={classes.chatAction}>
@@ -321,46 +250,91 @@ class ChatList extends PureComponent {
                                   {this.timeDisplay(convo.time)}{" "}
                                 </Typography>
                                 <Typography className={classes.chatBadge}>
-                                  {(convo.sender_id === this.props.sub &&
-                                    convo.chatmate_id ===
-                                      this.props.mentor[0].sub) ||
-                                  (convo.chatmate_id === this.props.sub &&
-                                    convo.sender_id ===
-                                      this.props.mentor[0].sub) ? (
-                                    <Badge
-                                      color="secondary"
-                                      badgeContent={this.state.count}
-                                      invisible={
-                                        this.props.priv === "student" &&
+                                  <Badge
+                                    color="secondary"
+                                    badgeContent={this.state.count}
+                                    invisible={
+                                      this.props.priv === "student" &&
                                         this.state.count !== 0
-                                          ? this.props.badge
-                                          : true
-                                      }
-                                      className={classes.margin}
-                                    ></Badge>
-                                  ) : null}
+                                        ? this.props.badge
+                                        : true
+                                    }
+                                    className={classes.margin}
+                                  ></Badge>
                                 </Typography>
                               </div>
                             </ListItem>
-                          ) : null}
-                        </React.Fragment>
-                      ) : null
-                    )
+                          </React.Fragment>
+                        )
+                      }
+                      return null;
+                    })
                   ) : (
-                    <Grid container className={classes.emptyQueue}>
-                      <img
-                        alt={"empty queue"}
-                        src={EmptyQueue}
-                        width="200"
-                        height="180"
-                      />
-                      <Typography variant="overline" display="block">
-                        No message available...
-                      </Typography>
-                    </Grid>
-                  )}
+                      <Grid container className={classes.emptyQueue}>
+                        <img
+                          alt={"empty queue"}
+                          src={EmptyQueue}
+                          width="200"
+                          height="180"
+                        />
+                        <Typography variant="overline" display="block">
+                          No message available...
+                        </Typography>
+                      </Grid>
+                    )}
                 </React.Fragment>
               );
+            } else {
+              return (
+                <React.Fragment key={i}>
+                {this.state.conversation.map(convo => (
+                  this.state.conversation[this.state.conversation.length-1] === convo?
+                  
+                    <ListItem
+                      className={classes.list}
+                      onClick={() => {
+                        this.props.sendChatSub(mentor.sub);
+                        this.props.displayBadge("student");
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          src={mentor.avatar}
+                          className={classes.userAvatar}
+                        />
+                      </ListItemAvatar>
+                      <div className={classes.multiline}>
+                        <Typography className={classes.chatName}>
+                          {mentor.first_name} {mentor.last_name}
+                        </Typography>
+                        <Typography className={classes.chatDetails}>
+                          {convo.message}
+                      </Typography>
+                      </div>
+                      <div className={classes.chatAction}>
+                        <Typography className={classes.chatTime}>
+                          {" "}
+                          {this.timeDisplay(convo.time)}{" "}
+                        </Typography>
+                        <Typography className={classes.chatBadge}>
+                          <Badge
+                            color="secondary"
+                            badgeContent={this.state.count}
+                            invisible={
+                              this.props.priv === "student" &&
+                                this.state.count !== 0
+                                ? this.props.badge
+                                : true
+                            }
+                            className={classes.margin}
+                          ></Badge>
+                        </Typography>
+                      </div>
+                    </ListItem>
+                  :null
+                  ))}
+                  </React.Fragment>
+                )
             }
           })}
         </Paper>
