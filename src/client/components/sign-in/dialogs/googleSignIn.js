@@ -9,6 +9,9 @@ import Typography from "@material-ui/core/Typography";
 import { toast } from "react-toastify";
 
 import api from "../../../services/fetchApi";
+import io from "socket.io-client";
+
+const socket = io("http://boom-handraiser.com:3001/");
 
 const styles = {
   dialogContent: {
@@ -108,13 +111,19 @@ export default class googleSignIn extends Component {
                 draggable: false
               });
             } else {
-              localStorage.setItem("id_token", token);
-              window.location.href = "/cohorts";
+              api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
+                socket.emit("active", res.data.user);
+                localStorage.setItem("id_token", token);
+                window.location.href = "/cohorts";
+              });
             }
           }
         } else {
-          localStorage.setItem("id_token", token);
-          window.location.href = "/cohorts";
+          api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
+            socket.emit("active", res.data.user);
+            localStorage.setItem("id_token", token);
+            window.location.href = "/cohorts";
+          });
         }
       }
     });

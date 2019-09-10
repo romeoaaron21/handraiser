@@ -2,7 +2,6 @@ function validate(req, res) {
   const db = req.app.get("db");
 
   const { key } = req.body;
-
   db.keys
     .findOne({
       sign_in_key: key
@@ -52,7 +51,8 @@ function signIn(req, res) {
                               last_name,
                               sub,
                               privilege,
-                              avatar
+                              avatar,
+                              status: 'active'
                             })
                             .then(user => {
                               res.status(201).send({ user });
@@ -114,6 +114,16 @@ function signIn(req, res) {
     });
 }
 
+function updateStatus(req, res) {
+  const db = req.app.get("db");
+  const { sub, status } = req.params;
+  db.query(`UPDATE users set status = '${status}' WHERE sub = '${sub}'`).then(resp => {
+    db.query(`SELECT * FROM users WHERE sub = '${sub}'`).then(user => {
+      res.status(200).send({ user });
+    });
+  });
+}
+
 function getFromSub(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
@@ -123,8 +133,19 @@ function getFromSub(req, res) {
   });
 }
 
+function getOnline(req, res) {
+  const db = req.app.get("db");
+
+  db.query(`SELECT * FROM users WHERE status = 'active'`).then(users => {
+    res.status(201).send({ users });
+  });
+}
+
+
 module.exports = {
   validate,
   signIn,
-  getFromSub
+  getFromSub,
+  updateStatus,
+  getOnline
 };
