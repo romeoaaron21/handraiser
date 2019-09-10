@@ -187,6 +187,7 @@ class Student extends Component {
       this.setState({studentChatBox: true, chatmateSub: chatmate_sub})
     }
   };
+  
 
   setChatText = (val) => {
     if(this.state.previledge === 'student'){
@@ -263,6 +264,7 @@ class Student extends Component {
 
   helpStudentClose = () => {
     socket.emit("close", "1");
+    this.setState({mentorChatBox: false,})
   };
 
   removeStudentRequest = id => {
@@ -369,7 +371,7 @@ class Student extends Component {
     socket.on("close", cohort_id => {
       this.setState({
         helpingStudent: "",
-        helpStudentModal: false,
+        // helpStudentModal: false,
         button: true,
         requested: false,
         btntext: "Raise Hand",
@@ -694,12 +696,16 @@ class Student extends Component {
                        cohort_id={this.props.cohort_id}
                        chat={this.state.studentChatText}
                        displayBadge={this.displayBadge}
+
+                       helpStudentClose={this.helpStudentClose}
+                       helpingStudent={this.state.helpingStudent}
+                       
                       />
                     </Grid>
                   ) : (
                         <Grid item xs={12} sm={8}>
                           <RequestQueue
-                            sendChatSubM={this.selectChatmate}
+                            sendChatSub={this.selectChatmate}
                             cohort_id={this.props.cohort_id}
                             sub={this.state.sub}
                             priv={this.state.previledge}

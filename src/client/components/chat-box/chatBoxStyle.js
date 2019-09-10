@@ -182,10 +182,11 @@ const styles = theme => ({
     }
   },
   mentorStyle: {
-    boxShadow: 0,
-    borderBottomRightRadius: 0,
-    borderBottomLeftRadius: 0,
-    position: "relative"
+    position: "relative",
+    boxShadow:
+      "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
+    borderBottomRightRadius: "5px",
+    borderBottomLeftRadius: "5px"
   },
   mentorStyle1: {
     boxShadow: 0,

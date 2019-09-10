@@ -268,7 +268,7 @@ class requestQueue extends Component {
                                     className={classes.responsive}
                                     onClick={() => {
                                       this.props.helpStudent(member.id);
-                                      this.props.sendChatSubM(member.id);
+                                      this.props.sendChatSub(member.sub);
                                     }}
                                   >
                                     <ThumbsUp className={classes.actionIcon} />
