@@ -119,7 +119,7 @@ class Student extends Component {
       //chatBox: false, deleted
       //mentor_sub: "", deleted
       // chat: "",
-      
+
       // senderInfo: [],
       // chatmateInfo: [],
       // chatM: "",
@@ -145,7 +145,7 @@ class Student extends Component {
       studentChatBox: false,
 
       studentChatText: "",
-      mentorChatText: "",
+      mentorChatText: [],
 
       senderInfo: [],
       chatmateInfo: [],
@@ -158,9 +158,9 @@ class Student extends Component {
   //added dh
 
   viewChatBox = () => {
-    if(this.state.previledge === "student"){
+    if (this.state.previledge === "student") {
       this.setState({ studentChatBox: false });
-    } else{
+    } else {
       this.setState({ mentorChatBox: false });
     }
   };
@@ -174,27 +174,28 @@ class Student extends Component {
     data.then(res => {
       res.data.map(user => {
         if (user.sub === this.state.sub) {
-          this.setState({senderInfo: user});
+          this.setState({ senderInfo: user });
         } else {
-          this.setState({chatmateInfo: user});
+          this.setState({ chatmateInfo: user });
         }
         return null;
       });
     });
-    if(this.state.previledge === 'mentor'){
-      this.setState({mentorChatBox: true, chatmateSub: chatmate_sub})
-    } else{
-      this.setState({studentChatBox: true, chatmateSub: chatmate_sub})
+    if (this.state.previledge === 'mentor') {
+      this.setState({ mentorChatBox: true, chatmateSub: chatmate_sub })
+    } else {
+      this.setState({ studentChatBox: true, chatmateSub: chatmate_sub })
     }
   };
-  
 
-  setChatText = (val) => {
-    if(this.state.previledge === 'student'){
-      socket.emit("handleChat", val);
+
+  setChatText = (val, sub) => {
+    let textVal = [val, sub];
+    if (this.state.previledge === 'student') {
+      socket.emit("handleChat", textVal);
     }
-    else{
-      socket.emit("handleChatM", val);
+    else {
+      socket.emit("handleChatM", textVal);
     }
   }
 
@@ -202,10 +203,10 @@ class Student extends Component {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let current_datetime = new Date();
     let formatted_date = months[current_datetime.getMonth()] + " " + current_datetime.getDate() + ", " + current_datetime.getFullYear();
-    var time = current_datetime.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true});
+    var time = current_datetime.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true });
     var datetime = formatted_date + " " + time;
     let convo = {
-      message: this.state.previledge === 'student'? this.state.studentChatText: this.state.mentorChatText,
+      message: this.state.previledge === 'student' ? this.state.studentChatText : this.state.mentorChatText,
       sender_sub: this.state.sub,
       chatmate_sub: this.state.chatmateSub,
       cohort_id: this.props.cohort_id,
@@ -213,8 +214,8 @@ class Student extends Component {
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     data.then(res => {
-      if(this.state.previledge==='student'){socket.emit("sendChat", res.data)}
-      else{socket.emit("sendChatM", res.data)}
+      if (this.state.previledge === 'student') { socket.emit("sendChat", res.data) }
+      else { socket.emit("sendChatM", res.data) }
     });
   }
 
@@ -264,7 +265,7 @@ class Student extends Component {
 
   helpStudentClose = () => {
     socket.emit("close", "1");
-    this.setState({mentorChatBox: false,})
+    this.setState({ mentorChatBox: false, })
   };
 
   removeStudentRequest = id => {
@@ -287,6 +288,7 @@ class Student extends Component {
     this.setState({ socket });
 
     //START OF BADGE
+     
     socket.on("displayBadge", () => {
       this.setState({ badge: false });
     });
@@ -294,8 +296,59 @@ class Student extends Component {
     socket.on("handleChat", priv => {
       this.setState({ studentChatText: priv });
     });
+
     socket.on("handleChatM", priv => {
-      this.setState({ mentorChatText: priv });
+      let mentorText = [{ text: priv[0], userSub: priv[1] }]
+
+      if(this.state.mentorChatText.length === 0){
+        this.setState({ mentorChatText: mentorText })
+      } else{
+        let index = this.state.mentorChatText.findIndex(obj => obj.userSub === this.state.sub)
+        if(index >= 0){
+          console.log('sam')
+          // let mentorChatText = [...this.state.mentorChatText];
+          // let chat = {...mentorChatText[index]};
+          // chat.text = priv[0];
+          // chat[index] = chat;
+          // this.setState({mentorChatText});
+        }else if(index < 0){
+          this.setState(prevState => ({
+           mentorChatText: [...prevState.mentorChatText, priv]
+          }))
+        }
+        console.log(this.state.mentorChatText)
+      }
+
+      // if (this.state.mentorChatText.length === 0) {
+      //   this.setState({ mentorChatText: mentorText })
+      // } else if(this.state.mentorChatText.findIndex(obj => obj.userSub === this.state.sub) === -1){
+      //   console.log(mentorText)
+      //   // this.setState(prevState => ({
+      //   //   mentorChatText: [...prevState.mentorChatText, priv]
+      //   // }))
+      // } 
+      // else{
+      //   let index = this.state.mentorChatText.findIndex(obj => obj.userSub === priv[1]);
+      //   console.log(index)
+      //   // let mentorChatText = [...this.state.mentorChatText];
+      //   // let chat = {...mentorChatText[index]};
+      //   // chat.text = priv[0];
+      //   // chat[index] = chat;
+      //   // this.setState({mentorChatText});
+      // }
+    // //    this.setState(prevState => ({
+    // //     mentorChatText: {
+    // //         ...prevState.mentorChatText,
+    // //         [prevState.mentorChatText[index].text]: priv,
+    // //     },
+    // // }));
+       
+    //     let mentorChatText = [...this.state.mentorChatText];
+    //     let chat = {...mentorChatText[index]};
+    //     chat.text = priv[0];
+    //     chat[index] = chat;
+    //     this.setState({mentorChatText});
+      
     });
     // END OF BADGE
 
@@ -684,22 +737,22 @@ class Student extends Component {
                   ) : this.state.mentorChatBox && this.state.previledge === "mentor" ? (
                     <Grid item xs={12} sm={8}>
                       <ChatBox
-                       viewChatBox={this.viewChatBox}
-                       sendChatM={this.sendChat}
-                       handleChatM={this.setChatText}
-                       chatM={this.state.mentorChatText}
-                       conversation={this.state.conversation}
-                       senderInfo={this.state.senderInfo}
-                       chatmateInfo={this.state.chatmateInfo}
-                       privileged={this.state.previledge}
-                       helpingStudent_sub={this.state.helpingStudent.sub}
-                       cohort_id={this.props.cohort_id}
-                       chat={this.state.studentChatText}
-                       displayBadge={this.displayBadge}
+                        viewChatBox={this.viewChatBox}
+                        sendChatM={this.sendChat}
+                        handleChatM={this.setChatText}
+                        chatM={this.state.mentorChatText}
+                        conversation={this.state.conversation}
+                        senderInfo={this.state.senderInfo}
+                        chatmateInfo={this.state.chatmateInfo}
+                        privileged={this.state.previledge}
+                        helpingStudent_sub={this.state.helpingStudent.sub}
+                        cohort_id={this.props.cohort_id}
+                        chat={this.state.studentChatText}
+                        displayBadge={this.displayBadge}
 
-                       helpStudentClose={this.helpStudentClose}
-                       helpingStudent={this.state.helpingStudent}
-                       
+                        helpStudentClose={this.helpStudentClose}
+                        helpingStudent={this.state.helpingStudent}
+
                       />
                     </Grid>
                   ) : (

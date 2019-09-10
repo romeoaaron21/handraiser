@@ -108,7 +108,7 @@ const styles = theme => ({
     bottom: 0,
     width: "100%",
     position: "absolute",
-    height: "85px",
+    // height: "85px",
     "@media (max-width: 425px)": {
       height: "70px"
     }
@@ -120,11 +120,12 @@ const styles = theme => ({
     width: "100%"
   },
   custom: {
-    height: 40
+    maxHeight:'auto',
   },
   chatContentWrapper: {
     padding: 15,
     overflowY: "auto",
+    height:'auto',
     maxHeight: "435px",
     "@media (max-height: 425px)":{
       maxHeight: '485px',
