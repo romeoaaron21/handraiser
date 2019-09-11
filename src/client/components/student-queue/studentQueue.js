@@ -128,13 +128,6 @@ class Student extends Component {
 
       badge: false,
 
-
-
-
-
-
-
-
       //added dh
 
       conversation: [],
@@ -145,7 +138,7 @@ class Student extends Component {
       studentChatBox: false,
 
       studentChatText: "",
-      mentorChatText: [],
+      mentorChatText: "",
 
       senderInfo: [],
       chatmateInfo: [],
@@ -189,8 +182,8 @@ class Student extends Component {
   };
 
 
-  setChatText = (val, sub) => {
-    let textVal = [val, sub];
+  setChatText = (val, receiversub, sendersub) => {
+    let textVal = [val, receiversub, sendersub];
     if (this.state.previledge === 'student') {
       socket.emit("handleChat", textVal);
     }
@@ -236,21 +229,22 @@ class Student extends Component {
   };
 
 
-
   //start of methods for chat websockets
 
   //end of methods for chat websockets
 
-  handleChange = () => {
-    this.setState({
-      newValue: 1
-    });
-  };
 
-  handleClick = event => {
-    event.preventDefault();
-    alert("You clicked a breadcrumb.");
-  };
+  //never been used
+  // handleChange = () => {
+  //   this.setState({
+  //     newValue: 1
+  //   });
+  // };
+  // handleClick = event => {
+  //   event.preventDefault();
+  //   alert("You clicked a breadcrumb.");
+  // };
+  //end of never been used
 
   helpStudent = memberid => {
     const data = api.fetch(
@@ -294,61 +288,15 @@ class Student extends Component {
     });
 
     socket.on("handleChat", priv => {
-      this.setState({ studentChatText: priv });
+      if(priv[1] === this.state.sub && priv[2] === this.state.chatmateSub || priv[2] === this.state.sub && priv[1] === this.state.chatmateSub){
+        this.setState({studentChatText: priv[0]})
+       }
     });
 
     socket.on("handleChatM", priv => {
-      let mentorText = [{ text: priv[0], userSub: priv[1] }]
-
-      if(this.state.mentorChatText.length === 0){
-        this.setState({ mentorChatText: mentorText })
-      } else{
-        let index = this.state.mentorChatText.findIndex(obj => obj.userSub === this.state.sub)
-        if(index >= 0){
-          console.log('sam')
-          // let mentorChatText = [...this.state.mentorChatText];
-          // let chat = {...mentorChatText[index]};
-          // chat.text = priv[0];
-          // chat[index] = chat;
-          // this.setState({mentorChatText});
-        }else if(index < 0){
-          this.setState(prevState => ({
-           mentorChatText: [...prevState.mentorChatText, priv]
-          }))
-        }
-        console.log(this.state.mentorChatText)
+      if(priv[1] === this.state.sub && priv[2] === this.state.chatmateSub || priv[2] === this.state.sub && priv[1] === this.state.chatmateSub){
+       this.setState({mentorChatText: priv[0]})
       }
-
-      // if (this.state.mentorChatText.length === 0) {
-      //   this.setState({ mentorChatText: mentorText })
-      // } else if(this.state.mentorChatText.findIndex(obj => obj.userSub === this.state.sub) === -1){
-      //   console.log(mentorText)
-      //   // this.setState(prevState => ({
-      //   //   mentorChatText: [...prevState.mentorChatText, priv]
-      //   // }))
-      // } 
-      // else{
-      //   let index = this.state.mentorChatText.findIndex(obj => obj.userSub === priv[1]);
-      //   console.log(index)
-      //   // let mentorChatText = [...this.state.mentorChatText];
-      //   // let chat = {...mentorChatText[index]};
-      //   // chat.text = priv[0];
-      //   // chat[index] = chat;
-      //   // this.setState({mentorChatText});
-      // }
-    // //    this.setState(prevState => ({
-    // //     mentorChatText: {
-    // //         ...prevState.mentorChatText,
-    // //         [prevState.mentorChatText[index].text]: priv,
-    // //     },
-    // // }));
-       
-    //     let mentorChatText = [...this.state.mentorChatText];
-    //     let chat = {...mentorChatText[index]};
-    //     chat.text = priv[0];
-    //     chat[index] = chat;
-    //     this.setState({mentorChatText});
-      
     });
     // END OF BADGE
 

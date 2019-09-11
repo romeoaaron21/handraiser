@@ -315,16 +315,17 @@ class ChatBox extends PureComponent {
                   <React.Fragment>
                     <TextField
                       classes={{ root: "MenuItem" }}
-                      id="outlined-full-width"
                       placeholder="Send message"
                       className={classes.textField}
                       InputProps={{ classes: { root: classes.custom } }}
+                      multiline={true}
+                      rowsMax='4'
                       margin="normal"
                       fullWidth
                       variant="outlined"
                       value={this.props.chat}
                       onChange={e => {
-                        this.props.handleChat(e.target.value);
+                        this.props.handleChat(e.target.value, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
                       }}
                       onClick={() => this.props.displayBadge("student")}
                     />
@@ -362,16 +363,9 @@ class ChatBox extends PureComponent {
                        margin="normal"
                        fullWidth
                        variant="outlined"
-                      //  value={
-                      //    this.props.chatM.map(chatText => {
-                      //      console.log(chatText)
-                      //     //  if(chatText.userSub === this.props.senderInfo.sub){
-                      //     //    return chatText.text
-                      //     //  }
-                      //    })
-                      //   }
+                       value={this.props.chatM}
                       onChange={e => {
-                        this.props.handleChatM(e.target.value, this.props.senderInfo.sub);
+                        this.props.handleChatM(e.target.value, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
                       }}
                       onKeyUp={(e) => {
                         if(e.target.value
@@ -388,12 +382,12 @@ class ChatBox extends PureComponent {
                         this.props.sendChatM(this.props.helpingStudent_sub);
                         this.props.displayBadge("mentor")
                       }}
-                      // disabled={
-                      //   this.props.chatM.replace(/^\s+/, "")
-                      //   .replace(/\s+$/, "") === ""
-                      //     ? true
-                      //     : false
-                      // }
+                      disabled={
+                        this.props.chatM.replace(/^\s+/, "")
+                        .replace(/\s+$/, "") === ""
+                          ? true
+                          : false
+                      }
                     >
                       <SendIcon />
                     </IconButton>
