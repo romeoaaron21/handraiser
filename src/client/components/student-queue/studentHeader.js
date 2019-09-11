@@ -11,7 +11,6 @@ import Handraise from "@material-ui/icons/PanTool";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Link from "@material-ui/core/Link";
-import ImageUploader from "react-images-upload";
 
 const styles = theme => ({
   raiseBtn: {
