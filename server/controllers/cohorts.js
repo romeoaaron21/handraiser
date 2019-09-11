@@ -292,10 +292,24 @@ function getHistory(req, res){
     });
 }
 
+function getHistoryById(req, res){
+  const db = req.app.get("db");
+  const { cohort, student } = req.params;
+
+  db
+    .query(`SELECT history.id, history.reason, history.mentor_id, history.time, cohorts.name FROM history, cohorts WHERE history.cohort_id = ${cohort} and history.member_id = ${student} and history.cohort_id = cohorts.id`)
+    .then(history => {
+      res.status(201).json({ history });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
 function getHistoryDetails(req, res){
   const db = req.app.get("db");
   const { id } = req.params;
-
   db
     .query(`select * from users, history where history.id = ${id} and history.member_id = users.id`)
     .then(history => {
@@ -341,5 +355,6 @@ module.exports = {
   getEnrolledClasses,
   getHistory,
   getHistoryDetails,
-  getHelpedBy
+  getHelpedBy,
+  getHistoryById
 };
