@@ -45,11 +45,11 @@ class StudentList extends React.Component {
       >
         <DialogTitle id="scroll-dialog-title">Students</DialogTitle>
         <DialogContent dividers={scroll === "paper"}>
-          {students.map(student => (
+          {students.map((student, index) => (
             <List
               className={classes.list}
               key={student.student_id}
-              style={{ borderBottom: "1px solid gainsboro" }}
+              style={students.length === 1 || index === students.length - 1 ? {} : { borderBottom: "1px solid gainsboro" }}
             >
               <ListItem button>
                 <ListItemAvatar>

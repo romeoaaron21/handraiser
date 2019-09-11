@@ -180,7 +180,7 @@ class Student extends Component {
     });
   };
 
-  sendChatSubM = chatmate_sub => {
+  sendChatSubM = (chatmate_sub) => {
     const data = api.fetch(
       `/api/displayChatUserInfo/${this.state.sub}/${chatmate_sub}`,
       "get"
