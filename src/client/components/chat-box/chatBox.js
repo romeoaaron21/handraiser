@@ -81,6 +81,19 @@ class ChatBox extends PureComponent {
     this.setState({ openMenu: null });
   };
 
+  handleEnterM = e => {
+    if (e.keyCode === 13){
+        this.props.sendChatM(this.props.helpingStudent_sub);
+        this.props.displayBadge("mentor");
+    }
+  }
+
+  handleEnterS = e => {
+    if (e.keyCode === 13){
+      this.props.sendChat()
+    }
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -229,6 +242,7 @@ class ChatBox extends PureComponent {
                       this.props.handleChat(e.target.value);
                     }}
                     onClick={() => this.props.displayBadge("student")}
+                    onKeyDown={this.handleEnterS}
                   />
                   <IconButton
                     className={classes.sendIcon}
@@ -277,6 +291,7 @@ class ChatBox extends PureComponent {
                     onChange={e => {
                       this.props.handleChatM(e.target.value);
                     }}
+                    onKeyDown={this.handleEnterM}
                   />
                   <IconButton
                     className={classes.sendIcon}
