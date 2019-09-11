@@ -145,11 +145,13 @@ massive({
 
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
     //History
-  app.get("/api/cohorts/history/:id", cohorts.getHistory);
+  app.get("/api/history/:id", cohorts.getHistory);
     //History Details
-  app.get("/api/cohorts/history/details/:id", cohorts.getHistoryDetails);
+  app.get("/api/history/details/:id", cohorts.getHistoryDetails);
     //Mentor Details
-  app.get("/api/cohorts/helpedby/:id", cohorts.getHelpedBy);
+  app.get("/api/helpedby/:id", cohorts.getHelpedBy);
+    //History by user id
+  app.get("/api/history/:cohort/:student", cohorts.getHistoryById);
   // Cohorts End
 
   app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);

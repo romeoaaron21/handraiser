@@ -506,7 +506,6 @@ class Student extends Component {
         "get"
       );
       data.then(res => {
-        console.log(res)
         this.setState({
           user: res.data[0],
           previledge: res.data[0][0].privilege
@@ -608,6 +607,8 @@ class Student extends Component {
                   <Grid container className={classes.navHeader}>
                     {this.state.previledge === "mentor" ? null : (
                       <StudentNavHeader
+                        user={this.state.user[0]}
+                        cohort={this.props.cohort_id}
                         raise={this.state.btntext}
                         requested={this.state.requested}
                         handleChangeReasons={this.handleChangeReasons}

@@ -78,7 +78,7 @@ class MentorClassCards extends React.Component {
   }
 
   openHistory = cohort => {
-    api.fetch(`/api/cohorts/history/${cohort.id}`, "get").then(res => {
+    api.fetch(`/api/history/${cohort.id}`, "get").then(res => {
       this.setState({
         openHistory: true,
         history: res.data.history,
@@ -180,13 +180,12 @@ class MentorClassCards extends React.Component {
                           Students
                         </Button>
                       ) : null}
-                       <Button
-                        size="small"
-                        color="primary"
-                        id={cohort.id}
-                        onClick={() => (
-                          window.location.href = `/settings/${cohort.id}`
-                        )}
+                      <Button
+                          size="small"
+                          className={classes.logBtn}
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => this.openHistory(cohort)}
                       >
                         Logs
                       </Button>

@@ -10,6 +10,9 @@ import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 
 import CardBackground from "../../../images/cardBg.jpg";
+import History from './history/history';
+//API
+import api from "../../../services/fetchApi";
 import { Grid } from "semantic-ui-react";
 
 const styles = theme => ({
@@ -65,10 +68,35 @@ const styles = theme => ({
     width: "100%",
     justifyContent: "space-between",
     alignItems: "center"
+  },
+  logBtn: {
+    marginLeft: 'auto'
   }
 });
 
 class StudentClassCards extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      openHistory: false,
+      history: [],
+      selectedCohort: []
+    }
+  }
+  openHistory = cohort => {
+    api.fetch(`/api/history/${cohort.id}/${this.props.user_id}`, "get").then(res => {
+      this.setState({
+        openHistory: true,
+        history: res.data.history,
+        selectedCohort: cohort
+      });
+    });
+  };
+  handleCloseHistory = () => {
+    this.setState({
+      openHistory: false
+    })
+  }
   render() {
     const {
       classes,
@@ -147,6 +175,15 @@ class StudentClassCards extends React.Component {
                       >
                         Students
                       </Button>
+                      <Button
+                          size="small"
+                          className={classes.logBtn}
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => this.openHistory(cohort)}
+                      >
+                        My Logs
+                      </Button>
                     </CardActions>
                     }
                   </Card>
@@ -218,6 +255,15 @@ class StudentClassCards extends React.Component {
                     >
                       Students
                     </Button>
+                    <Button
+                          size="small"
+                          className={classes.logBtn}
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => this.openHistory(cohort)}
+                      >
+                        My Logs
+                      </Button>
                   </CardActions>
                   }
                 </Card>
@@ -226,6 +272,12 @@ class StudentClassCards extends React.Component {
           }
           return null;
         })}
+          <History 
+          open={this.state.openHistory}
+          cohort={this.state.selectedCohort}
+          handleClose={this.handleCloseHistory}
+          history={this.state.history}
+        />
       </React.Fragment>
     );
   }
