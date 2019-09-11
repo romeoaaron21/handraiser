@@ -456,6 +456,7 @@ class Student extends Component {
         "get"
       );
       data.then(res => {
+        console.log(res)
         this.setState({
           user: res.data[0],
           previledge: res.data[0][0].privilege

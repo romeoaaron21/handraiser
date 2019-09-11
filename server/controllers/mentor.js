@@ -37,13 +37,13 @@ module.exports = {
   },
   doneHelp: (req, res) => {
     const db = req.app.get("db");
-    const { memberid, cohort_id } = req.params;
-
+    const { memberid, cohort_id, mentor_id } = req.params;
+    const { time } = req.body;
     db.query(
       `SELECT reasons.reason FROM requests, reasons,member WHERE reasons.request_id = requests.id AND requests.member_id = member.id AND member.student_id = ${memberid}`
     ).then(reason => {
       db.query(
-        `INSERT INTO history (member_id, cohort_id, reason) VALUES (${memberid}, ${cohort_id}, '${reason[0].reason}')`
+        `INSERT INTO history (member_id, cohort_id, mentor_id, time, reason) VALUES (${memberid}, ${cohort_id}, ${mentor_id}, '${time}', '${reason[0].reason}')`
       ).then(() => {
         db.member
           .findOne({ student_id: memberid, cohort_id: cohort_id })

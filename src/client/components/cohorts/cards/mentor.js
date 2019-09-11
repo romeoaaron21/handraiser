@@ -14,6 +14,10 @@ import LockIcon from "@material-ui/icons/Lock";
 
 import CardBackground from "../../../images/cardBg.jpg";
 
+import History from './history/history';
+//API
+import api from "../../../services/fetchApi";
+
 const styles = theme => ({
   card: {
     height: 275,
@@ -57,10 +61,38 @@ const styles = theme => ({
   media: {
     height: "45%",
     width: 300
+  },
+  logBtn: {
+    marginLeft: 'auto'
   }
 });
 
 class MentorClassCards extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      openHistory: false,
+      history: [],
+      selectedCohort: []
+    }
+  }
+
+  openHistory = cohort => {
+    api.fetch(`/api/cohorts/history/${cohort.id}`, "get").then(res => {
+      this.setState({
+        openHistory: true,
+        history: res.data.history,
+        selectedCohort: cohort
+      });
+    });
+  };
+
+  handleCloseHistory = () => {
+    this.setState({
+      openHistory: false
+    })
+  }
+
   render() {
     const {
       classes,
@@ -68,7 +100,8 @@ class MentorClassCards extends React.Component {
       openAdd,
       openStudentList,
       redirect,
-      search
+      search,
+      subCohorts
     } = this.props;
     return (
       <React.Fragment>
@@ -147,6 +180,16 @@ class MentorClassCards extends React.Component {
                           Students
                         </Button>
                       ) : null}
+                       <Button
+                        size="small"
+                        color="primary"
+                        id={cohort.id}
+                        onClick={() => (
+                          window.location.href = `/settings/${cohort.id}`
+                        )}
+                      >
+                        Logs
+                      </Button>
                     </CardActions>
                   </Card>
                 );
@@ -168,7 +211,7 @@ class MentorClassCards extends React.Component {
                         {cohort.name}
                         {cohort.status === 'active' ? null :
                           <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
-                        }
+                        } 
                       </Typography>
                       <Typography
                         variant="body2"
@@ -209,13 +252,163 @@ class MentorClassCards extends React.Component {
                         Students
                       </Button>
                     ) : null}
+                      <Button
+                          size="small"
+                          className={classes.logBtn}
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => this.openHistory(cohort)}
+                      >
+                          Logs
+                      </Button>
                   </CardActions>
                 </Card>
               );
             }
+          }else{
+            
+            // CO-MENTORS *******************************************SAM***************************************************
+            return subCohorts.map(row => {  
+              if (row.user_id === this.props.user.id && row.id === cohort.id ) {
+                if(search){
+                  if(cohort.name.toLowerCase().includes(search.toLowerCase())) {
+                    return (
+                      <Card className={classes.card} key={cohort.id}>
+                        <CardActionArea
+                          className={classes.cardContainer}
+                          onClick={() => redirect(cohort.id)}
+                        >
+                          <CardMedia
+                            className={classes.media}
+                            image={CardBackground}
+                            title={cohort.name}
+                          />
+                          <CardContent className={classes.cardContent}>
+                            <Typography gutterBottom variant="h5" component="h2" style={{display: 'flex', alignItems: 'center'}}>
+                              {cohort.name}
+                              {cohort.status === 'active' ? null :
+                                <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
+                              }
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                              component="p"
+                            >
+                              Password: {cohort.password}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                              component="p"
+                            >
+                              Students: {cohort.members}
+                            </Typography>
+                          </CardContent>
+                        </CardActionArea>
+                        <CardActions className={classes.buttonContainer}>
+                          <Button
+                            size="small"
+                            color="primary"
+                            id={cohort.id}
+                            onClick={() => (
+                              window.location.href = `/settings/${cohort.id}`
+                            )}
+                          >
+                            Settings
+                          </Button>
+                          {cohort.members !== "0" ? (
+                            <Button
+                              size="small"
+                              color="primary"
+                              id={cohort.id}
+                              onClick={() => {
+                                openStudentList(cohort.id);
+                              }}
+                            >
+                              Students
+                            </Button>
+                          ) : null}
+                        </CardActions>
+                      </Card>
+                    );
+                  }
+                }else{
+                  
+                  return (
+                    <Card className={classes.card} key={cohort.id}>
+                      <CardActionArea
+                        className={classes.cardContainer}
+                        onClick={() => redirect(cohort.id)} 
+                      >
+                        <CardMedia
+                          className={classes.media}
+                          image={CardBackground}
+                          title={cohort.name}
+                        />
+                        <CardContent className={classes.cardContent}>
+                          <Typography gutterBottom variant="h5" component="h2" style={{display: 'flex', alignItems: 'center'}}>
+                            {cohort.name}
+                            {cohort.status === 'active' ? null :
+                              <LockIcon style={{color: '#71686e', marginLeft: '8px'}}/>
+                            } 
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            component="p"
+                          >
+                            Password: {cohort.password}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            component="p"
+                          >
+                            Students: {cohort.members}
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                      <CardActions className={classes.buttonContainer}>
+                        <Button
+                          size="small"
+                          color="primary"
+                          id={cohort.id}
+                          onClick={() => (
+                            window.location.href = `/settings/${cohort.id}`
+                          )}
+                        >
+                          Settings
+                        </Button>
+                        {cohort.members !== "0" ? (
+                          <Button
+                            size="small"
+                            color="primary"
+                            id={cohort.id}
+                            onClick={() => {
+                              openStudentList(cohort.id);
+                            }}
+                          >
+                            Students
+                          </Button>
+                        ) : null}
+                      </CardActions>
+                    </Card>
+                  );
+                }
+              }
+            })
           }
           return null;
         })}
+
+        <History 
+          open={this.state.openHistory}
+          cohort={this.state.selectedCohort}
+          handleClose={this.handleCloseHistory}
+          history={this.state.history}
+        />
+
       </React.Fragment>
     );
   }

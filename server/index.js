@@ -12,6 +12,7 @@ const user = require("./controllers/user.js");
 const cohorts = require("./controllers/cohorts.js");
 const mentor = require("./controllers/mentor");
 const students = require("./controllers/students");
+const comentor = require("./controllers/comentor")
 
 massive({
   host: "boom-handraiser.com",
@@ -91,8 +92,14 @@ massive({
     });
 
     socket.on("seenChat", chat => {
-      // console.log(priv)
       io.emit("seenChat", chat);
+    });
+    // active attempt
+    socket.on("active", user => {
+      io.emit("active", user);
+    });
+    socket.on("inactive", user => {
+      io.emit("inactive", user);
     });
   });
   //WEBSOCKETS END
@@ -114,7 +121,10 @@ massive({
   //USERS
   app.post("/validate", user.validate);
   app.post("/sign-in", user.signIn);
-
+    //logout
+  app.patch("/status/:sub/:status", user.updateStatus);
+    //getonline
+  app.get("/online", user.getOnline);
   app.get("/api/users/:id", user.getFromSub);
 
   // Cohorts Start
@@ -137,11 +147,17 @@ massive({
   app.post("/api/cohort/:id/editDetails", cohorts.updateCohortDetails);
 
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
+    //History
+  app.get("/api/cohorts/history/:id", cohorts.getHistory);
+    //History Details
+  app.get("/api/cohorts/history/details/:id", cohorts.getHistoryDetails);
+    //Mentor Details
+  app.get("/api/cohorts/helpedby/:id", cohorts.getHelpedBy);
   // Cohorts End
 
   app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);
   app.get("/api/removebeinghelped/:memberid/:cohort_id", mentor.movebacktoqueu);
-  app.get("/api/doneHelp/:memberid/:cohort_id", mentor.doneHelp);
+  app.post("/api/doneHelp/:memberid/:cohort_id/:mentor_id", mentor.doneHelp);
 
   app.get("/api/displayUserInfo/:sub/:cohort_id", students.displayUserInfo);
   app.get("/api/displayStudents/", students.displayStudents);
@@ -162,6 +178,13 @@ massive({
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
 
   app.patch("/api/seenChat/:priv", students.seenChat);
+
+  //comentors
+  app.post("/api/addCoMentor", comentor.addCoMentor);
+  app.get("/api/fetchMentors", comentor.fetchMentors);
+  app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
+  app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
+
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

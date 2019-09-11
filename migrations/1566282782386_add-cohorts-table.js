@@ -22,6 +22,10 @@ exports.up = (pgm) => {
     status: {
       type: 'text',
       notNull: true
+    },
+    class_header: {
+      type: "text",
+      notNull: false
     }
   })
 };

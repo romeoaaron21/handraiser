@@ -52,7 +52,7 @@ class PersistentDrawerLeft extends React.Component {
   };
 
   componentDidMount() {
-    document.title = "Student Queues";
+    document.title = "Student Queue";
   }
 
   render() {

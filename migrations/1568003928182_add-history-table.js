@@ -14,10 +14,18 @@ exports.up = (pgm) => {
       type: 'integer',
       notNull: true
     },
+    mentor_id:{
+      type: 'integer',
+      notNull: true
+    },
     reason: {
       type: "text",
       notNull: true
-    }
+    },
+    time: {
+      type: "text",
+      notNull: "true"
+    },
   })
 };
 

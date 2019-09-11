@@ -19,6 +19,9 @@ import api from "../../services/fetchApi";
 import AuthService from "../../auth/AuthService";
 import SignInKey from "./dialogs/validateKey";
 import GoogleSignIn from "./dialogs/googleSignIn";
+import io from "socket.io-client";
+
+const socket = io("http://boom-handraiser.com:3001/");
 
 class SignInSide extends Component {
   constructor() {
@@ -97,15 +100,17 @@ class SignInSide extends Component {
     };
 
     api.fetch("/sign-in", "post", data).then(res => {
-      console.log(res.data.user);
       if (res.data.user.privilege !== "student") {
         toast.error("Sorry, you're not a student", {
           hideProgressBar: true,
           draggable: false
         });
       } else {
-        localStorage.setItem("id_token", google.tokenId);
-        window.location.href = "/cohorts";
+        api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
+          socket.emit("active", res.data.user);
+          localStorage.setItem("id_token", google.tokenId);
+          window.location.href = "/cohorts";
+        });     
       }
     });
   };

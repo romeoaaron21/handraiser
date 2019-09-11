@@ -25,6 +25,11 @@ exports.up = (pgm) => {
     avatar: {
       type: 'text',
       notNull: true
+    },
+    status: {
+      type: 'text',
+      notNull: true,
+      default: 'inactive'
     }
   })
 };
