@@ -173,12 +173,12 @@ class Student extends Component {
         }
         return null;
       });
-    });
-    if (this.state.previledge === 'mentor') {
-      this.setState({ mentorChatBox: true, chatmateSub: chatmate_sub })
-    } else {
-      this.setState({ studentChatBox: true, chatmateSub: chatmate_sub })
-    }
+      if (this.state.previledge === 'mentor') {
+        this.setState({ mentorChatBox: true, chatmateSub: chatmate_sub })
+      } else {
+        this.setState({ studentChatBox: true, chatmateSub: chatmate_sub })
+      }
+    }).then(() =>{this.displayBadge()});
   };
 
 
@@ -210,22 +210,19 @@ class Student extends Component {
       if (this.state.previledge === 'student') { socket.emit("sendChat", res.data) }
       else { socket.emit("sendChatM", res.data) }
     });
+      socket.emit("displayBadge");
   }
 
   //end added dh
 
 
-  displayBadge = priv => {
-    if (priv === "mentor") {
-      socket.emit("displayBadge");
-    } else if (priv === "student") {
+  displayBadge(){
       let sub = { student: this.state.sub, mentor: this.state.chatmateSub };
-      const data = api.fetch(`/api/seenChat`, "patch", sub);
+      const data = api.fetch(`/api/seenChat/${this.state.previledge}`, "patch", sub);
       data.then(res => {
         socket.emit("seenChat", res.data);
-        this.setState({ badge: true })
+        // this.setState({ badge: true })
       });
-    }
   };
 
 
@@ -614,6 +611,12 @@ class Student extends Component {
                           members={this.state.members}
                           moveToQueue={this.moveToQueue}
 
+
+                          conversation={this.state.conversation}
+                          sub={this.state.sub}
+                          displayBadge={this.displayBadge}
+                          badge={this.state.badge}
+
                           sendChatSub={this.selectChatmate}
                         />
 
@@ -680,6 +683,8 @@ class Student extends Component {
                             ? true
                             : false
                         }
+
+                        sendChatSub={this.selectChatmate}
                       />
                     </Grid>
                   ) : this.state.mentorChatBox && this.state.previledge === "mentor" ? (
@@ -700,6 +705,8 @@ class Student extends Component {
 
                         helpStudentClose={this.helpStudentClose}
                         helpingStudent={this.state.helpingStudent}
+
+                        sendChatSub={this.selectChatmate}
 
                       />
                     </Grid>

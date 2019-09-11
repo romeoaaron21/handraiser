@@ -10,6 +10,7 @@ import TypingEffect from "./typingEffect";
 
 import Dialog from "@material-ui/core/Dialog";
 import ConfirmationDialog from "../being-helped/doneCofirmationmodal";
+import TextareaAutosize from "react-textarea-autosize"
 
 //api
 import api from "../../services/fetchApi";
@@ -273,7 +274,11 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                  {convo.message}
+                                <TextareaAutosize 
+                                readOnly
+                                className={classes.textAreaChat}
+                                style={{color: this.props.senderInfo.sub === convo.chatmate_id? '#263238' : 'white',}}
+                                value={convo.message.replace(/\n$/, "")}/>
                                 </Typography>
                               </div>
                               <div className={classes.chatTime}>
@@ -324,10 +329,19 @@ class ChatBox extends PureComponent {
                       fullWidth
                       variant="outlined"
                       value={this.props.chat}
+                      onClick={()=>this.props.sendChatSub(this.props.chatmateInfo.sub)}
                       onChange={e => {
                         this.props.handleChat(e.target.value, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
                       }}
-                      onClick={() => this.props.displayBadge("student")}
+                      // onClick={() => this.props.displayBadge()}
+                      onKeyUp={(e) => {
+                        if(e.target.value
+                        .replace(/^\s+/, "")
+                        .replace(/\s+$/, "") !== ""){
+                        if(e.key === 'Enter' && !e.shiftKey){
+                           this.props.sendChat(this.props.helpingStudent_sub)
+                        }}
+                        }}
                     />
                     <IconButton
                       className={classes.sendIcon}
@@ -367,6 +381,7 @@ class ChatBox extends PureComponent {
                       onChange={e => {
                         this.props.handleChatM(e.target.value, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
                       }}
+                      onClick={()=>this.props.sendChatSub(this.props.chatmateInfo.sub)}
                       onKeyUp={(e) => {
                         if(e.target.value
                         .replace(/^\s+/, "")
@@ -380,7 +395,6 @@ class ChatBox extends PureComponent {
                       className={classes.sendIcon}
                       onClick={() => {
                         this.props.sendChatM(this.props.helpingStudent_sub);
-                        this.props.displayBadge("mentor")
                       }}
                       disabled={
                         this.props.chatM.replace(/^\s+/, "")

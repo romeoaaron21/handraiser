@@ -11,7 +11,8 @@ import {
   ListItemAvatar,
   InputBase,
   IconButton,
-  Tooltip
+  Tooltip,
+  Badge
 } from "@material-ui/core";
 
 import api from "../../services/fetchApi";
@@ -40,7 +41,7 @@ const styles = theme => ({
   },
   list: {
     maxHeight: "52px",
-    marginTop: "5px",
+    marginTop: "15px",
     cursor: "pointer",
     "&:hover": {
       backgroundColor: "#f1f1f1",
@@ -166,6 +167,11 @@ const styles = theme => ({
     borderRadius: "50%",
     backgroundColor: "#ababab",
     marginRight: "10px"
+  },
+  chatBadge: {
+    float: "right",
+    marginRight: "12px",
+    marginTop: "0px"
   }
 });
 
@@ -176,16 +182,62 @@ class ChatList extends PureComponent {
     this.state = {
       id: this.props.cohort_id,
       students: [],
-      search: ""
+      search: "",
     };
   }
+
 
   componentDidMount() {
     api.fetch(`/api/cohort/${this.state.id}/members/list`, "get").then(res => {
       this.setState({
         students: res.data.students
       });
-    });
+    }).then(() => {
+      this.props.conversation.map(convo => {
+        if (convo.cohort_id === parseInt(this.props.cohort_id)) {
+          this.setState({ conversation: convo })
+        }
+      })
+    })
+  }
+
+  unreadChat = (studentSub) => {
+    let count = 0;
+    this.props.conversation.map(convo => {
+      if (convo.cohort_id === parseInt(this.props.cohort_id)) {
+        if (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub) {
+          if (convo.seen === 0) {
+            count = count + 1
+          }
+        }
+      }
+    })
+    return count
+  }
+
+  convoMessage = (studentSub, need) => {
+    let conversation = [];
+    this.props.conversation.map(convo => {
+      if (convo.cohort_id === parseInt(this.props.cohort_id)) {
+        if ((convo.sender_id === this.props.sub && convo.chatmate_id === studentSub) ||
+          (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub)) {
+          conversation.push(convo)
+        }
+      }
+      return conversation
+    })
+    if(conversation.length !== 0){
+      if (need === 'message') {
+        return conversation[conversation.length - 1].message
+      } else if (need === 'time') {
+        let display = conversation[conversation.length - 1].time.split(" ");
+        return `${display[3]} ${display[4]}`;
+      }
+    }else{
+      if (need === 'message') {
+        return 'No conversation'
+      } 
+    }
   }
 
   render() {
@@ -216,15 +268,33 @@ class ChatList extends PureComponent {
           {/* Chat List */}
 
           {this.state.students.map(student => (
-            <ListItem className={classes.list} key={student.id} onClick={()=>{
-              this.props.sendChatSub(student.sub)
-              }}>
+            <ListItem className={classes.list} key={student.id} onClick={() => {
+              this.props.sendChatSub(student.sub);
+              this.unreadChat(student.sub)
+            }}>
               <ListItemAvatar>
                 <Avatar src={student.avatar} className={classes.userAvatar} />
               </ListItemAvatar>
               <div className={classes.multiline}>
                 <Typography className={classes.chatName}>
                   {student.first_name + " " + student.last_name}
+                </Typography>
+                <Typography className={classes.chatDetails}>
+                  {this.convoMessage(student.sub, 'message')}
+                </Typography>
+              </div>
+              <div className={classes.chatAction}>
+                <Typography className={classes.chatTime}>
+                  {" "}
+                  {this.convoMessage(student.sub, 'time')}{" "}
+                </Typography>
+                <Typography className={classes.chatBadge}>
+                  <Badge
+                    color="secondary"
+                    badgeContent={this.unreadChat(student.sub)}
+                    invisible = {this.unreadChat(student.sub) === 0? true : false}
+                    className={classes.margin}
+                  ></Badge>
                 </Typography>
               </div>
               <div className={`${classes.queueAction} actionShow`}>
@@ -236,13 +306,13 @@ class ChatList extends PureComponent {
                           requested =>
                             requested.sub === student.sub &&
                             parseInt(this.props.cohort_id) ===
-                              parseInt(requested.cohort_id)
+                            parseInt(requested.cohort_id)
                         ).length !== 0
                           ? true
                           : false
                       }
                       className={classes.responsive}
-                      onClick={(e) =>{ 
+                      onClick={(e) => {
                         this.props.moveToQueue(student.sub)
                         e.stopPropagation()
                       }}

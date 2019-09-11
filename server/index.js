@@ -89,6 +89,11 @@ massive({
       // console.log(priv)
       io.emit("sendChat", chat);
     });
+
+    socket.on("seenChat", chat => {
+      // console.log(priv)
+      io.emit("seenChat", chat);
+    });
   });
   //WEBSOCKETS END
 
@@ -156,7 +161,7 @@ massive({
 
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
 
-  app.patch("/api/seenChat", students.seenChat);
+  app.patch("/api/seenChat/:priv", students.seenChat);
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

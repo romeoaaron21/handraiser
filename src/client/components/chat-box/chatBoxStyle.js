@@ -176,7 +176,6 @@ const styles = theme => ({
   },
   chatTime: {
     display: "flex",
-    marginTop: "8px",
     justifyContent: "flex-end",
     "@media (max-width: 425px)": {
       marginTop: 2
@@ -219,6 +218,17 @@ const styles = theme => ({
       display: 'flex'
     }
   },
+  textAreaChat: {
+    resize:'none',
+    background:'none',
+    border: 'none',
+    overflow: 'auto',
+    outline: 'none',
+    lineHeight: '1.5',
+    boxShadow:'none',
+    fontSize: '16px',
+    fontFamily: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+  }
 });
 
 export default styles;
