@@ -14,7 +14,7 @@ import Menu from '@material-ui/core/Menu';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
-
+import MessageIcon from '@material-ui/icons/Message';
 import AuthService from '../../../auth/AuthService';
 import api from "../../../services/fetchApi";
 import io from "socket.io-client";
@@ -145,7 +145,9 @@ class NavBar extends React.Component {
             <Typography variant="h6" noWrap style={{flexGrow: 1, cursor: 'pointer'}} onClick={() => window.location.href='/cohorts'}>
               {this.props.title}
             </Typography>
-
+            <IconButton color='inherit' edge='start' style={{marginRight: 8}} onClick={()=>window.location.href='/chat'}>
+              <MessageIcon />
+            </IconButton>
             <HtmlTooltip
               title={
                 <React.Fragment>
