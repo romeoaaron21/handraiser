@@ -137,7 +137,7 @@ class BeingHelpedModal extends Component {
           fullScreen={window.innerWidth < "425" ? true : false}
           open={
             this.props.helpingStudent.length !== 0
-              ? true
+              ? false
               : this.props.helpStudentModal
           }
           aria-labelledby="alert-dialog-title"

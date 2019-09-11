@@ -91,6 +91,9 @@ massive({
       io.emit("sendChat", chat);
     });
 
+    socket.on("seenChat", chat => {
+      io.emit("seenChat", chat);
+    });
     // active attempt
     socket.on("active", user => {
       io.emit("active", user);
@@ -176,7 +179,7 @@ massive({
 
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
 
-  app.patch("/api/seenChat", students.seenChat);
+  app.patch("/api/seenChat/:priv", students.seenChat);
 
   //comentors
   app.post("/api/addCoMentor", comentor.addCoMentor);

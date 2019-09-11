@@ -9,6 +9,18 @@ const styles = theme => ({
     borderTopRightRadius: "5px",
     borderTopLeftRadius: "5px"
   },
+  helpStatus: {
+    padding: theme.spacing(2, 3),
+    maxWidth: "auto",
+    display: "flex",
+    alignItems: "center",
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    backgroundColor: "#802695",
+    color: "white",
+    justifyContent: "center"
+  },
+
   rightNav: {
     position: "relative",
     boxShadow:
@@ -96,7 +108,7 @@ const styles = theme => ({
     bottom: 0,
     width: "100%",
     position: "absolute",
-    height: "85px",
+    // height: "85px",
     "@media (max-width: 425px)": {
       height: "70px"
     }
@@ -108,11 +120,12 @@ const styles = theme => ({
     width: "100%"
   },
   custom: {
-    height: 40
+    maxHeight:'auto',
   },
   chatContentWrapper: {
     padding: 15,
     overflowY: "auto",
+    height:'auto',
     maxHeight: "435px",
     "@media (max-height: 425px)":{
       maxHeight: '485px',
@@ -163,17 +176,17 @@ const styles = theme => ({
   },
   chatTime: {
     display: "flex",
-    marginTop: "8px",
     justifyContent: "flex-end",
     "@media (max-width: 425px)": {
       marginTop: 2
     }
   },
   mentorStyle: {
-    boxShadow: 0,
-    borderBottomRightRadius: 0,
-    borderBottomLeftRadius: 0,
-    position: "relative"
+    position: "relative",
+    boxShadow:
+      "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
+    borderBottomRightRadius: "5px",
+    borderBottomLeftRadius: "5px"
   },
   mentorStyle1: {
     boxShadow: 0,
@@ -205,6 +218,17 @@ const styles = theme => ({
       display: 'flex'
     }
   },
+  textAreaChat: {
+    resize:'none',
+    background:'none',
+    border: 'none',
+    overflow: 'auto',
+    outline: 'none',
+    lineHeight: '1.5',
+    boxShadow:'none',
+    fontSize: '16px',
+    fontFamily: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+  }
 });
 
 export default styles;
