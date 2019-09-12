@@ -236,11 +236,9 @@ class Student extends Component {
     const data = api.fetch(`/api/sendChat`, "post", convo);
     this.setState({value:this.state.sub})
     data.then(res => {
-      if (this.state.previledge === 'student') { socket.emit("sendChat", res.data) }
-      else { socket.emit("sendChatM", res.data) }
+      socket.emit("sendChat", {chat:res.data, senderSub:this.state.sub, chatmateSub: this.state.chatmateSub})
     });
     socket.emit("displayBadge");
-    console.log(this.state.sub)
   };
 
   //end added dh
@@ -254,25 +252,8 @@ class Student extends Component {
     );
     data.then(res => {
       socket.emit("seenChat", res.data);
-      // this.setState({ badge: true })
     });
   }
-
-  //start of methods for chat websockets
-
-  //end of methods for chat websockets
-
-  //never been used
-  // handleChange = () => {
-  //   this.setState({
-  //     newValue: 1
-  //   });
-  // };
-  // handleClick = event => {
-  //   event.preventDefault();
-  //   alert("You clicked a breadcrumb.");
-  // };
-  //end of never been used
 
   helpStudent = memberid => {
     const data = api.fetch(
@@ -333,6 +314,11 @@ class Student extends Component {
     // END OF BADGE
 
     //start of socket chat
+    socket.on("initialConversation", chat => {
+      this.setState({
+        conversation: [...chat],
+      });
+    });
     socket.on("seenChat", chat => {
       this.setState({
         conversation: [...chat]
@@ -340,20 +326,16 @@ class Student extends Component {
     });
     socket.on("sendChat", chat => {
       this.setState({
-        conversation: [...chat],
+        conversation: [...chat.chat],
       });
-      if(this.state.value === this.state.sub){
-        this.setState({studentChatText: ""})
+      if(this.state.sub === chat.senderSub || this.state.sub === chat.chatmateSub){
+            this.setState({mentorChatText:""})
+            this.setState({studentChatText:""})
       }
     });
-    socket.on("sendChatM", chat => {
-      this.setState({
-        conversation: [...chat],
-      });
-      if(this.state.value === this.state.sub){
-        this.setState({mentorChatText: ""})
-      }
-    });
+
+
+
     //end of socket chat
 
     socket.on("requestHelping", students => {
@@ -470,14 +452,13 @@ class Student extends Component {
           "get"
         );
         data1.then(res => {
-          console.log(res.data);
           this.setState({ mentorInfo: res.data });
         });
       })
       .then(() => {
         const data2 = api.fetch(`/api/getChat`, "get");
         data2.then(res => {
-          socket.emit("sendChat", res.data);
+          socket.emit("initialConversation", res.data);
         });
       });
   };

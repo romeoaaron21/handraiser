@@ -78,6 +78,10 @@ massive({
       io.emit("sendChatM", chat);
     });
 
+    socket.on("initialConversation", chat => {
+      io.emit("initialConversation", chat);
+    });
+
     /*BADGE*/ socket.on("displayBadge", () => {
       io.emit("displayBadge");
     });
