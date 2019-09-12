@@ -11,14 +11,15 @@ const styles = theme => ({
   },
   helpStatus: {
     padding: theme.spacing(2, 3),
-    maxWidth: "auto",
+    width: "100%",
     display: "flex",
     alignItems: "center",
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
     backgroundColor: "#802695",
     color: "white",
-    justifyContent: "center"
+    justifyContent: "center",
+    borderRadius: 0,
   },
 
   rightNav: {
@@ -114,9 +115,9 @@ const styles = theme => ({
     }
   },
   chatBoxBody: {
-    minHeight: "520px",
+    minHeight: "570px",
     maxWidth: "auto",
-    maxHeight: "520px",
+    maxHeight: "570px",
     width: "100%"
   },
   custom: {

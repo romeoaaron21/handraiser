@@ -143,7 +143,7 @@ class ChatBox extends PureComponent {
     const data = api.fetch(
       `/api/doneHelp/${student.id}/${this.props.cohort_id}/${this.props.senderInfo.id}`,
       "post",
-      {time: datetime}
+      { time: datetime }
     );
     data.then(res => {
       this.props.helpStudentClose();
@@ -176,14 +176,6 @@ class ChatBox extends PureComponent {
     // console.log(this.props.chatM)
     return (
       <React.Fragment>
-
-        {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
-          <Paper className={classes.helpStatus}>
-            <Typography variant="subtitle4">Currently Helping....</Typography>
-          </Paper>
-          : null}
-
-
         <Paper elevation={1} className={classes.rightTopNav} square={true}>
           <Typography variant="subtitle1" className={classes.chatName}>
             {this.props.chatmateInfo.first_name}{" "}
@@ -215,7 +207,7 @@ class ChatBox extends PureComponent {
               </StyledMenuItem>
 
 
-              {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub?
+              {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
                 <React.Fragment>
                   <StyledMenuItem onClick={() => this.removeFromQueue(this.props.helpingStudent)}>
                     <ListItemIcon>
@@ -232,7 +224,7 @@ class ChatBox extends PureComponent {
                     <ListItemText primary="Done" />
                   </StyledMenuItem>
                 </React.Fragment>
-                :null}
+                : null}
 
 
 
@@ -259,6 +251,19 @@ class ChatBox extends PureComponent {
             container
             className={`${classes.chatBoxBody} ${classes.scrollBar}`}
           >
+
+
+
+
+            {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
+              <Paper className={classes.helpStatus}>
+                <Typography variant="subtitle4">Currently Helping....</Typography>
+              </Paper>
+              : null}
+
+
+
+
             <div className={`${classes.chatBoxBody} ${classes.scrollBar}`}>
               <Grid
                 item
@@ -302,11 +307,11 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                <TextareaAutosize 
-                                readOnly
-                                className={classes.textAreaChat}
-                                style={{color: this.props.senderInfo.sub === convo.chatmate_id? '#263238' : 'white',}}
-                                value={convo.message.replace(/\n$/, "")}/>
+                                  <TextareaAutosize
+                                    readOnly
+                                    className={classes.textAreaChat}
+                                    style={{ color: this.props.senderInfo.sub === convo.chatmate_id ? '#263238' : 'white', }}
+                                    value={convo.message.replace(/\n$/, "")} />
                                 </Typography>
                               </div>
                               <div className={classes.chatTime}>
@@ -357,26 +362,27 @@ class ChatBox extends PureComponent {
                       fullWidth
                       variant="outlined"
                       value={this.props.chat}
-                      onClick={()=>this.props.sendChatSub(this.props.chatmateInfo.sub)}
+                      onClick={() => this.props.sendChatSub(this.props.chatmateInfo.sub)}
                       onChange={e => {
                         this.props.handleChat(e.target.value, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
                       }}
                       // onClick={() => this.props.displayBadge()}
                       onKeyUp={(e) => {
-                        if(e.target.value
-                        .replace(/^\s+/, "")
-                        .replace(/\s+$/, "") !== ""){
-                        if(e.key === 'Enter' && !e.shiftKey){
-                           this.props.sendChat(this.props.helpingStudent_sub)
-                        }}
-                        }}
+                        if (e.target.value
+                          .replace(/^\s+/, "")
+                          .replace(/\s+$/, "") !== "") {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            this.props.sendChat(this.props.helpingStudent_sub)
+                          }
+                        }
+                      }}
                     />
                     <IconButton
                       className={classes.sendIcon}
                       onClick={this.props.sendChat}
                       disabled={
                         this.props.chat.replace(/^\s+/, "")
-                        .replace(/\s+$/, "") === ""
+                          .replace(/\s+$/, "") === ""
                           ? true
                           : false
                       }
@@ -396,28 +402,29 @@ class ChatBox extends PureComponent {
                       className={classes.userAvatar}
                     />
                     <TextField
-                       classes={{ root: "MenuItem" }}
-                       placeholder="Send message"
-                       className={classes.textField}
-                       InputProps={{ classes: { root: classes.custom } }}
-                       multiline={true}
-                       rowsMax='4'
-                       margin="normal"
-                       fullWidth
-                       variant="outlined"
-                       value={this.props.chatM}
+                      classes={{ root: "MenuItem" }}
+                      placeholder="Send message"
+                      className={classes.textField}
+                      InputProps={{ classes: { root: classes.custom } }}
+                      multiline={true}
+                      rowsMax='4'
+                      margin="normal"
+                      fullWidth
+                      variant="outlined"
+                      value={this.props.chatM}
                       onChange={e => {
                         this.props.handleChatM(e.target.value, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
                       }}
-                      onClick={()=>this.props.sendChatSub(this.props.chatmateInfo.sub)}
+                      onClick={() => this.props.sendChatSub(this.props.chatmateInfo.sub)}
                       onKeyUp={(e) => {
-                        if(e.target.value
-                        .replace(/^\s+/, "")
-                        .replace(/\s+$/, "") !== ""){
-                        if(e.key === 'Enter' && !e.shiftKey){
-                           this.props.sendChatM(this.props.helpingStudent_sub)
-                        }}
-                        }}
+                        if (e.target.value
+                          .replace(/^\s+/, "")
+                          .replace(/\s+$/, "") !== "") {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            this.props.sendChatM(this.props.helpingStudent_sub)
+                          }
+                        }
+                      }}
                     />
                     <IconButton
                       className={classes.sendIcon}
@@ -426,7 +433,7 @@ class ChatBox extends PureComponent {
                       }}
                       disabled={
                         this.props.chatM.replace(/^\s+/, "")
-                        .replace(/\s+$/, "") === ""
+                          .replace(/\s+$/, "") === ""
                           ? true
                           : false
                       }
