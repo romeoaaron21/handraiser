@@ -15,6 +15,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import CreateIcon from "@material-ui/icons/Create";
 import IconButton from "@material-ui/core/IconButton";
 import Hidden from "@material-ui/core/Hidden";
+import Grid from "@material-ui/core/Grid"
 
 class ChatPageList extends Component {
   constructor(props) {
@@ -23,24 +24,12 @@ class ChatPageList extends Component {
   render() {
     const { classes } = this.props;
     return (
+      <Grid item md={3} xs={4}>
       <Paper>
         <div style={{ padding: 13 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap"
-            }}
-          >
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "center"
-              }}
-            >
-              <Avatar style={{ marginRight: "10px" }} sizes="lg">
+          <div className={classes.chatListHeader}>
+            <span className={classes.avatarWrapper}>
+              <Avatar style={{ marginRight: "10px" }}>
                 ME
               </Avatar>
               <Typography variant="h5">Chats</Typography>
@@ -74,10 +63,7 @@ class ChatPageList extends Component {
         </div>
         <Divider />
 
-        <div
-          style={{ height: "660px", overflowY: "auto" }}
-          className={classes.scrollBar}
-        >
+        <div className={`${classes.scrollBar} ${classes.chatListWrapper}`}>
           <List>
             <ListItem alignItems="flex-start" button>
               <Hidden only="xs">
@@ -105,6 +91,7 @@ class ChatPageList extends Component {
           </List>
         </div>
       </Paper>
+      </Grid>
     );
   }
 }
