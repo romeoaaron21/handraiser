@@ -30,7 +30,6 @@ function Router() {
         <Route path="/admin/mentors" component={Mentor} />
         <Route path="/admin/cohorts" component={AdminCohorts} />
         <Route path="/admin/sign-in" component={AdminSignIn} />
-
         <Route component={NotFound} />
       </Switch>
     </BrowserRouter>

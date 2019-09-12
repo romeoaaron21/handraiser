@@ -3,7 +3,7 @@ const styles = theme => ({
    marginTop: '90px'
  },
  root: {
-  width: '100%',
+  width: '100%', 
   maxWidth: 360,
   backgroundColor: theme.palette.background.paper,
 },

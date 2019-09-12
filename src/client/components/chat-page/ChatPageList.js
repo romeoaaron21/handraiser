@@ -29,7 +29,8 @@ class ChatPageList extends Component {
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "center"
+                      alignItems: "center",
+                      flexWrap: 'wrap'
                     }}
                   >
                     <span style={{display:'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
@@ -72,7 +73,7 @@ class ChatPageList extends Component {
                     <ListItemText
                       primary="Trizha Kate Longaza"
                       secondary=" I'll be in your neighborhood doing errands this"   
-                    />
+                    /> 
                   </ListItem>
                   <Divider/>
                 </List>
