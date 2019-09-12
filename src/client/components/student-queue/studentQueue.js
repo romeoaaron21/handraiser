@@ -114,7 +114,7 @@ class Student extends Component {
       sub: "",
       requested: false,
       studentsReason: "",
-      value: 0,
+      value: "",
       open: false,
 
       /*start of dded for chatBox state*/
@@ -234,14 +234,13 @@ class Student extends Component {
       time: datetime
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
+    this.setState({value:this.state.sub})
     data.then(res => {
-      if (this.state.previledge === "student") {
-        socket.emit("sendChat", res.data);
-      } else {
-        socket.emit("sendChatM", res.data);
-      }
+      if (this.state.previledge === 'student') { socket.emit("sendChat", res.data) }
+      else { socket.emit("sendChatM", res.data) }
     });
     socket.emit("displayBadge");
+    console.log(this.state.sub)
   };
 
   //end added dh
@@ -342,14 +341,18 @@ class Student extends Component {
     socket.on("sendChat", chat => {
       this.setState({
         conversation: [...chat],
-        studentChatText: ""
       });
+      if(this.state.value === this.state.sub){
+        this.setState({studentChatText: ""})
+      }
     });
     socket.on("sendChatM", chat => {
       this.setState({
         conversation: [...chat],
-        mentorChatText: ""
       });
+      if(this.state.value === this.state.sub){
+        this.setState({mentorChatText: ""})
+      }
     });
     //end of socket chat
 
