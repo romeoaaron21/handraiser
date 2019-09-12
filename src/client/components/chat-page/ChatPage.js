@@ -101,13 +101,23 @@ class ChatPage extends Component {
                 <div
                   style={{
                     minHeight: "630px",
+                    height: '500px',
                     maxHeight: "800px",
-                    padding: 15
+                    padding: 15,
+                    overflowY: 'scroll'
                   }}
+
+                  className={classes.scrollBar}
                 >
+                  
+
                   {/* SENDER */}
                   <div
-                    style={{ display: "flex", justifyContent: "flex-start", marginBottom: 13 }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      marginBottom: 13
+                    }}
                   >
                     <Avatar style={{ marginRight: "10px" }}>TL</Avatar>
                     <Box
@@ -116,24 +126,18 @@ class ChatPage extends Component {
                         padding: 12,
                         background: "#f5f5f5",
                         color: "#263238",
-                        borderRadius: 8
+                        borderRadius: 5
                       }}
                     >
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       Morbi ante urna, suscipit eu tincidunt non, dictum quis
-                      arcu. Maecenas sit amet massa vitae mi dictum vulputate
-                      eget non justo. Nunc convallis rutrum fringilla. Cras in
-                      elit nec elit commodo mattis. Morbi sed metus eget elit
-                      tincidunt blandit. Phasellus ultricies gravida interdum.
-                      Maecenas tristique iaculis sapien, dictum luctus turpis
-                      euismod at. Aenean ornare ultrices mauris quis
-                      egestas.something
+                      arcu.
                       <div
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
                           marginTop: "10px",
-                          fontSize: '.8em',
+                          fontSize: ".8em"
                         }}
                       >
                         Sept. 12, 2019 10:30 AM
@@ -142,36 +146,43 @@ class ChatPage extends Component {
                   </div>
                   {/* END SENDER */}
 
-                  {/* SENDER */}
+                 
+
+                
+
+                  {/* RECEIVER */}
                   <div
-                    style={{ display: "flex", justifyContent: "flex-start", marginBottom: 17 }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      marginBottom: 13
+                    }}
                   >
-                    <Avatar style={{ marginRight: "10px" }}>TL</Avatar>
                     <Box
                       style={{
                         maxWidth: "40%",
                         padding: 12,
-                        background: "#f5f5f5",
-                        color: "#263238",
-                        borderRadius: 8
+                        background: "#983cac",
+                        color: "#fff",
+                        borderRadius: 5
                       }}
                     >
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       Morbi ante urna, suscipit eu tincidunt non, dictum quis
-                      arcu. 
+                      arcu.
                       <div
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
                           marginTop: "10px",
-                          fontSize: '.8em',
+                          fontSize: ".8em"
                         }}
                       >
                         Sept. 12, 2019 10:30 AM
                       </div>
                     </Box>
                   </div>
-                  {/* END SENDER */}
+                  {/* RECEIVER */}
 
 
 
