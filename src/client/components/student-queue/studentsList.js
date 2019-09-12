@@ -192,12 +192,6 @@ class ChatList extends PureComponent {
       this.setState({
         students: res.data.students
       });
-    }).then(() => {
-      this.props.conversation.map(convo => {
-        if (convo.cohort_id === parseInt(this.props.cohort_id)) {
-          this.setState({ conversation: convo })
-        }
-      })
     })
   }
 

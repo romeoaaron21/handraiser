@@ -66,12 +66,10 @@ massive({
       io.emit("displayMember", member);
     });
     socket.on("sendChat", chat => {
-      // console.log(chat)
       io.emit("sendChat", chat);
     });
 
     socket.on("sendChatM", chat => {
-      // console.log(chat)
       io.emit("sendChatM", chat);
     });
 
@@ -85,10 +83,6 @@ massive({
     socket.on("handleChatM", priv => {
       // console.log(priv)
       io.emit("handleChatM", priv);
-    });
-    socket.on("sendChat", chat => {
-      // console.log(priv)
-      io.emit("sendChat", chat);
     });
 
     socket.on("seenChat", chat => {

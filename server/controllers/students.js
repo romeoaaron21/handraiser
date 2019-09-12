@@ -39,10 +39,10 @@ function requestHelp(req, res) {
   const { reason } = req.body;
   db.users
     .findOne({ sub: sub })
-    .then(function(data) {
+    .then(function (data) {
       db.member
         .findOne({ student_id: data.id, cohort_id: cohort_id })
-        .then(function(member) {
+        .then(function (member) {
           db.requests
             .insert({
               member_id: member.id,
@@ -143,21 +143,29 @@ function getChat(req, res) {
 function displayMentor(req, res) {
   const db = req.app.get("db");
   const { cohort_id } = req.params;
+  let mentor = [];
 
-  db.cohorts.findOne({ id: cohort_id }).then(cohort => {
-    db.users.findOne({ id: cohort.mentor_id }).then(mentor => {
-      res.status(200).json([mentor]);
-    });
-  });
+  db.query(`SELECT mentor_id FROM cohorts WHERE id = ${cohort_id} UNION SELECT mentor_id FROM comentor WHERE cohort_id = ${cohort_id}`)
+    .then((mentor_id) => {
+      mentor_id.map(id => {
+        db.users.findOne({ id: id.mentor_id }).then(user => {
+          mentor.push(user)
+        }).then(()=> {
+          if(mentor_id.length === mentor.length){
+            res.status(200).json([...mentor]);
+          }
+        })
+      })
+    })
 }
 
 function seenChat(req, res) {
   const db = req.app.get("db");
   const student = req.body.student;
   const mentor = req.body.mentor;
-  const {priv} = req.params;
+  const { priv } = req.params;
 
-  if(priv === 'student'){
+  if (priv === 'student') {
     db.query(
       `UPDATE chat SET seen=1 WHERE chatmate_id='${student}' AND sender_id='${mentor}'`
     ).then(() => {
@@ -165,7 +173,7 @@ function seenChat(req, res) {
         res.status(201).json(chats);
       });
     });
-  }else if(priv === 'mentor'){
+  } else if (priv === 'mentor') {
     db.query(
       `UPDATE chat SET seen=1 WHERE sender_id='${mentor}' AND chatmate_id='${student}'`
     ).then(() => {
@@ -174,7 +182,7 @@ function seenChat(req, res) {
       });
     });
   }
-  
+
 }
 
 module.exports = {

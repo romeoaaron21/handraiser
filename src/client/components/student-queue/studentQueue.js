@@ -431,12 +431,8 @@ class Student extends Component {
           "get"
         );
         data1.then(res => {
+          console.log(res.data)
           this.setState({ mentorInfo: res.data });
-
-          res.data.map(mentor => {
-            this.setState({ chatmateSub: mentor.sub });
-            return null;
-          });
         });
       })
       .then(() => {
@@ -616,7 +612,6 @@ class Student extends Component {
 
                           conversation={this.state.conversation}
                           sub={this.state.sub}
-                          displayBadge={this.displayBadge}
                           badge={this.state.badge}
 
                           sendChatSub={this.selectChatmate}
@@ -640,16 +635,26 @@ class Student extends Component {
                             </div>
 
                             <ChatList
-                              sendChatSub={this.selectChatmate}
-                              mentor={this.state.mentorInfo}
-                              conversation={this.state.conversation}
-                              sub={this.state.sub}
-                              priv={this.state.previledge}
-                          /*BADGE*/ badge={this.state.badge}
-                          /*BADGE*/ displayBadge={this.displayBadge}
-                              cohort_id={this.props.cohort_id}
+                          //     sendChatSub={this.selectChatmate}
+                          //     mentor={this.state.mentorInfo}
+                          //     conversation={this.state.conversation}
+                          //     sub={this.state.sub}
+                          //     priv={this.state.previledge}
+                          // /*BADGE*/ badge={this.state.badge}
+                          // /*BADGE*/ displayBadge={this.displayBadge}
+                          //     cohort_id={this.props.cohort_id}
 
-                              sendChatSub={this.selectChatmate}
+                          //     sendChatSub={this.selectChatmate}
+
+                          sendChatSub={this.selectChatmate}
+                          mentor={this.state.mentorInfo}
+                          conversation={this.state.conversation}
+                          sub={this.state.sub}
+                          badge={this.state.badge}
+                          cohort_id={this.props.cohort_id}
+                          
+
+                          
 
                             />
                           </Box>
