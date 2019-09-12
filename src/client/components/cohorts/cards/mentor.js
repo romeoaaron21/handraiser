@@ -134,7 +134,11 @@ class MentorClassCards extends React.Component {
                     >
                       <CardMedia
                         className={classes.media}
-                        image={DefaultBackground}
+                        image={
+                          cohort.class_header === null
+                            ? DefaultBackground
+                            : require(`../../../images/class-header-images/${cohort.class_header}`)
+                        }
                         title={cohort.name}
                       />
                       <CardContent className={classes.cardContent}>
@@ -304,7 +308,11 @@ class MentorClassCards extends React.Component {
                         >
                           <CardMedia
                             className={classes.media}
-                            image={DefaultBackground}
+                            image={
+                              cohort.class_header === null
+                                ? DefaultBackground
+                                : require(`../../../images/class-header-images/${cohort.class_header}`)
+                            }
                             title={cohort.name}
                           />
                           <CardContent className={classes.cardContent}>
@@ -376,7 +384,11 @@ class MentorClassCards extends React.Component {
                       >
                         <CardMedia
                           className={classes.media}
-                          image={DefaultBackground}
+                          image={
+                            cohort.class_header === null
+                              ? DefaultBackground
+                              : require(`../../../images/class-header-images/${cohort.class_header}`)
+                          }
                           title={cohort.name}
                         />
                         <CardContent className={classes.cardContent}>

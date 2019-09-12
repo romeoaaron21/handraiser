@@ -35,7 +35,7 @@ function getEnrolledClasses(req, res) {
   const { studentId } = req.params;
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.status, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.status, cohorts.password, cohorts.status, cohorts.class_header, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
     AS members FROM cohorts, users, member WHERE cohorts.mentor_id = users.id AND member.cohort_id = cohorts.id AND member.student_id = '${studentId}' ORDER BY cohorts.id DESC;`
   )
     .then(cohorts => {
