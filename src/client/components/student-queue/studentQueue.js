@@ -347,45 +347,50 @@ class Student extends Component {
     //end of socket chat
 
     socket.on("requestHelping", students => {
-      this.setState({ members: students });
-      if (students.length === 0) {
-        this.setState({
-          button: true,
-          btntext: "Waiting for help",
-          requested: true
-        });
-      }
-      students.map(student => {
-        if (student.sub === this.state.sub) {
-          return this.setState({
+      if (students[0].cohort_id === this.props.cohort_id){
+        this.setState({ members: students });
+        if (students.length === 0) {
+          this.setState({
             button: true,
             btntext: "Waiting for help",
             requested: true
           });
-        } else {
-          return null;
         }
-      });
-    });
-
-    socket.on("deleteRequest", students => {
-      this.setState({ members: students });
-      if (students.length === 0) {
-        this.setState({
-          btntext: "Raise Hand",
-          requested: false
+        students.map(student => {
+          if (student.sub === this.state.sub) {
+            return this.setState({
+              button: true,
+              btntext: "Waiting for help",
+              requested: true
+            });
+          } else {
+            return null;
+          }
         });
       }
-      students.map(student => {
-        if (student.sub !== this.state.sub) {
-          return this.setState({
+    });
+
+    socket.on("deleteRequest", studs => {
+      const students = [...studs.members]
+      if (studs.cohort === this.props.cohort_id){
+        this.setState({ members: students });
+        if (students.length === 0) {
+          this.setState({
             btntext: "Raise Hand",
             requested: false
           });
-        } else {
-          return null;
         }
-      });
+        students.map(student => {
+          if (student.sub !== this.state.sub) {
+            return this.setState({
+              btntext: "Raise Hand",
+              requested: false
+            });
+          } else {
+            return null;
+          }
+        });
+      }
     });
 
     socket.on("helpStudent", students => {
@@ -539,7 +544,10 @@ class Student extends Component {
     );
     data
       .then(res => {
-        socket.emit("deleteRequest", res.data);
+        socket.emit("deleteRequest", {
+          members : res.data, 
+          cohort : this.props.cohort_id
+        });
       })
       .then(() => {
         this.fetchStudents();

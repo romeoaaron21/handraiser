@@ -45,7 +45,7 @@ massive({
     });
 
     socket.on("deleteRequest", students => {
-      io.emit("deleteRequest", [...students]);
+      io.emit("deleteRequest", students);
     });
 
     socket.on("helpStudent", students => {
