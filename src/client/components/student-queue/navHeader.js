@@ -80,10 +80,12 @@ class navHeader extends Component {
 
   openHistory = () => {
     api.fetch(`/api/history/${this.props.cohort}/${this.props.user.id}`, "get").then(res => {
-      this.setState({
-        openHistory: true,
-        history: res.data.history,
-        cohort: res.data.history[0]
+      api.fetch(`/api/cohort/${this.props.cohort}/details`, "get").then(response => {
+        this.setState({
+          openHistory: true,
+          history: res.data.history,
+          cohort: response.data.cohort[0]
+        });
       });
     });
   };
