@@ -71,12 +71,10 @@ massive({
       io.emit("displayMember", member);
     });
     socket.on("sendChat", chat => {
-      // console.log(chat)
       io.emit("sendChat", chat);
     });
 
     socket.on("sendChatM", chat => {
-      // console.log(chat)
       io.emit("sendChatM", chat);
     });
 
@@ -91,11 +89,10 @@ massive({
       // console.log(priv)
       io.emit("handleChatM", priv);
     });
-    socket.on("sendChat", chat => {
-      // console.log(priv)
-      io.emit("sendChat", chat);
-    });
 
+    socket.on("seenChat", chat => {
+      io.emit("seenChat", chat);
+    });
     // active attempt
     socket.on("active", user => {
       io.emit("active", user);
@@ -150,11 +147,13 @@ massive({
   app.post("/api/cohort/:id/editDetails", cohorts.updateCohortDetails);
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
   //History
-  app.get("/api/cohorts/history/:id", cohorts.getHistory);
+  app.get("/api/history/:id", cohorts.getHistory);
   //History Details
-  app.get("/api/cohorts/history/details/:id", cohorts.getHistoryDetails);
+  app.get("/api/history/details/:id", cohorts.getHistoryDetails);
   //Mentor Details
-  app.get("/api/cohorts/helpedby/:id", cohorts.getHelpedBy);
+  app.get("/api/helpedby/:id", cohorts.getHelpedBy);
+  //History by user id
+  app.get("/api/history/:cohort/:student", cohorts.getHistoryById);
   // Cohorts End
 
   //STUDENTS START
@@ -180,8 +179,15 @@ massive({
   app.post("/api/sendChat", students.sendChat);
   app.get("/api/getChat", students.getChat);
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
-  app.patch("/api/seenChat", students.seenChat);
+  app.get("/api/cohort/:id/members/list", list.getAllStudents);
+  app.patch("/api/seenChat/:priv", students.seenChat);
   //CHAT END
+
+  //UPLOAD IMAGE START
+  app.post("/upload/:cohortId", upload.image);
+  app.get("/setToDeFault/:cohortId", upload.setToDefault);
+  app.get("/specific/:cohortId", upload.cohort);
+  //UPLOAD IMAGE END
 
   //UPLOAD IMAGE START
   app.post("/upload/:cohortId", upload.image);

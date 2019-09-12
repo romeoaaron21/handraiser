@@ -118,54 +118,187 @@ class Student extends Component {
       open: false,
 
       /*start of dded for chatBox state*/
-      chatBox: false,
-      mentor_sub: "",
-      chat: "",
-      conversation: [],
-      senderInfo: [],
-      chatmateInfo: [],
-      chatM: "",
-      mentorInfo: [],
-      badge: false,
+      //chatBox: false, deleted
+      //mentor_sub: "", deleted
+      // chat: "",
+
+      // senderInfo: [],
+      // chatmateInfo: [],
+      // chatM: "",
+      // mentorInfo: [],
       /*end of added for chatBox state*/
 
-      /* CLASS HEADER IMAGE */
+      badge: false,
+
+      //added dh
+
+      conversation: [],
+
+      chatmateSub: "",
+
+      mentorChatBox: false,
+      studentChatBox: false,
+
+      studentChatText: "",
+      mentorChatText: "",
+
+      senderInfo: [],
+      chatmateInfo: [],
       classHeaderImage: null
-      /* CLASS HEADER IMAGE */
+
+      //end added dh
     };
   }
 
-  //* COMPONENT DID MOUNT *//
-  componentDidMount() {
-    this.setState({ loader: true });
-    this.fetch.then(fetch => {
-      const user = fetch.data.user[0];
-      this.setState({ sub: user.sub });
-      const data = api.fetch(
-        `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
-        "get"
-      );
-      data.then(res => {
-        this.setState({
-          user: res.data[0],
-          previledge: res.data[0][0].privilege
-        });
-        data.then(() => {
-          this.fetchStudents();
-          setTimeout(() => {
-            this.setState({ loader: false });
-          }, 1000);
-        });
-      });
-    });
+  //added dh
 
-    api.fetch(`/specific/${this.props.cohort_id}`, "get").then(res => {
-      this.setState({ classHeaderImage: res.data[0].class_header });
+  viewChatBox = () => {
+    if (this.state.previledge === "student") {
+      this.setState({ studentChatBox: false });
+    } else {
+      this.setState({ mentorChatBox: false });
+    }
+  };
+
+  selectChatmate = chatmate_sub => {
+    const data = api.fetch(
+      `/api/displayChatUserInfo/${this.state.sub}/${chatmate_sub}`,
+      "get"
+    );
+    data
+      .then(res => {
+        res.data.map(user => {
+          if (user.sub === this.state.sub) {
+            this.setState({ senderInfo: user });
+          } else {
+            this.setState({ chatmateInfo: user });
+          }
+          return null;
+        });
+        if (this.state.previledge === "mentor") {
+          this.setState({ mentorChatBox: true, chatmateSub: chatmate_sub });
+        } else {
+          this.setState({ studentChatBox: true, chatmateSub: chatmate_sub });
+        }
+      })
+      .then(() => {
+        this.displayBadge();
+      });
+  };
+
+  setChatText = (val, receiversub, sendersub) => {
+    let textVal = [val, receiversub, sendersub];
+    if (this.state.previledge === "student") {
+      socket.emit("handleChat", textVal);
+    } else {
+      socket.emit("handleChatM", textVal);
+    }
+  };
+
+  sendChat = () => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
+    let convo = {
+      message:
+        this.state.previledge === "student"
+          ? this.state.studentChatText
+          : this.state.mentorChatText,
+      sender_sub: this.state.sub,
+      chatmate_sub: this.state.chatmateSub,
+      cohort_id: this.props.cohort_id,
+      time: datetime
+    };
+    const data = api.fetch(`/api/sendChat`, "post", convo);
+    data.then(res => {
+      if (this.state.previledge === "student") {
+        socket.emit("sendChat", res.data);
+      } else {
+        socket.emit("sendChatM", res.data);
+      }
+    });
+    socket.emit("displayBadge");
+  };
+
+  //end added dh
+
+  displayBadge() {
+    let sub = { student: this.state.sub, mentor: this.state.chatmateSub };
+    const data = api.fetch(
+      `/api/seenChat/${this.state.previledge}`,
+      "patch",
+      sub
+    );
+    data.then(res => {
+      socket.emit("seenChat", res.data);
+      // this.setState({ badge: true })
     });
   }
-  //* COMPONENT DID MOUNT *//
 
-  //* INIT SOCKETS *//
+  //start of methods for chat websockets
+
+  //end of methods for chat websockets
+
+  //never been used
+  // handleChange = () => {
+  //   this.setState({
+  //     newValue: 1
+  //   });
+  // };
+  // handleClick = event => {
+  //   event.preventDefault();
+  //   alert("You clicked a breadcrumb.");
+  // };
+  //end of never been used
+
+  helpStudent = memberid => {
+    const data = api.fetch(
+      `/api/helpStudent/${memberid}/${this.props.cohort_id}`,
+      "patch"
+    );
+    data.then(res => {
+      this.fetchStudents();
+      socket.emit("helpStudent", res.data[0]);
+    });
+  };
+
+  helpStudentClose = () => {
+    socket.emit("close", "1");
+    this.setState({ mentorChatBox: false });
+  };
+
+  removeStudentRequest = id => {
+    this.setState({ removeStudentReqModal: true, member: id });
+  };
+
+  removeStudentReqClose = () => [
+    this.setState({ removeStudentReqModal: false })
+  ];
+
   UNSAFE_componentWillMount() {
     this.initSocket();
   }
@@ -176,15 +309,27 @@ class Student extends Component {
     this.setState({ socket });
 
     //START OF BADGE
+
     socket.on("displayBadge", () => {
       this.setState({ badge: false });
     });
 
     socket.on("handleChat", priv => {
-      this.setState({ chat: priv });
+      if (
+        (priv[1] === this.state.sub && priv[2] === this.state.chatmateSub) ||
+        (priv[2] === this.state.sub && priv[1] === this.state.chatmateSub)
+      ) {
+        this.setState({ studentChatText: priv[0] });
+      }
     });
+
     socket.on("handleChatM", priv => {
-      this.setState({ chatM: priv });
+      if (
+        (priv[1] === this.state.sub && priv[2] === this.state.chatmateSub) ||
+        (priv[2] === this.state.sub && priv[1] === this.state.chatmateSub)
+      ) {
+        this.setState({ mentorChatText: priv[0] });
+      }
     });
     // END OF BADGE
 
@@ -197,13 +342,13 @@ class Student extends Component {
     socket.on("sendChat", chat => {
       this.setState({
         conversation: [...chat],
-        chat: ""
+        studentChatText: ""
       });
     });
     socket.on("sendChatM", chat => {
       this.setState({
         conversation: [...chat],
-        chatM: ""
+        mentorChatText: ""
       });
     });
     //end of socket chat
@@ -260,7 +405,7 @@ class Student extends Component {
     socket.on("close", cohort_id => {
       this.setState({
         helpingStudent: "",
-        helpStudentModal: false,
+        // helpStudentModal: false,
         button: true,
         requested: false,
         btntext: "Raise Hand",
@@ -309,168 +454,7 @@ class Student extends Component {
       }
     });
   };
-  //* INIT SOCKETS *//
 
-  //start of methods for chat websockets
-  displayBadge = priv => {
-    if (priv === "mentor") {
-      socket.emit("displayBadge");
-    } else if (priv === "student") {
-      let sub = { student: this.state.sub, mentor: this.state.mentor_sub };
-      const data = api.fetch(`/api/seenChat`, "patch", sub);
-      data.then(res => {
-        socket.emit("seenChat", res.data);
-        this.setState({ badge: true });
-      });
-    }
-  };
-
-  viewChatBox = () => {
-    this.setState({ chatBox: false });
-  };
-
-  handleChat = val => {
-    socket.emit("handleChat", val);
-  };
-
-  handleChatM = val => {
-    socket.emit("handleChatM", val);
-  };
-
-  sendChatSub = () => {
-    const data = api.fetch(
-      `/api/displayChatUserInfo/${this.state.sub}/${this.state.mentor_sub}`,
-      "get"
-    );
-    data.then(res => {
-      res.data.map(user => {
-        if (user.sub === this.state.sub) {
-          this.setState({
-            senderInfo: user,
-            chatBox: true
-          });
-        } else {
-          this.setState({
-            chatmateInfo: user,
-            chatBox: true
-          });
-        }
-        return null;
-      });
-    });
-  };
-
-  sendChatSubM = chatmate_sub => {
-    const data = api.fetch(
-      `/api/displayChatUserInfo/${this.state.sub}/${chatmate_sub}`,
-      "get"
-    );
-    data.then(res => {
-      res.data.map(user => {
-        if (user.sub === this.state.sub) {
-          this.setState({
-            senderInfo: user,
-            chatBox: true,
-            chatmate_sub: chatmate_sub
-          });
-        } else {
-          this.setState({
-            chatmateInfo: user,
-            chatBox: true,
-            chatmate_sub: chatmate_sub
-          });
-        }
-        return null;
-      });
-    });
-  };
-
-  messagesEndRef = React.createRef();
-
-  sendChat = () => {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-    let current_datetime = new Date();
-    let formatted_date =
-      months[current_datetime.getMonth()] +
-      " " +
-      current_datetime.getDate() +
-      ", " +
-      current_datetime.getFullYear();
-    var time = current_datetime.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true
-    });
-    var datetime = formatted_date + " " + time;
-    let convo = {
-      message: this.state.chat,
-      sender_sub: this.state.sub,
-      chatmate_sub: this.state.mentor_sub,
-      cohort_id: this.props.cohort_id,
-      time: datetime
-    };
-    const data = api.fetch(`/api/sendChat`, "post", convo);
-    data.then(res => {
-      socket.emit("sendChat", res.data);
-    });
-  };
-
-  sendChatM = chatmate => {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-    let current_datetime = new Date();
-    let formatted_date =
-      months[current_datetime.getMonth()] +
-      " " +
-      current_datetime.getDate() +
-      ", " +
-      current_datetime.getFullYear();
-    var time = current_datetime.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true
-    });
-    var datetime = formatted_date + " " + time;
-    let convo = {
-      message: this.state.chatM,
-      sender_sub: this.state.sub,
-      chatmate_sub: chatmate,
-      cohort_id: this.props.cohort_id,
-      time: datetime
-    };
-    const data = api.fetch(`/api/sendChat`, "post", convo);
-    data.then(res => {
-      socket.emit("sendChatM", res.data);
-    });
-  };
-  //end of methods for chat websockets
-
-  //* STUDENT QUEUE FCUNTIONS *//
   fetchStudents = () => {
     const data = api.fetch(`/api/displayStudents/`, "get");
     data
@@ -483,12 +467,8 @@ class Student extends Component {
           "get"
         );
         data1.then(res => {
+          console.log(res.data);
           this.setState({ mentorInfo: res.data });
-
-          res.data.map(mentor => {
-            this.setState({ mentor_sub: mentor.sub });
-            return null;
-          });
         });
       })
       .then(() => {
@@ -499,39 +479,33 @@ class Student extends Component {
       });
   };
 
-  handleChange = () => {
-    this.setState({
-      newValue: 1
+  componentDidMount() {
+    this.setState({ loader: true });
+    this.fetch.then(fetch => {
+      const user = fetch.data.user[0];
+      this.setState({ sub: user.sub });
+      const data = api.fetch(
+        `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
+        "get"
+      );
+      data.then(res => {
+        this.setState({
+          user: res.data[0],
+          previledge: res.data[0][0].privilege
+        });
+        data.then(() => {
+          this.fetchStudents();
+          setTimeout(() => {
+            this.setState({ loader: false });
+          }, 1000);
+        });
+      });
     });
-  };
 
-  handleClick = event => {
-    event.preventDefault();
-    alert("You clicked a breadcrumb.");
-  };
-
-  helpStudent = memberid => {
-    const data = api.fetch(
-      `/api/helpStudent/${memberid}/${this.props.cohort_id}`,
-      "patch"
-    );
-    data.then(res => {
-      this.fetchStudents();
-      socket.emit("helpStudent", res.data[0]);
+    api.fetch(`/specific/${this.props.cohort_id}`, "get").then(res => {
+      this.setState({ classHeaderImage: res.data[0].class_header });
     });
-  };
-
-  helpStudentClose = () => {
-    socket.emit("close", "1");
-  };
-
-  removeStudentRequest = id => {
-    this.setState({ removeStudentReqModal: true, member: id });
-  };
-
-  removeStudentReqClose = () => [
-    this.setState({ removeStudentReqModal: false })
-  ];
+  }
 
   requestHelp = () => {
     const data = api.fetch(
@@ -633,10 +607,11 @@ class Student extends Component {
                       }
                     >
                       <StudentHeader
+                        setToDefaultHeaderFn={this.setToDefaultHeader}
                         loadStateFn={this.loadState}
                         user={this.state.user[0]}
                         cohortId={this.props.cohort_id}
-                        setToDefaultHeaderFn={this.setToDefaultHeader}
+                        user={this.state.user[0]}
                       />
                     </Paper>
                   ) : (
@@ -656,8 +631,9 @@ class Student extends Component {
                       }
                     >
                       <StudentHeader
-                        loadStateFn={this.loadState}
                         setToDefaultHeaderFn={this.setToDefaultHeader}
+                        loadStateFn={this.loadState}
+                        user={this.state.user[0]}
                         cohortId={this.props.cohort_id}
                         user={this.state.user[0]}
                         raise={this.state.btntext}
@@ -670,6 +646,8 @@ class Student extends Component {
                   <Grid container className={classes.navHeader}>
                     {this.state.previledge === "mentor" ? null : (
                       <StudentNavHeader
+                        user={this.state.user[0]}
+                        cohort={this.props.cohort_id}
                         raise={this.state.btntext}
                         requested={this.state.requested}
                         handleChangeReasons={this.handleChangeReasons}
@@ -703,16 +681,16 @@ class Student extends Component {
                         helpStudentClose={this.helpStudentClose}
                         helpingStudent={this.state.helpingStudent}
                         cohort_id={this.props.cohort_id}
-                        chatM={this.state.chatM}
-                        handleChatM={this.handleChatM}
-                        sendChatM={this.sendChatM}
+                        chatM={this.state.mentorChatText}
+                        handleChatM={this.setChatText}
+                        sendChatM={this.sendChat}
                         conversation={this.state.conversation}
                         senderInfo={this.state.senderInfo}
                         chatmateInfo={this.state.chatmateInfo}
                         previledge={this.state.previledge}
-                        sendChatSubM={this.sendChatSubM}
+                        sendChatSubM={this.selectChatmate}
                         /*BADGE*/ displayBadge={this.displayBadge}
-                        chat={this.state.chat}
+                        chat={this.state.studentChatText}
                       />
                       <MentorProfile
                         user={this.state.user[0]}
@@ -723,6 +701,10 @@ class Student extends Component {
                         cohort_id={this.props.cohort_id}
                         members={this.state.members}
                         moveToQueue={this.moveToQueue}
+                        conversation={this.state.conversation}
+                        sub={this.state.sub}
+                        badge={this.state.badge}
+                        sendChatSub={this.selectChatmate}
                       />
 
                       <RemoveRequest
@@ -743,13 +725,22 @@ class Student extends Component {
                         </div>
 
                         <ChatList
-                          sendChatSub={this.sendChatSub}
+                          //     sendChatSub={this.selectChatmate}
+                          //     mentor={this.state.mentorInfo}
+                          //     conversation={this.state.conversation}
+                          //     sub={this.state.sub}
+                          //     priv={this.state.previledge}
+                          // /*BADGE*/ badge={this.state.badge}
+                          // /*BADGE*/ displayBadge={this.displayBadge}
+                          //     cohort_id={this.props.cohort_id}
+
+                          //     sendChatSub={this.selectChatmate}
+
+                          sendChatSub={this.selectChatmate}
                           mentor={this.state.mentorInfo}
                           conversation={this.state.conversation}
                           sub={this.state.sub}
-                          priv={this.state.previledge}
-                          /*BADGE*/ badge={this.state.badge}
-                          /*BADGE*/ displayBadge={this.displayBadge}
+                          badge={this.state.badge}
                           cohort_id={this.props.cohort_id}
                         />
                       </Box>
@@ -766,34 +757,15 @@ class Student extends Component {
                   ) : null}
                 </Grid>
                 {/* start of chatBox */}
-                {!this.state.chatBox ? (
-                  <Grid item xs={12} sm={8} className={classes.requestQue}>
-                    <RequestQueue
-                      sendChatSubM={this.sendChatSubM}
-                      cohort_id={this.props.cohort_id}
-                      sub={this.state.sub}
-                      priv={this.state.previledge}
-                      helpStudentModal={this.state.helpStudentModal}
-                      helpStudentClose={this.helpStudentClose}
-                      helpStudent={this.helpStudent}
-                      removeStudentRequest={this.removeStudentRequest}
-                      removeStudentReqModal={this.state.removeStudentReqModal}
-                      removeStudentReqClose={this.removeStudentReqClose}
-                      members={this.state.members}
-                    />
-                  </Grid>
-                ) : this.state.previledge === "student" ? (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={this.state.previledge === "mentor" ? 12 : 8}
-                  >
+                {this.state.studentChatBox &&
+                this.state.previledge === "student" ? (
+                  <Grid item xs={12} sm={8}>
                     <ChatBox
                       cohort_id={this.props.cohort_id}
                       sendChat={this.sendChat}
-                      handleChat={this.handleChat}
-                      chat={this.state.chat}
-                      chatM={this.state.chatM}
+                      handleChat={this.setChatText}
+                      chat={this.state.studentChatText}
+                      chatM={this.state.mentorChatText}
                       conversation={this.state.conversation}
                       senderInfo={this.state.senderInfo}
                       chatmateInfo={this.state.chatmateInfo}
@@ -805,12 +777,34 @@ class Student extends Component {
                           ? true
                           : false
                       }
+                      sendChatSub={this.selectChatmate}
+                    />
+                  </Grid>
+                ) : this.state.mentorChatBox &&
+                  this.state.previledge === "mentor" ? (
+                  <Grid item xs={12} sm={8}>
+                    <ChatBox
+                      viewChatBox={this.viewChatBox}
+                      sendChatM={this.sendChat}
+                      handleChatM={this.setChatText}
+                      chatM={this.state.mentorChatText}
+                      conversation={this.state.conversation}
+                      senderInfo={this.state.senderInfo}
+                      chatmateInfo={this.state.chatmateInfo}
+                      privileged={this.state.previledge}
+                      helpingStudent_sub={this.state.helpingStudent.sub}
+                      cohort_id={this.props.cohort_id}
+                      chat={this.state.studentChatText}
+                      displayBadge={this.displayBadge}
+                      helpStudentClose={this.helpStudentClose}
+                      helpingStudent={this.state.helpingStudent}
+                      sendChatSub={this.selectChatmate}
                     />
                   </Grid>
                 ) : (
                   <Grid item xs={12} sm={8}>
                     <RequestQueue
-                      sendChatSubM={this.sendChatSubM}
+                      sendChatSub={this.selectChatmate}
                       cohort_id={this.props.cohort_id}
                       sub={this.state.sub}
                       priv={this.state.previledge}

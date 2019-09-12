@@ -200,7 +200,7 @@ class requestQueue extends Component {
           square={true}
           style={
             this.props.priv === "mentor"
-              ? { minHeight: "561px", maxHeight: "561px" }
+              ? { minHeight: "570px", maxHeight: "570px" }
               : { minHeight: "520px", maxHeight: "520px" }
           }
         >
@@ -268,7 +268,7 @@ class requestQueue extends Component {
                                     className={classes.responsive}
                                     onClick={() => {
                                       this.props.helpStudent(member.id);
-                                      this.props.sendChatSubM(member.id);
+                                      this.props.sendChatSub(member.sub);
                                     }}
                                   >
                                     <ThumbsUp className={classes.actionIcon} />

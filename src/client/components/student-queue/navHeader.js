@@ -6,6 +6,8 @@ import Avatar from "@material-ui/core/Avatar";
 import ClassIcon from "@material-ui/icons/Group";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import History from '../cohorts/cards/history/history';
+import api from "../../services/fetchApi";
 
 const styles = {
   breadcrumbNav: {
@@ -33,12 +35,16 @@ const StyledBreadcrumb = withStyles(theme => ({
 }))(Chip);
 
 class navHeader extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
     this.state = {
       reason: "",
       disabled: false,
-      clearText: ""
+      clearText: "",
+      history: [],
+      cohort: [],
+      openHistory: false
     };
   }
 
@@ -71,6 +77,18 @@ class navHeader extends Component {
       }
     }
   }
+
+  openHistory = () => {
+    api.fetch(`/api/history/${this.props.cohort}/${this.props.user.id}`, "get").then(res => {
+      api.fetch(`/api/cohort/${this.props.cohort}/details`, "get").then(response => {
+        this.setState({
+          openHistory: true,
+          history: res.data.history,
+          cohort: response.data.cohort[0]
+        });
+      });
+    });
+  };
 
   componentDidUpdate() {
     if (this.props.raise === "Waiting for help") {
@@ -108,6 +126,13 @@ class navHeader extends Component {
     });
     this.props.handleChangeReasons(e);
   };
+
+  handleCloseHistory = () => {
+    this.setState({
+      openHistory: false
+    })
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -128,7 +153,7 @@ class navHeader extends Component {
               }
               onClick={this.handleClick}
             />
-            <StyledBreadcrumb component="a" href="#" label="My Activities" />
+            <StyledBreadcrumb onClick={this.openHistory} component="a" href="#" label="My Activities" />
           </Breadcrumbs>
         </Grid>
 
@@ -145,6 +170,14 @@ class navHeader extends Component {
             variant="outlined"
           />
         </Grid>
+
+        <History 
+          open={this.state.openHistory}
+          cohort={this.state.cohort}
+          handleClose={this.handleCloseHistory}
+          history={this.state.history}
+        />
+
       </React.Fragment>
     );
   }
