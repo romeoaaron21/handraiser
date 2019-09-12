@@ -8,8 +8,6 @@ import Transition from './transition'
 import ConcernItem from './concernItem';
 import EmptyQueue from "../../../../images/emptyqueue.svg";
 
-
-
 const styles = theme => ({
     title: {
       paddingTop: 35,
@@ -70,7 +68,7 @@ class History extends React.Component {
             handleClose, 
             history,
             cohort
-        } = this.props; 
+        } = this.props;
         return (
             <Dialog
                 maxWidth="sm"
@@ -88,8 +86,8 @@ class History extends React.Component {
                 </DialogTitle>
                 <DialogContent>
                 {history.length ?
-                  history.map(concern => (
-                    <ConcernItem key={concern.id} concern={concern}/>
+                  history.map((concern,index) => (
+                    <ConcernItem key={index} concern={concern}/>                    
                 ))
                 :  
                 <Grid container className={classes.emptyQueue}>

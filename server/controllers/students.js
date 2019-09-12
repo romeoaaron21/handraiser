@@ -151,26 +151,46 @@ function getChat(req, res) {
 function displayMentor(req, res) {
   const db = req.app.get("db");
   const { cohort_id } = req.params;
+  let mentor = [];
 
-  db.cohorts.findOne({ id: cohort_id }).then(cohort => {
-    db.users.findOne({ id: cohort.mentor_id }).then(mentor => {
-      res.status(200).json([mentor]);
-    });
-  });
+  db.query(`SELECT mentor_id FROM cohorts WHERE id = ${cohort_id} UNION SELECT mentor_id FROM comentor WHERE cohort_id = ${cohort_id}`)
+    .then((mentor_id) => {
+      mentor_id.map(id => {
+        db.users.findOne({ id: id.mentor_id }).then(user => {
+          mentor.push(user)
+        }).then(()=> {
+          if(mentor_id.length === mentor.length){
+            res.status(200).json([...mentor]);
+          }
+        })
+      })
+    })
 }
 
 function seenChat(req, res) {
   const db = req.app.get("db");
   const student = req.body.student;
   const mentor = req.body.mentor;
+  const { priv } = req.params;
 
-  db.query(
-    `UPDATE chat SET seen=1 WHERE sender_id='${student}' AND chatmate_id='${mentor}' OR chatmate_id='${student}' AND sender_id='${mentor}'`
-  ).then(() => {
-    db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
-      res.status(201).json(chats);
+  if (priv === 'student') {
+    db.query(
+      `UPDATE chat SET seen=1 WHERE chatmate_id='${student}' AND sender_id='${mentor}'`
+    ).then(() => {
+      db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
+        res.status(201).json(chats);
+      });
     });
-  });
+  } else if (priv === 'mentor') {
+    db.query(
+      `UPDATE chat SET seen=1 WHERE sender_id='${mentor}' AND chatmate_id='${student}'`
+    ).then(() => {
+      db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
+        res.status(201).json(chats);
+      });
+    });
+  }
+
 }
 
 module.exports = {

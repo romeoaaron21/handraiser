@@ -2,8 +2,8 @@ function getAll(req, res) {
   const db = req.app.get("db");
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
-    AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id GROUP BY cohorts.status = 'nonactive', cohorts.id, users.first_name, users.last_name, users.avatar`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, cohorts.class_header, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY cohorts.status, cohorts.id DESC`
   )
     .then(cohorts => {
       res.status(201).json({ cohorts });
@@ -19,7 +19,7 @@ function getByMentorID(req, res) {
   const { id } = req.params;
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id}`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id} ORDER BY cohorts.name ASC`
   )
     .then(cohorts => {
       res.status(201).json({ cohorts });
@@ -35,7 +35,7 @@ function getEnrolledClasses(req, res) {
   const { studentId } = req.params;
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.status, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.status, cohorts.password, cohorts.status, cohorts.class_header, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
     AS members FROM cohorts, users, member WHERE cohorts.mentor_id = users.id AND member.cohort_id = cohorts.id AND member.student_id = '${studentId}' ORDER BY cohorts.id DESC;`
   )
     .then(cohorts => {
@@ -277,12 +277,11 @@ function updateCohortDetails(req, res) {
     });
 }
 
-function getHistory(req, res){
+function getHistory(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
 
-  db
-    .query(`SELECT * FROM history WHERE cohort_id = ${id}`)
+  db.query(`SELECT * FROM history WHERE cohort_id = ${id}`)
     .then(history => {
       res.status(201).json({ history });
     })
@@ -292,12 +291,13 @@ function getHistory(req, res){
     });
 }
 
-function getHistoryDetails(req, res){
+function getHistoryById(req, res) {
   const db = req.app.get("db");
-  const { id } = req.params;
+  const { cohort, student } = req.params;
 
-  db
-    .query(`select * from users, history where history.id = ${id} and history.member_id = users.id`)
+  db.query(
+    `SELECT history.id, history.reason, history.mentor_id, history.time, cohorts.name FROM history, cohorts WHERE history.cohort_id = ${cohort} and history.member_id = ${student} and history.cohort_id = cohorts.id`
+  )
     .then(history => {
       res.status(201).json({ history });
     })
@@ -307,12 +307,26 @@ function getHistoryDetails(req, res){
     });
 }
 
-function getHelpedBy(req, res){
+function getHistoryDetails(req, res) {
+  const db = req.app.get("db");
+  const { id } = req.params;
+  db.query(
+    `select * from users, history where history.id = ${id} and history.member_id = users.id`
+  )
+    .then(history => {
+      res.status(201).json({ history });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    });
+}
+
+function getHelpedBy(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
 
-  db
-    .query(`select * from users where id = ${id}`)
+  db.query(`select * from users where id = ${id}`)
     .then(mentor => {
       res.status(201).json({ mentor });
     })
@@ -341,5 +355,6 @@ module.exports = {
   getEnrolledClasses,
   getHistory,
   getHistoryDetails,
-  getHelpedBy
+  getHelpedBy,
+  getHistoryById
 };

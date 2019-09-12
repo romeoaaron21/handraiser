@@ -29,7 +29,7 @@ import api from "./../../services/fetchApi";
 import Loader from "../common-components/loader/loader";
 
 //AUTH
-import Auth from "../../auth/Auth";                                                                                                                      
+import Auth from "../../auth/Auth";
 import AuthService from "../../auth/AuthService";
 
 //NAVIGATION
@@ -79,7 +79,7 @@ class Cohorts extends React.Component {
       privilege: "",
       id: 0,
       cohorts: [],
-      subCohorts:[],
+      subCohorts: [],
       enrolledClasses: [],
       availableClasses: [],
       cohortsSideNav: [],
@@ -97,8 +97,7 @@ class Cohorts extends React.Component {
       cohort_id: "",
       search: "",
       socket: null,
-      tabValue: 0,
-      user: []
+      tabValue: 0
     };
   }
 
@@ -122,7 +121,7 @@ class Cohorts extends React.Component {
       const user = fetch.data.user[0];
       api.fetch(`/api/cohorts/api`, "get").then(res => {
         if (this.state.privilege === "student") {
-          this.setState({ availableClasses: res.data.cohorts, user});
+          this.setState({ availableClasses: res.data.cohorts, user });
           var cohorts = res.data.cohorts.filter(
             cohorts => cohorts.status === "active"
           );
@@ -131,7 +130,7 @@ class Cohorts extends React.Component {
           this.setState({ cohorts: res.data.cohorts });
         }
       });
- 
+
       if (user.privilege === "mentor") {
         api.fetch(`/api/cohorts/navigation/side-nav`, "get").then(res => {
           socket.emit("displayCohortsSideNav", res.data.cohorts);
@@ -140,9 +139,8 @@ class Cohorts extends React.Component {
           }, 1000);
         });
         api.fetch(`/api/fetchCoMentorCohorts`, "get").then(data => {
-          this.setState({subCohorts: data.data})
-        })
-
+          this.setState({ subCohorts: data.data });
+        });
       } else {
         api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
           socket.emit("displayMember", res.data.member);
@@ -152,7 +150,7 @@ class Cohorts extends React.Component {
         });
 
         api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
-            this.setState({ enrolledClasses: res.data.cohorts });
+          this.setState({ enrolledClasses: res.data.cohorts });
         });
       }
       console.log(this.state.privilege)
@@ -337,11 +335,12 @@ class Cohorts extends React.Component {
           });
           this.closeModal();
           this.setState({ search: "" });
+          this.setState({ tabValue: 0 });
           this.componentDidMount();
         }
       });
     }
-  }; 
+  };
 
   //LEAVE IN CLASSES ENROLLED
 
@@ -361,7 +360,6 @@ class Cohorts extends React.Component {
   //STUDENT FUNCTIONS END
 
   render() {
-    
     const { classes } = this.props;
     return (
       <div className={classes.root}>

@@ -110,7 +110,7 @@ class SignInSide extends Component {
           socket.emit("active", res.data.user);
           localStorage.setItem("id_token", google.tokenId);
           window.location.href = "/cohorts";
-        });     
+        });
       }
     });
   };

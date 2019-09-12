@@ -35,8 +35,8 @@ class ConcernItem extends React.Component {
     }
 
     componentDidMount(){
-        api.fetch(`api/cohorts/history/details/${this.props.concern.id}`, "get").then(res => {
-            api.fetch(`api/cohorts/helpedby/${this.props.concern.mentor_id}`, "get").then(resp => {
+        api.fetch(`/api/history/details/${this.props.concern.id}`, "get").then(res => {
+            api.fetch(`/api/helpedby/${this.props.concern.mentor_id}`, "get").then(resp => {
                 this.setState({
                     details: res.data.history[0],
                     helpedBy: resp.data.mentor[0],
