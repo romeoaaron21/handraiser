@@ -171,17 +171,16 @@ massive({
   app.post("/api/sendChat", students.sendChat);
   app.get("/api/getChat", students.getChat);
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
-
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
-
   app.patch("/api/seenChat", students.seenChat);
 
   //comentors
-  app.post("/api/addCoMentor", comentor.addCoMentor);
-  app.get("/api/fetchMentors", comentor.fetchMentors);
+  app.post("/api/addCoMentor/:cohort_id", comentor.addCoMentor);
   app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
   app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
-
+  app.get("/api/:id/fetchCohorts", comentor.fetchCohorts);
+  app.get("/api/availableMentor/:cohort_id/:mentor_id", comentor.availableMentor);
+  app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);
