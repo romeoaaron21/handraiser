@@ -328,9 +328,17 @@ class Student extends Component {
       this.setState({
         conversation: [...chat.chat],
       });
-      if(this.state.sub === chat.senderSub || this.state.sub === chat.chatmateSub){
-            this.setState({mentorChatText:""})
-            this.setState({studentChatText:""})
+      if(this.state.sub === chat.chatmateSub && this.state.previledge === 'student'){
+          this.setState({mentorChatText:""})
+      }else if(this.state.sub === chat.chatmateSub && this.state.previledge === 'mentor'){
+        this.setState({studentChatText:""})
+      }
+      if(this.state.sub === chat.senderSub){
+        if(this.state.previledge === 'student'){
+          this.setState({studentChatText:""})
+        }else{
+          this.setState({mentorChatText:""})
+        }
       }
     });
 
