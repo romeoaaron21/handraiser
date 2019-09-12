@@ -113,9 +113,37 @@ class ChatBox extends PureComponent {
 
   //done helping student
   doneHelp = student => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
     const data = api.fetch(
-      `/api/doneHelp/${student.id}/${this.props.cohort_id}`,
-      "get"
+      `/api/doneHelp/${student.id}/${this.props.cohort_id}/${this.props.senderInfo.id}`,
+      "post",
+      {time: datetime}
     );
     data.then(res => {
       this.props.helpStudentClose();
