@@ -83,7 +83,7 @@ class AddCoMentor extends React.Component {
                     aria-labelledby="alert-dialog-slide-title"
                     aria-describedby="alert-dialog-slide-description"
                 >
-                    <DialogTitle id="alert-dialog-slide-title" style={{color:'purple'}}>{"Choose Mentor"}</DialogTitle>
+                    <DialogTitle id="alert-dialog-slide-title" style={{ color: 'purple' }}>{"Choose Mentor"}</DialogTitle>
                     <DialogContent>
                         <List dense>
                             {(() => {
@@ -116,38 +116,44 @@ class AddCoMentor extends React.Component {
                                             );
                                         })
                                     } else {
-                                       return (<ListItem>
+                                        return (<ListItem>
                                             <ListItemText primary={`NO MENTOR AVAILABLE`} />
                                         </ListItem>)
                                     }
                                 } else {
-                                    if (mentors.length > 0)
-                                    return mentors.map(value => {
-                                        return (
-                                            <ListItem key={value.id} button
-                                                onClick={() => {
-                                                    this.handleChecked(value.id);
-                                                }}
-                                            >
-                                                <ListItemAvatar>
-                                                    <Avatar
-                                                        alt={`Avatar${value.id}`}
-                                                        src={`${value.avatar}`}
-                                                    />
-                                                </ListItemAvatar>
-                                                <ListItemText id={value.id} primary={`${value.first_name} ${value.last_name} `} />
-                                                <ListItemSecondaryAction>
-                                                    <Checkbox
-                                                        edge="end"
-                                                        checked={this.state.postData.indexOf(value.id) !== -1}
-                                                        onClick={() => {
-                                                            this.handleChecked(value.id);
-                                                        }}
-                                                    />
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        );
-                                    })
+                                    if (mentors.length > 0) {
+                                        return mentors.map(value => {
+                                            return (
+                                                <ListItem key={value.id} button
+                                                    onClick={() => {
+                                                        this.handleChecked(value.id);
+                                                    }}
+                                                >
+                                                    <ListItemAvatar>
+                                                        <Avatar
+                                                            alt={`Avatar${value.id}`}
+                                                            src={`${value.avatar}`}
+                                                        />
+                                                    </ListItemAvatar>
+                                                    <ListItemText id={value.id} primary={`${value.first_name} ${value.last_name} `} />
+                                                    <ListItemSecondaryAction>
+                                                        <Checkbox
+                                                            edge="end"
+                                                            checked={this.state.postData.indexOf(value.id) !== -1}
+                                                            onClick={() => {
+                                                                this.handleChecked(value.id);
+                                                            }}
+                                                        />
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            );
+                                        })
+                                    }else{
+                                        return (<ListItem>
+                                            <ListItemText primary={`NO MENTOR AVAILABLE`} />
+                                        </ListItem>)
+                                    }
+
                                 }
                             })()
                             }
