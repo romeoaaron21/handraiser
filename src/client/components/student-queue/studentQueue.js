@@ -434,9 +434,12 @@ class Student extends Component {
                 btntext: "Waiting for help"
               });
             } else if (member.status === "inprogress") {
-              return this.setState({
+              this.setState({
                 helpingStudent: member
-              });
+              })
+              if(this.state.previledge == "mentor"){
+                this.selectChatmate(member.sub)
+              }
             } else {
               return null;
             }

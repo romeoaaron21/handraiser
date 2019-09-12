@@ -250,6 +250,7 @@ class ChatBox extends PureComponent {
           <Grid
             container
             className={`${classes.chatBoxBody} ${classes.scrollBar}`}
+            style={this.props.privileged === "mentor"? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}
           >
 
 
@@ -264,7 +265,7 @@ class ChatBox extends PureComponent {
 
 
 
-            <div className={`${classes.chatBoxBody} ${classes.scrollBar}`}>
+            <div className={`${classes.chatBoxBody} ${classes.scrollBar}`} style={this.props.privileged === "mentor"? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}>
               <Grid
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
