@@ -35,6 +35,7 @@ import api from "./../../../services/fetchApi";
 import Loader from "../loader/loader";
 
 import DeleteClass from "./modal/delete";
+import AddCoMentor from "./modal/addCoMentor";
 
 const styles = theme => ({
   root: {
@@ -159,7 +160,11 @@ class Settings extends PureComponent {
       passwordMatch: true,
       newpasswordDisable: true,
       tab: 0,
-      coMentor: []
+      coMentor: [],
+      modalAddMentor: false,
+      mentors: [],
+      cohortDetails: [],
+      availableMentor: [],
     };
   }
 
@@ -182,9 +187,31 @@ class Settings extends PureComponent {
       }, 1000);
     });
 
-    api.fetch(`/api/fetchCoMentor/${this.state.id}`, "get").then(data => {
-      this.setState({ coMentor: data.data });
-    });
+    api.fetch(`/api/fetchCoMentor/${this.state.id}`, "get")
+      .then(data => {
+        this.setState({ coMentor: data.data })
+      })
+
+    api.fetch(`/api/${this.state.id}/fetchCohorts`, "get")
+      .then(data => {
+        this.setState({ cohortDetails: data.data })
+
+        api.fetch(`/api/fetchMentors/${data.data[0].mentor_id}`, "get")
+          .then(data => {
+            this.setState({ mentors: data.data })
+          })
+        api.fetch(`/api/availableMentor/${this.state.id}/${data.data[0].mentor_id}`, "get")
+          .then(data => {
+            this.setState({ availableMentor: data.data })
+          })
+      })
+
+
+
+  }
+
+  remount = () => {
+    this.componentDidMount()
   }
 
   //NAVIGATION
@@ -226,7 +253,19 @@ class Settings extends PureComponent {
     });
   };
 
-  handleNameChange = e => {
+  openACM = () => {
+    this.setState({
+      modalAddMentor: true
+    })
+  }
+
+  closeACM = () => {
+    this.setState({
+      modalAddMentor: false
+    })
+  }
+
+  handleNameChange = (e) => {
     if (e.target.value !== "") {
       this.setState({
         errorNewName: false
@@ -611,13 +650,12 @@ class Settings extends PureComponent {
                 </TabPanel>
                 <TabPanel value={this.state.tab} index={2}>
                   {/* ADD CO-MENTOR START */}
-                  CO-MENTOR
+                  <span style={{ marginLeft: '10px' }}>CO-MENTOR</span>
                   <List>
                     {this.state.coMentor.map(row => {
-                      console.log(row);
                       return (
-                        <React.Fragment>
-                          <ListItem alignItems="center" justifyContent="center">
+                        <React.Fragment key={row.id}>
+                          <ListItem alignItems="center" >
                             <ListItemAvatar>
                               <Avatar alt={`${row.id}`} src={`${row.avatar}`} />
                             </ListItemAvatar>
@@ -628,10 +666,21 @@ class Settings extends PureComponent {
                         </React.Fragment>
                       );
                     })}
+                    <ListItem alignItems="center" >
+                      <ListItemAvatar onClick={() => {
+                        this.openACM()
+                      }}>
+                        <Fab size="small" color="primary" aria-label="add" >
+                          <AddIcon />
+                        </Fab>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`ADD CO-MENTOR`}
+                      />
+                    </ListItem>
+
                   </List>
-                  {/* <Fab size="small" color="secondary" aria-label="add" >
-                    <AddIcon />
-                  </Fab> */}
+
                   {/*ADD CO-MENTOR END */}
                 </TabPanel>
                 <TabPanel value={this.state.tab} index={3}>
@@ -679,6 +728,15 @@ class Settings extends PureComponent {
             close={this.closeModal}
             id={this.state.id}
             delete={this.delete}
+          />
+          <AddCoMentor
+            open={this.state.modalAddMentor}
+            close={this.closeACM}
+            mentors={this.state.mentors}
+            coMentor={this.state.coMentor}
+            cohortDetails={this.state.cohortDetails}
+            mount={this.remount}
+            availableMentor={this.state.availableMentor}
           />
         </main>
       </div>

@@ -484,6 +484,7 @@ class Student extends Component {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
       this.setState({ sub: user.sub });
+      console.log(user.sub, " ",this.props.cohort_id)
       const data = api.fetch(
         `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
         "get"

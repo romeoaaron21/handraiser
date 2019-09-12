@@ -200,10 +200,12 @@ massive({
   //UPLOAD IMAGE END
 
   //comentors
-  app.post("/api/addCoMentor", comentor.addCoMentor);
-  app.get("/api/fetchMentors", comentor.fetchMentors);
+  app.post("/api/addCoMentor/:cohort_id", comentor.addCoMentor);
   app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
   app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
+  app.get("/api/:id/fetchCohorts", comentor.fetchCohorts);
+  app.get("/api/availableMentor/:cohort_id/:mentor_id", comentor.availableMentor);
+  app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

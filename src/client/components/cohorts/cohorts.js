@@ -153,6 +153,7 @@ class Cohorts extends React.Component {
           this.setState({ enrolledClasses: res.data.cohorts });
         });
       }
+      console.log(this.state.privilege)
       this.setState({
         user,
         id: user.id,
@@ -172,7 +173,6 @@ class Cohorts extends React.Component {
     socket.on("displayCohortsSideNav", cohorts => {
       this.setState({ cohortsSideNav: cohorts });
     });
-
     socket.on("displayMember", member => {
       this.setState({ member });
     });
@@ -229,7 +229,7 @@ class Cohorts extends React.Component {
       delete: false,
       enroll: false,
       leave: false,
-      studentList: false
+      studentList: false  
     });
   };
   // MODALS END
