@@ -10,7 +10,6 @@ import MentorKeys from "../admin/components/mentor-keys/mentorKeys";
 import Mentor from "../admin/components/mentors/mentor";
 import AdminCohorts from "../admin/components/cohorts/cohort";
 import Settings from "../client/components/common-components/settings/settings";
-
 import ChatPage from "../client/components/chat-page/ChatPage"
 
 import NotFound from "../404";
@@ -31,8 +30,6 @@ function Router() {
         <Route path="/admin/mentors" component={Mentor} />
         <Route path="/admin/cohorts" component={AdminCohorts} />
         <Route path="/admin/sign-in" component={AdminSignIn} />
-
-
         <Route component={NotFound} />
       </Switch>
     </BrowserRouter>

@@ -9,22 +9,11 @@ import SideNav from "../common-components/side-nav/sideNav";
 //MAIN
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-
-//CHATLIST
-import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
-import TextField from "@material-ui/core/TextField";
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-import ListItemText from "@material-ui/core/ListItemText"
-import CreateIcon from '@material-ui/icons/Create';
-import IconButton from "@material-ui/core/IconButton"
 
 //COMPONENTS
-import ChatPageList from "./ChatPageList"
+import ChatPageList from "./ChatPageList";
+import ChatPageBox from "./ChatPageBox";
+import ChatPageInfo from "./ChatPageInfo";
 
 class ChatPage extends Component {
   constructor(props) {
@@ -52,40 +41,14 @@ class ChatPage extends Component {
         />
 
         <Container maxWidth="xl" className={classes.container}>
-          <Grid container spacing={2}>
-            <Grid item md={3} xs={4}>
-                <ChatPageList/>
-            </Grid>
-
-            <Grid item md={6} xs={8}>
-              <Paper style={{ height: "800px", maxHeight: "1000px" }}>
-                <div style={{display: 'flex', justifyContent: 'flex-start', alignItems:'center', padding: 15}}>
-                   <Avatar style={{marginRight: 10}}>TL</Avatar>
-                   <div>
-                    <Typography variant="body"> Trizha Kate Longaza</Typography>
-                    <div style={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    <div style={{
-                            height: 10,
-                            width:10,
-                            borderRadius: "50%",
-                            backgroundColor: "#43a047",
-                            marginRight: "3px"
-                    }} />
-                    <Typography variant="subtitle2" style={{marginTop: 2}}>
-                        Active Now
-                    </Typography>
-                    </div>
-                   </div>
-                </div>
-                <Divider />
-              </Paper>
-            </Grid>
-
-            <Grid item md={3} xs={12}>
-              <Paper style={{ height: "800px", maxHeight: "1000px" }}>
-                {/* SOMETHING */}
-              </Paper>
-            </Grid>
+          <Grid
+            container
+            spacing={2}
+            style={{ height: "800px", maxHeight: "700px" }}
+          >
+            <ChatPageList />
+            <ChatPageBox />
+            <ChatPageInfo />
           </Grid>
         </Container>
       </div>

@@ -5,6 +5,7 @@ const express = require("express");
 const massive = require("massive");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const fileUpload = require("express-fileupload");
 
 const admin = require("./controllers/admin.js");
 const list = require("./controllers/list.js");
@@ -12,7 +13,8 @@ const user = require("./controllers/user.js");
 const cohorts = require("./controllers/cohorts.js");
 const mentor = require("./controllers/mentor");
 const students = require("./controllers/students");
-const comentor = require("./controllers/comentor")
+const comentor = require("./controllers/comentor");
+const upload = require("./controllers/upload");
 
 massive({
   host: "boom-handraiser.com",
@@ -30,6 +32,9 @@ massive({
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
 
+  //UPLOAD IMAGES
+  app.use(fileUpload());
+
   //WEBSOCKET START
   const server = http.Server(app);
   const io = socketIO(server);
@@ -40,7 +45,7 @@ massive({
     });
 
     socket.on("deleteRequest", students => {
-      io.emit("deleteRequest", [...students]);
+      io.emit("deleteRequest", students);
     });
 
     socket.on("helpStudent", students => {
@@ -66,13 +71,15 @@ massive({
       io.emit("displayMember", member);
     });
     socket.on("sendChat", chat => {
-      // console.log(chat)
       io.emit("sendChat", chat);
     });
 
     socket.on("sendChatM", chat => {
-      // console.log(chat)
       io.emit("sendChatM", chat);
+    });
+
+    socket.on("initialConversation", chat => {
+      io.emit("initialConversation", chat);
     });
 
     /*BADGE*/ socket.on("displayBadge", () => {
@@ -86,11 +93,10 @@ massive({
       // console.log(priv)
       io.emit("handleChatM", priv);
     });
-    socket.on("sendChat", chat => {
-      // console.log(priv)
-      io.emit("sendChat", chat);
-    });
 
+    socket.on("seenChat", chat => {
+      io.emit("seenChat", chat);
+    });
     // active attempt
     socket.on("active", user => {
       io.emit("active", user);
@@ -118,9 +124,9 @@ massive({
   //USERS
   app.post("/validate", user.validate);
   app.post("/sign-in", user.signIn);
-    //logout
+  //logout
   app.patch("/status/:sub/:status", user.updateStatus);
-    //getonline
+  //getonline
   app.get("/online", user.getOnline);
   app.get("/api/users/:id", user.getFromSub);
 
@@ -131,27 +137,31 @@ massive({
   app.get("/api/cohorts/:id/delete", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
-  app.get("/api/cohorts/:value/search/mentor/:id", cohorts.getMentorCohortsByName);
+  app.get(
+    "/api/cohorts/:value/search/mentor/:id",
+    cohorts.getMentorCohortsByName
+  );
   app.get("/api/cohorts/:value/search", cohorts.getAllCohortsByName);
   app.get("/api/cohorts/:id/students", cohorts.getStudentsByClass);
   app.get("/api/cohorts/:id/status/:status", cohorts.changeStatus);
   app.get("/api/cohort/:id/details", cohorts.getCohortDetails);
-
   app.get("/api/cohorts/enrolled/:studentId", cohorts.getEnrolledClasses);
-
   app.post("/api/cohorts/mentor/:id/add", cohorts.addCohort);
   app.post("/api/cohorts/:id/students", cohorts.enroll);
   app.post("/api/cohort/:id/editDetails", cohorts.updateCohortDetails);
-
   app.get("/api/cohorts/navigation/side-nav", cohorts.getAllSideNav);
-    //History
-  app.get("/api/cohorts/history/:id", cohorts.getHistory);
-    //History Details
-  app.get("/api/cohorts/history/details/:id", cohorts.getHistoryDetails);
-    //Mentor Details
-  app.get("/api/cohorts/helpedby/:id", cohorts.getHelpedBy);
+  //History
+  app.get("/api/history/:id", cohorts.getHistory);
+  //History Details
+  app.get("/api/history/details/:id", cohorts.getHistoryDetails);
+  //Mentor Details
+  app.get("/api/helpedby/:id", cohorts.getHelpedBy);
+  //History by user id
+  app.get("/api/history/:cohort/:student", cohorts.getHistoryById);
   // Cohorts End
 
+  //STUDENTS START
+  app.get("/api/cohort/:id/members/list", list.getAllStudents);
   app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);
   app.get("/api/removebeinghelped/:memberid/:cohort_id", mentor.movebacktoqueu);
   app.post("/api/doneHelp/:memberid/:cohort_id/:mentor_id", mentor.doneHelp);
@@ -163,7 +173,9 @@ massive({
     "/api/deleteRequest/:student_id/:cohort_id",
     students.deleteRequest
   );
+  //STUDENTS END
 
+  //CHAT START
   app.get(
     "/api/displayChatUserInfo/:student_sub/:mentor_sub",
     students.displayChatUserInfo
@@ -171,17 +183,29 @@ massive({
   app.post("/api/sendChat", students.sendChat);
   app.get("/api/getChat", students.getChat);
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
-
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
+  app.patch("/api/seenChat/:priv", students.seenChat);
+  //CHAT END
 
-  app.patch("/api/seenChat", students.seenChat);
+  //UPLOAD IMAGE START
+  app.post("/upload/:cohortId", upload.image);
+  app.get("/setToDeFault/:cohortId", upload.setToDefault);
+  app.get("/specific/:cohortId", upload.cohort);
+  //UPLOAD IMAGE END
+
+  //UPLOAD IMAGE START
+  app.post("/upload/:cohortId", upload.image);
+  app.get("/setToDeFault/:cohortId", upload.setToDefault);
+  app.get("/specific/:cohortId", upload.cohort);
+  //UPLOAD IMAGE END
 
   //comentors
-  app.post("/api/addCoMentor", comentor.addCoMentor);
-  app.get("/api/fetchMentors", comentor.fetchMentors);
+  app.post("/api/addCoMentor/:cohort_id", comentor.addCoMentor);
   app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
   app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
-
+  app.get("/api/:id/fetchCohorts", comentor.fetchCohorts);
+  app.get("/api/availableMentor/:cohort_id/:mentor_id", comentor.availableMentor);
+  app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

@@ -11,7 +11,11 @@ import Handraise from "@material-ui/icons/PanTool";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Link from "@material-ui/core/Link";
-import ImageUploader from "react-images-upload";
+import Dialog from "@material-ui/core/Dialog";
+
+import UploadPhoto from "../common-components/upload-photo/UploadPhoto";
+
+import api from "../../services/fetchApi";
 
 const styles = theme => ({
   raiseBtn: {
@@ -63,7 +67,16 @@ class StudentHeader extends Component {
   constructor() {
     super();
 
-    this.state = { pictures: [] };
+    this.state = {
+      uploadPhotoDialog: false,
+      classHeaderImage: null
+    };
+  }
+
+  componentDidMount() {
+    api.fetch(`/specific/${this.props.cohortId}`, "get").then(res => {
+      this.setState({ classHeaderImage: res.data[0].class_header });
+    });
   }
 
   onDrop = picture => {
@@ -148,13 +161,50 @@ class StudentHeader extends Component {
               </div>
             ) : (
               <div style={{ marginTop: "auto" }}>
-                <Link style={{ color: "#f3f3f3", fontSize: "13px" }}>
-                  Upload photo
-                </Link>
+                <div>
+                  <Link
+                    style={{
+                      color: "#f3f3f3",
+                      fontSize: "13px",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => this.setState({ uploadPhotoDialog: true })}
+                  >
+                    Upload photo
+                  </Link>
+                </div>
+
+                {this.state.classHeaderImage !== null ? (
+                  <Link
+                    style={{
+                      color: "#f3f3f3",
+                      fontSize: "13px",
+                      textDecoration: "underline",
+                      cursor: "pointer"
+                    }}
+                    onClick={this.props.setToDefaultHeaderFn}
+                  >
+                    Set to default
+                  </Link>
+                ) : null}
               </div>
             )}
           </ListItem>
         </Box>
+
+        {/* DIALOGS */}
+        <Dialog
+          onClose={() => this.setState({ uploadPhotoDialog: false })}
+          open={this.state.uploadPhotoDialog}
+          maxWidth="md"
+          fullWidth={true}
+        >
+          <UploadPhoto
+            loadStateFn={this.props.loadStateFn}
+            handleClose={() => this.setState({ uploadPhotoDialog: false })}
+            cohortId={this.props.cohortId}
+          />
+        </Dialog>
       </div>
     );
   }

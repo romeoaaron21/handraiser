@@ -17,7 +17,6 @@ import api from "../../../services/fetchApi";
 import Online from "../../../images/active.png";
 import io from "socket.io-client";
 
-
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -60,7 +59,6 @@ const styles = theme => ({
 
 const socket = io("http://boom-handraiser.com:3001/");
 
-
 class SideNav extends React.Component {
   constructor() {
     super();
@@ -73,21 +71,21 @@ class SideNav extends React.Component {
       members: [],
       cohorts: [],
       online: [],
-      subCohorts:[],
+      subCohorts: []
     };
   }
   UNSAFE_componentWillMount() {
     socket.on("active", user => {
-      this.setState({ 
+      this.setState({
         online: [...user, ...this.state.online]
       });
     });
     socket.on("inactive", user => {
-      let temp = this.state.online
+      let temp = this.state.online;
       temp = temp.filter(obj => {
         return obj.sub !== user[0].sub;
       });
-      this.setState({ 
+      this.setState({
         online: temp
       });
     });
@@ -97,23 +95,29 @@ class SideNav extends React.Component {
       const user = fetch.data.user[0];
       this.setState({ user });
 
-      api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
-        this.setState({
-          cohorts: res.data.cohorts
+      if (user.privilege === "student") {
+        api.fetch(`/api/cohorts/enrolled/${user.id}`, "get").then(res => {
+          this.setState({
+            cohorts: res.data.cohorts
+          });
         });
-      });
+      } else {
+        api.fetch(`/api/mentor/${user.id}/cohorts/`, "get").then(res => {
+          this.setState({
+            cohorts: res.data.cohorts
+          });
+        });
+      }
 
       api.fetch(`/api/fetchCoMentorCohorts`, "get").then(data => {
-        this.setState({subCohorts: data.data})
-      })
-      
+        this.setState({ subCohorts: data.data });
+      });
+
       api.fetch(`/api/student/${user.id}/cohorts/`, "get").then(res => {
         this.setState({
           members: res.data.member
         });
       });
-
- 
     });
     api.fetch(`/online`, "get").then(res => {
       this.setState({
@@ -186,11 +190,13 @@ class SideNav extends React.Component {
                       </ListItemIcon>
                       <ListItemText primary={cohort.name} />
                     </ListItem>
-                  ) 
-                  :
-                   (()=>{
-                      return this.state.subCohorts.map(row=>{
-                        if (row.user_id === this.state.user.id && row.id === cohort.id ){
+                  ) : (
+                    (() => {
+                      return this.state.subCohorts.map(row => {
+                        if (
+                          row.user_id === this.state.user.id &&
+                          row.id === cohort.id
+                        ) {
                           return (
                             <ListItem
                               button
@@ -206,26 +212,28 @@ class SideNav extends React.Component {
                               </ListItemIcon>
                               <ListItemText primary={cohort.name} />
                             </ListItem>
-                          )
+                          );
                         }
-                      })
+                        return null;
+                      });
                     })()
+                  )
+                ) : (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
                 )
-                :
-                <ListItem
-                  button
-                  key={cohort.name}
-                  onClick={() =>
-                    (window.location.href = `/queue/${cohort.id}`)
-                  }
-                >
-                <ListItemIcon>
-                  <Avatar className={classes.purpleAvatar}>
-                    {cohort.name.charAt(0).toUpperCase()}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={cohort.name} />
-              </ListItem>
               )
             : this.state.cohorts.map(cohort =>
                 this.state.user.privilege === "mentor" ? (
@@ -244,47 +252,51 @@ class SideNav extends React.Component {
                       </ListItemIcon>
                       <ListItemText primary={cohort.name} />
                     </ListItem>
-                  ) : 
-                      (()=>{
-                        return this.state.subCohorts.map(row=>{
-                          if (row.user_id === this.state.user.id && row.id === cohort.id ){
-                            return (
-                              <ListItem
-                                button
-                                key={cohort.name}
-                                onClick={() =>
-                                  (window.location.href = `/queue/${cohort.id}`)
-                                }
-                              >
-                                <ListItemIcon>
-                                  <Avatar className={classes.purpleAvatar}>
-                                    {cohort.name.charAt(0).toUpperCase()}
-                                  </Avatar>
-                                </ListItemIcon>
-                                <ListItemText primary={cohort.name} />
-                              </ListItem>
-                            )
-                          }
-                        })
-                      })()
+                  ) : (
+                    (() => {
+                      return this.state.subCohorts.map(row => {
+                        if (
+                          row.user_id === this.state.user.id &&
+                          row.id === cohort.id
+                        ) {
+                          return (
+                            <ListItem
+                              button
+                              key={cohort.name}
+                              onClick={() =>
+                                (window.location.href = `/queue/${cohort.id}`)
+                              }
+                            >
+                              <ListItemIcon>
+                                <Avatar className={classes.purpleAvatar}>
+                                  {cohort.name.charAt(0).toUpperCase()}
+                                </Avatar>
+                              </ListItemIcon>
+                              <ListItemText primary={cohort.name} />
+                            </ListItem>
+                          );
+                        }
+                        return null;
+                      });
+                    })()
                   )
-                :
-                <ListItem
-                  button
-                  key={cohort.name}
-                  onClick={() =>
-                    (window.location.href = `/queue/${cohort.id}`)
-                  }
-                >
-                <ListItemIcon>
-                  <Avatar className={classes.purpleAvatar}>
-                    {cohort.name.charAt(0).toUpperCase()}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={cohort.name} />
-              </ListItem>
-            )
-          }
+                ) : (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                )
+              )}
         </List>
         <Divider />
         {/*CHAT*/}
@@ -300,29 +312,29 @@ class SideNav extends React.Component {
           Active Now
         </Typography>
         {this.state.online.map(stud => (
-          <List
-          key={stud.id}
-          >
-          <ListItem button>
-            <ListItemAvatar>
-              <Avatar
-                alt={stud.first_name + " " + stud.last_name}
-                src={stud.avatar}
-              />
-              <img style={{ 
-                width: 35, 
-                height: 35, 
-                margin: 0, 
-                position: "absolute", 
-                top: 24, 
-                left: 32 
-              }} src={Online} alt="" />
-            </ListItemAvatar>
-            <ListItemText
-              primary={stud.first_name + " " + stud.last_name}
-            />
-          </ListItem>
-        </List>          
+          <List key={stud.id}>
+            <ListItem button>
+              <ListItemAvatar>
+                <Avatar
+                  alt={stud.first_name + " " + stud.last_name}
+                  src={stud.avatar}
+                />
+                <img
+                  style={{
+                    width: 35,
+                    height: 35,
+                    margin: 0,
+                    position: "absolute",
+                    top: 24,
+                    left: 32
+                  }}
+                  src={Online}
+                  alt=""
+                />
+              </ListItemAvatar>
+              <ListItemText primary={stud.first_name + " " + stud.last_name} />
+            </ListItem>
+          </List>
         ))}
       </Drawer>
     );

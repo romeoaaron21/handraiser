@@ -7,7 +7,6 @@ import { TabPanel, a11yProps } from "./props";
 import AddIcon from '@material-ui/icons/Add';
 import {
   withStyles,
-
   Paper,
   Typography,
   Divider,
@@ -38,6 +37,7 @@ import api from "./../../../services/fetchApi";
 import Loader from "../loader/loader";
 
 import DeleteClass from "./modal/delete";
+import AddCoMentor from "./modal/addCoMentor";
 
 const styles = theme => ({
   root: {
@@ -46,12 +46,12 @@ const styles = theme => ({
   vTab: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
-    display: 'flex',
-    minHeight: '52vh',
+    display: "flex",
+    minHeight: "52vh"
   },
   tabs: {
     paddingTop: 15,
-    borderRight: `1px solid ${theme.palette.divider}`,
+    borderRight: `1px solid ${theme.palette.divider}`
   },
   content: {
     flexGrow: 1,
@@ -119,10 +119,10 @@ const styles = theme => ({
   },
   deleteBtn: {
     margin: theme.spacing(1),
-    color: 'white',
-    backgroundColor: '#b31010',
-    '&:hover': {
-      backgroundColor: '#a91111'
+    color: "white",
+    backgroundColor: "#b31010",
+    "&:hover": {
+      backgroundColor: "#a91111"
     }
   },
   settingsBtn: {
@@ -162,36 +162,58 @@ class Settings extends PureComponent {
       passwordMatch: true,
       newpasswordDisable: true,
       tab: 0,
-      coMentor: []
+      coMentor: [],
+      modalAddMentor: false,
+      mentors: [],
+      cohortDetails: [],
+      availableMentor: [],
     };
   }
 
   componentDidMount() {
-
     document.title = "Settings";
-    api
-      .fetch(`/api/cohort/${this.state.id}/details`, 'get')
-      .then(res => {
-        if (res.data.cohort[0].status !== 'active') {
-          this.setState({
-            status: true,
-            oldStatus: true
-          })
-        }
+    api.fetch(`/api/cohort/${this.state.id}/details`, "get").then(res => {
+      if (res.data.cohort[0].status !== "active") {
         this.setState({
-          oldname: res.data.cohort[0].name,
-          name: res.data.cohort[0].name,
-          password: res.data.cohort[0].password
-        })
-        setTimeout(() => {
-          this.setState({ loader: false });
-        }, 1000);
-      })
+          status: true,
+          oldStatus: true
+        });
+      }
+      this.setState({
+        oldname: res.data.cohort[0].name,
+        name: res.data.cohort[0].name,
+        password: res.data.cohort[0].password
+      });
+      setTimeout(() => {
+        this.setState({ loader: false });
+      }, 1000);
+    });
 
     api.fetch(`/api/fetchCoMentor/${this.state.id}`, "get")
       .then(data => {
         this.setState({ coMentor: data.data })
       })
+
+    api.fetch(`/api/${this.state.id}/fetchCohorts`, "get")
+      .then(data => {
+        this.setState({ cohortDetails: data.data })
+
+        api.fetch(`/api/fetchMentors/${data.data[0].mentor_id}`, "get")
+          .then(data => {
+            this.setState({ mentors: data.data })
+          })
+        api.fetch(`/api/availableMentor/${this.state.id}/${data.data[0].mentor_id}`, "get")
+          .then(data => {
+            this.setState({ availableMentor: data.data })
+          })
+      })
+
+
+
+  }
+
+  remount = () => {
+    this.componentDidMount()
   }
 
   //NAVIGATION
@@ -215,21 +237,33 @@ class Settings extends PureComponent {
     event.preventDefault();
   };
 
-  delete = (id) => {
+  delete = id => {
     api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
       window.location.href = `/cohorts`;
     });
-  }
+  };
 
   openModal = () => {
     this.setState({
       modal: true
-    })
-  }
+    });
+  };
 
   closeModal = () => {
     this.setState({
       modal: false
+    });
+  };
+
+  openACM = () => {
+    this.setState({
+      modalAddMentor: true
+    })
+  }
+
+  closeACM = () => {
+    this.setState({
+      modalAddMentor: false
     })
   }
 
@@ -237,93 +271,95 @@ class Settings extends PureComponent {
     if (e.target.value !== "") {
       this.setState({
         errorNewName: false
-      })
+      });
     } else {
       this.setState({
         errorNewName: true
-      })
+      });
     }
     this.setState({
       name: e.target.value
-    })
-  }
+    });
+  };
 
-  checkNewNameBlur = (e) => {
+  checkNewNameBlur = e => {
     if (e.target.value === "") {
       this.setState({
         errorNewName: true
-      })
+      });
     }
-  }
+  };
 
-  checkOldPass = (e) => {
+  checkOldPass = e => {
     if (e.target.value !== "") {
       this.setState({
         errorOldPass: false
-      })
+      });
     } else {
       this.setState({
         errorOldPass: true
-      })
+      });
     }
     this.setState({
       oldpassword: e.target.value
-    })
-  }
+    });
+  };
 
   onFocusToNewPass = () => {
     if (this.state.oldpassword !== this.state.password) {
       this.setState({
-        passwordMatch: false,
-      })
+        passwordMatch: false
+      });
     } else {
       this.setState({
-        passwordMatch: true,
-      })
+        passwordMatch: true
+      });
     }
-  }
+  };
 
-  checkOldPassBlur = (e) => {
+  checkOldPassBlur = e => {
     if (e.target.value === "") {
       this.setState({
         errorOldPass: true
-      })
+      });
     }
-  }
+  };
 
-  checkNewPass = (e) => {
+  checkNewPass = e => {
     if (e.target.value !== "") {
       this.setState({
         errorNewPass: false
-      })
+      });
     } else {
       this.setState({
         errorNewPass: true
-      })
+      });
     }
     this.setState({
       newpassword: e.target.value
-    })
-  }
+    });
+  };
 
-  checkNewPassBlur = (e) => {
+  checkNewPassBlur = e => {
     if (e.target.value === "") {
       this.setState({
         errorNewPass: true
-      })
+      });
     }
-  }
+  };
 
   submit = (name, oldpassword, newpassword, status) => {
     if (status !== true) {
-      status = 'active'
+      status = "active";
     } else {
-      status = 'nonactive'
+      status = "nonactive";
     }
     if (name && oldpassword && newpassword) {
       const state = {
-        name, newpassword, status
-      }
+        name,
+        newpassword,
+        status
+      };
       if (oldpassword !== this.state.password) {
         toast.error("Wrong Old Password!", {
           hideProgressBar: true,
@@ -334,31 +370,33 @@ class Settings extends PureComponent {
           .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
           .then(() => {
             window.location.href = `/cohorts`;
-          })
+          });
       }
     } else if (name) {
-      const newpassword = this.state.password
+      const newpassword = this.state.password;
       const state = {
-        name, newpassword, status
-      }
+        name,
+        newpassword,
+        status
+      };
       api
         .fetch(`/api/cohort/${this.state.id}/editDetails`, "post", state)
         .then(() => {
           window.location.href = `/cohorts`;
-        })
+        });
     } else {
       toast.error("Please fill up all the necessary fields!", {
         hideProgressBar: true,
         draggable: false
       });
     }
-  }
+  };
 
   handleChangeTab = (event, newValue) => {
     this.setState({
       tab: newValue
-    })
-  }
+    });
+  };
 
   render() {
     const { classes } = this.props;
@@ -379,12 +417,13 @@ class Settings extends PureComponent {
           })}
         >
           <div className={classes.drawerHeader} />
-          {this.state.loader ?
+          {this.state.loader ? (
             <Loader content="Loading Details..." />
-            : <Paper className={classes.mainContent}>
+          ) : (
+            <Paper className={classes.mainContent}>
               <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
                 Cohort Settings
-            </Typography>
+              </Typography>
               <Divider className={classes.divider} />
               <div className={classes.vTab}>
                 <Tabs
@@ -406,7 +445,7 @@ class Settings extends PureComponent {
                     <Grid item xs={12} sm={5}>
                       <Typography variant="h6" className={classes.name}>
                         New cohort name
-                    </Typography>
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={7} className={classes.responsive}>
                       <TextField
@@ -421,7 +460,9 @@ class Settings extends PureComponent {
                         variant="outlined"
                         onKeyUp={this.handleNameChange}
                         error={this.state.errorNewName}
-                        helperText={this.state.errorNewName ? "Name is required" : ' '}
+                        helperText={
+                          this.state.errorNewName ? "Name is required" : " "
+                        }
                         onBlur={this.checkNewNameBlur}
                       />
                     </Grid>
@@ -431,7 +472,7 @@ class Settings extends PureComponent {
                     <Grid item xs={12} sm={4}>
                       <Typography variant="h6" className={classes.name}>
                         Lock this Cohort
-                    </Typography>
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={2} className={classes.responsive}>
                       <Switch
@@ -440,7 +481,7 @@ class Settings extends PureComponent {
                         onClick={() => {
                           this.setState({
                             status: !this.state.status
-                          })
+                          });
                         }}
                         color="primary"
                         inputProps={{ "aria-label": "primary checkbox" }}
@@ -452,24 +493,30 @@ class Settings extends PureComponent {
                       variant="contained"
                       size="small"
                       className={classes.button}
-                      onClick={() => (
-                        window.location.href = `/cohorts`
-                      )}
+                      onClick={() => (window.location.href = `/cohorts`)}
                     >
                       cancel
-                  </Button>
-                    {
-                      this.state.name !== this.state.oldname || this.state.newpassword !== '' || this.state.status !== this.state.oldStatus ?
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          className={classes.button}
-                          onClick={() => { this.submit(this.state.name, this.state.oldpassword, this.state.newpassword, this.state.status) }}
-                        >
-                          save
-                  </Button>
-                        : null}
+                    </Button>
+                    {this.state.name !== this.state.oldname ||
+                    this.state.newpassword !== "" ||
+                    this.state.status !== this.state.oldStatus ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        className={classes.button}
+                        onClick={() => {
+                          this.submit(
+                            this.state.name,
+                            this.state.oldpassword,
+                            this.state.newpassword,
+                            this.state.status
+                          );
+                        }}
+                      >
+                        save
+                      </Button>
+                    ) : null}
                   </Grid>
                   {/* COHORT NAME END */}
                 </TabPanel>
@@ -479,7 +526,7 @@ class Settings extends PureComponent {
                     <Grid item xs={12} sm={4}>
                       <Typography variant="h6" className={classes.name}>
                         Enter old password:
-                    </Typography>
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={8} className={classes.responsive}>
                       <TextField
@@ -491,8 +538,16 @@ class Settings extends PureComponent {
                         name="oldpassword"
                         defaultValue={this.state.oldpassword}
                         onKeyUp={this.checkOldPass}
-                        error={this.state.errorOldPass || !this.state.passwordMatch}
-                        helperText={this.state.errorOldPass ? "Password is required!" : !this.state.passwordMatch ? "Password is incorrect!" : ' '}
+                        error={
+                          this.state.errorOldPass || !this.state.passwordMatch
+                        }
+                        helperText={
+                          this.state.errorOldPass
+                            ? "Password is required!"
+                            : !this.state.passwordMatch
+                            ? "Password is incorrect!"
+                            : " "
+                        }
                         onBlur={this.checkOldPassBlur}
                         InputProps={{
                           classes: { root: classes.custom },
@@ -507,8 +562,8 @@ class Settings extends PureComponent {
                                 {this.state.showPassword ? (
                                   <VisibilityOff />
                                 ) : (
-                                    <Visibility />
-                                  )}
+                                  <Visibility />
+                                )}
                               </IconButton>
                             </InputAdornment>
                           )
@@ -520,7 +575,7 @@ class Settings extends PureComponent {
                     <Grid item xs={12} sm={4}>
                       <Typography variant="h6" className={classes.name}>
                         Enter new password:
-                    </Typography>
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={8} className={classes.responsive}>
                       <TextField
@@ -533,7 +588,11 @@ class Settings extends PureComponent {
                         defaultValue={this.state.newpassword}
                         onKeyUp={this.checkNewPass}
                         error={this.state.errorNewPass}
-                        helperText={this.state.errorNewPass ? "Password is required!" : ' '}
+                        helperText={
+                          this.state.errorNewPass
+                            ? "Password is required!"
+                            : " "
+                        }
                         onBlur={this.checkNewPassBlur}
                         onFocus={this.onFocusToNewPass}
                         InputProps={{
@@ -549,8 +608,8 @@ class Settings extends PureComponent {
                                 {this.state.showPassword ? (
                                   <VisibilityOff />
                                 ) : (
-                                    <Visibility />
-                                  )}
+                                  <Visibility />
+                                )}
                               </IconButton>
                             </InputAdornment>
                           )
@@ -563,86 +622,105 @@ class Settings extends PureComponent {
                       variant="contained"
                       size="small"
                       className={classes.button}
-                      onClick={() => (
-                        window.location.href = `/cohorts`
-                      )}
+                      onClick={() => (window.location.href = `/cohorts`)}
                     >
                       cancel
-                  </Button>
-                    {
-                      this.state.name !== this.state.oldname || (this.state.newpassword !== '' && this.state.passwordMatch) || this.state.status !== this.state.oldStatus ?
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          className={classes.button}
-                          onClick={() => { this.submit(this.state.name, this.state.oldpassword, this.state.newpassword, this.state.status) }}
-                        >
-                          save
-                  </Button>
-                        : null}
+                    </Button>
+                    {this.state.name !== this.state.oldname ||
+                    (this.state.newpassword !== "" &&
+                      this.state.passwordMatch) ||
+                    this.state.status !== this.state.oldStatus ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        className={classes.button}
+                        onClick={() => {
+                          this.submit(
+                            this.state.name,
+                            this.state.oldpassword,
+                            this.state.newpassword,
+                            this.state.status
+                          );
+                        }}
+                      >
+                        save
+                      </Button>
+                    ) : null}
                   </Grid>
                   {/* COHORT PASSWORD END */}
                 </TabPanel>
                 <TabPanel value={this.state.tab} index={2}>
                   {/* ADD CO-MENTOR START */}
-                  CO-MENTOR
+                  <span style={{ marginLeft: '10px' }}>CO-MENTOR</span>
                   <List>
                     {this.state.coMentor.map(row => {
-                      console.log(row);
                       return (
-                        <React.Fragment>
-                          <ListItem alignItems="center" justifyContent="center">
+                        <React.Fragment key={row.id}>
+                          <ListItem alignItems="center" >
                             <ListItemAvatar>
-                              <Avatar alt={`${row.id}`}
-                                src={`${row.avatar}`} />
+                              <Avatar alt={`${row.id}`} src={`${row.avatar}`} />
                             </ListItemAvatar>
                             <ListItemText
                               primary={`${row.first_name} ${row.last_name}`}
-
                             />
                           </ListItem>
                         </React.Fragment>
-                      )
+                      );
                     })}
+                    <ListItem alignItems="center" >
+                      <ListItemAvatar onClick={() => {
+                        this.openACM()
+                      }}>
+                        <Fab size="small" color="primary" aria-label="add" >
+                          <AddIcon />
+                        </Fab>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`ADD CO-MENTOR`}
+                      />
+                    </ListItem>
+
                   </List>
-                  {/* <Fab size="small" color="secondary" aria-label="add" >
-                    <AddIcon />
-                  </Fab> */}
+
                   {/*ADD CO-MENTOR END */}
                 </TabPanel>
                 <TabPanel value={this.state.tab} index={3}>
                   {/* DELETE COHORT START */}
-                  <Typography style={{ padding: 0, width: 560 }} variant="subtitle1" gutterBottom>
-                    <b style={{ color: 'red', letterSpacing: 5 }}>WARNING: </b>
-                    This will delete the cohort along with its contents.
-                  This proccess is <b>irreversible</b>.
-                </Typography>
+                  <Typography
+                    style={{ padding: 0, width: 560 }}
+                    variant="subtitle1"
+                    gutterBottom
+                  >
+                    <b style={{ color: "red", letterSpacing: 5 }}>WARNING: </b>
+                    This will delete the cohort along with its contents. This
+                    proccess is <b>irreversible</b>.
+                  </Typography>
                   <Grid container className={classes.settingsBtn}>
                     <Button
                       variant="contained"
                       size="small"
                       className={classes.button}
-                      onClick={() => (
-                        window.location.href = `/cohorts`
-                      )}
+                      onClick={() => (window.location.href = `/cohorts`)}
                     >
                       cancel
-                  </Button>
+                    </Button>
                     <Button
                       variant="contained"
                       size="small"
                       className={classes.deleteBtn}
-                      onClick={() => { this.openModal() }}
+                      onClick={() => {
+                        this.openModal();
+                      }}
                     >
                       delete
-                  </Button>
+                    </Button>
                   </Grid>
                   {/*DELETE COHORT END */}
                 </TabPanel>
               </div>
             </Paper>
-          }
+          )}
           <ToastContainer
             enableMultiContainer
             position={toast.POSITION.TOP_RIGHT}
@@ -653,9 +731,18 @@ class Settings extends PureComponent {
             id={this.state.id}
             delete={this.delete}
           />
+          <AddCoMentor
+            open={this.state.modalAddMentor}
+            close={this.closeACM}
+            mentors={this.state.mentors}
+            coMentor={this.state.coMentor}
+            cohortDetails={this.state.cohortDetails}
+            mount={this.remount}
+            availableMentor={this.state.availableMentor}
+          />
         </main>
       </div>
-    )
+    );
   }
 }
 
