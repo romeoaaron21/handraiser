@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { TabPanel, a11yProps } from "./props";
+import AddIcon from '@material-ui/icons/Add';
 import {
   withStyles,
   Paper,
@@ -21,7 +22,8 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  Fab,
 } from "@material-ui/core";
 
 //NAVIGATION
