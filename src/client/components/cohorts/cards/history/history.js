@@ -68,7 +68,7 @@ class History extends React.Component {
             handleClose, 
             history,
             cohort
-        } = this.props; 
+        } = this.props;
         return (
             <Dialog
                 maxWidth="sm"
