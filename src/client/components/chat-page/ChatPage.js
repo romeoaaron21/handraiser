@@ -24,8 +24,17 @@ import ListItemText from "@material-ui/core/ListItemText";
 import CreateIcon from "@material-ui/icons/Create";
 import IconButton from "@material-ui/core/IconButton";
 
+import SendIcon from "@material-ui/icons/Send";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
+
+import GridList from "@material-ui/core/GridList";
+import GridListTile from "@material-ui/core/GridListTile";
+
+
 //COMPONENTS
 import ChatPageList from "./ChatPageList";
+
+import Samplepic from "../../images/bg.jpg"
 
 class ChatPage extends Component {
   constructor(props) {
@@ -53,14 +62,14 @@ class ChatPage extends Component {
         />
 
         <Container maxWidth="xl" className={classes.container}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} style={{ height: "800px", maxHeight: "700px" }}>
             <Grid item md={3} xs={4}>
               <ChatPageList />
             </Grid>
 
-            <Grid item md={6} xs={8}>
+            <Grid item md={6} xs={8} style={{ height: "800px", maxHeight: "800px" }}>
               {/* CHATBOX HEADER*/}
-              <Paper style={{ height: "800px", maxHeight: "1000px" }}>
+              <Paper >
                 <div
                   style={{
                     display: "flex",
@@ -100,17 +109,15 @@ class ChatPage extends Component {
                 {/* MAIN CHATBOX */}
                 <div
                   style={{
-                    minHeight: "630px",
-                    height: '500px',
-                    maxHeight: "800px",
-                    padding: 15,
-                    overflowY: 'scroll'
+                    minHeight: "628px",
+                    height: "auto",
+                    maxHeight: "620px",
+                    padding: 17,
+                    overflowY: "auto",
+                    overflowX:"none"
                   }}
-
                   className={classes.scrollBar}
                 >
-                  
-
                   {/* SENDER */}
                   <div
                     style={{
@@ -132,23 +139,20 @@ class ChatPage extends Component {
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       Morbi ante urna, suscipit eu tincidunt non, dictum quis
                       arcu.
-                      <div
+                      <Typography
+                        variant="caption"
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
-                          marginTop: "10px",
-                          fontSize: ".8em"
+                          marginTop: "10px"
+                          // fontSize: ".8em"
                         }}
                       >
                         Sept. 12, 2019 10:30 AM
-                      </div>
+                      </Typography>
                     </Box>
                   </div>
                   {/* END SENDER */}
-
-                 
-
-                
 
                   {/* RECEIVER */}
                   <div
@@ -170,37 +174,139 @@ class ChatPage extends Component {
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       Morbi ante urna, suscipit eu tincidunt non, dictum quis
                       arcu.
-                      <div
+                      <Typography
+                        variant="caption"
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
-                          marginTop: "10px",
-                          fontSize: ".8em"
+                          marginTop: "10px"
                         }}
                       >
                         Sept. 12, 2019 10:30 AM
-                      </div>
+                      </Typography>
                     </Box>
                   </div>
                   {/* RECEIVER */}
-
-
-
-
+                
                 </div>
-                <Divider />
                 {/* END CHAT BOX */}
+                <Divider />
+                <div
+                  style={{
+                    padding: 5,
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    height: "auto"
+                  }}
+                >
+                  <IconButton>
+                    <AttachFileIcon />
+                  </IconButton>
+
+                  <TextField
+                    variant="outlined"
+                    multiline
+                    rowsMax='3'
+                    fullWidth
+                    placeholder="Send Message"
+                    color="primary"
+                    // autoFocus
+                  />
+                  <IconButton>
+                    <SendIcon />
+                  </IconButton>
+                </div>
               </Paper>
             </Grid>
 
-            <Grid item md={3} xs={12}>
-              <Paper style={{ height: "800px", maxHeight: "1000px" }}>
-                {/* SOMETHING */}
+            <Grid item md={3} xs={12} style={{ height: "800px", maxHeight: "800px" }}>
+              <Paper >
+                <div
+                  style={{
+                    padding: 15,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center"
+                  }}
+                >
+                  <Avatar style={{ width: 100, height: 100, marginBottom: 10 }}>
+                    TL
+                  </Avatar>
+                  <Typography variant="h6">Trizha Kate Longaza</Typography>
+                  <Typography variant="subtitle2">
+                    trizha.longaza@boom.camp
+                  </Typography>
+                </div>
+                <Divider />
+                <span style={{padding: 5, display: 'flex', justifyContent: 'center'}}>
+                <Typography variant="overline">SHARED PHOTOS</Typography>
+                </span>
+                <Divider />
+                <div style={{height: 556, overflowY:"auto", padding:5}} className={classes.scrollBar}>
+                <div style={
+                  {
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-around',
+                    overflow: 'hidden',
+                  }
+                }>
+                  <GridList
+                    cellHeight={160}
+                    style={{
+                        width: 500,
+                      }}
+                    cols={3}
+                  >
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                    <GridListTile cols={1}>
+                      <img src={Samplepic}/>
+                    </GridListTile>
+                  </GridList>
+                </div>
+              </div>
               </Paper>
             </Grid>
           </Grid>
         </Container>
       </div>
+
     );
   }
 }
