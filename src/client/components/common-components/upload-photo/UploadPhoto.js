@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-
+import Link from "@material-ui/core/Link";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
@@ -78,6 +78,40 @@ const styles = theme => ({
   },
   smallImage: {
     width: "417px"
+  },
+  fadeIn: {
+    textAlign: "center",
+    borderColor: "#202020",
+    backgroundColor: "#484848",
+    color: "#fff",
+    borderRadius: "4px",
+    fontSize: "11px",
+    height: "15px",
+    padding: "6px",
+    position: "absolute",
+    marginLeft: "auto",
+    marginRight: "auto",
+    left: "11%",
+    right: "11%",
+    opacity: "1",
+    transition: "opacity 1s linear"
+  },
+  fadeOut: {
+    textAlign: "center",
+    borderColor: "#202020",
+    backgroundColor: "#484848",
+    color: "#fff",
+    borderRadius: "4px",
+    fontSize: "11px",
+    height: "15px",
+    padding: "6px",
+    position: "absolute",
+    marginLeft: "auto",
+    marginRight: "auto",
+    left: "11%",
+    right: "11%",
+    opacity: "0",
+    transition: "opacity 1s linear"
   }
 });
 
@@ -130,6 +164,7 @@ class UploadPhoto extends React.Component {
       imgWidth: null,
       imgSrc: null,
       imgSrcExt: null,
+      errorMsg: false,
       crop: {
         unit: "%",
         height: 37,
@@ -141,22 +176,19 @@ class UploadPhoto extends React.Component {
     };
   }
 
-  clickUploadFile = () => {
-    document.getElementById("file").click();
+  dismiss = () => {
+    document.getElementById("file").value = null;
+    this.setState({
+      file: [],
+      imgWidth: null,
+      imgSrc: null,
+      imgSrcExt: null,
+      errorMsg: false
+    });
   };
 
-  checkImageSize = file => {
-    console.log(file);
-    // var _URL = window.URL || window.webkitURL;
-    // var file, img;
-    // if ((file = files[0])) {
-    //   img = new Image();
-    //   img.onload = function() {
-    //     alert(this.width + " " + this.height);
-    //   };
-    //   img.src = _URL.createObjectURL(file);
-    // }
-    return true;
+  clickUploadFile = () => {
+    document.getElementById("file").click();
   };
 
   handleImageLoaded = image => {};
@@ -192,6 +224,7 @@ class UploadPhoto extends React.Component {
   };
 
   handleFileSelect = event => {
+    this.setState({ errorMsg: false });
     const files = event.target.files;
     if (files && files.length > 0) {
       const isVerified = this.verifyFile(files);
@@ -200,6 +233,8 @@ class UploadPhoto extends React.Component {
         const currentFile = files[0];
         const myFileItemReader = new FileReader();
 
+        var changeState = this; // set the this to changeState for setState in line 214
+
         myFileItemReader.addEventListener(
           "load",
           () => {
@@ -207,26 +242,17 @@ class UploadPhoto extends React.Component {
             img.src = myFileItemReader.result;
 
             img.onload = function() {
-              var w = this.width;
-              var h = this.height;
-              console.log(h);
-
-              if (h !== 0 && w !== 0) {
-                if (this.width >= 800 && this.height >= 200) {
-                  return true;
-                }
-                return false;
+              if (img.width >= 800 && img.height >= 200) {
+                const myResult = myFileItemReader.result;
+                changeState.setState({
+                  file: files,
+                  imgSrc: myResult,
+                  imgSrcExt: extractImageFileExtensionFromBase64(myResult)
+                });
+              } else {
+                changeState.setState({ errorMsg: true });
               }
             };
-            console.log(img.onload());
-            if (img.onload() === true) {
-              const myResult = myFileItemReader.result;
-              this.setState({
-                file: files,
-                imgSrc: myResult,
-                imgSrcExt: extractImageFileExtensionFromBase64(myResult)
-              });
-            }
           },
           false
         );
@@ -234,23 +260,6 @@ class UploadPhoto extends React.Component {
         myFileItemReader.readAsDataURL(currentFile);
       }
     }
-  };
-
-  handleUploadImage = e => {
-    e.preventDefault();
-
-    const data = new FormData();
-    data.append("file", this.uploadInput.files[0]);
-    data.append("filename", this.uploadInput.files[0].name);
-
-    fetch("/upload", {
-      method: "POST",
-      body: data
-    }).then(response => {
-      response.json().then(body => {
-        this.setState({ imageURL: `${body.file}` });
-      });
-    });
   };
 
   handleSelectClassHeader = event => {
@@ -272,16 +281,16 @@ class UploadPhoto extends React.Component {
       data.append("file", myNewCroppedFile);
       data.append("filename", `${this.props.cohortId}.png`);
 
-      fetch("/upload", {
+      fetch(`/upload/${this.props.cohortId}`, {
         method: "POST",
         body: data
       }).then(response => {
         response.json().then(body => {
           this.setState({ imageURL: `${body.file}` });
+          this.props.handleClose();
+          this.props.loadStateFn();
         });
       });
-
-      this.props.handleClose();
     }
   };
 
@@ -296,6 +305,26 @@ class UploadPhoto extends React.Component {
           Upload Photo
         </DialogTitle>
         <DialogContent dividers style={{ height: "450px" }}>
+          <div
+            className={
+              this.state.errorMsg ? `${classes.fadeIn}` : `${classes.fadeOut}`
+            }
+          >
+            The photo that you uploaded is too small! It must be at least 800
+            pixels wide and 200 pixels tall.
+            <Link
+              onClick={this.dismiss}
+              style={{
+                color: "#fff",
+                textDecoration: "none",
+                cursor: "pointer"
+              }}
+            >
+              {" "}
+              Dismiss
+            </Link>
+          </div>
+
           {this.state.imgSrc === null ? (
             <Grid container className={classes.container}>
               <Grid item className={classes.uploadDiv}>
@@ -342,8 +371,15 @@ class UploadPhoto extends React.Component {
             <React.Fragment>
               <Grid container>
                 <Grid item>
-                  <Typography gutterBottom style={{ fontSize: "12px" }}>
-                    Upload &#8250; <b>{this.state.img}</b>
+                  <Typography
+                    gutterBottom
+                    style={{
+                      fontSize: "12px",
+                      overflow: "hidden",
+                      width: "920px"
+                    }}
+                  >
+                    Upload &#8250; <b>{this.state.file[0].name}</b>
                   </Typography>
                   <Typography gutterBottom style={{ fontSize: "12px" }}>
                     To crop this image, drag the region below and then click
@@ -361,11 +397,6 @@ class UploadPhoto extends React.Component {
                         onImageLoaded={this.handleImageLoaded}
                         onComplete={this.handleOnCropComplete}
                         onChange={this.handleOnCropChange}
-                        className={
-                          this.checkImageSize(this.state.file)
-                            ? classes.largeImage
-                            : classes.smallImage
-                        }
                       />
                       <canvas
                         ref={this.imagePreviewCanvasRef}
@@ -383,7 +414,7 @@ class UploadPhoto extends React.Component {
             classes={{ textPrimary: classes.uploadBtn }}
             onClick={e => this.handleSelectClassHeader(e)}
             color="primary"
-            disabled={this.state.img === null ? true : false}
+            disabled={this.state.imgSrc === null ? true : false}
           >
             Select class header
           </Button>

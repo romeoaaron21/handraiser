@@ -43,7 +43,9 @@ const styles = theme => ({
     margin: "0 auto",
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
-    backgroundImage: `radial-gradient(25rem 18.75rem ellipse at bottom right, #883dca, transparent), url(${ClassroomBg})`
+    backgroundImage: `radial-gradient(25rem 18.75rem ellipse at bottom right, #883dca, transparent), url(${ClassroomBg})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover"
   },
   main: {
     marginTop: 4,
@@ -124,12 +126,192 @@ class Student extends Component {
       chatmateInfo: [],
       chatM: "",
       mentorInfo: [],
+      badge: false,
       /*end of added for chatBox state*/
 
-      badge: false,
+      /* CLASS HEADER IMAGE */
+      classHeaderImage: null
+      /* CLASS HEADER IMAGE */
     };
   }
 
+  //* COMPONENT DID MOUNT *//
+  componentDidMount() {
+    this.setState({ loader: true });
+    this.fetch.then(fetch => {
+      const user = fetch.data.user[0];
+      this.setState({ sub: user.sub });
+      const data = api.fetch(
+        `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
+        "get"
+      );
+      data.then(res => {
+        this.setState({
+          user: res.data[0],
+          previledge: res.data[0][0].privilege
+        });
+        data.then(() => {
+          this.fetchStudents();
+          setTimeout(() => {
+            this.setState({ loader: false });
+          }, 1000);
+        });
+      });
+    });
+
+    api.fetch(`/specific/${this.props.cohort_id}`, "get").then(res => {
+      this.setState({ classHeaderImage: res.data[0].class_header });
+    });
+  }
+  //* COMPONENT DID MOUNT *//
+
+  //* INIT SOCKETS *//
+  UNSAFE_componentWillMount() {
+    this.initSocket();
+  }
+
+  initSocket = () => {
+    const socket = io(socketUrl);
+    socket.on("connect", () => {});
+    this.setState({ socket });
+
+    //START OF BADGE
+    socket.on("displayBadge", () => {
+      this.setState({ badge: false });
+    });
+
+    socket.on("handleChat", priv => {
+      this.setState({ chat: priv });
+    });
+    socket.on("handleChatM", priv => {
+      this.setState({ chatM: priv });
+    });
+    // END OF BADGE
+
+    //start of socket chat
+    socket.on("seenChat", chat => {
+      this.setState({
+        conversation: [...chat]
+      });
+    });
+    socket.on("sendChat", chat => {
+      this.setState({
+        conversation: [...chat],
+        chat: ""
+      });
+    });
+    socket.on("sendChatM", chat => {
+      this.setState({
+        conversation: [...chat],
+        chatM: ""
+      });
+    });
+    //end of socket chat
+
+    socket.on("requestHelping", students => {
+      this.setState({ members: students });
+      if (students.length === 0) {
+        this.setState({
+          button: true,
+          btntext: "Waiting for help",
+          requested: true
+        });
+      }
+      students.map(student => {
+        if (student.sub === this.state.sub) {
+          return this.setState({
+            button: true,
+            btntext: "Waiting for help",
+            requested: true
+          });
+        } else {
+          return null;
+        }
+      });
+    });
+
+    socket.on("deleteRequest", students => {
+      this.setState({ members: students });
+      if (students.length === 0) {
+        this.setState({
+          btntext: "Raise Hand",
+          requested: false
+        });
+      }
+      students.map(student => {
+        if (student.sub !== this.state.sub) {
+          return this.setState({
+            btntext: "Raise Hand",
+            requested: false
+          });
+        } else {
+          return null;
+        }
+      });
+    });
+
+    socket.on("helpStudent", students => {
+      this.setState({
+        helpStudentModal: true,
+        helpingStudent: students
+      });
+    });
+
+    socket.on("close", cohort_id => {
+      this.setState({
+        helpingStudent: "",
+        helpStudentModal: false,
+        button: true,
+        requested: false,
+        btntext: "Raise Hand",
+        cohort_id: cohort_id
+      });
+      if (this.state.helpingStudent === "") {
+        this.setState({
+          helpStudentModal: false
+        });
+      }
+      this.fetchStudents();
+    });
+
+    socket.on("displayStudents", students => {
+      this.setState({
+        members: students
+      });
+      if (this.state.members) {
+        this.state.members.map(member => {
+          if (parseInt(member.cohort_id) === parseInt(this.props.cohort_id)) {
+            if (
+              member.sub === this.state.sub &&
+              member.status === "inprogress"
+            ) {
+              return this.setState({
+                helpingStudent: member,
+                button: true,
+                btntext: "Currently Helping"
+              });
+            } else if (member.sub === this.state.sub) {
+              return this.setState({
+                button: true,
+                btntext: "Waiting for help"
+              });
+            } else if (member.status === "inprogress") {
+              return this.setState({
+                helpingStudent: member
+              });
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        });
+      }
+    });
+  };
+  //* INIT SOCKETS *//
+
+  //start of methods for chat websockets
   displayBadge = priv => {
     if (priv === "mentor") {
       socket.emit("displayBadge");
@@ -138,12 +320,10 @@ class Student extends Component {
       const data = api.fetch(`/api/seenChat`, "patch", sub);
       data.then(res => {
         socket.emit("seenChat", res.data);
-        this.setState({badge:true})
+        this.setState({ badge: true });
       });
     }
   };
-
-  //start of methods for chat websockets
 
   viewChatBox = () => {
     this.setState({ chatBox: false });
@@ -288,8 +468,36 @@ class Student extends Component {
       socket.emit("sendChatM", res.data);
     });
   };
-
   //end of methods for chat websockets
+
+  //* STUDENT QUEUE FCUNTIONS *//
+  fetchStudents = () => {
+    const data = api.fetch(`/api/displayStudents/`, "get");
+    data
+      .then(res => {
+        socket.emit("displayStudents", res.data);
+      })
+      .then(() => {
+        const data1 = api.fetch(
+          `/api/displayMentor/${this.props.cohort_id}`,
+          "get"
+        );
+        data1.then(res => {
+          this.setState({ mentorInfo: res.data });
+
+          res.data.map(mentor => {
+            this.setState({ mentor_sub: mentor.sub });
+            return null;
+          });
+        });
+      })
+      .then(() => {
+        const data2 = api.fetch(`/api/getChat`, "get");
+        data2.then(res => {
+          socket.emit("sendChat", res.data);
+        });
+      });
+  };
 
   handleChange = () => {
     this.setState({
@@ -324,202 +532,6 @@ class Student extends Component {
   removeStudentReqClose = () => [
     this.setState({ removeStudentReqModal: false })
   ];
-
-  UNSAFE_componentWillMount() {
-    this.initSocket();
-  }
-
-  initSocket = () => {
-    const socket = io(socketUrl);
-    socket.on("connect", () => {});
-    this.setState({ socket });
-
-    //START OF BADGE
-    socket.on("displayBadge", () => {
-      this.setState({ badge: false });
-    });
-
-    socket.on("handleChat", priv => {
-      this.setState({ chat: priv });
-    });
-    socket.on("handleChatM", priv => {
-      this.setState({ chatM: priv });
-    });
-    // END OF BADGE
-
-    //start of socket chat
-    socket.on("seenChat", chat => {
-      this.setState({
-        conversation: [...chat]
-      });
-    });
-    socket.on("sendChat", chat => {
-      this.setState({
-        conversation: [...chat],
-        chat: ""
-      });
-    });
-    socket.on("sendChatM", chat => {
-      this.setState({
-        conversation: [...chat],
-        chatM: ""
-      });
-    });
-    //end of socket chat
-
-    socket.on("requestHelping", students => {
-      this.setState({ members: students });
-      if (students.length === 0) {
-        this.setState({
-          button: true,
-          btntext: "Waiting for help",
-          requested: true
-        });
-      }
-      students.map(student => {
-        if (student.sub === this.state.sub) {
-          return this.setState({
-            button: true,
-            btntext: "Waiting for help",
-            requested: true
-          });
-        } else {
-          return null;
-        }
-      });
-    });
-
-    socket.on("deleteRequest", students => {
-      this.setState({ members: students });
-      if (students.length === 0) {
-        this.setState({
-          btntext: "Raise Hand",
-          requested: false
-        });
-      }
-      students.map(student => {
-        if (student.sub !== this.state.sub) {
-          return this.setState({
-            btntext: "Raise Hand",
-            requested: false
-          });
-        } else {
-          return null;
-        }
-      });
-    });
-
-    socket.on("helpStudent", students => {
-      this.setState({
-        helpStudentModal: true,
-        helpingStudent: students
-      });
-    });
-
-    socket.on("close", cohort_id => {
-      this.setState({
-        helpingStudent: "",
-        helpStudentModal: false,
-        button: true,
-        requested: false,
-        btntext: "Raise Hand",
-        cohort_id: cohort_id,
-      });
-      if (this.state.helpingStudent === "") {
-        this.setState({
-          helpStudentModal: false
-        });
-      }
-      this.fetchStudents();
-    });
-
-    socket.on("displayStudents", students => {
-      this.setState({
-        members: students
-      });
-      if (this.state.members) {
-        this.state.members.map(member => {
-          if (parseInt(member.cohort_id) === parseInt(this.props.cohort_id)) {
-            if (
-              member.sub === this.state.sub &&
-              member.status === "inprogress"
-            ) {
-              return this.setState({
-                helpingStudent: member,
-                button: true,
-                btntext: "Currently Helping"
-              });
-            } else if (member.sub === this.state.sub) {
-              return this.setState({
-                button: true,
-                btntext: "Waiting for help",
-              });
-            } else if (member.status === "inprogress") {
-              return this.setState({
-                helpingStudent: member
-              });
-            } else {
-              return null;
-            }
-          } else {
-            return null;
-          }
-        });
-      }
-    });
-  };
-
-  fetchStudents = () => {
-    const data = api.fetch(`/api/displayStudents/`, "get");
-    data
-      .then(res => {
-        socket.emit("displayStudents", res.data);
-      })
-      .then(() => {
-        const data1 = api.fetch(
-          `/api/displayMentor/${this.props.cohort_id}`,
-          "get"
-        );
-        data1.then(res => {
-          this.setState({ mentorInfo: res.data });
-
-          res.data.map(mentor => {
-            this.setState({ mentor_sub: mentor.sub });
-            return null;
-          });
-        });
-      })
-      .then(() => {
-        const data2 = api.fetch(`/api/getChat`, "get");
-        data2.then(res => {
-          socket.emit("sendChat", res.data);
-        });
-      });
-  };
-
-  componentDidMount() {
-    this.fetch.then(fetch => {
-      const user = fetch.data.user[0];
-      this.setState({ sub: user.sub });
-      const data = api.fetch(
-        `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
-        "get"
-      );
-      data.then(res => {
-        console.log(res)
-        this.setState({
-          user: res.data[0],
-          previledge: res.data[0][0].privilege
-        });
-        data.then(() => {
-          this.fetchStudents();
-          setTimeout(() => {
-            this.setState({ loader: false });
-          }, 1000);
-        });
-      });
-    });
-  }
 
   requestHelp = () => {
     const data = api.fetch(
@@ -578,6 +590,20 @@ class Student extends Component {
       });
     }
   };
+  //* STUDENT QUEUE FCUNTIONS *//
+
+  //* CLASS HEADER IMAGE *//
+  setToDefaultHeader = () => {
+    api.fetch(`/setToDefault/${this.props.cohort_id}`, "get").then(res => {
+      this.setState({ classHeaderImage: null });
+      this.componentDidMount();
+    });
+  };
+
+  loadState = () => {
+    this.componentDidMount();
+  };
+  //* CLASS HEADER IMAGE *//
 
   render() {
     const { classes } = this.props;
@@ -591,12 +617,48 @@ class Student extends Component {
               {this.state.user.length !== 0 ? (
                 <React.Fragment>
                   {this.state.previledge === "mentor" ? (
-                    <Paper className={classes.header}>
-                      <StudentHeader user={this.state.user[0]} />
+                    <Paper
+                      className={classes.header}
+                      style={
+                        this.state.classHeaderImage !== null
+                          ? {
+                              backgroundImage:
+                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #000000, transparent), url(" +
+                                require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
+                                ")"
+                            }
+                          : {
+                              backgroundImage: require(`../../images/cardBg.jpg`)
+                            }
+                      }
+                    >
+                      <StudentHeader
+                        loadStateFn={this.loadState}
+                        user={this.state.user[0]}
+                        cohortId={this.props.cohort_id}
+                        setToDefaultHeaderFn={this.setToDefaultHeader}
+                      />
                     </Paper>
                   ) : (
-                    <Paper className={classes.header}>
+                    <Paper
+                      className={classes.header}
+                      style={
+                        this.state.classHeaderImage !== null
+                          ? {
+                              backgroundImage:
+                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #000000, transparent), url(" +
+                                require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
+                                ")"
+                            }
+                          : {
+                              backgroundImage: require(`../../images/cardBg.jpg`)
+                            }
+                      }
+                    >
                       <StudentHeader
+                        loadStateFn={this.loadState}
+                        setToDefaultHeaderFn={this.setToDefaultHeader}
+                        cohortId={this.props.cohort_id}
                         user={this.state.user[0]}
                         raise={this.state.btntext}
                         btn={this.state.button}

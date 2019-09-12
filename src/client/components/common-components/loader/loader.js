@@ -25,8 +25,8 @@ const style = {
     }
   },
   loader: {
-    marginTop: "20%",
-    marginBottom: "38%",
+    marginTop: "17%",
+    marginBottom: "auto",
     "@media (max-width: 425px)": {
       marginTop: "100%",
       marginBottom: "100%"

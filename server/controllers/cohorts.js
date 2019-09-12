@@ -2,8 +2,8 @@ function getAll(req, res) {
   const db = req.app.get("db");
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
-    AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id GROUP BY cohorts.status = 'nonactive', cohorts.id, users.first_name, users.last_name, users.avatar`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, cohorts.status, cohorts.class_header, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id )
+    AS members FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY cohorts.status, cohorts.id DESC`
   )
     .then(cohorts => {
       res.status(201).json({ cohorts });
@@ -19,7 +19,7 @@ function getByMentorID(req, res) {
   const { id } = req.params;
 
   db.query(
-    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id}`
+    `SELECT cohorts.id, cohorts.mentor_id, cohorts.name, cohorts.password, users.first_name, users.last_name, users.avatar, (SELECT COUNT(*) FROM member WHERE member.cohort_id = cohorts.id ) AS members FROM cohorts LEFT JOIN users ON users.id = cohorts.mentor_id WHERE mentor_id = ${id} ORDER BY cohorts.name ASC`
   )
     .then(cohorts => {
       res.status(201).json({ cohorts });
@@ -277,12 +277,11 @@ function updateCohortDetails(req, res) {
     });
 }
 
-function getHistory(req, res){
+function getHistory(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
 
-  db
-    .query(`SELECT * FROM history WHERE cohort_id = ${id}`)
+  db.query(`SELECT * FROM history WHERE cohort_id = ${id}`)
     .then(history => {
       res.status(201).json({ history });
     })
@@ -292,12 +291,13 @@ function getHistory(req, res){
     });
 }
 
-function getHistoryDetails(req, res){
+function getHistoryDetails(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
 
-  db
-    .query(`select * from users, history where history.id = ${id} and history.member_id = users.id`)
+  db.query(
+    `select * from users, history where history.id = ${id} and history.member_id = users.id`
+  )
     .then(history => {
       res.status(201).json({ history });
     })
@@ -307,12 +307,11 @@ function getHistoryDetails(req, res){
     });
 }
 
-function getHelpedBy(req, res){
+function getHelpedBy(req, res) {
   const db = req.app.get("db");
   const { id } = req.params;
 
-  db
-    .query(`select * from users where id = ${id}`)
+  db.query(`select * from users where id = ${id}`)
     .then(mentor => {
       res.status(201).json({ mentor });
     })

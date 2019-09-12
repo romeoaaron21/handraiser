@@ -110,8 +110,10 @@ class NotFound extends Component {
 
   render() {
     const { classes } = this.props;
-    const decodedToken = decode(localStorage.getItem("id_token"));
-
+    var decodedToken = null;
+    if (localStorage.getItem("id_token")) {
+      decodedToken = decode(localStorage.getItem("id_token"));
+    }
     return (
       <React.Fragment>
         <Container component="main" maxWidth="md">
@@ -147,20 +149,23 @@ class NotFound extends Component {
                     className={classes.backToHome}
                   >
                     <KeyboardArrowLeft className={classes.arrowLeft} />
-                    {localStorage.getItem("id_token") === null ? (
+                    {decodedToken === null ? (
                       <Link
                         style={{ color: "#490362", cursor: "pointer" }}
                         onClick={() => (window.location.href = "/sign-in")}
                       >
-                        Back to Home
+                        Go to sign in page
                       </Link>
                     ) : decodedToken.sub === undefined ? (
-                      <Link
-                        style={{ color: "#490362", cursor: "pointer" }}
-                        onClick={() => (window.location.href = "/admin/keys")}
-                      >
-                        Back to Home
-                      </Link>
+                      (console.log(localStorage.getItem("id_token")),
+                      (
+                        <Link
+                          style={{ color: "#490362", cursor: "pointer" }}
+                          onClick={() => (window.location.href = "/admin/keys")}
+                        >
+                          Back to Home
+                        </Link>
+                      ))
                     ) : (
                       <Link
                         style={{ color: "#490362", cursor: "pointer" }}

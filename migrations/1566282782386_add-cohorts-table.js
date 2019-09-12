@@ -1,35 +1,33 @@
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {
-  pgm.createTable('cohorts', {
+exports.up = pgm => {
+  pgm.createTable("cohorts", {
     id: {
-      type: 'serial',
+      type: "serial",
       primaryKey: true
     },
     mentor_id: {
-      type: 'integer',
+      type: "integer",
       notNull: true,
       references: '"users"'
     },
     name: {
-      type: 'text',
+      type: "text",
       notNull: true
     },
     password: {
-      type: 'text',
+      type: "text",
       notNull: true
     },
     status: {
-      type: 'text',
+      type: "text",
       notNull: true
     },
     class_header: {
       type: "text",
       notNull: false
     }
-  })
+  });
 };
 
-exports.down = (pgm) => {
-
-};
+exports.down = pgm => {};
