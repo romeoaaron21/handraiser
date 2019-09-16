@@ -313,7 +313,7 @@ class SideNav extends React.Component {
         </Typography>
         {this.state.online.map(stud => (
           <List key={stud.id}>
-            <ListItem button>
+            <ListItem button onClick={()=>window.location.href='/chat'}>
               <ListItemAvatar>
                 <Avatar
                   alt={stud.first_name + " " + stud.last_name}
