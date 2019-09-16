@@ -1,6 +1,6 @@
 const styles = theme => ({
   container: {
-    marginTop: 85
+    marginTop: 93
   },
   root: {
     width: "100%",
@@ -68,12 +68,8 @@ const styles = theme => ({
   },
 
   chatBoxContainer: {
-    minHeight: "628px",
     height: "auto",
-    maxHeight: "620px",
-    padding: 17,
-    overflowY: "auto",
-    overflowX: "none"
+    padding: 20,
   },
 
   senderChatWrapper: {
@@ -140,7 +136,7 @@ const styles = theme => ({
   },
 
   photosGridContainer: {
-    height: 556,
+    height: 554,
     overflowY: "auto",
     padding: 5
   },
@@ -149,6 +145,17 @@ const styles = theme => ({
     flexWrap: "wrap",
     justifyContent: "space-around",
     overflow: "hidden"
+  },
+  textAreaChat: {
+    resize:'none',
+    background:'none',
+    border: 'none',
+    overflow: 'auto',
+    outline: 'none',
+    lineHeight: '1.5',
+    boxShadow:'none',
+    fontSize: '16px',
+    fontFamily: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
   }
   // End ChatInfo
 });

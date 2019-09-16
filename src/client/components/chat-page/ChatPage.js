@@ -46,6 +46,7 @@ class ChatPage extends Component {
             spacing={2}
             style={{ height: "800px", maxHeight: "700px" }}
           >
+            
             <ChatPageList />
             <ChatPageBox />
             <ChatPageInfo />

@@ -17,7 +17,7 @@ class ChatPageInfo extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <Grid item md={3} xs={12} style={{ height: "800px", maxHeight: "800px" }}>
+      <Grid item md={3} xs={12} style={{ height: "800px"}}>
         <Paper>
           <div className={classes.chatInfoHeader}>
             <Avatar className={classes.avatarLarge}>TL</Avatar>
