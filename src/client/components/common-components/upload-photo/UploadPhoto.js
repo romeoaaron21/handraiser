@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -11,6 +11,7 @@ import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import Dropzone from "react-dropzone";
 
 import UploadIcon from "../../../images/upload.png";
 
@@ -154,6 +155,15 @@ const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
   return item.trim();
 });
 
+const dropzoneRef = createRef();
+const openDialog = () => {
+  // Note that the ref is set async,
+  // so it might be null at some point
+  if (dropzoneRef.current) {
+    dropzoneRef.current.open();
+  }
+};
+
 class UploadPhoto extends React.Component {
   constructor() {
     super();
@@ -220,6 +230,46 @@ class UploadPhoto extends React.Component {
         return false;
       }
       return true;
+    }
+  };
+
+  handleOnDrop = (files, rejectedFiles) => {
+    if (rejectedFiles && rejectedFiles.length > 0) {
+      this.verifyFile(rejectedFiles);
+    }
+
+    if (files && files.length > 0) {
+      const isVerified = this.verifyFile(files);
+      if (isVerified) {
+        const currentFile = files[0];
+        const myFileItemReader = new FileReader();
+
+        var changeState = this; // set the this to changeState for setState in line 214
+
+        myFileItemReader.addEventListener(
+          "load",
+          () => {
+            var img = new Image();
+            img.src = myFileItemReader.result;
+
+            img.onload = function() {
+              if (img.width >= 800 && img.height >= 200) {
+                const myResult = myFileItemReader.result;
+                changeState.setState({
+                  file: files,
+                  imgSrc: myResult,
+                  imgSrcExt: extractImageFileExtensionFromBase64(myResult)
+                });
+              } else {
+                changeState.setState({ errorMsg: true });
+              }
+            };
+          },
+          false
+        );
+
+        myFileItemReader.readAsDataURL(currentFile);
+      }
     }
   };
 
@@ -326,47 +376,64 @@ class UploadPhoto extends React.Component {
           </div>
 
           {this.state.imgSrc === null ? (
-            <Grid container className={classes.container}>
-              <Grid item className={classes.uploadDiv}>
-                <div className={classes.uploadIcon} />
-              </Grid>
-              <Grid item>
-                <Typography
-                  gutterBottom
-                  style={{ fontSize: "25px", color: "#a8a8a8" }}
-                >
-                  Drag a photo here
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Typography
-                  gutterBottom
-                  style={{ fontSize: "18px", color: "#a8a8a8" }}
-                >
-                  - or -
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Button
-                  className={classes.selectBtn}
-                  onClick={() => this.clickUploadFile()}
-                >
-                  Select a photo from your computer
-                </Button>
+            <Dropzone
+              ref={dropzoneRef}
+              noClick
+              noKeyboard
+              onDrop={this.handleOnDrop}
+              accept={acceptedFileTypes}
+              multiple={false}
+              maxSize={imageMaxSize}
+            >
+              {({ getRootProps, getInputProps, acceptedFiles }) => {
+                return (
+                  <Grid
+                    container
+                    {...getRootProps({ className: classes.container })}
+                  >
+                    <Grid item className={classes.uploadDiv}>
+                      <div className={classes.uploadIcon} />
+                    </Grid>
+                    <Grid item>
+                      <Typography
+                        gutterBottom
+                        style={{ fontSize: "25px", color: "#a8a8a8" }}
+                      >
+                        Drag a photo here
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography
+                        gutterBottom
+                        style={{ fontSize: "18px", color: "#a8a8a8" }}
+                      >
+                        - or -
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        className={classes.selectBtn}
+                        onClick={() => this.clickUploadFile()}
+                      >
+                        Select a photo from your computer
+                      </Button>
 
-                <input
-                  style={{ display: "none" }}
-                  id="file"
-                  ref={ref => {
-                    this.uploadInput = ref;
-                  }}
-                  type="file"
-                  accept={acceptedFileTypes}
-                  multiple={false}
-                  onChange={this.handleFileSelect}
-                />
-              </Grid>
-            </Grid>
+                      <input
+                        style={{ display: "none" }}
+                        id="file"
+                        ref={ref => {
+                          this.uploadInput = ref;
+                        }}
+                        type="file"
+                        accept={acceptedFileTypes}
+                        multiple={false}
+                        onChange={this.handleFileSelect}
+                      />
+                    </Grid>
+                  </Grid>
+                );
+              }}
+            </Dropzone>
           ) : (
             <React.Fragment>
               <Grid container>
