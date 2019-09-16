@@ -68,12 +68,8 @@ const styles = theme => ({
   },
 
   chatBoxContainer: {
-    minHeight: "628px",
     height: "auto",
-    maxHeight: "620px",
-    padding: 17,
-    overflowY: "auto",
-    overflowX: "none"
+    padding: 20,
   },
 
   senderChatWrapper: {
@@ -140,7 +136,7 @@ const styles = theme => ({
   },
 
   photosGridContainer: {
-    height: 556,
+    height: 554,
     overflowY: "auto",
     padding: 5
   },
