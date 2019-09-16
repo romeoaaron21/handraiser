@@ -481,7 +481,15 @@ class UploadPhoto extends React.Component {
             classes={{ textPrimary: classes.uploadBtn }}
             onClick={e => this.handleSelectClassHeader(e)}
             color="primary"
-            disabled={this.state.imgSrc === null ? true : false}
+            disabled={
+              this.state.imgSrc === null ||
+              (this.state.crop.height === 37 &&
+                this.state.crop.width === 100 &&
+                this.state.crop.x === 5.329070518200751e-15 &&
+                this.state.crop.y === 30)
+                ? true
+                : false
+            }
           >
             Select class header
           </Button>
