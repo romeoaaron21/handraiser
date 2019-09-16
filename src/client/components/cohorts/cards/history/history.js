@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from "@material-ui/core/styles";
 import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle,
-  Typography, Grid
+  Typography, Grid, withWidth
 } from '@material-ui/core';
 import Transition from './transition'
 import ConcernItem from './concernItem';
@@ -15,36 +15,6 @@ const styles = theme => ({
       backgroundColor: '#780aaf',
       color: 'white',
       textAlign: 'center'
-    },
-    buttonContainer: {
-      height: 50,
-      paddingTop: 0,
-      paddingBottom: 0
-    },
-    addCardContainer: {
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
-    },
-    cardContent: {
-      height: "55%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      flexDirection: "column"
-    },
-    add: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
-    },
-    media: {
-      height: "45%",
-      width: 300
-    },
-    logBtn: {
-      marginLeft: 'auto'
     },
     emptyQueue: {
       marginTop: 45,
@@ -62,7 +32,8 @@ const styles = theme => ({
 
 class History extends React.Component {
     render(){
-        const { 
+        const {
+            width,
             classes,
             open, 
             handleClose, 
@@ -73,6 +44,7 @@ class History extends React.Component {
             <Dialog
                 maxWidth="sm"
                 fullWidth
+                fullScreen={width === 'xs' ? true : false}
                 disableBackdropClick
                 disableEscapeKeyDown
                 open={open}
@@ -93,7 +65,7 @@ class History extends React.Component {
                 <Grid container className={classes.emptyQueue}>
                 <img src={EmptyQueue} alt="img" width="280" height="250" />
                 <Typography className={classes.subtitle} variant="overline" color="textSecondary">
-                  Nothing here...
+                  {width}
                 </Typography>
                 </Grid>
                 }
@@ -107,4 +79,4 @@ class History extends React.Component {
         );
     }
 }
-export default withStyles(styles)(History);
+export default withWidth()(withStyles(styles)(History));
