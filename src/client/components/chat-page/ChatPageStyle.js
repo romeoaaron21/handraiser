@@ -1,6 +1,6 @@
 const styles = theme => ({
   container: {
-    marginTop: 85
+    marginTop: 93
   },
   root: {
     width: "100%",
@@ -145,6 +145,17 @@ const styles = theme => ({
     flexWrap: "wrap",
     justifyContent: "space-around",
     overflow: "hidden"
+  },
+  textAreaChat: {
+    resize:'none',
+    background:'none',
+    border: 'none',
+    overflow: 'auto',
+    outline: 'none',
+    lineHeight: '1.5',
+    boxShadow:'none',
+    fontSize: '16px',
+    fontFamily: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
   }
   // End ChatInfo
 });

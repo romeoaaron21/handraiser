@@ -11,6 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import SendIcon from "@material-ui/icons/Send";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
+import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 class ChatPageBox extends Component {
   render() {
@@ -20,7 +21,7 @@ class ChatPageBox extends Component {
         item
         md={6}
         xs={8}
-        style={{ minHeight: "800px", maxHeight: "800px" }}
+        style={{ minHeight: "800px"}}
       >
         <Paper
           style={{
@@ -32,6 +33,7 @@ class ChatPageBox extends Component {
           }}
         >
           <div style={{ height: "92%" }}>
+            {/* Chatbox Header */}
             <div style={{ height: "10%" }}>
               <div className={classes.chatBoxHeader}>
                 <Avatar style={{ marginRight: 10 }}>TL</Avatar>
@@ -47,36 +49,54 @@ class ChatPageBox extends Component {
               </div>
               <Divider />
             </div>
+            {/* End Chatbox Header */}
+
+
+            {/* Main Chatbox */}
             <div
               style={{ height: "90%", overflowY: "auto" }}
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
+                {/* Sender  */}
                 <div className={classes.senderChatWrapper}>
                   <Avatar style={{ marginRight: "10px" }}>TL</Avatar>
                   <Box className={classes.senderBox}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Morbi ante urna, suscipit eu tincidunt non, dictum quis
-                    arcu.
+                    <TextareaAutosize
+                      readOnly
+                      className={classes.textAreaChat}
+                      style={{ color: "#263238" }}
+                      value={"Lorem ipsum  Lorem ipsum".replace(/\n$/, "")}
+                    />
                     <Typography variant="caption" className={classes.time}>
                       Sept. 12, 2019 10:30 AM
                     </Typography>
                   </Box>
                 </div>
+                {/* End Sender  */}
+
+                {/* Receiver */}
                 <div className={classes.receiverChatWrapper}>
                   <Box className={classes.receiverBox}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Morbi ante urna, suscipit eu tincidunt non, dictum quis
-                    arcu.
+                    <TextareaAutosize
+                      readOnly
+                      className={classes.textAreaChat}
+                      style={{ color: "#fff" }}
+                      value={"Lorem ipsum  Lorem ipsum".replace(/\n$/, "")}
+                    />
                     <Typography variant="caption" className={classes.time}>
                       Sept. 12, 2019 10:30 AM
                     </Typography>
                   </Box>
                 </div>
+                {/* End Receiver */}
+
               </div>
             </div>
+            {/* End Chatbox */}
           </div>
 
+          {/* Message Box */}
           <div style={{ height: "auto" }}>
             <Divider />
             <div className={classes.messageWrapper}>
@@ -98,6 +118,7 @@ class ChatPageBox extends Component {
               </IconButton>
             </div>
           </div>
+          {/* End Message Box  */}
         </Paper>
       </Grid>
     );
