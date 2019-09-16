@@ -10,6 +10,11 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import HomeIcon from "@material-ui/icons/Home";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+
+
+import { Redirect } from "react-router-dom";
+
+
 //AUTH
 import AuthService from "../../../auth/AuthService";
 import { Typography, Avatar } from "@material-ui/core";
@@ -71,9 +76,32 @@ class SideNav extends React.Component {
       members: [],
       cohorts: [],
       online: [],
-      subCohorts: []
+      subCohorts: [],
+
+
+
+      chatmateSub: "",
+
+
+
     };
   }
+
+
+  // start of normal chatting
+
+  selectChatmate = (studentInfo) => {
+    this.setState({ chatmateSub: studentInfo.sub })
+  }
+
+
+  // end of normal chatting
+
+
+
+
+
+
   UNSAFE_componentWillMount() {
     socket.on("active", user => {
       this.setState({
@@ -90,6 +118,7 @@ class SideNav extends React.Component {
       });
     });
   }
+
   componentDidMount() {
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
@@ -174,23 +203,23 @@ class SideNav extends React.Component {
         <List className={classes.classList}>
           {this.props.socket
             ? this.props.cohorts.map(cohort =>
-                this.state.user.privilege === "mentor" ? (
-                  this.state.user.id === cohort.mentor_id ? (
-                    <ListItem
-                      button
-                      key={cohort.name}
-                      onClick={() =>
-                        (window.location.href = `/queue/${cohort.id}`)
-                      }
-                    >
-                      <ListItemIcon>
-                        <Avatar className={classes.purpleAvatar}>
-                          {cohort.name.charAt(0).toUpperCase()}
-                        </Avatar>
-                      </ListItemIcon>
-                      <ListItemText primary={cohort.name} />
-                    </ListItem>
-                  ) : (
+              this.state.user.privilege === "mentor" ? (
+                this.state.user.id === cohort.mentor_id ? (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                ) : (
                     (() => {
                       return this.state.subCohorts.map(row => {
                         if (
@@ -218,7 +247,7 @@ class SideNav extends React.Component {
                       });
                     })()
                   )
-                ) : (
+              ) : (
                   <ListItem
                     button
                     key={cohort.name}
@@ -234,25 +263,25 @@ class SideNav extends React.Component {
                     <ListItemText primary={cohort.name} />
                   </ListItem>
                 )
-              )
+            )
             : this.state.cohorts.map(cohort =>
-                this.state.user.privilege === "mentor" ? (
-                  this.state.user.id === cohort.mentor_id ? (
-                    <ListItem
-                      button
-                      key={cohort.name}
-                      onClick={() =>
-                        (window.location.href = `/queue/${cohort.id}`)
-                      }
-                    >
-                      <ListItemIcon>
-                        <Avatar className={classes.purpleAvatar}>
-                          {cohort.name.charAt(0).toUpperCase()}
-                        </Avatar>
-                      </ListItemIcon>
-                      <ListItemText primary={cohort.name} />
-                    </ListItem>
-                  ) : (
+              this.state.user.privilege === "mentor" ? (
+                this.state.user.id === cohort.mentor_id ? (
+                  <ListItem
+                    button
+                    key={cohort.name}
+                    onClick={() =>
+                      (window.location.href = `/queue/${cohort.id}`)
+                    }
+                  >
+                    <ListItemIcon>
+                      <Avatar className={classes.purpleAvatar}>
+                        {cohort.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText primary={cohort.name} />
+                  </ListItem>
+                ) : (
                     (() => {
                       return this.state.subCohorts.map(row => {
                         if (
@@ -280,7 +309,7 @@ class SideNav extends React.Component {
                       });
                     })()
                   )
-                ) : (
+              ) : (
                   <ListItem
                     button
                     key={cohort.name}
@@ -296,7 +325,7 @@ class SideNav extends React.Component {
                     <ListItemText primary={cohort.name} />
                   </ListItem>
                 )
-              )}
+            )}
         </List>
         <Divider />
         {/*CHAT*/}
@@ -313,7 +342,7 @@ class SideNav extends React.Component {
         </Typography>
         {this.state.online.map(stud => (
           <List key={stud.id}>
-            <ListItem button onClick={()=>window.location.href='/chat'}>
+            <ListItem button onClick={() => this.selectChatmate(stud)}>
               <ListItemAvatar>
                 <Avatar
                   alt={stud.first_name + " " + stud.last_name}
@@ -336,6 +365,14 @@ class SideNav extends React.Component {
             </ListItem>
           </List>
         ))}
+
+        {this.state.chatmateSub ? (
+          <Redirect
+            to={{
+              pathname: `/chat/${this.state.chatmateSub}/${this.state.user.sub}`
+            }}
+          />
+        ) : null}
       </Drawer>
     );
   }

@@ -74,9 +74,6 @@ class ChatBox extends PureComponent {
   componentDidMount() {
     this.scrollToBottom();
   }
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };

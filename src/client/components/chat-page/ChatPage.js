@@ -26,6 +26,12 @@ class ChatPage extends Component {
   handleDrawerOpen = () => this.setState({ open: true });
   handleDrawerClose = () => this.setState({ open: false });
 
+
+  componentDidMount() {
+    console.log(this.props.match.params.chatmateSub)
+    console.log(this.props.match.params.userSub)
+  }
+
   render() {
     const { classes } = this.props;
     return (

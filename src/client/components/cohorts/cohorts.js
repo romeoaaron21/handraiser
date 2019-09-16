@@ -97,7 +97,8 @@ class Cohorts extends React.Component {
       cohort_id: "",
       search: "",
       socket: null,
-      tabValue: 0
+      tabValue: 0, 
+      sub: "",
     };
   }
 
@@ -153,11 +154,10 @@ class Cohorts extends React.Component {
           this.setState({ enrolledClasses: res.data.cohorts });
         });
       }
-      console.log(this.state.privilege)
       this.setState({
         user,
         id: user.id,
-        privilege: user.privilege
+        privilege: user.privilege,
       });
     });
   }

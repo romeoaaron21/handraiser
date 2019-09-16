@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -92,7 +92,7 @@ const styles = theme => ({
 const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
 
-class Student extends Component {
+class Student extends PureComponent {
   constructor(props) {
     super(props);
 

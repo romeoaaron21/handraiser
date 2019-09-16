@@ -23,7 +23,7 @@ function Router() {
           : null}
         <Route path="/sign-in" component={SignIn} />
         <Route exact path="/cohorts" component={Cohorts} />
-        <Route exact path="/chat" component={ChatPage} />
+        <Route exact path="/chat/:chatmateSub/:userSub" component={ChatPage} />
         <Route path="/queue/:cid" component={Queue} />
         <Route path="/settings/:cid" component={Settings} />
         <Route path="/admin/keys" component={MentorKeys} />
