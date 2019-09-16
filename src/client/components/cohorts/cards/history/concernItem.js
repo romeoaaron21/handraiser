@@ -8,7 +8,10 @@ import api from "../../../../services/fetchApi";
 
 const styles = theme => ({
   avatar: {
-    marginTop: 20  
+    marginTop: 20,
+    '@media (max-width: 460px)' : {
+        display: "none"
+    } 
   },
   paper: {
     padding: theme.spacing(2),
@@ -21,6 +24,12 @@ const styles = theme => ({
   },
   chip: {
     marginTop: 10
+  },
+  respGrid: {
+    '@media (max-width: 460px)' : {
+        maxWidth: '100%',
+        flexBasis: '100%'
+    } 
   }
 });
 
@@ -44,7 +53,7 @@ class ConcernItem extends React.Component {
                 })
             })
         });
-    } 
+    } div
 
     render(){
         const { classes, concern } = this.props;
@@ -57,8 +66,8 @@ class ConcernItem extends React.Component {
                             <Grid item className={classes.avatar}>
                                 <Avatar alt="" className={classes.img} src={details.avatar} />
                             </Grid>
-                            <Grid item xs={12} sm container>
-                                <Grid item xs container direction="column" spacing={2}>
+                            <Grid className={classes.respGrid} item xs={10} sm container>
+                                <Grid style={{ maxHeight: 120 }} item xs container direction="column" spacing={2}>
                                 <Grid item xs>
                                     <Typography gutterBottom variant="subtitle1">
                                     {details.first_name + " " + details.last_name}
@@ -79,9 +88,11 @@ class ConcernItem extends React.Component {
                                             avatar={<Avatar alt="" src={helpedBy.avatar} />}
                                             label={helpedBy.first_name + " " + helpedBy.last_name}
                                         />
-                                        <Typography variant="overline" color="textSecondary" gutterBottom>
-                                            {details.time}
-                                        </Typography>
+                                        <Box>
+                                            <Typography variant="overline" color="textSecondary" gutterBottom>
+                                                {details.time}
+                                            </Typography>
+                                        </Box>
                                     </Grid>
                                 </Grid>
                             </Grid>
