@@ -59,8 +59,9 @@ class ChatPage extends Component {
         })
       })
     }
-
   }
+
+
 
   render() {
     const { classes } = this.props;
