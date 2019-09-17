@@ -170,7 +170,7 @@ massive({
 
   //STUDENTS START
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
-  app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);
+  app.patch("/api/helpStudent/:memberid/:cohort_id/:assistid", mentor.helpStudent);
   app.get("/api/removebeinghelped/:memberid/:cohort_id", mentor.movebacktoqueu);
   app.post("/api/doneHelp/:memberid/:cohort_id/:mentor_id", mentor.doneHelp);
 

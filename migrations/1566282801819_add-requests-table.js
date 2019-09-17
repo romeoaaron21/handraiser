@@ -15,6 +15,9 @@ exports.up = (pgm) => {
     status: {
       type: 'text',
       notNull: true
+    },
+    assist_id:{
+      type: 'integer'
     }
   })
 };
