@@ -350,16 +350,6 @@ class MentorClassCards extends React.Component {
                           </CardContent>
                         </CardActionArea>
                         <CardActions className={classes.buttonContainer}>
-                          <Button
-                            size="small"
-                            color="primary"
-                            id={cohort.id}
-                            onClick={() =>
-                              (window.location.href = `/settings/${cohort.id}`)
-                            }
-                          >
-                            Settings
-                          </Button>
                           {cohort.members !== "0" ? (
                             <Button
                               size="small"
@@ -423,16 +413,7 @@ class MentorClassCards extends React.Component {
                         </CardContent>
                       </CardActionArea>
                       <CardActions className={classes.buttonContainer}>
-                        <Button
-                          size="small"
-                          color="primary"
-                          id={cohort.id}
-                          onClick={() =>
-                            (window.location.href = `/settings/${cohort.id}`)
-                          }
-                        >
-                          Settings
-                        </Button>
+                        
                         {cohort.members !== "0" ? (
                           <Button
                             size="small"
