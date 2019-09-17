@@ -141,12 +141,6 @@ const styles = theme => ({
     "@media (max-width: 599px)": {
       marginTop: 12
     }
-  },
-  label: {
-    "&.MuiInputLabel-shrink": {
-      transform: "translate(10px, -14px) scale(0.75)",
-      zIndex: "1"
-    }
   }
 });
 
@@ -545,116 +539,52 @@ class Settings extends PureComponent {
                     index={1}
                     style={{ position: "relative", width: "600px" }}
                   >
-                    {/* COHORT PASSWORD START */}
                     <Grid container className={classes.itemSettings}>
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={5}>
                         <Typography variant="h6" className={classes.name}>
-                          Enter old password:
+                          New cohort name
                         </Typography>
                       </Grid>
-                      <Grid item xs={12} sm={8} className={classes.responsive}>
+                      <Grid item xs={12} sm={7} className={classes.responsive}>
                         <TextField
-                          id="outlined-adornment-oldpassword"
-                          className={clsx(classes.margin, classes.textField)}
+                          id="outlined-name"
+                          label="Cohort Name"
+                          name="name"
+                          className={classes.textField}
+                          InputProps={{ classes: { root: classes.custom } }}
+                          fullWidth
+                          defaultValue={this.state.name}
+                          margin="normal"
                           variant="outlined"
-                          type={
-                            this.state.showOldPassword ? "text" : "password"
-                          }
-                          label="Old Password"
-                          InputLabelProps={{
-                            classes: { outlined: classes.label }
-                          }}
-                          name="oldpassword"
-                          defaultValue={this.state.oldpassword}
-                          onKeyUp={this.checkOldPass}
-                          error={
-                            this.state.errorOldPass || !this.state.passwordMatch
-                          }
+                          onKeyUp={this.handleNameChange}
+                          error={this.state.errorNewName}
                           helperText={
-                            this.state.errorOldPass
-                              ? "Password is required!"
-                              : !this.state.passwordMatch
-                              ? "Password is incorrect!"
-                              : " "
+                            this.state.errorNewName ? "Name is required" : " "
                           }
-                          onBlur={this.checkOldPassBlur}
-                          InputProps={{
-                            classes: { root: classes.custom },
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  edge="end"
-                                  aria-label="toggle password visibility"
-                                  onClick={this.handleClickShowOldPassword}
-                                  onMouseDown={this.handleMouseDownPassword}
-                                >
-                                  {this.state.showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            )
+                          onBlur={this.checkNewNameBlur}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={5}>
+                        <Typography variant="h6" className={classes.name}>
+                          Lock this Cohort
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={2} className={classes.responsive}>
+                        <Switch
+                          checked={this.state.status}
+                          value={this.state.status}
+                          onClick={() => {
+                            this.setState({
+                              status: !this.state.status
+                            });
                           }}
+                          color="primary"
+                          inputProps={{ "aria-label": "primary checkbox" }}
                         />
                       </Grid>
                     </Grid>
-                    <Grid
-                      container
-                      className={classes.itemSettings}
-                      style={{ marginTop: "1%" }}
-                    >
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="h6" className={classes.name}>
-                          Enter new password:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={8} className={classes.responsive}>
-                        <TextField
-                          id="outlined-adornment-newpassword"
-                          className={clsx(classes.margin, classes.textField)}
-                          variant="outlined"
-                          type={
-                            this.state.showNewPassword ? "text" : "password"
-                          }
-                          label="New Password"
-                          InputLabelProps={{
-                            classes: { outlined: classes.label }
-                          }}
-                          name="newpassword"
-                          defaultValue={this.state.newpassword}
-                          onKeyUp={this.checkNewPass}
-                          error={this.state.errorNewPass}
-                          helperText={
-                            this.state.errorNewPass
-                              ? "Password is required!"
-                              : " "
-                          }
-                          onBlur={this.checkNewPassBlur}
-                          onFocus={this.onFocusToNewPass}
-                          InputProps={{
-                            classes: { root: classes.custom },
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  edge="end"
-                                  aria-label="toggle password visibility"
-                                  onClick={this.handleClickShowNewPassword}
-                                  onMouseDown={this.handleMouseDownPassword}
-                                >
-                                  {this.state.showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
+
                     <Grid container className={classes.settingsBtn}>
                       <Button
                         variant="contained"
@@ -665,8 +595,7 @@ class Settings extends PureComponent {
                         cancel
                       </Button>
                       {this.state.name !== this.state.oldname ||
-                      (this.state.newpassword !== "" &&
-                        this.state.passwordMatch) ||
+                      this.state.newpassword !== "" ||
                       this.state.status !== this.state.oldStatus ? (
                         <Button
                           variant="contained"
@@ -686,7 +615,6 @@ class Settings extends PureComponent {
                         </Button>
                       ) : null}
                     </Grid>
-                    {/* COHORT PASSWORD END */}
                   </TabPanel>
                   {/* COHORT PASSWORD END */}
 
