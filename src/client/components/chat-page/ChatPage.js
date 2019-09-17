@@ -61,6 +61,58 @@ class ChatPage extends Component {
     }
   }
 
+  setChatText = (val) => {
+    this.setState({senderText:val})
+    let textVal = [val, this.state.chatmateSub, this.props.match.params.userSub];
+    // if (this.state.previledge === "student") {
+    //   socket.emit("handleChat", textVal);
+    // } else {
+    //   socket.emit("handleChatM", textVal);
+    // }
+  };
+
+  sendChat = () => {
+    // console.log(this.props.match.params.userSub)
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
+    let convo = {
+      message: this.state.senderText,
+      sender_sub: this.props.match.params.userSub,
+      chatmate_sub: this.state.chatmateSub,
+      time: datetime
+    };
+    const data = api.fetch(`/api/sendStudentChat`, "post", convo);
+    data.then(res => {
+      console.log(res.data)
+      this.setState({senderText:""})
+    });
+  };
+
 
 
   render() {
@@ -84,7 +136,7 @@ class ChatPage extends Component {
             style={{ height: "800px", maxHeight: "700px" }}
           >
             <ChatPageList />
-            <ChatPageBox chatmateInfo={this.state.chatmateInfo}/>
+            <ChatPageBox chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat}/>
             <ChatPageInfo />
           </Grid>
         </Container>

@@ -129,7 +129,7 @@ function sendChat(req, res) {
       message: message,
       sender_id: sender_id,
       chatmate_id: chatmate_id,
-      cohort_id: cohort_id,
+      cohort_id: `${cohort_id}`,
       time: time,
       seen: 0
     })

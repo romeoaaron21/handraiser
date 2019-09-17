@@ -212,6 +212,7 @@ massive({
 
   //START of Normal Chatting
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
+  app.post("/api/sendStudentChat", chat.sendStudentChat);
 
   //END of Normal Chatting
 
