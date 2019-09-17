@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -28,9 +28,6 @@ import AuthService from "../../auth/AuthService";
 import ClassroomBg from "../../images/classroomBg.jpg";
 import ChatList from "../chat-box/chatList";
 import ChatBox from "../chat-box/chatBox";
-import axios from "axios";
-
-
 
 //end of added chatBox
 const styles = theme => ({
@@ -95,7 +92,7 @@ const styles = theme => ({
 const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
 
-class Student extends Component {
+class Student extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -149,6 +146,7 @@ class Student extends Component {
       chatmateInfo: [],
       classHeaderImage: null,
 
+      assist_id: "",
       //end added dh
 
       //image chat
@@ -157,7 +155,7 @@ class Student extends Component {
       //end image chat
     };
   }
-
+ 
   //added dh
 
   viewChatBox = () => {
@@ -190,6 +188,7 @@ class Student extends Component {
         }
       })
       .then(() => {
+
         this.displayBadge();
       });
   };
@@ -264,9 +263,13 @@ class Student extends Component {
       })
     }
     const data = api.fetch(`/api/sendChat`, "post", convo);
-    this.setState({value:this.state.sub})
+    this.setState({ value: this.state.sub });
     data.then(res => {
-      socket.emit("sendChat", {chat:res.data, senderSub:this.state.sub, chatmateSub: this.state.chatmateSub})
+      socket.emit("sendChat", {
+        chat: res.data,
+        senderSub: this.state.sub,
+        chatmateSub: this.state.chatmateSub
+      });
     });
     socket.emit("displayBadge");
   };
@@ -285,9 +288,9 @@ class Student extends Component {
     });
   }
 
-  helpStudent = memberid => {
+  helpStudent = (memberid,assistid) => {
     const data = api.fetch(
-      `/api/helpStudent/${memberid}/${this.props.cohort_id}`,
+      `/api/helpStudent/${memberid}/${this.props.cohort_id}/${assistid}`,
       "patch"
     );
     data.then(res => {
@@ -351,7 +354,7 @@ class Student extends Component {
     //start of socket chat
     socket.on("initialConversation", chat => {
       this.setState({
-        conversation: [...chat],
+        conversation: [...chat]
       });
     });
     socket.on("seenChat", chat => {
@@ -361,28 +364,32 @@ class Student extends Component {
     });
     socket.on("sendChat", chat => {
       this.setState({
-        conversation: [...chat.chat],
+        conversation: [...chat.chat]
       });
-      if(this.state.sub === chat.chatmateSub && this.state.previledge === 'student'){
-          this.setState({mentorChatText:""})
-      }else if(this.state.sub === chat.chatmateSub && this.state.previledge === 'mentor'){
-        this.setState({studentChatText:""})
+      if (
+        this.state.sub === chat.chatmateSub &&
+        this.state.previledge === "student"
+      ) {
+        this.setState({ mentorChatText: "" });
+      } else if (
+        this.state.sub === chat.chatmateSub &&
+        this.state.previledge === "mentor"
+      ) {
+        this.setState({ studentChatText: "" });
       }
-      if(this.state.sub === chat.senderSub){
-        if(this.state.previledge === 'student'){
-          this.setState({studentChatText:""})
-        }else{
-          this.setState({mentorChatText:""})
+      if (this.state.sub === chat.senderSub) {
+        if (this.state.previledge === "student") {
+          this.setState({ studentChatText: "" });
+        } else {
+          this.setState({ mentorChatText: "" });
         }
       }
     });
 
-
-
     //end of socket chat
 
     socket.on("requestHelping", students => {
-      if (students[0].cohort_id === this.props.cohort_id){
+      if (students[0].cohort_id === this.props.cohort_id) {
         this.setState({ members: students });
         if (students.length === 0) {
           this.setState({
@@ -406,8 +413,8 @@ class Student extends Component {
     });
 
     socket.on("deleteRequest", studs => {
-      const students = [...studs.members]
-      if (studs.cohort === this.props.cohort_id){
+      const students = [...studs.members];
+      if (studs.cohort === this.props.cohort_id) {
         this.setState({ members: students });
         if (students.length === 0) {
           this.setState({
@@ -430,7 +437,7 @@ class Student extends Component {
 
     socket.on("helpStudent", students => {
       this.setState({
-        helpStudentModal: true,
+        // helpStudentModal: true,
         helpingStudent: students
       });
     });
@@ -476,9 +483,9 @@ class Student extends Component {
             } else if (member.status === "inprogress") {
               this.setState({
                 helpingStudent: member
-              })
-              if(this.state.previledge == "mentor"){
-                this.selectChatmate(member.sub)
+              });
+              if (this.state.previledge == "mentor") {
+                this.selectChatmate(member.sub);
               }
             } else {
               return null;
@@ -518,7 +525,7 @@ class Student extends Component {
     this.setState({ loader: true });
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
-      this.setState({ sub: user.sub });
+      this.setState({ sub: user.sub, assist_id: user.id });
       const data = api.fetch(
         `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
         "get"
@@ -580,8 +587,8 @@ class Student extends Component {
     data
       .then(res => {
         socket.emit("deleteRequest", {
-          members : res.data, 
-          cohort : this.props.cohort_id
+          members: res.data,
+          cohort: this.props.cohort_id
         });
       })
       .then(() => {
@@ -630,6 +637,7 @@ class Student extends Component {
  
 
   render() {
+    console.log(this.state.assist_id)
     const { classes } = this.props;
     return (
       <React.Fragment>
@@ -647,7 +655,7 @@ class Student extends Component {
                         this.state.classHeaderImage !== null
                           ? {
                               backgroundImage:
-                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #000000, transparent), url(" +
+                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #3e3e3e, transparent), url(" +
                                 require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
                                 ")"
                             }
@@ -671,7 +679,7 @@ class Student extends Component {
                         this.state.classHeaderImage !== null
                           ? {
                               backgroundImage:
-                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #000000, transparent), url(" +
+                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #3e3e3e, transparent), url(" +
                                 require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
                                 ")"
                             }
@@ -865,6 +873,7 @@ class Student extends Component {
                       removeStudentReqModal={this.state.removeStudentReqModal}
                       removeStudentReqClose={this.removeStudentReqClose}
                       members={this.state.members}
+                      assist_id={this.state.assist_id}
                     />
                   </Grid>
                 )}

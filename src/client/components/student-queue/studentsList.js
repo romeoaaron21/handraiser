@@ -198,7 +198,7 @@ class ChatList extends PureComponent {
   unreadChat = (studentSub) => {
     let count = 0;
     this.props.conversation.map(convo => {
-      if (convo.cohort_id === parseInt(this.props.cohort_id)) {
+      if (parseInt(convo.cohort_id) === parseInt(this.props.cohort_id)) {
         if (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub) {
           if (convo.seen === 0) {
             count = count + 1
@@ -212,7 +212,7 @@ class ChatList extends PureComponent {
   convoMessage = (studentSub, need) => {
     let conversation = [];
     this.props.conversation.map(convo => {
-      if (convo.cohort_id === parseInt(this.props.cohort_id)) {
+      if (parseInt(convo.cohort_id) === parseInt(this.props.cohort_id)) {
         if ((convo.sender_id === this.props.sub && convo.chatmate_id === studentSub) ||
           (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub)) {
           conversation.push(convo)

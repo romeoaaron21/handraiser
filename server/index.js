@@ -14,6 +14,7 @@ const mentor = require("./controllers/mentor");
 const students = require("./controllers/students");
 const comentor = require("./controllers/comentor");
 const upload = require("./controllers/upload");
+const chat = require("./controllers/chat");
 
 massive({
   host: "boom-handraiser.com",
@@ -85,11 +86,9 @@ massive({
       io.emit("displayBadge");
     });
     socket.on("handleChat", priv => {
-      // console.log(priv)
       io.emit("handleChat", priv);
     });
     socket.on("handleChatM", priv => {
-      // console.log(priv)
       io.emit("handleChatM", priv);
     });
 
@@ -103,6 +102,15 @@ massive({
     socket.on("inactive", user => {
       io.emit("inactive", user);
     });
+
+    //START of Normal Student Chat
+    socket.on("getNormalChat", conversation => {
+      io.emit("getNormalChat", conversation);
+    });
+    socket.on("setStudentChatText", chatText => {
+      io.emit("setStudentChatText", chatText);
+    });
+    //END of Normal Student Chat
   });
   //WEBSOCKETS END
 
@@ -133,7 +141,7 @@ massive({
   app.get("/api/cohorts/api", cohorts.getAll);
   app.get("/api/student/:id/cohorts/", cohorts.getCohortsByStudentID);
   app.get("/api/mentor/:id/cohorts/", cohorts.getByMentorID);
-  app.get("/api/cohorts/:id/delete", cohorts.deleteCohort);
+  app.get("/api/cohorts/:id/:classHeader/delete", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
   app.get(
@@ -161,7 +169,7 @@ massive({
 
   //STUDENTS START
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
-  app.patch("/api/helpStudent/:memberid/:cohort_id", mentor.helpStudent);
+  app.patch("/api/helpStudent/:memberid/:cohort_id/:assistid", mentor.helpStudent);
   app.get("/api/removebeinghelped/:memberid/:cohort_id", mentor.movebacktoqueu);
   app.post("/api/doneHelp/:memberid/:cohort_id/:mentor_id", mentor.doneHelp);
 
@@ -206,8 +214,19 @@ massive({
   app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
   app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
   app.get("/api/:id/fetchCohorts", comentor.fetchCohorts);
-  app.get("/api/availableMentor/:cohort_id/:mentor_id", comentor.availableMentor);
+  app.get(
+    "/api/availableMentor/:cohort_id/:mentor_id",
+    comentor.availableMentor
+  );
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
+
+
+  //START of Normal Chatting
+
+  app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
+  app.post("/api/sendStudentChat", chat.sendStudentChat);
+
+  //END of Normal Chatting
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

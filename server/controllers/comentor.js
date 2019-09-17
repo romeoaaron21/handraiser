@@ -66,7 +66,7 @@ function fetchCohorts(req, res) {
 
 function availableMentor(req, res) {
   const db = req.app.get("db");
-  db.query(`select * from users WHERE id NOT IN(SELECT mentor_id from comentor WHERE cohort_id = ${req.params.cohort_id} ) AND id !=${req.params.mentor_id} ;`)
+  db.query(`select * from users WHERE id NOT IN(SELECT mentor_id from comentor WHERE cohort_id = ${req.params.cohort_id} ) AND id !=${req.params.mentor_id} AND privilege = 'mentor' ;`)
   .then(data=>{
     res.status(200).json(data)
   })

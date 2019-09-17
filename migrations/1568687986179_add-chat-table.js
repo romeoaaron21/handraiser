@@ -23,10 +23,8 @@ exports.up = pgm => {
       notNull: "true"
     },
     cohort_id: {
-      type: "integer",
+      type: "text",
       notNull: true,
-      references: '"cohorts"',
-      onDelete: "cascade"
     },
     seen: {
       type: "integer",

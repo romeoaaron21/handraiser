@@ -244,7 +244,7 @@ class requestQueue extends Component {
                                   onClick={() =>
                                     this.props.removeStudentRequest(member.id)
                                   }
-                                >
+                                > 
                                   <Delete className={classes.actionIcon} />
                                 </IconButton>
                               </Tooltip>
@@ -267,7 +267,8 @@ class requestQueue extends Component {
                                   <IconButton
                                     className={classes.responsive}
                                     onClick={() => {
-                                      this.props.helpStudent(member.id);
+                                      // console.log(this.props.assist_id)
+                                      this.props.helpStudent(member.id, this.props.assist_id);
                                       this.props.sendChatSub(member.sub);
                                     }}
                                   >

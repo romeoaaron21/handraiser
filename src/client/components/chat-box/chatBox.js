@@ -94,9 +94,6 @@ class ChatBox extends PureComponent {
   componentDidMount() {
     this.scrollToBottom();
   }
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
@@ -375,7 +372,7 @@ class ChatBox extends PureComponent {
                     (this.props.senderInfo.sub === convo.chatmate_id &&
                       this.props.chatmateInfo.sub === convo.sender_id) ? (
                       <React.Fragment key={i}>
-                        {parseInt(this.props.cohort_id) === convo.cohort_id ? (
+                        {parseInt(this.props.cohort_id) === parseInt(convo.cohort_id) ? (
                           <Box
                             className={
                               this.props.senderInfo.sub === convo.chatmate_id

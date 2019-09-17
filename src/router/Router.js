@@ -10,9 +10,11 @@ import MentorKeys from "../admin/components/mentor-keys/mentorKeys";
 import Mentor from "../admin/components/mentors/mentor";
 import AdminCohorts from "../admin/components/cohorts/cohort";
 import Settings from "../client/components/common-components/settings/settings";
-import ChatPage from "../client/components/chat-page/ChatPage"
+import ChatPage from "../client/components/chat-page/ChatPage";
 
 import NotFound from "../404";
+
+import TestSettings from "../client/components/common-components/settings/test_setting";
 
 function Router() {
   return (
@@ -23,9 +25,12 @@ function Router() {
           : null}
         <Route path="/sign-in" component={SignIn} />
         <Route exact path="/cohorts" component={Cohorts} />
-        <Route exact path="/chat" component={ChatPage} />
+        <Route exact path="/chat/:chatmateSub/:userSub" component={ChatPage} />
         <Route path="/queue/:cid" component={Queue} />
         <Route path="/settings/:cid" component={Settings} />
+
+        <Route path="/testsettings/:cid" component={TestSettings} />
+
         <Route path="/admin/keys" component={MentorKeys} />
         <Route path="/admin/mentors" component={Mentor} />
         <Route path="/admin/cohorts" component={AdminCohorts} />
