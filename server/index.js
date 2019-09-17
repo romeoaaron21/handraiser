@@ -103,6 +103,15 @@ massive({
     socket.on("inactive", user => {
       io.emit("inactive", user);
     });
+
+    //START of Normal Student Chat
+    socket.on("getNormalChat", conversation => {
+      io.emit("getNormalChat", conversation);
+    });
+    socket.on("setStudentChatText", chatText => {
+      io.emit("setStudentChatText", chatText);
+    });
+    //END of Normal Student Chat
   });
   //WEBSOCKETS END
 
@@ -211,6 +220,7 @@ massive({
 
 
   //START of Normal Chatting
+
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
   app.post("/api/sendStudentChat", chat.sendStudentChat);
 

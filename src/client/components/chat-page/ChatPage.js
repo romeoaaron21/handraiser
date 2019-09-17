@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import styles from "./ChatPageStyle";
 
@@ -17,8 +17,13 @@ import ChatPageInfo from "./ChatPageInfo";
 
 
 import api from "../../services/fetchApi";
+import { Socket } from "net";
+import io from "socket.io-client";
 
-class ChatPage extends Component {
+const socketUrl = "http://boom-handraiser.com:3001/";
+const socket = io("http://boom-handraiser.com:3001/");
+
+class ChatPage extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,11 +37,41 @@ class ChatPage extends Component {
 
       senderText: "",
       chatmateText: "",
+
     };
   }
 
   handleDrawerOpen = () => this.setState({ open: true });
   handleDrawerClose = () => this.setState({ open: false });
+
+  UNSAFE_componentWillMount() {
+    const socket = io(socketUrl);
+
+    socket.on("getNormalChat", (conversation) => {
+      // console.log(conversation)
+      this.setState({ conversation: conversation[0] });
+
+      if(conversation[1] === this.props.match.params.userSub){
+        this.setState({senderText:""})
+      }
+      else if(conversation[1] === this.state.chatmateSub){
+        this.setState({chatmateText:""})
+      }
+
+
+
+    });
+
+    socket.on("setStudentChatText", (chatText) => {
+      if (chatText[2] === this.props.match.params.userSub && chatText[1] === this.state.chatmateSub) {
+        this.setState({ senderText: chatText[0] });
+      }
+      else if(chatText[1] === this.props.match.params.userSub && chatText[2] === this.state.chatmateSub){
+        this.setState({ chatmateText: chatText[0] });
+      }
+    })
+  }
+
 
   componentDidMount() {
     this.setState({ chatmateSub: this.props.match.params.chatmateSub })
@@ -47,7 +82,8 @@ class ChatPage extends Component {
     this.selectChatmate()
   }
 
-  selectChatmate() {
+
+  selectChatmate = () => {
     if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
       const data = api.fetch(`/api/getChatUsersInfo/${this.props.match.params.userSub}/${this.props.match.params.chatmateSub}`, "get")
       data.then(res => {
@@ -58,21 +94,26 @@ class ChatPage extends Component {
           } else { this.setState({ chatmateInfo: chatUser }) }
         })
       })
+        .then(() => this.getConversation())
     }
   }
 
+  getConversation = () => {
+    const data = api.fetch(`/api/getChat`, "get");
+    data.then(res => {
+      this.setState({ conversation: res.data })
+    });
+  }
+
   setChatText = (val) => {
-    this.setState({senderText:val})
+    this.setState({ senderText: val })
     let textVal = [val, this.state.chatmateSub, this.props.match.params.userSub];
-    // if (this.state.previledge === "student") {
-    //   socket.emit("handleChat", textVal);
-    // } else {
-    //   socket.emit("handleChatM", textVal);
-    // }
+    
+    socket.emit('setStudentChatText', textVal)
+
   };
 
   sendChat = () => {
-    // console.log(this.props.match.params.userSub)
     const months = [
       "Jan",
       "Feb",
@@ -108,8 +149,8 @@ class ChatPage extends Component {
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
-      console.log(res.data)
-      this.setState({senderText:""})
+      const chat = [res.data, this.props.match.params.userSub]
+      socket.emit('getNormalChat', chat)
     });
   };
 
@@ -136,7 +177,7 @@ class ChatPage extends Component {
             style={{ height: "800px", maxHeight: "700px" }}
           >
             <ChatPageList />
-            <ChatPageBox chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat}/>
+            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText}/>
             <ChatPageInfo />
           </Grid>
         </Container>

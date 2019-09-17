@@ -17,7 +17,7 @@ function sendStudentChat(req, res) {
         message: message,
         sender_id: sender_sub,
         chatmate_id: chatmate_sub,
-        cohort_id: 001,
+        cohort_id: 'all',
         time: time,
         seen: 0
       })

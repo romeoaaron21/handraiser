@@ -12,14 +12,27 @@ import IconButton from "@material-ui/core/IconButton";
 import SendIcon from "@material-ui/icons/Send";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import { connectableObservableDescriptor } from "rxjs/internal/observable/ConnectableObservable";
+
+import TypingEffect from "../chat-box/typingEffect";
 
 class ChatPageBox extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
 
     }
   }
+  //Start of Added Scroll Bottom
+  // messagesEndRef = React.createRef();
+
+  // componentDidMount() {
+  //   this.scrollToBottom();
+  // }
+  // scrollToBottom = () => {
+  //   this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  // };
+  //End of Added Scroll Bottom
 
   render() {
     const { classes } = this.props;
@@ -46,15 +59,15 @@ class ChatPageBox extends Component {
                 <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar}>TL</Avatar>
                 <div>
                   <Typography variant="body">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
-                  {this.props.chatmateInfo.status === 'active'?
-                  <div className={classes.activeNowWrapper}>
-                    <div className={classes.activeNowCircle} />
-                    <Typography variant="subtitle2" style={{ marginTop: 2 }}>
-                      Active Now
+                  {this.props.chatmateInfo.status === 'active' ?
+                    <div className={classes.activeNowWrapper}>
+                      <div className={classes.activeNowCircle} />
+                      <Typography variant="subtitle2" style={{ marginTop: 2 }}>
+                        Active Now
                     </Typography>
-                  </div>
-                  :
-                  null}
+                    </div>
+                    :
+                    null}
                 </div>
               </div>
               <Divider />
@@ -68,40 +81,50 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                {/* Sender  */}
-                <div className={classes.senderChatWrapper}>
-                  <Avatar style={{ marginRight: "10px" }}>TL</Avatar>
-                  <Box className={classes.senderBox}>
-                    <TextareaAutosize
-                      readOnly
-                      className={classes.textAreaChat}
-                      style={{ color: "#263238" }}
-                      value={"Lorem ipsum  Lorem ipsum".replace(/\n$/, "")}
-                    />
-                    <Typography variant="caption" className={classes.time}>
-                      Sept. 12, 2019 10:30 AM
-                    </Typography>
-                  </Box>
-                </div>
-                {/* End Sender  */}
 
-                {/* Receiver */}
-                <div className={classes.receiverChatWrapper}>
-                  <Box className={classes.receiverBox}>
-                    <TextareaAutosize
-                      readOnly
-                      className={classes.textAreaChat}
-                      style={{ color: "#fff" }}
-                      value={"Lorem ipsum  Lorem ipsum".replace(/\n$/, "")}
-                    />
-                    <Typography variant="caption" className={classes.time}>
-                      Sept. 12, 2019 10:30 AM
-                    </Typography>
-                  </Box>
-                </div>
-                {/* End Receiver */}
+
+                {this.props.conversation.map((convo, i) => (
+                  convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id ||
+                  convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id?
+                  
+                  <React.Fragment key={i}>
+                      {convo.cohort_id === "all" ? (
+                        <div className={convo.sender_id !== this.props.userInfo.sub?classes.senderChatWrapper:classes.receiverChatWrapper}>
+
+                          {convo.sender_id !== this.props.userInfo.sub?
+                          <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar}/>
+                          :null
+                          }
+                              
+
+                              <Box className={convo.sender_id !== this.props.userInfo.sub?classes.senderBox:classes.receiverBox}>
+                                <TextareaAutosize
+                                  readOnly
+                                  className={classes.textAreaChat}
+                                  style={convo.sender_id !== this.props.userInfo.sub?{ color: "#263238" }:{ color: "#fff" }}
+                                  value={convo.message.replace(/\n$/, "")}
+                                />
+                                <Typography variant="caption" className={classes.time}>
+                                  {convo.time}
+                                </Typography>
+                              </Box>
+                            </div>
+                      ):
+                      null}
+                  </React.Fragment>
+                  :
+                  null
+                ))}
+                {this.props.chatmateText.length > 0?
+                <TypingEffect />
+                :
+                null
+                }
+                
+                {/* <div ref={this.messagesEndRef}>asdasd</div> */}
 
               </div>
+              
             </div>
             {/* End Chatbox */}
           </div>
@@ -124,9 +147,9 @@ class ChatPageBox extends Component {
 
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
-                
+
               />
-              <IconButton onClick={()=>this.props.sendChat()}>
+              <IconButton onClick={() => this.props.sendChat()}>
                 <SendIcon />
               </IconButton>
             </div>
