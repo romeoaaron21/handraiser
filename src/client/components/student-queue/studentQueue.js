@@ -234,9 +234,13 @@ class Student extends PureComponent {
       time: datetime
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
-    this.setState({value:this.state.sub})
+    this.setState({ value: this.state.sub });
     data.then(res => {
-      socket.emit("sendChat", {chat:res.data, senderSub:this.state.sub, chatmateSub: this.state.chatmateSub})
+      socket.emit("sendChat", {
+        chat: res.data,
+        senderSub: this.state.sub,
+        chatmateSub: this.state.chatmateSub
+      });
     });
     socket.emit("displayBadge");
   };
@@ -316,7 +320,7 @@ class Student extends PureComponent {
     //start of socket chat
     socket.on("initialConversation", chat => {
       this.setState({
-        conversation: [...chat],
+        conversation: [...chat]
       });
     });
     socket.on("seenChat", chat => {
@@ -326,28 +330,32 @@ class Student extends PureComponent {
     });
     socket.on("sendChat", chat => {
       this.setState({
-        conversation: [...chat.chat],
+        conversation: [...chat.chat]
       });
-      if(this.state.sub === chat.chatmateSub && this.state.previledge === 'student'){
-          this.setState({mentorChatText:""})
-      }else if(this.state.sub === chat.chatmateSub && this.state.previledge === 'mentor'){
-        this.setState({studentChatText:""})
+      if (
+        this.state.sub === chat.chatmateSub &&
+        this.state.previledge === "student"
+      ) {
+        this.setState({ mentorChatText: "" });
+      } else if (
+        this.state.sub === chat.chatmateSub &&
+        this.state.previledge === "mentor"
+      ) {
+        this.setState({ studentChatText: "" });
       }
-      if(this.state.sub === chat.senderSub){
-        if(this.state.previledge === 'student'){
-          this.setState({studentChatText:""})
-        }else{
-          this.setState({mentorChatText:""})
+      if (this.state.sub === chat.senderSub) {
+        if (this.state.previledge === "student") {
+          this.setState({ studentChatText: "" });
+        } else {
+          this.setState({ mentorChatText: "" });
         }
       }
     });
 
-
-
     //end of socket chat
 
     socket.on("requestHelping", students => {
-      if (students[0].cohort_id === this.props.cohort_id){
+      if (students[0].cohort_id === this.props.cohort_id) {
         this.setState({ members: students });
         if (students.length === 0) {
           this.setState({
@@ -371,8 +379,8 @@ class Student extends PureComponent {
     });
 
     socket.on("deleteRequest", studs => {
-      const students = [...studs.members]
-      if (studs.cohort === this.props.cohort_id){
+      const students = [...studs.members];
+      if (studs.cohort === this.props.cohort_id) {
         this.setState({ members: students });
         if (students.length === 0) {
           this.setState({
@@ -441,9 +449,9 @@ class Student extends PureComponent {
             } else if (member.status === "inprogress") {
               this.setState({
                 helpingStudent: member
-              })
-              if(this.state.previledge == "mentor"){
-                this.selectChatmate(member.sub)
+              });
+              if (this.state.previledge == "mentor") {
+                this.selectChatmate(member.sub);
               }
             } else {
               return null;
@@ -545,8 +553,8 @@ class Student extends PureComponent {
     data
       .then(res => {
         socket.emit("deleteRequest", {
-          members : res.data, 
-          cohort : this.props.cohort_id
+          members: res.data,
+          cohort: this.props.cohort_id
         });
       })
       .then(() => {
@@ -600,7 +608,7 @@ class Student extends PureComponent {
                         this.state.classHeaderImage !== null
                           ? {
                               backgroundImage:
-                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #000000, transparent), url(" +
+                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #3e3e3e, transparent), url(" +
                                 require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
                                 ")"
                             }
@@ -624,7 +632,7 @@ class Student extends PureComponent {
                         this.state.classHeaderImage !== null
                           ? {
                               backgroundImage:
-                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #000000, transparent), url(" +
+                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #3e3e3e, transparent), url(" +
                                 require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
                                 ")"
                             }

@@ -23,10 +23,6 @@ exports.up = pgm => {
       type: "text",
       notNull: true
     },
-    class_header: {
-      type: "text",
-      notNull: false
-    }
   });
 };
 
