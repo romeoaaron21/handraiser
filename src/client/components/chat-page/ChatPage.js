@@ -58,8 +58,6 @@ class ChatPage extends PureComponent {
         this.setState({chatmateText:""})
       }
 
-
-
     });
 
     socket.on("setStudentChatText", (chatText) => {
