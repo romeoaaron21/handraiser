@@ -96,9 +96,10 @@ class Cohorts extends React.Component {
       selected: "",
       cohort_id: "",
       search: "",
+      searchCount: 0,
       socket: null,
-      tabValue: 0, 
-      sub: "",
+      tabValue: 0,
+      sub: ""
     };
   }
 
@@ -157,7 +158,7 @@ class Cohorts extends React.Component {
       this.setState({
         user,
         id: user.id,
-        privilege: user.privilege,
+        privilege: user.privilege
       });
     });
   }
@@ -229,7 +230,7 @@ class Cohorts extends React.Component {
       delete: false,
       enroll: false,
       leave: false,
-      studentList: false  
+      studentList: false
     });
   };
   // MODALS END
@@ -359,6 +360,13 @@ class Cohorts extends React.Component {
 
   //STUDENT FUNCTIONS END
 
+  search = e => {
+    this.setState({
+      search: e.target.value,
+      searchCount: document.getElementById("mentorCard").childElementCount
+    });
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -403,7 +411,7 @@ class Cohorts extends React.Component {
                       root: classes.inputRoot,
                       input: classes.inputInput
                     }}
-                    onChange={e => this.setState({ search: e.target.value })}
+                    onChange={e => this.search(e)}
                     value={this.state.search}
                     fullWidth
                     inputProps={{ "aria-label": "search" }}
@@ -429,7 +437,8 @@ class Cohorts extends React.Component {
                   </Tabs>
                 ) : null}
                 {this.state.privilege !== "student" ? (
-                  <div className={classes.mentor}>
+                  <div className={classes.mentor} id="mentorCard">
+                    {console.log(this.state.searchCount)}
                     <MentorClassCards
                       search={this.state.search}
                       cohorts={this.state.cohorts}
