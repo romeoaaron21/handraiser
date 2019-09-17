@@ -144,12 +144,12 @@ class Student extends PureComponent {
 
       senderInfo: [],
       chatmateInfo: [],
-      classHeaderImage: null
-
+      classHeaderImage: null,
+      assist_id: "",
       //end added dh
     };
   }
-
+ 
   //added dh
 
   viewChatBox = () => {
@@ -182,6 +182,7 @@ class Student extends PureComponent {
         }
       })
       .then(() => {
+
         this.displayBadge();
       });
   };
@@ -259,9 +260,9 @@ class Student extends PureComponent {
     });
   }
 
-  helpStudent = memberid => {
+  helpStudent = (memberid,assistid) => {
     const data = api.fetch(
-      `/api/helpStudent/${memberid}/${this.props.cohort_id}`,
+      `/api/helpStudent/${memberid}/${this.props.cohort_id}/${assistid}`,
       "patch"
     );
     data.then(res => {
@@ -403,7 +404,7 @@ class Student extends PureComponent {
 
     socket.on("helpStudent", students => {
       this.setState({
-        helpStudentModal: true,
+        // helpStudentModal: true,
         helpingStudent: students
       });
     });
@@ -491,7 +492,7 @@ class Student extends PureComponent {
     this.setState({ loader: true });
     this.fetch.then(fetch => {
       const user = fetch.data.user[0];
-      this.setState({ sub: user.sub });
+      this.setState({ sub: user.sub, assist_id: user.id });
       const data = api.fetch(
         `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
         "get"
@@ -591,6 +592,7 @@ class Student extends PureComponent {
   //* CLASS HEADER IMAGE *//
 
   render() {
+    console.log(this.state.assist_id)
     const { classes } = this.props;
     return (
       <React.Fragment>
@@ -826,6 +828,7 @@ class Student extends PureComponent {
                       removeStudentReqModal={this.state.removeStudentReqModal}
                       removeStudentReqClose={this.removeStudentReqClose}
                       members={this.state.members}
+                      assist_id={this.state.assist_id}
                     />
                   </Grid>
                 )}

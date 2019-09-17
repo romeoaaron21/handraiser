@@ -1,13 +1,13 @@
 module.exports = {
   helpStudent: (req, res) => {
     const db = req.app.get("db");
-    const { memberid, cohort_id } = req.params;
+    const { memberid, cohort_id, assistid } = req.params;
 
     db.member
       .findOne({ student_id: memberid, cohort_id: cohort_id })
       .then(member => {
         db.query(
-          `UPDATE requests SET status = 'inprogress' WHERE member_id=${member.id}`
+          `UPDATE requests SET status = 'inprogress',assist_id = ${assistid}  WHERE member_id=${member.id}`
         ).then(() => {
           db.query(
             `SELECT users.*, requests.status,member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${cohort_id} and requests.status = 'inprogress'`
@@ -16,7 +16,7 @@ module.exports = {
           });
         });
       });
-  },
+  }, 
   movebacktoqueu: (req, res) => {
     const db = req.app.get("db");
     const { memberid, cohort_id } = req.params;
@@ -25,7 +25,7 @@ module.exports = {
       .findOne({ student_id: memberid, cohort_id: cohort_id })
       .then(member => {
         db.query(
-          `UPDATE requests SET status = 'waiting' WHERE member_id=${member.id}`
+          `UPDATE requests SET status = 'waiting', assist_id = null WHERE member_id=${member.id}`
         ).then(() => {
           db.query(
             `SELECT users.*, requests.status FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${cohort_id}`
