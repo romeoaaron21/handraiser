@@ -83,7 +83,10 @@ const styles = theme => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
     display: "flex",
-    minHeight: "52vh"
+    minHeight: "52vh",
+    "@media (max-width: 425px)": {
+      display: "inline-block"
+    }
   },
   tabs: {
     paddingTop: 15,
@@ -118,7 +121,10 @@ const styles = theme => ({
     alignItems: "center"
   },
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    "@media (max-width: 425px)": {
+      fontSize: "10px"
+    }
   },
   deleteBtn: {
     margin: theme.spacing(1),
@@ -126,6 +132,9 @@ const styles = theme => ({
     backgroundColor: "#b31010",
     "&:hover": {
       backgroundColor: "#a91111"
+    },
+    "@media (max-width: 425px)": {
+      fontSize: "10px"
     }
   },
   settingsBtn: {
@@ -133,8 +142,9 @@ const styles = theme => ({
     bottom: "10px",
     alignItems: "flex-end",
     justifyContent: "flex-end",
-    "@media (max-width: 599px)": {
-      marginTop: 20
+    "@media (max-width: 425px)": {
+      marginTop: 20,
+      bottom: "0"
     }
   },
   responsive: {
@@ -142,10 +152,60 @@ const styles = theme => ({
       marginTop: 12
     }
   },
+  tabPanel: {
+    position: "relative",
+    width: "600px",
+    "@media (max-width: 425px)": {
+      width: "100%",
+      height: "280px"
+    }
+  },
+  input: {
+    "@media (max-width: 425px)": {
+      height: "40px",
+      fontSize: "13px"
+    }
+  },
   label: {
     "&.MuiInputLabel-shrink": {
-      transform: "translate(10px, -14px) scale(0.75)",
-      zIndex: "1"
+      background: "white",
+      paddingLeft: "6px",
+      paddingRight: "6px"
+    },
+    "@media (max-width: 425px)": {
+      fontSize: "11px",
+      marginTop: "-6px",
+      "&.MuiInputLabel-shrink": {
+        transform: "translate(14px, 2px) scale(0.75)"
+      }
+    }
+  },
+  avatar: {
+    "@media (max-width: 425px)": {
+      width: "35px",
+      height: "35px"
+    }
+  },
+  addIcon: {
+    "@media (max-width: 425px)": {
+      fontSize: "15px"
+    }
+  },
+  fab: {
+    "@media (max-width: 425px)": {
+      width: "35px",
+      height: "35px"
+    }
+  },
+  list: {
+    fontSize: "16px",
+    "@media (max-width: 425px)": {
+      fontSize: "14px"
+    }
+  },
+  listItem: {
+    "@media (max-width: 425px)": {
+      paddingLeft: "1px"
     }
   }
 });
@@ -458,7 +518,7 @@ class Settings extends PureComponent {
                   <TabPanel
                     value={this.state.tab}
                     index={0}
-                    style={{ position: "relative", width: "600px" }}
+                    className={classes.tabPanel}
                   >
                     <Grid container className={classes.itemSettings}>
                       <Grid item xs={12} sm={5}>
@@ -472,7 +532,7 @@ class Settings extends PureComponent {
                           label="Cohort Name"
                           name="name"
                           className={classes.textField}
-                          InputProps={{ classes: { root: classes.custom } }}
+                          InputProps={{ classes: { root: classes.input } }}
                           fullWidth
                           defaultValue={this.state.name}
                           margin="normal"
@@ -543,7 +603,7 @@ class Settings extends PureComponent {
                   <TabPanel
                     value={this.state.tab}
                     index={1}
-                    style={{ position: "relative", width: "600px" }}
+                    className={classes.tabPanel}
                   >
                     {/* COHORT PASSWORD START */}
                     <Grid container className={classes.itemSettings}>
@@ -579,7 +639,7 @@ class Settings extends PureComponent {
                           }
                           onBlur={this.checkOldPassBlur}
                           InputProps={{
-                            classes: { root: classes.custom },
+                            classes: { root: classes.input },
                             endAdornment: (
                               <InputAdornment position="end">
                                 <IconButton
@@ -634,7 +694,7 @@ class Settings extends PureComponent {
                           onBlur={this.checkNewPassBlur}
                           onFocus={this.onFocusToNewPass}
                           InputProps={{
-                            classes: { root: classes.custom },
+                            classes: { root: classes.input },
                             endAdornment: (
                               <InputAdornment position="end">
                                 <IconButton
@@ -693,7 +753,7 @@ class Settings extends PureComponent {
                   <TabPanel
                     value={this.state.tab}
                     index={2}
-                    style={{ position: "relative", width: "600px" }}
+                    className={classes.tabPanel}
                   >
                     {/* ADD CO-MENTOR START */}
                     <span style={{ marginLeft: "10px" }}>CO-MENTOR</span>
@@ -701,39 +761,57 @@ class Settings extends PureComponent {
                       {this.state.coMentor.map(row => {
                         return (
                           <React.Fragment key={row.id}>
-                            <ListItem alignItems="center">
+                            <ListItem
+                              alignItems="center"
+                              className={classes.listItem}
+                            >
                               <ListItemAvatar>
                                 <Avatar
+                                  className={classes.avatar}
                                   alt={`${row.id}`}
                                   src={`${row.avatar}`}
                                 />
                               </ListItemAvatar>
-                              <ListItemText
-                                primary={`${row.first_name} ${row.last_name}`}
-                              />
+                              <ListItemText>
+                                <Typography className={classes.list}>
+                                  {`${row.first_name} ${row.last_name}`}
+                                </Typography>
+                              </ListItemText>
                             </ListItem>
                           </React.Fragment>
                         );
                       })}
-                      <ListItem alignItems="center">
+                      <ListItem
+                        alignItems="center"
+                        className={classes.listItem}
+                      >
                         <ListItemAvatar
                           onClick={() => {
                             this.openACM();
                           }}
                         >
-                          <Fab size="small" color="primary" aria-label="add">
-                            <AddIcon />
+                          <Fab
+                            className={classes.fab}
+                            size="small"
+                            color="primary"
+                            aria-label="add"
+                          >
+                            <AddIcon className={classes.addIcon} />
                           </Fab>
                         </ListItemAvatar>
-                        <ListItemText primary={`ADD CO-MENTOR`} />
+                        <ListItemText>
+                          <Typography className={classes.list}>
+                            {`ADD CO-MENTOR`}
+                          </Typography>
+                        </ListItemText>
                       </ListItem>
                     </List>
-                    {/*ADD CO-MENTOR END */}{" "}
+                    {/*ADD CO-MENTOR END */}
                   </TabPanel>
                   <TabPanel
                     value={this.state.tab}
                     index={3}
-                    style={{ position: "relative", width: "600px" }}
+                    className={classes.tabPanel}
                   >
                     {/* DELETE COHORT START */}
                     <Grid item xs={12} sm={12}>
