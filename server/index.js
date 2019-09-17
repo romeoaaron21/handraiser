@@ -15,6 +15,7 @@ const mentor = require("./controllers/mentor");
 const students = require("./controllers/students");
 const comentor = require("./controllers/comentor");
 const upload = require("./controllers/upload");
+const chat = require("./controllers/chat");
 
 massive({
   host: "boom-handraiser.com",
@@ -86,11 +87,9 @@ massive({
       io.emit("displayBadge");
     });
     socket.on("handleChat", priv => {
-      // console.log(priv)
       io.emit("handleChat", priv);
     });
     socket.on("handleChatM", priv => {
-      // console.log(priv)
       io.emit("handleChatM", priv);
     });
 
@@ -206,6 +205,12 @@ massive({
   app.get("/api/:id/fetchCohorts", comentor.fetchCohorts);
   app.get("/api/availableMentor/:cohort_id/:mentor_id", comentor.availableMentor);
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
+
+
+  //START of Normal Chatting
+  app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
+
+  //END of Normal Chatting
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

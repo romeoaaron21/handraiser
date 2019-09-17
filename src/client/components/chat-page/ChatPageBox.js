@@ -14,6 +14,13 @@ import AttachFileIcon from "@material-ui/icons/AttachFile";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 class ChatPageBox extends Component {
+  constructor() {
+    super();
+    this.state = {
+
+    }
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -21,7 +28,7 @@ class ChatPageBox extends Component {
         item
         md={6}
         xs={8}
-        style={{ minHeight: "800px"}}
+        style={{ minHeight: "800px" }}
       >
         <Paper
           style={{
@@ -36,15 +43,18 @@ class ChatPageBox extends Component {
             {/* Chatbox Header */}
             <div style={{ height: "10%" }}>
               <div className={classes.chatBoxHeader}>
-                <Avatar style={{ marginRight: 10 }}>TL</Avatar>
+                <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar}>TL</Avatar>
                 <div>
-                  <Typography variant="body"> Trizha Kate Longaza</Typography>
+                  <Typography variant="body">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
+                  {this.props.chatmateInfo.status === 'active'?
                   <div className={classes.activeNowWrapper}>
                     <div className={classes.activeNowCircle} />
                     <Typography variant="subtitle2" style={{ marginTop: 2 }}>
                       Active Now
                     </Typography>
                   </div>
+                  :
+                  null}
                 </div>
               </div>
               <Divider />

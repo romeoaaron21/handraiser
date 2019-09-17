@@ -15,21 +15,51 @@ import ChatPageList from "./ChatPageList";
 import ChatPageBox from "./ChatPageBox";
 import ChatPageInfo from "./ChatPageInfo";
 
+
+import api from "../../services/fetchApi";
+
 class ChatPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      conversation: [],
+
+      chatmateSub: "",
+
+      userInfo: [],
+      chatmateInfo: [],
+
+      senderText: "",
+      chatmateText: "",
     };
   }
 
   handleDrawerOpen = () => this.setState({ open: true });
   handleDrawerClose = () => this.setState({ open: false });
 
-
   componentDidMount() {
-    console.log(this.props.match.params.chatmateSub)
-    console.log(this.props.match.params.userSub)
+    this.setState({ chatmateSub: this.props.match.params.chatmateSub })
+    this.selectChatmate()
+  }
+
+  componentDidUpdate() {
+    this.selectChatmate()
+  }
+
+  selectChatmate() {
+    if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
+      const data = api.fetch(`/api/getChatUsersInfo/${this.props.match.params.userSub}/${this.props.match.params.chatmateSub}`, "get")
+      data.then(res => {
+        this.setState({ chatmateSub: this.props.match.params.chatmateSub })
+        res.data.map(chatUser => {
+          if (chatUser.sub === this.props.match.params.userSub) {
+            this.setState({ userInfo: chatUser })
+          } else { this.setState({ chatmateInfo: chatUser }) }
+        })
+      })
+    }
+
   }
 
   render() {
@@ -52,9 +82,8 @@ class ChatPage extends Component {
             spacing={2}
             style={{ height: "800px", maxHeight: "700px" }}
           >
-            
             <ChatPageList />
-            <ChatPageBox />
+            <ChatPageBox chatmateInfo={this.state.chatmateInfo}/>
             <ChatPageInfo />
           </Grid>
         </Container>
