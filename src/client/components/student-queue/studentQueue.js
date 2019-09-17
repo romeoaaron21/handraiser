@@ -145,8 +145,14 @@ class Student extends PureComponent {
       senderInfo: [],
       chatmateInfo: [],
       classHeaderImage: null,
+
       assist_id: "",
       //end added dh
+
+      //image chat
+      imageChat: null,
+      imageChatName: ''
+      //end image chat
     };
   }
  
@@ -187,16 +193,16 @@ class Student extends PureComponent {
       });
   };
 
-  setChatText = (val, receiversub, sendersub) => {
-    let textVal = [val, receiversub, sendersub];
+  setChatText = (val, receiversub, sendersub, type) => {
+    let textVal = [val, receiversub, sendersub, type];
     if (this.state.previledge === "student") {
       socket.emit("handleChat", textVal);
     } else {
       socket.emit("handleChatM", textVal);
     }
   };
-
-  sendChat = () => {
+//ANCHOR send chat
+  sendChat = (image) => {
     const months = [
       "Jan",
       "Feb",
@@ -223,17 +229,39 @@ class Student extends PureComponent {
       minute: "numeric",
       hour12: true
     });
+    let message;
+    const formData = new FormData();
+    let fileName = '';
+    if (image) {
+      const ext = image.type.split('/')[1];
+      const id = this.makeid()
+      fileName = id + "." + ext
+      message = fileName
+      formData.append("file", image);
+      
+    }
+    else if (this.state.previledge === "student")
+    {
+      message = this.state.studentChatText
+    }
+    else {
+      message = this.state.mentorChatText
+    }
     var datetime = formatted_date + " " + time;
-    let convo = {
-      message:
-        this.state.previledge === "student"
-          ? this.state.studentChatText
-          : this.state.mentorChatText,
+    let convo = { 
+      message,
       sender_sub: this.state.sub,
       chatmate_sub: this.state.chatmateSub,
       cohort_id: this.props.cohort_id,
-      time: datetime
+      time: datetime,
+      type : image ? "image" : "text"
     };
+    if (image){
+      fetch(`/api/sendChat/image/${fileName}`, {
+        method: "POST",
+        body: formData
+      })
+    }
     const data = api.fetch(`/api/sendChat`, "post", convo);
     this.setState({ value: this.state.sub });
     data.then(res => {
@@ -313,7 +341,12 @@ class Student extends PureComponent {
         (priv[1] === this.state.sub && priv[2] === this.state.chatmateSub) ||
         (priv[2] === this.state.sub && priv[1] === this.state.chatmateSub)
       ) {
-        this.setState({ mentorChatText: priv[0] });
+        if(!priv[3]){
+          this.setState({ mentorChatText: priv[0] });
+        }
+        else {
+          this.setState({ imageChat: priv[0], imageChatName: priv[3] });
+        }
       }
     });
     // END OF BADGE
@@ -590,6 +623,18 @@ class Student extends PureComponent {
     this.componentDidMount();
   };
   //* CLASS HEADER IMAGE *//
+
+  //randomid
+  makeid = (length = 15) => {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+ 
 
   render() {
     console.log(this.state.assist_id)

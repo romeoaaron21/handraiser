@@ -123,6 +123,8 @@ function sendChat(req, res) {
   const chatmate_id = req.body.chatmate_sub;
   const cohort_id = req.body.cohort_id;
   const time = req.body.time;
+  const type = req.body.type;
+
 
   db.chat
     .insert({
@@ -131,7 +133,8 @@ function sendChat(req, res) {
       chatmate_id: chatmate_id,
       cohort_id: `${cohort_id}`,
       time: time,
-      seen: 0
+      seen: 0,
+      chat_type: type
     })
     .then(() => {
       db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {

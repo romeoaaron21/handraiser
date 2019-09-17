@@ -24,6 +24,26 @@ function image(req, res) {
   );
 }
 
+function imageChat(req, res) {
+  const db = req.app.get("db");
+  const { fileName } = req.params;
+  let imageFile = req.files.file;
+  
+  if (!req.files){
+    return res.status(400).json({ msg: 'No file uploaded' });
+  }
+  imageFile.mv(
+    `${__dirname}/../../src/client/images/chat-images/${fileName}`,
+    function(err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      res.json({ msg: "ok" })
+    }
+  );
+}
+
+
 function cohort(req, res) {
   const db = req.app.get("db");
   const { cohortId } = req.params;
@@ -55,5 +75,6 @@ function setToDefault(req, res) {
 module.exports = {
   image,
   cohort,
-  setToDefault
+  setToDefault,
+  imageChat
 };

@@ -319,7 +319,6 @@ class UploadPhoto extends React.Component {
           },
           false
         );
-
         myFileItemReader.readAsDataURL(currentFile);
       }
     }
@@ -333,7 +332,7 @@ class UploadPhoto extends React.Component {
 
       const { imgSrcExt } = this.state;
       const imageData64 = canvasRef.toDataURL("image/" + imgSrcExt);
-
+      
       const myFilename = "previewFile." + imgSrcExt;
 
       // file to be uploaded
@@ -356,7 +355,7 @@ class UploadPhoto extends React.Component {
       });
     }
   };
-
+  
   render() {
     const { classes } = this.props;
     return (
