@@ -32,6 +32,19 @@ const styles = theme => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500]
   },
+  uploadContent: {
+    "&::-webkit-scrollbar": {
+      width: "0.3em"
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+      borderRadius: "10px",
+      outline: "1px solid slategrey"
+    }
+  },
   uploadBtn: {
     backgroundColor: "#ebebff",
     "&:hover": {
@@ -49,7 +62,6 @@ const styles = theme => ({
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
-    paddingTop: "5%",
     position: "relative",
     top: "45%",
     left: "50%",
@@ -177,10 +189,10 @@ class UploadPhoto extends React.Component {
       errorMsg: false,
       crop: {
         unit: "%",
-        height: 37,
-        width: 100,
-        x: 5.329070518200751e-15,
-        y: 30,
+        height: 16.10294117647059,
+        width: 48.34437086092716,
+        x: 25,
+        y: 43,
         aspect: 16 / 3
       }
     };
@@ -204,6 +216,7 @@ class UploadPhoto extends React.Component {
   handleImageLoaded = image => {};
 
   handleOnCropChange = crop => {
+    console.log(crop);
     this.setState({ crop: crop });
   };
 
@@ -354,7 +367,11 @@ class UploadPhoto extends React.Component {
         >
           Upload Photo
         </DialogTitle>
-        <DialogContent dividers style={{ height: "450px" }}>
+        <DialogContent
+          dividers
+          style={{ height: "450px" }}
+          className={classes.uploadContent}
+        >
           <div
             className={
               this.state.errorMsg ? `${classes.fadeIn}` : `${classes.fadeOut}`
@@ -459,6 +476,7 @@ class UploadPhoto extends React.Component {
                   {this.state.imgWidth === null ? (
                     <React.Fragment>
                       <ReactCrop
+                        imageStyle={{ height: "340px" }}
                         src={this.state.imgSrc}
                         crop={this.state.crop}
                         onImageLoaded={this.handleImageLoaded}
