@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { TabPanel, a11yProps } from "./props";
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from "@material-ui/icons/Add";
 import {
   withStyles,
   Paper,
@@ -23,7 +23,7 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Fab,
+  Fab
 } from "@material-ui/core";
 
 //NAVIGATION
@@ -166,7 +166,7 @@ class Settings extends PureComponent {
       modalAddMentor: false,
       mentors: [],
       cohortDetails: [],
-      availableMentor: [],
+      availableMentor: []
     };
   }
 
@@ -189,32 +189,32 @@ class Settings extends PureComponent {
       }, 1000);
     });
 
-    api.fetch(`/api/fetchCoMentor/${this.state.id}`, "get")
-      .then(data => {
-        this.setState({ coMentor: data.data })
-      })
+    api.fetch(`/api/fetchCoMentor/${this.state.id}`, "get").then(data => {
+      this.setState({ coMentor: data.data });
+    });
 
-    api.fetch(`/api/${this.state.id}/fetchCohorts`, "get")
-      .then(data => {
-        this.setState({ cohortDetails: data.data })
+    api.fetch(`/api/${this.state.id}/fetchCohorts`, "get").then(data => {
+      this.setState({ cohortDetails: data.data });
 
-        api.fetch(`/api/fetchMentors/${data.data[0].mentor_id}`, "get")
-          .then(data => {
-            this.setState({ mentors: data.data })
-          })
-        api.fetch(`/api/availableMentor/${this.state.id}/${data.data[0].mentor_id}`, "get")
-          .then(data => {
-            this.setState({ availableMentor: data.data })
-          })
-      })
-
-
-
+      api
+        .fetch(`/api/fetchMentors/${data.data[0].mentor_id}`, "get")
+        .then(data => {
+          this.setState({ mentors: data.data });
+        });
+      api
+        .fetch(
+          `/api/availableMentor/${this.state.id}/${data.data[0].mentor_id}`,
+          "get"
+        )
+        .then(data => {
+          this.setState({ availableMentor: data.data });
+        });
+    });
   }
 
   remount = () => {
-    this.componentDidMount()
-  }
+    this.componentDidMount();
+  };
 
   //NAVIGATION
   handleDrawerOpen = () => {
@@ -237,8 +237,8 @@ class Settings extends PureComponent {
     event.preventDefault();
   };
 
-  delete = id => {
-    api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
+  delete = (id, classHeader) => {
+    api.fetch(`/api/cohorts/${id}/${classHeader}/delete`, "get").then(() => {
       window.location.href = `/cohorts`;
     });
   };
@@ -258,16 +258,16 @@ class Settings extends PureComponent {
   openACM = () => {
     this.setState({
       modalAddMentor: true
-    })
-  }
+    });
+  };
 
   closeACM = () => {
     this.setState({
       modalAddMentor: false
-    })
-  }
+    });
+  };
 
-  handleNameChange = (e) => {
+  handleNameChange = e => {
     if (e.target.value !== "") {
       this.setState({
         errorNewName: false
@@ -652,12 +652,12 @@ class Settings extends PureComponent {
                 </TabPanel>
                 <TabPanel value={this.state.tab} index={2}>
                   {/* ADD CO-MENTOR START */}
-                  <span style={{ marginLeft: '10px' }}>CO-MENTOR</span>
+                  <span style={{ marginLeft: "10px" }}>CO-MENTOR</span>
                   <List>
                     {this.state.coMentor.map(row => {
                       return (
                         <React.Fragment key={row.id}>
-                          <ListItem alignItems="center" >
+                          <ListItem alignItems="center">
                             <ListItemAvatar>
                               <Avatar alt={`${row.id}`} src={`${row.avatar}`} />
                             </ListItemAvatar>
@@ -668,19 +668,18 @@ class Settings extends PureComponent {
                         </React.Fragment>
                       );
                     })}
-                    <ListItem alignItems="center" >
-                      <ListItemAvatar onClick={() => {
-                        this.openACM()
-                      }}>
-                        <Fab size="small" color="primary" aria-label="add" >
+                    <ListItem alignItems="center">
+                      <ListItemAvatar
+                        onClick={() => {
+                          this.openACM();
+                        }}
+                      >
+                        <Fab size="small" color="primary" aria-label="add">
                           <AddIcon />
                         </Fab>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={`ADD CO-MENTOR`}
-                      />
+                      <ListItemText primary={`ADD CO-MENTOR`} />
                     </ListItem>
-
                   </List>
 
                   {/*ADD CO-MENTOR END */}
@@ -729,6 +728,11 @@ class Settings extends PureComponent {
             open={this.state.modal}
             close={this.closeModal}
             id={this.state.id}
+            classHeader={
+              this.state.cohortDetails.length !== 0
+                ? this.state.cohortDetails[0].class_header
+                : null
+            }
             delete={this.delete}
           />
           <AddCoMentor

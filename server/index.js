@@ -134,7 +134,7 @@ massive({
   app.get("/api/cohorts/api", cohorts.getAll);
   app.get("/api/student/:id/cohorts/", cohorts.getCohortsByStudentID);
   app.get("/api/mentor/:id/cohorts/", cohorts.getByMentorID);
-  app.get("/api/cohorts/:id/delete", cohorts.deleteCohort);
+  app.get("/api/cohorts/:id/:classHeader/delete", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
   app.get(
@@ -204,7 +204,10 @@ massive({
   app.get("/api/fetchCoMentor/:cohort_id", comentor.fetchCoMentor);
   app.get("/api/fetchCoMentorCohorts", comentor.fetchCoMentorCohorts);
   app.get("/api/:id/fetchCohorts", comentor.fetchCohorts);
-  app.get("/api/availableMentor/:cohort_id/:mentor_id", comentor.availableMentor);
+  app.get(
+    "/api/availableMentor/:cohort_id/:mentor_id",
+    comentor.availableMentor
+  );
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
 
   server.listen(PORT, () => {
