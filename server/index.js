@@ -6,7 +6,6 @@ const massive = require("massive");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
-
 const admin = require("./controllers/admin.js");
 const list = require("./controllers/list.js");
 const user = require("./controllers/user.js");
@@ -185,9 +184,12 @@ massive({
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
   app.patch("/api/seenChat/:priv", students.seenChat);
+
   //CHAT END
 
   //UPLOAD IMAGE START
+      //image chat try
+  app.post("/api/sendChat/image/:fileName", upload.imageChat);
   app.post("/upload/:cohortId", upload.image);
   app.get("/setToDeFault/:cohortId", upload.setToDefault);
   app.get("/specific/:cohortId", upload.cohort);

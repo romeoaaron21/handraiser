@@ -315,22 +315,24 @@ class SideNav extends React.Component {
           <List key={stud.id}>
             <ListItem button onClick={()=>window.location.href='/chat'}>
               <ListItemAvatar>
-                <Avatar
-                  alt={stud.first_name + " " + stud.last_name}
-                  src={stud.avatar}
-                />
-                <img
-                  style={{
-                    width: 35,
-                    height: 35,
-                    margin: 0,
-                    position: "absolute",
-                    top: 24,
-                    left: 32
-                  }}
-                  src={Online}
-                  alt=""
-                />
+                <div>
+                  <Avatar
+                    alt={stud.first_name + " " + stud.last_name}
+                    src={stud.avatar}
+                  />
+                  <img
+                    style={{
+                      width: 35,
+                      height: 35,
+                      margin: 0,
+                      position: "absolute",
+                      top: 24,
+                      left: 32
+                    }}
+                    src={Online}
+                    alt=""
+                  />
+                </div>
               </ListItemAvatar>
               <ListItemText primary={stud.first_name + " " + stud.last_name} />
             </ListItem>

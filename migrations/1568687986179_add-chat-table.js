@@ -31,6 +31,11 @@ exports.up = pgm => {
     seen: {
       type: "integer",
       notNull: true
+    },
+    chat_type: {
+      type: "text",
+      default: "text",
+      notNull: true
     }
   });
 };
