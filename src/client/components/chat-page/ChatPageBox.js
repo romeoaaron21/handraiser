@@ -121,9 +121,12 @@ class ChatPageBox extends Component {
                 placeholder="Send Message"
                 color="primary"
                 style={{ marginRight: 5 }}
-                autoFocus
+
+                value={this.props.senderText}
+                onChange={(e) => this.props.setChatText(e.target.value)}
+                
               />
-              <IconButton>
+              <IconButton onClick={()=>this.props.sendChat()}>
                 <SendIcon />
               </IconButton>
             </div>
