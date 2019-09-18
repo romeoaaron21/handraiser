@@ -220,9 +220,15 @@ class ChatList extends PureComponent {
       }
       return conversation
     })
+
     if(conversation.length !== 0){
       if (need === 'message') {
-        return conversation[conversation.length - 1].message
+        if(conversation[conversation.length - 1].chat_type === "image"){
+          return "Sent an image"
+        }
+        else {
+          return conversation[conversation.length - 1].message
+        }
       } else if (need === 'time') {
         let display = conversation[conversation.length - 1].time.split(" ");
         return `${display[3]} ${display[4]}`;

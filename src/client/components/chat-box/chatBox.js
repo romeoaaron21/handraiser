@@ -7,7 +7,8 @@ import BackToQueue from "@material-ui/icons/SettingsBackupRestore";
 import Done from "@material-ui/icons/Done";
 import styles from "./chatBoxStyle";
 import TypingEffect from "./typingEffect";
-
+import Photo from '@material-ui/icons/Photo'
+import RemoveCircle from '@material-ui/icons/RemoveCircle'
 import Dialog from "@material-ui/core/Dialog";
 import ConfirmationDialog from "../being-helped/doneCofirmationmodal";
 import TextareaAutosize from "react-textarea-autosize"
@@ -28,6 +29,12 @@ import {
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
+
+import {
+  base64StringtoFile,
+  extractImageFileExtensionFromBase64,
+  image64toCanvasRef
+} from "../common-components/upload-photo/ReusableUtils";
 
 const StyledMenu = withStyles({
   paper: {
@@ -60,12 +67,24 @@ const StyledMenuItem = withStyles(theme => ({
   }
 }))(MenuItem);
 
+// UPLOAD IMAGE ATTRIBUTES
+const imageMaxSize = 1000000000; // bytes
+const acceptedFileTypes =
+  "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
+const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
+  return item.trim();
+});
+
 class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      preview: null,
       openMenu: null,
-      assist: []
+      file: null,
+      imgWidth: null,
+      imgSrc: null,
+      imgSrcExt: null,
     };
   }
 
@@ -109,8 +128,6 @@ class ChatBox extends PureComponent {
 
 
   //added dh
-
-
   openConfirmationDialog = () => this.setState({ confirmationDialog: true });
   closeConfirmationDialog = () => this.setState({ confirmationDialog: false });
 
@@ -171,11 +188,99 @@ class ChatBox extends PureComponent {
   //end of added dh
 
 
+
+
+  // image echo
+
+  verifyFile = files => {
+    if (files && files.length > 0) {
+      const currentFile = files[0];
+      const currentFileType = currentFile.type;
+      const currentFileSize = currentFile.size;
+
+      if (currentFileSize > imageMaxSize) {
+        alert(
+          "This file is not allowed. " + currentFileSize + " bytes is too large"
+        );
+        return false;
+      }
+      if (!acceptedFileTypesArray.includes(currentFileType)) {
+        alert("This file is not allowed. Only images are allowed.");
+        return false;
+      }
+      return true;
+    }
+  };
+  // ANCHOR here upload
+  handleUpload = event => {
+    this.setState({
+      preview: URL.createObjectURL(event.target.files[0])
+    })
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const isVerified = this.verifyFile(files);
+      if (isVerified) {
+        // imageBase64Data
+        const currentFile = files[0];
+        const myFileItemReader = new FileReader();
+
+        var changeState = this; // set the this to changeState for setState in line 214
+
+        myFileItemReader.addEventListener(
+          "load",
+          () => {
+            var img = new Image();
+            img.src = myFileItemReader.result;
+
+            img.onload = function() {
+              if (img.width >= 800 && img.height >= 200) {
+                const myResult = myFileItemReader.result;
+                changeState.setState({
+                  file: files,
+                  imgSrc: myResult,
+                  imgSrcExt: extractImageFileExtensionFromBase64(myResult)
+                });
+              } else {
+                //changeState.setState({ errorMsg: true });
+              }
+            };
+          },
+          false
+        );
+        myFileItemReader.readAsDataURL(currentFile);
+      }
+    }
+    this.props.handleChatM(event.target.files[0], this.props.chatmateInfo.sub, this.props.senderInfo.sub, event.target.files[0].name);
+  }
+
+  handleSendImage = () => {
+    //console.log(this.state)
+    const myFilename = "previewFile." + this.state.imgSrcExt;
+    const myImage = base64StringtoFile(this.state.imgSrc, myFilename);
+    this.props.sendChatM(myImage)
+  }
+
+  cancelUpload = () => {
+    this.setState({
+      file: null
+    })
+  }
+
+  // end image echo
+
+
+
+
+
+
+
+
+
+
+
+
   render() {
     const { classes } = this.props;
-    // console.log(this.state.assist.user_id);
-    // console.log(this.props.chatmateInfo)
-    //TO DO MAKE A CONDITION IF ASSIST 
     return (
       <React.Fragment>
         <Paper elevation={1} className={classes.rightTopNav} square={true}>
@@ -309,11 +414,14 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                  <TextareaAutosize
+                                  {convo.chat_type === "image" 
+                                  ? <img style={{ width: "100%" }} src={require(`../../images/chat-images/${convo.message}`)} alt="" />
+                                  : <TextareaAutosize
                                     readOnly
                                     className={classes.textAreaChat}
                                     style={{ color: this.props.senderInfo.sub === convo.chatmate_id ? '#263238' : 'white', }}
-                                    value={convo.message.replace(/\n$/, "")} />
+                                  value={convo.message.replace(/\n$/, "")} />
+                                  }
                                 </Typography>
                               </div>
                               <div className={classes.chatTime}>
@@ -361,7 +469,7 @@ class ChatBox extends PureComponent {
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
-                      fullWidth
+                      fullWidth 
                       variant="outlined"
                       value={this.props.chat}
                       onClick={() => this.props.sendChatSub(this.props.chatmateInfo.sub)}
@@ -374,14 +482,14 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChat(this.props.helpingStudent_sub)
+                            this.props.sendChat()
                           }
                         }
                       }}
                     />
                     <IconButton
                       className={classes.sendIcon}
-                      onClick={this.props.sendChat}
+                      onClick={() => this.props.sendChat()}
                       disabled={
                         this.props.chat.replace(/^\s+/, "")
                           .replace(/\s+$/, "") === ""
@@ -403,6 +511,28 @@ class ChatBox extends PureComponent {
                       src={this.props.senderInfo.avatar}
                       className={classes.userAvatar}
                     />
+                    <input 
+                      type="file" 
+                      onChange={this.handleUpload}
+                      style={{ display: "none" }}
+                      ref={fileInput => this.fileInput = fileInput}
+                    />
+                    {!this.state.file && (
+                      <IconButton onClick={() => this.fileInput.click()}>
+                        <Photo />
+                      </IconButton>
+                    )}
+                    {this.state.file && (
+                    <div>                      
+                      <img style={{ width: 300 }} src={this.state.preview} alt="" />
+                      <IconButton 
+                        style={{ position: 'absolute', marginLeft: '-47px' }}
+                        onClick={this.cancelUpload}
+                      >
+                        <RemoveCircle style={{ color: 'white' }}/>
+                      </IconButton>
+                    </div>
+                    )}
                     <TextField
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
@@ -431,11 +561,13 @@ class ChatBox extends PureComponent {
                     <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
-                        this.props.sendChatM(this.props.helpingStudent_sub);
+                        this.state.file
+                        ? this.handleSendImage()
+                        : this.props.sendChatM();
                       }}
                       disabled={
                         this.props.chatM.replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === ""
+                          .replace(/\s+$/, "") === "" && !this.state.file
                           ? true
                           : false
                       }

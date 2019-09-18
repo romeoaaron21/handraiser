@@ -65,7 +65,7 @@ class History extends React.Component {
                 <Grid container className={classes.emptyQueue}>
                 <img src={EmptyQueue} alt="img" width="280" height="250" />
                 <Typography className={classes.subtitle} variant="overline" color="textSecondary">
-                  {width}
+                  Nothing here...
                 </Typography>
                 </Grid>
                 }
