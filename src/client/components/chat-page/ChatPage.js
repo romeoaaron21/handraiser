@@ -19,6 +19,7 @@ import ChatPageInfo from "./ChatPageInfo";
 import api from "../../services/fetchApi";
 import { Socket } from "net";
 import io from "socket.io-client";
+import { Redirect } from "react-router-dom";
 
 const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
@@ -38,7 +39,9 @@ class ChatPage extends PureComponent {
       senderText: "",
       chatmateText: "",
 
-      chatListInfo: []
+      chatListInfo: [],
+
+      newChatmateSub: "",
 
     };
   }
@@ -54,9 +57,11 @@ class ChatPage extends PureComponent {
 
       if (conversation[1] === this.props.match.params.userSub) {
         this.setState({ senderText: "" })
+        this.displayChatList();
       }
       else if (conversation[1] === this.state.chatmateSub) {
         this.setState({ chatmateText: "" })
+        this.displayChatList();
       }
 
     });
@@ -73,7 +78,7 @@ class ChatPage extends PureComponent {
 
 
   componentDidMount() {
-    this.setState({ chatmateSub: this.props.match.params.chatmateSub })
+    this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub:this.props.match.params.chatmateSub })
     this.selectChatmate();
   }
 
@@ -86,10 +91,10 @@ class ChatPage extends PureComponent {
         sub.push(chatListSub.chatsub)
       })
     })
-    .then(() => {
-      UniqueSub = [...new Set(sub)];
-    })
-    .then(() => {
+      .then(() => {
+        UniqueSub = [...new Set(sub)];
+      })
+      .then(() => {
         api.fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
           .then(res => {
             this.setState({ chatListInfo: [...res.data] })
@@ -101,6 +106,9 @@ class ChatPage extends PureComponent {
     this.selectChatmate();
   }
 
+  changeChatmate = (chatmate) => {
+    this.setState({ newChatmateSub: chatmate })
+  }
 
   selectChatmate = () => {
     if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
@@ -127,9 +135,7 @@ class ChatPage extends PureComponent {
 
   setChatText = (val) => {
     let textVal = [val, this.state.chatmateSub, this.props.match.params.userSub];
-    
     socket.emit('setStudentChatText', textVal)
-
   };
 
   sendChat = () => {
@@ -170,7 +176,6 @@ class ChatPage extends PureComponent {
     data.then(res => {
       const chat = [res.data, this.props.match.params.userSub]
       socket.emit('getNormalChat', chat)
-      this.displayChatList();
     });
   };
 
@@ -197,11 +202,20 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.props.match.params.userSub} />
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.props.match.params.userSub} changeChatmate={this.changeChatmate} />
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} />
             <ChatPageInfo />
           </Grid>
         </Container>
+
+        {this.state.newChatmateSub !== this.state.chatmateSub ?
+          <Redirect
+            to={{
+              pathname: `/chat/${this.state.newChatmateSub}/${this.props.match.params.userSub}`
+            }}
+          /> 
+          : null}
+
       </div>
     );
   }

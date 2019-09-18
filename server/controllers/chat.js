@@ -36,10 +36,10 @@ function getChatList(req, res) {
   db.query(`SELECT chatSub, id from (SELECT sender_id as chatSub, id FROM chat WHERE chatmate_id = '${userSub}'
   UNION
   SELECT chatmate_id as chatSub, id FROM chat WHERE sender_id = '${userSub}') as sub order by id DESC`)
-  .then(chatSub => {
-    res.status(200).json([...chatSub]);
-  })
-  
+    .then(chatSub => {
+        res.status(200).json([...chatSub]);
+    })
+
 }
 
 function getChatListInformation(req, res) {
@@ -48,18 +48,20 @@ function getChatListInformation(req, res) {
   var ChatSub = chatListSub.split(',');
   let users = []
 
-  ChatSub.map((sub, i) => {
+  ChatSub.map(sub => {
     db.users
-    .findOne({ sub: sub })
-    .then(chatListInfo => {
-      users.push(chatListInfo)
-      if(i === ChatSub.length-1){
-        setTimeout(()=>{
-          res.status(200).json([...users])
-        },200)
+      .findOne({ sub: sub })
+      .then(chatListInfo => {
+        users.push(chatListInfo)
+        if (ChatSub[ChatSub.length-1] === chatListInfo.sub) {
+          setTimeout(() => {
+            res.status(200).json([...users])
+          }, 100)
+        }
         
-      }
-    })
+      }).then(()=> {
+        console.log(users)
+      })
   })
 }
 

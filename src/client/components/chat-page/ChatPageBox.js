@@ -144,9 +144,17 @@ class ChatPageBox extends Component {
                 placeholder="Send Message"
                 color="primary"
                 style={{ marginRight: 5 }}
-
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.target.value
+                    .replace(/^\s+/, "")
+                    .replace(/\s+$/, "") !== "") {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      this.props.sendChat()
+                    }
+                  }
+                }}
 
               />
               <IconButton onClick={() => this.props.sendChat()}>

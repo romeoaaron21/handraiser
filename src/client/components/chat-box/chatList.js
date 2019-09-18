@@ -168,17 +168,19 @@ class ChatList extends PureComponent {
       }
       return conversation
     })
-    if(conversation.length !== 0){
+    if (conversation.length !== 0) {
       if (need === 'message') {
         return conversation[conversation.length - 1].message
-      } else if (need === 'time') {
+      }
+      else if (need === 'time') {
         let display = conversation[conversation.length - 1].time.split(" ");
         return `${display[3]} ${display[4]}`;
       }
-    }else{
+    }
+    else {
       if (need === 'message') {
         return 'No conversation'
-      } 
+      }
     }
   }
 
@@ -186,67 +188,67 @@ class ChatList extends PureComponent {
     const { classes } = this.props;
     return (
       <React.Fragment>
-      {/* Chat List Header*/}
-      <Paper className={classes.leftNav} square={true}>
-        <div className={classes.search}>
-          <div className={classes.searchIcon} />
-          <InputBase
-            className={classes.margin}
-            placeholder="Search Mentor"
-            inputProps={{ "aria-label": "naked" }}
-            fullWidth
-            onChange={e => this.setState({ search: e.target.value })}
-          />
-          <SearchIcon style={{ color: "#8c929c" }} />
-        </div>
-      </Paper>
-      {/* End Chat List Header*/}
+        {/* Chat List Header*/}
+        <Paper className={classes.leftNav} square={true}>
+          <div className={classes.search}>
+            <div className={classes.searchIcon} />
+            <InputBase
+              className={classes.margin}
+              placeholder="Search Mentor"
+              inputProps={{ "aria-label": "naked" }}
+              fullWidth
+              onChange={e => this.setState({ search: e.target.value })}
+            />
+            <SearchIcon style={{ color: "#8c929c" }} />
+          </div>
+        </Paper>
+        {/* End Chat List Header*/}
 
-      {/* Chat List Container*/}
-      <Paper
-        className={`${classes.chatList} ${classes.scrollBar}`}
-        square={true}
-      >
-        {/* Chat List */}
+        {/* Chat List Container*/}
+        <Paper
+          className={`${classes.chatList} ${classes.scrollBar}`}
+          square={true}
+        >
+          {/* Chat List */}
 
-        {this.props.mentor.map(mentor => (
-          <ListItem className={classes.list} key={mentor.id} onClick={() => {
-            this.props.sendChatSub(mentor.sub);
-            this.unreadChat(mentor.sub)
-          }}>
-            <ListItemAvatar>
-              <Avatar src={mentor.avatar} className={classes.userAvatar} />
-            </ListItemAvatar>
-            <div className={classes.multiline}>
-              <Typography className={classes.chatName}>
-                {mentor.first_name + " " + mentor.last_name}
-              </Typography>
-              <Typography className={classes.chatDetails}>
-                {this.convoMessage(mentor.sub, 'message')}
-              </Typography>
-            </div>
-            <div className={classes.chatAction}>
-              <Typography className={classes.chatTime}>
-                {" "}
-                {this.convoMessage(mentor.sub, 'time')}{" "}
-              </Typography>
-              <Typography className={classes.chatBadge}>
-                <Badge
-                  color="secondary"
-                  badgeContent={this.unreadChat(mentor.sub)}
-                  invisible = {this.unreadChat(mentor.sub) === 0? true : false}
-                  className={classes.margin}
-                ></Badge>
-              </Typography>
-            </div>
-          </ListItem>
-        ))}
-        {/* End Chat List */}
+          {this.props.mentor.map(mentor => (
+            <ListItem className={classes.list} key={mentor.id} onClick={() => {
+              this.props.sendChatSub(mentor.sub);
+              this.unreadChat(mentor.sub)
+            }}>
+              <ListItemAvatar>
+                <Avatar src={mentor.avatar} className={classes.userAvatar} />
+              </ListItemAvatar>
+              <div className={classes.multiline}>
+                <Typography className={classes.chatName}>
+                  {mentor.first_name + " " + mentor.last_name}
+                </Typography>
+                <Typography className={classes.chatDetails}>
+                  {this.convoMessage(mentor.sub, 'message')}
+                </Typography>
+              </div>
+              <div className={classes.chatAction}>
+                <Typography className={classes.chatTime}>
+                  {" "}
+                  {this.convoMessage(mentor.sub, 'time')}{" "}
+                </Typography>
+                <Typography className={classes.chatBadge}>
+                  <Badge
+                    color="secondary"
+                    badgeContent={this.unreadChat(mentor.sub)}
+                    invisible={this.unreadChat(mentor.sub) === 0 ? true : false}
+                    className={classes.margin}
+                  ></Badge>
+                </Typography>
+              </div>
+            </ListItem>
+          ))}
+          {/* End Chat List */}
 
-        {/* End No Message Display */}
-      </Paper>
-      {/* End Chat List Container*/}
-    </React.Fragment>
+          {/* End No Message Display */}
+        </Paper>
+        {/* End Chat List Container*/}
+      </React.Fragment>
     );
   }
 }
@@ -549,7 +551,7 @@ export default withStyles(styles)(ChatList);
 //                 <React.Fragment key={i}>
 //                 {this.state.conversation.map(convo => (
 //                   this.state.conversation[this.state.conversation.length-1] === convo?
-                  
+
 //                     <ListItem
 //                       className={classes.list}
 //                       onClick={() => {

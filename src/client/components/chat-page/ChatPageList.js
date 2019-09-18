@@ -101,7 +101,7 @@ class ChatPageList extends PureComponent {
               {this.props.chatListInfo.length !== 0 ?
                 this.props.chatListInfo.map((chatmate, i) => (
                   <React.Fragment key = {i}>
-                  <ListItem alignItems="flex-start" button>
+                  <ListItem alignItems="flex-start" onClick={()=>this.props.changeChatmate(chatmate.sub)} button>
                     <Hidden only="xs">
                       <ListItemAvatar>
                         <Avatar src={chatmate.avatar}/>
