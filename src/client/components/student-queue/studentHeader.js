@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, emphasize } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -12,7 +12,11 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Link from "@material-ui/core/Link";
 import Dialog from "@material-ui/core/Dialog";
-
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Chip from "@material-ui/core/Chip";
+import Grid from "@material-ui/core/Grid";
+import ClassIcon from "@material-ui/icons/Group";
+import History from "../cohorts/cards/history/history";
 import UploadPhoto from "../common-components/upload-photo/UploadPhoto";
 
 import api from "../../services/fetchApi";
@@ -60,8 +64,31 @@ const styles = theme => ({
     "&.Mui-disabled": {
       backgroundColor: "rgba(255, 255, 255, 0.46)"
     }
+  },
+
+  breadcrumbNav: {
+    marginTop: "13px",
+    display: "flex",
+    justifyContent: "center"
   }
 });
+
+const StyledBreadcrumb = withStyles(theme => ({
+  root: {
+    backgroundColor: "whitesmoke",
+    height: 21,
+    cursor: "pointer",
+    color: theme.palette.grey[800],
+    fontWeight: theme.typography.fontWeightRegular,
+    "&:hover, &:focus": {
+      backgroundColor: theme.palette.grey[300]
+    },
+    "&:active": {
+      boxShadow: theme.shadows[1],
+      backgroundColor: emphasize(theme.palette.grey[300], 0.12)
+    }
+  }
+}))(Chip);
 
 class StudentHeader extends Component {
   constructor() {
@@ -69,7 +96,11 @@ class StudentHeader extends Component {
 
     this.state = {
       uploadPhotoDialog: false,
-      classHeaderImage: null
+      classHeaderImage: null,
+
+      history: [],
+      cohort: [],
+      openHistory: false
     };
   }
 
@@ -82,6 +113,28 @@ class StudentHeader extends Component {
   onDrop = picture => {
     this.setState({
       pictures: this.state.pictures.concat(picture)
+    });
+  };
+
+  openHistory = () => {
+    api
+      .fetch(`/api/history/${this.props.cohortId}/${this.props.user.id}`, "get")
+      .then(res => {
+        api
+          .fetch(`/api/cohort/${this.props.cohortId}/details`, "get")
+          .then(response => {
+            this.setState({
+              openHistory: true,
+              history: res.data.history,
+              cohort: response.data.cohort[0]
+            });
+          });
+      });
+  };
+
+  handleCloseHistory = () => {
+    this.setState({
+      openHistory: false
     });
   };
 
@@ -107,6 +160,43 @@ class StudentHeader extends Component {
                 className={classes.userAvatar}
               />
             </ListItemAvatar>
+            {this.props.privilege === "student"?
+            <ListItemText>
+              <Typography
+                variant="h6"
+                component="h3"
+                className={classes.responsiveHeader}
+                style={{ color: "whitesmoke", marginLeft: 7}}
+              >
+                {this.props.user.first_name.charAt(0).toUpperCase() +
+                  this.props.user.first_name.slice(1)}{" "}
+                {this.props.user.last_name.charAt(0).toUpperCase() +
+                  this.props.user.last_name.slice(1)}
+              </Typography>
+              <Breadcrumbs
+                aria-label="breadcrumb"
+                style={{marginTop: 3}}
+              >
+                <StyledBreadcrumb
+                  component="a"
+                  href="#"
+                  label="Students"
+                  avatar={
+                    <Avatar className={classes.avatar}>
+                      <ClassIcon />
+                    </Avatar>
+                  }
+                  onClick={this.handleClick}
+                />
+                <StyledBreadcrumb
+                  onClick={this.openHistory}
+                  component="a"
+                  href="#"
+                  label="My Activities"
+                />
+              </Breadcrumbs>
+            </ListItemText>
+            :
             <ListItemText>
               <Typography
                 variant="h6"
@@ -120,6 +210,8 @@ class StudentHeader extends Component {
                   this.props.user.last_name.slice(1)}
               </Typography>
             </ListItemText>
+            }
+
             {this.props.privilege === "student" ? (
               <div>
                 <Tooltip title="Send Raise" placement="top">
@@ -205,6 +297,13 @@ class StudentHeader extends Component {
             cohortId={this.props.cohortId}
           />
         </Dialog>
+
+        <History
+          open={this.state.openHistory}
+          cohort={this.state.cohort}
+          handleClose={this.handleCloseHistory}
+          history={this.state.history}
+        />
       </div>
     );
   }
