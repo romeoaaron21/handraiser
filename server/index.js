@@ -225,6 +225,9 @@ massive({
 
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
   app.post("/api/sendStudentChat", chat.sendStudentChat);
+  app.get("/api/getChatList/:userSub", chat.getChatList);
+  app.get("/api/getChatListInformation/:chatListSub", chat.getChatListInformation);
+  
 
   //END of Normal Chatting
 

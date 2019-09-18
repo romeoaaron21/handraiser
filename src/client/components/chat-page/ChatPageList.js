@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import styles from "./ChatPageStyle";
 import Paper from "@material-ui/core/Paper";
@@ -17,80 +17,85 @@ import IconButton from "@material-ui/core/IconButton";
 import Hidden from "@material-ui/core/Hidden";
 import Grid from "@material-ui/core/Grid"
 
-class ChatPageList extends Component {
+import api from "../../services/fetchApi";
+
+class ChatPageList extends PureComponent {
   constructor(props) {
     super(props);
   }
+
   render() {
+    console.log(this.props.chatListInfo)
+    console.log(this.props.conversation)
     const { classes } = this.props;
     return (
       <Grid item md={3} xs={4}>
-      <Paper>
-        <div style={{ padding: 13 }}>
-          <div className={classes.chatListHeader}>
-            <span className={classes.avatarWrapper}>
-              <Avatar style={{ marginRight: "10px" }}>
-                ME
+        <Paper>
+          <div style={{ padding: 13 }}>
+            <div className={classes.chatListHeader}>
+              <span className={classes.avatarWrapper}>
+                <Avatar style={{ marginRight: "10px" }}>
+                  ME
               </Avatar>
-              <Typography variant="h5">Chats</Typography>
-            </span>
-            <Hidden xsDown>
-              <IconButton>
-                <CreateIcon />
-              </IconButton>
-            </Hidden>
+                <Typography variant="h5">Chats</Typography>
+              </span>
+              <Hidden xsDown>
+                <IconButton>
+                  <CreateIcon />
+                </IconButton>
+              </Hidden>
+            </div>
+            <div>
+              <TextField
+                id="outlined-search"
+                label="Search"
+                inputProps={{
+                  style: {
+                    height: "4px"
+                  }
+                }}
+                InputLabelProps={{
+                  style: {
+                    height: "3px",
+                    marginTop: -6
+                  }
+                }}
+                fullWidth
+                margin="normal"
+                variant="outlined"
+              />
+            </div>
           </div>
-          <div>
-            <TextField
-              id="outlined-search"
-              label="Search"
-              inputProps={{
-                style: {
-                  height: "4px"
-                }
-              }}
-              InputLabelProps={{
-                style: {
-                  height: "3px",
-                  marginTop: -6
-                }
-              }}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-            />
-          </div>
-        </div>
-        <Divider />
+          <Divider />
 
-        <div className={`${classes.scrollBar} ${classes.chatListWrapper}`}>
-          <List>
-            <ListItem alignItems="flex-start" button>
-              <Hidden only="xs">
-                <ListItemAvatar>
-                  <Avatar> TL </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Trizha Kate Longaza"
-                  secondary=" I'll be in your neighborhood doing errands this"
-                />
-              </Hidden>
-              <Hidden smUp>
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center"
-                  }}
-                >
-                  <Avatar> TL </Avatar>
-                </div>
-              </Hidden>
-            </ListItem>
-            <Divider />
-          </List>
-        </div>
-      </Paper>
+          <div className={`${classes.scrollBar} ${classes.chatListWrapper}`}>
+            <List>
+              <ListItem alignItems="flex-start" button>
+                <Hidden only="xs">
+                  <ListItemAvatar>
+                    <Avatar> TL </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Trizha Kate Longaza"
+                    secondary=" I'll be in your neighborhood doing errands this"
+                  />
+                </Hidden>
+                <Hidden smUp>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Avatar> TL </Avatar>
+                  </div>
+                </Hidden>
+              </ListItem>
+              <Divider />
+            </List>
+          </div>
+        </Paper>
       </Grid>
     );
   }

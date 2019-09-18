@@ -38,6 +38,8 @@ class ChatPage extends PureComponent {
       senderText: "",
       chatmateText: "",
 
+      chatListInfo: []
+
     };
   }
 
@@ -51,11 +53,11 @@ class ChatPage extends PureComponent {
       // console.log(conversation)
       this.setState({ conversation: conversation[0] });
 
-      if(conversation[1] === this.props.match.params.userSub){
-        this.setState({senderText:""})
+      if (conversation[1] === this.props.match.params.userSub) {
+        this.setState({ senderText: "" })
       }
-      else if(conversation[1] === this.state.chatmateSub){
-        this.setState({chatmateText:""})
+      else if (conversation[1] === this.state.chatmateSub) {
+        this.setState({ chatmateText: "" })
       }
 
     });
@@ -64,7 +66,7 @@ class ChatPage extends PureComponent {
       if (chatText[2] === this.props.match.params.userSub && chatText[1] === this.state.chatmateSub) {
         this.setState({ senderText: chatText[0] });
       }
-      else if(chatText[1] === this.props.match.params.userSub && chatText[2] === this.state.chatmateSub){
+      else if (chatText[1] === this.props.match.params.userSub && chatText[2] === this.state.chatmateSub) {
         this.setState({ chatmateText: chatText[0] });
       }
     })
@@ -73,11 +75,26 @@ class ChatPage extends PureComponent {
 
   componentDidMount() {
     this.setState({ chatmateSub: this.props.match.params.chatmateSub })
-    this.selectChatmate()
+    this.selectChatmate();
+  }
+
+  displayChatList = () => {
+    const data = api.fetch(`/api/getChatList/${this.props.match.params.userSub}`, "get")
+    data.then(res => {
+      res.data.map(chatListSub => {
+        api.fetch(`/api/getChatListInformation/${chatListSub.sender_id}`, "get")
+          .then(res => {
+            this.setState(prevState => ({
+              chatListInfo: [...prevState.chatListInfo, res.data]
+            }))
+          })
+
+      })
+    })
   }
 
   componentDidUpdate() {
-    this.selectChatmate()
+    this.selectChatmate();
   }
 
 
@@ -93,6 +110,7 @@ class ChatPage extends PureComponent {
         })
       })
         .then(() => this.getConversation())
+        .then(() => this.displayChatList());
     }
   }
 
@@ -106,7 +124,7 @@ class ChatPage extends PureComponent {
   setChatText = (val) => {
     this.setState({ senderText: val })
     let textVal = [val, this.state.chatmateSub, this.props.match.params.userSub];
-    
+
     socket.emit('setStudentChatText', textVal)
 
   };
@@ -174,8 +192,9 @@ class ChatPage extends PureComponent {
             spacing={2}
             style={{ height: "800px", maxHeight: "700px" }}
           >
-            <ChatPageList />
-            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText}/>
+
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation}/>
+            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} />
             <ChatPageInfo />
           </Grid>
         </Container>
