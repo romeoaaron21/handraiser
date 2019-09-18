@@ -86,7 +86,7 @@ const styles = theme => ({
     }
   },
   emptyQueue: {
-    marginTop: 120,
+    marginTop: 60,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
@@ -201,7 +201,7 @@ class requestQueue extends Component {
           style={
             this.props.priv === "mentor"
               ? { minHeight: "570px", maxHeight: "570px" }
-              : { minHeight: "520px", maxHeight: "520px" }
+              : { minHeight: "455px", maxHeight: "520px" }
           }
         >
           {insideCohort.length !== 0 ? (

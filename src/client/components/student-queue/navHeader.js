@@ -137,7 +137,7 @@ class navHeader extends Component {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        <Grid item xs={12} sm={4}>
+        {/* <Grid item xs={12} sm={4}>
           <Breadcrumbs
             aria-label="breadcrumb"
             className={classes.breadcrumbNav}
@@ -155,9 +155,9 @@ class navHeader extends Component {
             />
             <StyledBreadcrumb onClick={this.openHistory} component="a" href="#" label="My Activities" />
           </Breadcrumbs>
-        </Grid>
+        </Grid> */}
 
-        <Grid item xs={12} sm={8}>
+        <Grid item xs={12} sm={12}>
           <TextField
             value={this.state.reason}
             onChange={e => this.handleChange(e)}
