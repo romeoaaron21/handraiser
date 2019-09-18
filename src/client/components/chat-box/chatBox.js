@@ -317,13 +317,6 @@ class ChatBox extends PureComponent {
                 : null}
 
 
-
-
-
-
-
-
-
             </StyledMenu>
           </Box>
         </Paper>

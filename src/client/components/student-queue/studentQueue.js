@@ -63,7 +63,7 @@ const styles = theme => ({
     }
   },
   beingHelp: {
-    marginTop: '15px',
+    // marginTop: '15px',
     "@media (max-width: 425px)": {
       display: "none"
     }
@@ -697,6 +697,7 @@ class Student extends PureComponent {
                       />
                     </Paper>
                   )}
+           
                 </React.Fragment>
               ) : (
                 <React.Fragment />
@@ -766,7 +767,7 @@ class Student extends PureComponent {
                             cohort_id={this.props.cohort_id}
                           />
                         </div>
-                      
+
                         <ChatList
                           //     sendChatSub={this.selectChatmate}
                           //     mentor={this.state.mentorInfo}
@@ -829,6 +830,7 @@ class Student extends PureComponent {
                   this.state.previledge === "mentor" ? (
                   <React.Fragment>
                     <Grid item xs={12} sm={8}>
+                      
                       <ChatBox
                         viewChatBox={this.viewChatBox}
                         sendChatM={this.sendChat}
@@ -852,6 +854,7 @@ class Student extends PureComponent {
                   <React.Fragment>
                     <Grid item xs={12} sm={8}>
                       {this.state.previledge === "mentor" ? null : (
+                        <div style={{marginTop: '-16px'}}>
                         <StudentNavHeader
                           user={this.state.user[0]}
                           cohort={this.props.cohort_id}
@@ -859,6 +862,7 @@ class Student extends PureComponent {
                           requested={this.state.requested}
                           handleChangeReasons={this.handleChangeReasons}
                         />
+                        </div>
                       )}
                       <RequestQueue
                         sendChatSub={this.selectChatmate}
