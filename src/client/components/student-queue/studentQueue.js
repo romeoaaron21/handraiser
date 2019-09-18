@@ -332,7 +332,13 @@ class Student extends PureComponent {
         (priv[1] === this.state.sub && priv[2] === this.state.chatmateSub) ||
         (priv[2] === this.state.sub && priv[1] === this.state.chatmateSub)
       ) {
-        this.setState({ studentChatText: priv[0] });
+        if(!priv[3]){
+          this.setState({ studentChatText: priv[0] });
+          console.log(this.state.studentChatText)
+        }
+        else {
+          this.setState({ imageChat: priv[0], imageChatName: priv[3] });
+        }
       }
     });
 
