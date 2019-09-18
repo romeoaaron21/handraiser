@@ -32,7 +32,7 @@ class Cohorts extends React.Component {
 
     this.state = {
       loader: true,
-      open: false,
+      open: true,
       studentListDialog: false,
       search: "",
       sortCohort: "",
@@ -56,7 +56,10 @@ class Cohorts extends React.Component {
     });
 
     api.fetch("/students", "get").then(res => {
-      this.setState({ students: res.data.students, loader: false });
+      this.setState({ students: res.data.students });
+      setTimeout(() => {
+        this.setState({ loader: false });
+      }, 1000);
     });
   }
 

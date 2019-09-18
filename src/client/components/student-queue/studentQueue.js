@@ -149,7 +149,7 @@ class Student extends PureComponent {
       classHeaderImage: null,
 
       assist_id: "",
-      assist:[],
+      assist: [],
       //end added dh
 
       //image chat
@@ -331,11 +331,10 @@ class Student extends PureComponent {
         (priv[1] === this.state.sub && priv[2] === this.state.chatmateSub) ||
         (priv[2] === this.state.sub && priv[1] === this.state.chatmateSub)
       ) {
-        if(!priv[3]){
+        if (!priv[3]) {
           this.setState({ studentChatText: priv[0] });
-          console.log(this.state.studentChatText)
-        }
-        else {
+          console.log(this.state.studentChatText);
+        } else {
           this.setState({ imageChat: priv[0], imageChatName: priv[3] });
         }
       }
@@ -477,7 +476,7 @@ class Student extends PureComponent {
               return this.setState({
                 helpingStudent: member,
                 button: true,
-                btntext: "Currently Helping"         
+                btntext: "Currently Helping"
               });
             } else if (member.sub === this.state.sub) {
               return this.setState({
@@ -534,7 +533,7 @@ class Student extends PureComponent {
   //     data.data.map(val=>{
   //       this.setState({assist: val})
   //     })
-      
+
   //   })
   // }
 
@@ -718,7 +717,6 @@ class Student extends PureComponent {
                       />
                     </Paper>
                   )}
-           
                 </React.Fragment>
               ) : (
                 <React.Fragment />
@@ -849,40 +847,37 @@ class Student extends PureComponent {
                   </React.Fragment>
                 ) : this.state.mentorChatBox &&
                   this.state.previledge === "mentor" ? (
-                  <React.Fragment>
-                    <Grid item xs={12} sm={8}>
-                      
-                      <ChatBox
-                        viewChatBox={this.viewChatBox}
-                        sendChatM={this.sendChat}
-                        handleChatM={this.setChatText}
-                        chatM={this.state.mentorChatText}
-                        conversation={this.state.conversation}
-                        senderInfo={this.state.senderInfo}
-                        chatmateInfo={this.state.chatmateInfo}
-                        privileged={this.state.previledge}
-                        helpingStudent_sub={this.state.helpingStudent.sub}
-                        cohort_id={this.props.cohort_id}
-                        chat={this.state.studentChatText}
-                        displayBadge={this.displayBadge}
-                        helpStudentClose={this.helpStudentClose}
-                        helpingStudent={this.state.helpingStudent}
-                        sendChatSub={this.selectChatmate}
-                      />
-                    </Grid>
-                  </React.Fragment>
+                  <Grid item xs={12} sm={8}>
+                    <ChatBox
+                      viewChatBox={this.viewChatBox}
+                      sendChatM={this.sendChat}
+                      handleChatM={this.setChatText}
+                      chatM={this.state.mentorChatText}
+                      conversation={this.state.conversation}
+                      senderInfo={this.state.senderInfo}
+                      chatmateInfo={this.state.chatmateInfo}
+                      privileged={this.state.previledge}
+                      helpingStudent_sub={this.state.helpingStudent.sub}
+                      cohort_id={this.props.cohort_id}
+                      chat={this.state.studentChatText}
+                      displayBadge={this.displayBadge}
+                      helpStudentClose={this.helpStudentClose}
+                      helpingStudent={this.state.helpingStudent}
+                      sendChatSub={this.selectChatmate}
+                    />
+                  </Grid>
                 ) : (
                   <React.Fragment>
                     <Grid item xs={12} sm={8}>
                       {this.state.previledge === "mentor" ? null : (
-                        <div style={{marginTop: '-16px'}}>
-                        <StudentNavHeader
-                          user={this.state.user[0]}
-                          cohort={this.props.cohort_id}
-                          raise={this.state.btntext}
-                          requested={this.state.requested}
-                          handleChangeReasons={this.handleChangeReasons}
-                        />
+                        <div style={{ marginTop: "-16px" }}>
+                          <StudentNavHeader
+                            user={this.state.user[0]}
+                            cohort={this.props.cohort_id}
+                            raise={this.state.btntext}
+                            requested={this.state.requested}
+                            handleChangeReasons={this.handleChangeReasons}
+                          />
                         </div>
                       )}
                       <RequestQueue

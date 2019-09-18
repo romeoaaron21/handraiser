@@ -66,4 +66,12 @@ export default class AuthService {
       ...options
     }).then(response => response.json());
   };
+
+  getDecodedToken = () => {
+    try {
+      return decode(localStorage.getItem("id_token"));
+    } catch (err) {
+      return (window.location.href = "/");
+    }
+  };
 }

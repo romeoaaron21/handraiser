@@ -116,6 +116,8 @@ massive({
 
   // ADMIN START
   app.post("/admin-sign-in", admin.signIn);
+  app.get("/admin/details/:id", admin.adminDetails);
+  app.post("/change-password/:id", admin.changePassword);
   app.post("/generate-key", admin.generateNewKey);
   app.get("/keys", admin.generatedKeys);
   app.get("/keys/:status", admin.filterByStatus);
@@ -169,7 +171,10 @@ massive({
 
   //STUDENTS START
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
-  app.patch("/api/helpStudent/:memberid/:cohort_id/:assistid", mentor.helpStudent);
+  app.patch(
+    "/api/helpStudent/:memberid/:cohort_id/:assistid",
+    mentor.helpStudent
+  );
   app.get("/api/removebeinghelped/:memberid/:cohort_id", mentor.movebacktoqueu);
   app.post("/api/doneHelp/:memberid/:cohort_id/:mentor_id", mentor.doneHelp);
 
@@ -196,7 +201,7 @@ massive({
   //CHAT END
 
   //UPLOAD IMAGE START
-      //image chat try
+  //image chat try
   app.post("/api/sendChat/image/:fileName", upload.imageChat);
   app.post("/upload/:cohortId", upload.image);
   app.get("/setToDeFault/:cohortId", upload.setToDefault);
@@ -220,7 +225,6 @@ massive({
   );
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
   app.get("/api/fetchAssist/:student_id/:mentor_id", comentor.fetchAssist);
-
 
   //START of Normal Chatting
 

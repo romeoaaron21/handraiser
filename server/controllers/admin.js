@@ -12,7 +12,6 @@ function signIn(req, res) {
     })
     .then(admin => {
       if (!admin) {
-        console.log(admin);
         res.status(201).send({ token: null });
       }
       const token = jwt.sign({ adminId: admin.id }, "5up324pp11c4710n53c237");
@@ -26,6 +25,35 @@ function signIn(req, res) {
       } else {
         res.status(500).end();
       }
+    });
+}
+
+function adminDetails(req, res) {
+  const db = res.app.get("db");
+  const { id } = req.params;
+
+  db.query(`SELECT * FROM admin WHERE id = 1`)
+    .then(admin => {
+      res.status(201).send({ admin });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(501).end();
+    });
+}
+
+function changePassword(req, res) {
+  const db = res.app.get("db");
+  const { newpassword } = req.body;
+  const { id } = req.params;
+
+  db.query(`UPDATE admin set password = '${newpassword}' WHERE id = ${id}`)
+    .then(admin => {
+      res.status(201).send({ admin });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(501).end();
     });
 }
 
@@ -142,12 +170,10 @@ function filterByStatus(req, res) {
   const { status } = req.params;
 
   if (status === "all") {
-    console.log(status);
     db.query(`SELECT * FROM keys ORDER BY id desc`).then(keys => {
       res.status(201).send({ keys });
     });
   } else if (status === "available") {
-    console.log(status);
     db.query(`SELECT * FROM keys WHERE sub IS NULL ORDER BY id desc`).then(
       keys => {
         res.status(201).send({ keys });
@@ -174,7 +200,6 @@ function sortByMentor(req, res) {
       res.status(201).send({ cohorts });
     });
   } else {
-    console.log("false");
     db.query(
       `SELECT cohorts.id "id", cohorts.mentor_id, cohorts.name FROM cohorts, users WHERE cohorts.mentor_id = users.id ORDER BY users.first_name desc`
     ).then(cohorts => {
@@ -185,6 +210,8 @@ function sortByMentor(req, res) {
 
 module.exports = {
   signIn,
+  adminDetails,
+  changePassword,
   generateNewKey,
   generatedKeys,
   mentors,

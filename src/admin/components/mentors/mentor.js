@@ -33,7 +33,7 @@ class Mentor extends React.Component {
 
     this.state = {
       loader: true,
-      open: false,
+      open: true,
       cohortListDialog: false,
       search: "",
       sort: "",
@@ -50,7 +50,10 @@ class Mentor extends React.Component {
     });
 
     api.fetch("/cohorts", "get").then(res => {
-      this.setState({ cohorts: res.data.cohorts, loader: false });
+      this.setState({ cohorts: res.data.cohorts });
+      setTimeout(() => {
+        this.setState({ loader: false });
+      }, 1000);
     });
   }
 
