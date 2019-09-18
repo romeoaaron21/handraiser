@@ -79,6 +79,7 @@ class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      confirmationDialog: false,
       preview: null,
       openMenu: null,
       file: null,
@@ -111,6 +112,9 @@ class ChatBox extends PureComponent {
 
     }
 
+  }
+  componentDidUpdate(){
+    this.scrollToBottom();
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -214,50 +218,52 @@ class ChatBox extends PureComponent {
   };
   // ANCHOR here upload
   handleUpload = event => {
-    this.setState({
-      preview: URL.createObjectURL(event.target.files[0])
-    })
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const isVerified = this.verifyFile(files);
-      if (isVerified) {
-        // imageBase64Data
-        const currentFile = files[0];
-        const myFileItemReader = new FileReader();
+    if (event.target.files){
+      this.setState({
+        preview: URL.createObjectURL(event.target.files[0])
+      })
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        const isVerified = this.verifyFile(files);
+        if (isVerified) {
+          // imageBase64Data
+          const currentFile = files[0];
+          const myFileItemReader = new FileReader();
 
-        var changeState = this; // set the this to changeState for setState in line 214
+          var changeState = this; // set the this to changeState for setState in line 214
 
-        myFileItemReader.addEventListener(
-          "load",
-          () => {
-            var img = new Image();
-            img.src = myFileItemReader.result;
+          myFileItemReader.addEventListener(
+            "load",
+            () => {
+              var img = new Image();
+              img.src = myFileItemReader.result;
 
-            img.onload = function() {
-              if (img.width >= 800 && img.height >= 200) {
-                const myResult = myFileItemReader.result;
-                changeState.setState({
-                  file: files,
-                  imgSrc: myResult,
-                  imgSrcExt: extractImageFileExtensionFromBase64(myResult)
-                });
-              } else {
-                //changeState.setState({ errorMsg: true });
-              }
-            };
-          },
-          false
-        );
-        myFileItemReader.readAsDataURL(currentFile);
+              img.onload = function() {
+                if (img.width >= 800 && img.height >= 200) {
+                  const myResult = myFileItemReader.result;
+                  changeState.setState({
+                    file: files,
+                    imgSrc: myResult,
+                    imgSrcExt: extractImageFileExtensionFromBase64(myResult)
+                  });
+                } else {
+                  //changeState.setState({ errorMsg: true });
+                }
+              };
+            },
+            false
+          );
+          myFileItemReader.readAsDataURL(currentFile);
+        }
       }
+      this.props.handleChatM(event.target.files[0], this.props.chatmateInfo.sub, this.props.senderInfo.sub, event.target.files[0].name);
     }
-    this.props.handleChatM(event.target.files[0], this.props.chatmateInfo.sub, this.props.senderInfo.sub, event.target.files[0].name);
   }
 
   handleSendImage = () => {
-    //console.log(this.state)
     const myFilename = "previewFile." + this.state.imgSrcExt;
     const myImage = base64StringtoFile(this.state.imgSrc, myFilename);
+    this.setState({ file: null })
     this.props.sendChatM(myImage)
   }
 
@@ -319,7 +325,7 @@ class ChatBox extends PureComponent {
 
 
               {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
-                <React.Fragment>
+                <Box>
                   <StyledMenuItem onClick={() => {
                     this.removeFromQueue(this.props.helpingStudent)
                     this.props.viewChatBox();
@@ -337,7 +343,7 @@ class ChatBox extends PureComponent {
                     </ListItemIcon>
                     <ListItemText primary="Done" />
                   </StyledMenuItem>
-                </React.Fragment>
+                </Box>
                 : null}
 
 
@@ -365,7 +371,7 @@ class ChatBox extends PureComponent {
             {/* CURRENTLY HELPING TEXT */}
             {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
               <Paper className={classes.helpStatus}>
-                <Typography variant="subtitle4">Currently Helping....</Typography>
+                <Typography variant="subtitle2">Currently Helping....</Typography>
               </Paper>
               : null}
 
@@ -416,7 +422,7 @@ class ChatBox extends PureComponent {
                                   className={classes.chatText}
                                 >
                                   {convo.chat_type === "image" 
-                                  ? <img style={{ width: "100%" }} src={require(`../../images/chat-images/${convo.message}`)} alt="" />
+                                  ? <img style={{ width: "100%" }} src={`/images/chat-images/${convo.message}`} alt="" />
                                   : <TextareaAutosize
                                     readOnly
                                     className={classes.textAreaChat}
@@ -554,7 +560,7 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChatM(this.props.helpingStudent_sub)
+                            this.props.sendChatM()
                           }
                         }
                       }}

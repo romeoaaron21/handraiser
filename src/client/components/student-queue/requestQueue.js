@@ -208,7 +208,7 @@ class requestQueue extends Component {
             <Box item="true" xs={12} sm={8} mt={2}>
               <Grid container>
                 {this.props.members.length > 0 ? (
-                  this.props.members.map(member =>
+                  this.props.members.map((member, i) =>
                     member.status === "waiting" &&
                     parseInt(this.props.cohort_id) ===
                       parseInt(member.cohort_id) ? (
@@ -304,7 +304,7 @@ class requestQueue extends Component {
                           member.status === "waiting" &&
                           member.cohort_id === parseInt(this.props.cohort_id)
                       ).length === 0 ? (
-                      <Grid container className={classes.emptyQueue}>
+                      <Grid container className={classes.emptyQueue} key={i}>
                         <img
                           src={EmptyQueue}
                           alt="img"

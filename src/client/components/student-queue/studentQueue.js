@@ -654,7 +654,6 @@ class Student extends PureComponent {
   };
 
   render() {
-    console.log(this.state.assist_id);
     const { classes } = this.props;
     return (
       <React.Fragment>
