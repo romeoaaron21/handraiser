@@ -149,6 +149,7 @@ class Student extends PureComponent {
       classHeaderImage: null,
 
       assist_id: "",
+      assist:[]
       //end added dh
 
       //image chat
@@ -291,6 +292,7 @@ class Student extends PureComponent {
       "patch"
     );
     data.then(res => {
+      // this.fetchAssist(memberid,assistid); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<< request
       this.fetchStudents();
       socket.emit("helpStudent", res.data[0]);
     });
@@ -298,7 +300,7 @@ class Student extends PureComponent {
 
   helpStudentClose = () => {
     socket.emit("close", "1");
-    this.setState({ mentorChatBox: false });
+    // this.setState({ mentorChatBox: false });  //<<<<<<<<<<<<<<<<<<<<<<<<<<< SOCKET CLOSE CHAT BOX
   };
 
   removeStudentRequest = id => {
@@ -329,7 +331,13 @@ class Student extends PureComponent {
         (priv[1] === this.state.sub && priv[2] === this.state.chatmateSub) ||
         (priv[2] === this.state.sub && priv[1] === this.state.chatmateSub)
       ) {
-        this.setState({ studentChatText: priv[0] });
+        if(!priv[3]){
+          this.setState({ studentChatText: priv[0] });
+          console.log(this.state.studentChatText)
+        }
+        else {
+          this.setState({ imageChat: priv[0], imageChatName: priv[3] });
+        }
       }
     });
 
@@ -469,7 +477,7 @@ class Student extends PureComponent {
               return this.setState({
                 helpingStudent: member,
                 button: true,
-                btntext: "Currently Helping"
+                btntext: "Currently Helping"         
               });
             } else if (member.sub === this.state.sub) {
               return this.setState({
@@ -480,9 +488,9 @@ class Student extends PureComponent {
               this.setState({
                 helpingStudent: member
               });
-              if (this.state.previledge == "mentor") {
-                this.selectChatmate(member.sub);
-              }
+              // if (this.state.previledge == "mentor") {
+              //   this.selectChatmate(member.sub);           //<< SOCKET ON CHATBOX
+              // }
             } else {
               return null;
             }
@@ -516,6 +524,19 @@ class Student extends PureComponent {
         });
       });
   };
+
+  // fetchAssist = (student_id,mentor_id) => {
+  //   // console.log(student_id,"-",mentor_id)
+  //   api.fetch(
+  //     `/api/fetchAssist/${student_id}/${mentor_id}`,
+  //     "get"
+  //   ).then(data=>{
+  //     data.data.map(val=>{
+  //       this.setState({assist: val})
+  //     })
+      
+  //   })
+  // }
 
   componentDidMount() {
     this.setState({ loader: true });

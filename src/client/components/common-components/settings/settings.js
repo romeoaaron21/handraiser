@@ -161,12 +161,24 @@ const styles = theme => ({
     }
   },
   input: {
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#9b44af"
+    },
+    "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#f44336 !important"
+    },
     "@media (max-width: 425px)": {
       height: "40px",
       fontSize: "13px"
     }
   },
   label: {
+    "&.Mui-error": {
+      color: "#f44336 !important"
+    },
+    "&.Mui-focused": {
+      color: "#9b44af"
+    },
     "&.MuiInputLabel-shrink": {
       background: "white",
       paddingLeft: "6px",
@@ -216,6 +228,7 @@ class Settings extends PureComponent {
 
     this.state = {
       loader: true,
+      loaderTab: false,
       id: this.props.match.params.cid,
       status: false,
       modal: false,
@@ -284,7 +297,13 @@ class Settings extends PureComponent {
   }
 
   remount = () => {
+    this.setState({
+      loaderTab: true
+    });
     this.componentDidMount();
+    setTimeout(() => {
+      this.setState({ loaderTab: false });
+    }, 1000);
   };
 
   //NAVIGATION
@@ -499,354 +518,382 @@ class Settings extends PureComponent {
                   Cohort Settings
                 </Typography>
                 <Divider className={classes.divider} />
-                <div className={classes.vTab}>
-                  <Tabs
-                    orientation="vertical"
-                    variant="scrollable"
-                    value={this.state.tab}
-                    onChange={this.handleChangeTab}
-                    aria-label="Vertical tabs example"
-                    className={classes.tabs}
-                  >
-                    <Tab label="Cohort Name" {...a11yProps(0)} />
-                    <Tab label="Cohort Password" {...a11yProps(1)} />
-                    <Tab label="Co-Mentor" {...a11yProps(2)} />
-                    <Tab label="Delete Cohort" {...a11yProps(3)} />
-                  </Tabs>
-
-                  {/* COHORT NAME START */}
-                  <TabPanel
-                    value={this.state.tab}
-                    index={0}
-                    className={classes.tabPanel}
-                  >
-                    <Grid container className={classes.itemSettings}>
-                      <Grid item xs={12} sm={5}>
-                        <Typography variant="h6" className={classes.name}>
-                          New cohort name
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={7} className={classes.responsive}>
-                        <TextField
-                          id="outlined-name"
-                          label="Cohort Name"
-                          name="name"
-                          className={classes.textField}
-                          InputProps={{ classes: { root: classes.input } }}
-                          fullWidth
-                          defaultValue={this.state.name}
-                          margin="normal"
-                          variant="outlined"
-                          onKeyUp={this.handleNameChange}
-                          error={this.state.errorNewName}
-                          helperText={
-                            this.state.errorNewName ? "Name is required" : " "
-                          }
-                          onBlur={this.checkNewNameBlur}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={5}>
-                        <Typography variant="h6" className={classes.name}>
-                          Lock this Cohort
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={2} className={classes.responsive}>
-                        <Switch
-                          checked={this.state.status}
-                          value={this.state.status}
-                          onClick={() => {
-                            this.setState({
-                              status: !this.state.status
-                            });
-                          }}
-                          color="primary"
-                          inputProps={{ "aria-label": "primary checkbox" }}
-                        />
-                      </Grid>
-                    </Grid>
-
-                    <Grid container className={classes.settingsBtn}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        className={classes.button}
-                        onClick={() => (window.location.href = `/cohorts`)}
-                      >
-                        cancel
-                      </Button>
-                      {this.state.name !== this.state.oldname ||
-                      this.state.newpassword !== "" ||
-                      this.state.status !== this.state.oldStatus ? (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          className={classes.button}
-                          onClick={() => {
-                            this.submit(
-                              this.state.name,
-                              this.state.oldpassword,
-                              this.state.newpassword,
-                              this.state.status
-                            );
-                          }}
-                        >
-                          save
-                        </Button>
-                      ) : null}
-                    </Grid>
-                  </TabPanel>
-                  {/* COHORT NAME END */}
-
-                  {/* COHORT PASSWORD START */}
-                  <TabPanel
-                    value={this.state.tab}
-                    index={1}
-                    className={classes.tabPanel}
-                  >
-                    {/* COHORT PASSWORD START */}
-                    <Grid container className={classes.itemSettings}>
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="h6" className={classes.name}>
-                          Enter old password:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={8} className={classes.responsive}>
-                        <TextField
-                          id="outlined-adornment-oldpassword"
-                          className={clsx(classes.margin, classes.textField)}
-                          variant="outlined"
-                          type={
-                            this.state.showOldPassword ? "text" : "password"
-                          }
-                          label="Old Password"
-                          InputLabelProps={{
-                            classes: { outlined: classes.label }
-                          }}
-                          name="oldpassword"
-                          defaultValue={this.state.oldpassword}
-                          onKeyUp={this.checkOldPass}
-                          error={
-                            this.state.errorOldPass || !this.state.passwordMatch
-                          }
-                          helperText={
-                            this.state.errorOldPass
-                              ? "Password is required!"
-                              : !this.state.passwordMatch
-                              ? "Password is incorrect!"
-                              : " "
-                          }
-                          onBlur={this.checkOldPassBlur}
-                          InputProps={{
-                            classes: { root: classes.input },
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  edge="end"
-                                  aria-label="toggle password visibility"
-                                  onClick={this.handleClickShowOldPassword}
-                                  onMouseDown={this.handleMouseDownPassword}
-                                >
-                                  {this.state.showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                    <Grid
-                      container
-                      className={classes.itemSettings}
-                      style={{ marginTop: "1%" }}
+                {this.state.loaderTab === true ? (
+                  <Loader content="Loading details..." />
+                ) : (
+                  <div className={classes.vTab}>
+                    <Tabs
+                      orientation="vertical"
+                      variant="scrollable"
+                      value={this.state.tab}
+                      onChange={this.handleChangeTab}
+                      aria-label="Vertical tabs example"
+                      className={classes.tabs}
                     >
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="h6" className={classes.name}>
-                          Enter new password:
-                        </Typography>
+                      <Tab label="Cohort Name" {...a11yProps(0)} />
+                      <Tab label="Cohort Password" {...a11yProps(1)} />
+                      <Tab label="Co-Mentor" {...a11yProps(2)} />
+                      <Tab label="Delete Cohort" {...a11yProps(3)} />
+                    </Tabs>
+
+                    {/* COHORT NAME START */}
+                    <TabPanel
+                      value={this.state.tab}
+                      index={0}
+                      className={classes.tabPanel}
+                    >
+                      <Grid container className={classes.itemSettings}>
+                        <Grid item xs={12} sm={5}>
+                          <Typography variant="h6" className={classes.name}>
+                            New cohort name
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          sm={7}
+                          className={classes.responsive}
+                        >
+                          <TextField
+                            id="outlined-name"
+                            label="Cohort Name"
+                            name="name"
+                            className={classes.textField}
+                            InputLabelProps={{
+                              classes: { outlined: classes.label }
+                            }}
+                            InputProps={{ classes: { root: classes.input } }}
+                            fullWidth
+                            defaultValue={this.state.name}
+                            margin="normal"
+                            variant="outlined"
+                            onKeyUp={this.handleNameChange}
+                            error={this.state.errorNewName}
+                            helperText={
+                              this.state.errorNewName ? "Name is required" : " "
+                            }
+                            onBlur={this.checkNewNameBlur}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} sm={5}>
+                          <Typography variant="h6" className={classes.name}>
+                            Lock this Cohort
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          sm={2}
+                          className={classes.responsive}
+                        >
+                          <Switch
+                            checked={this.state.status}
+                            value={this.state.status}
+                            onClick={() => {
+                              this.setState({
+                                status: !this.state.status
+                              });
+                            }}
+                            color="primary"
+                            inputProps={{ "aria-label": "primary checkbox" }}
+                          />
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12} sm={8} className={classes.responsive}>
-                        <TextField
-                          id="outlined-adornment-newpassword"
-                          className={clsx(classes.margin, classes.textField)}
-                          variant="outlined"
-                          type={
-                            this.state.showNewPassword ? "text" : "password"
-                          }
-                          label="New Password"
-                          InputLabelProps={{
-                            classes: { outlined: classes.label }
-                          }}
-                          name="newpassword"
-                          defaultValue={this.state.newpassword}
-                          onKeyUp={this.checkNewPass}
-                          error={this.state.errorNewPass}
-                          helperText={
-                            this.state.errorNewPass
-                              ? "Password is required!"
-                              : " "
-                          }
-                          onBlur={this.checkNewPassBlur}
-                          onFocus={this.onFocusToNewPass}
-                          InputProps={{
-                            classes: { root: classes.input },
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  edge="end"
-                                  aria-label="toggle password visibility"
-                                  onClick={this.handleClickShowNewPassword}
-                                  onMouseDown={this.handleMouseDownPassword}
-                                >
-                                  {this.state.showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                    <Grid container className={classes.settingsBtn}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        className={classes.button}
-                        onClick={() => (window.location.href = `/cohorts`)}
-                      >
-                        cancel
-                      </Button>
-                      {this.state.name !== this.state.oldname ||
-                      (this.state.newpassword !== "" &&
-                        this.state.passwordMatch) ||
-                      this.state.status !== this.state.oldStatus ? (
+
+                      <Grid container className={classes.settingsBtn}>
                         <Button
                           variant="contained"
-                          color="primary"
                           size="small"
                           className={classes.button}
-                          onClick={() => {
-                            this.submit(
-                              this.state.name,
-                              this.state.oldpassword,
-                              this.state.newpassword,
-                              this.state.status
-                            );
-                          }}
+                          onClick={() => (window.location.href = `/cohorts`)}
                         >
-                          save
+                          cancel
                         </Button>
-                      ) : null}
-                    </Grid>
-                    {/* COHORT PASSWORD END */}
-                  </TabPanel>
-                  {/* COHORT PASSWORD END */}
+                        {this.state.name !== this.state.oldname ||
+                        this.state.newpassword !== "" ||
+                        this.state.status !== this.state.oldStatus ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            className={classes.button}
+                            onClick={() => {
+                              this.submit(
+                                this.state.name,
+                                this.state.oldpassword,
+                                this.state.newpassword,
+                                this.state.status
+                              );
+                            }}
+                          >
+                            save
+                          </Button>
+                        ) : null}
+                      </Grid>
+                    </TabPanel>
+                    {/* COHORT NAME END */}
 
-                  <TabPanel
-                    value={this.state.tab}
-                    index={2}
-                    className={classes.tabPanel}
-                  >
-                    {/* ADD CO-MENTOR START */}
-                    <span style={{ marginLeft: "10px" }}>CO-MENTOR</span>
-                    <List>
-                      {this.state.coMentor.map(row => {
-                        return (
-                          <React.Fragment key={row.id}>
-                            <ListItem
-                              alignItems="center"
-                              className={classes.listItem}
-                            >
-                              <ListItemAvatar>
-                                <Avatar
-                                  className={classes.avatar}
-                                  alt={`${row.id}`}
-                                  src={`${row.avatar}`}
-                                />
-                              </ListItemAvatar>
-                              <ListItemText>
-                                <Typography className={classes.list}>
-                                  {`${row.first_name} ${row.last_name}`}
-                                </Typography>
-                              </ListItemText>
-                            </ListItem>
-                          </React.Fragment>
-                        );
-                      })}
-                      <ListItem
-                        alignItems="center"
-                        className={classes.listItem}
+                    {/* COHORT PASSWORD START */}
+                    <TabPanel
+                      value={this.state.tab}
+                      index={1}
+                      className={classes.tabPanel}
+                    >
+                      {/* COHORT PASSWORD START */}
+                      <Grid container className={classes.itemSettings}>
+                        <Grid item xs={12} sm={4}>
+                          <Typography variant="h6" className={classes.name}>
+                            Enter old password:
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          sm={8}
+                          className={classes.responsive}
+                        >
+                          <TextField
+                            id="outlined-adornment-oldpassword"
+                            className={clsx(classes.margin, classes.textField)}
+                            variant="outlined"
+                            type={
+                              this.state.showOldPassword ? "text" : "password"
+                            }
+                            label="Old Password"
+                            InputLabelProps={{
+                              classes: { outlined: classes.label }
+                            }}
+                            name="oldpassword"
+                            defaultValue={this.state.oldpassword}
+                            onKeyUp={this.checkOldPass}
+                            error={
+                              this.state.errorOldPass ||
+                              !this.state.passwordMatch
+                            }
+                            helperText={
+                              this.state.errorOldPass
+                                ? "Password is required!"
+                                : !this.state.passwordMatch
+                                ? "Password is incorrect!"
+                                : " "
+                            }
+                            onBlur={this.checkOldPassBlur}
+                            InputProps={{
+                              classes: { root: classes.input },
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="toggle password visibility"
+                                    onClick={this.handleClickShowOldPassword}
+                                    onMouseDown={this.handleMouseDownPassword}
+                                  >
+                                    {this.state.showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              )
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        container
+                        className={classes.itemSettings}
+                        style={{ marginTop: "1%" }}
                       >
-                        <ListItemAvatar
+                        <Grid item xs={12} sm={4}>
+                          <Typography variant="h6" className={classes.name}>
+                            Enter new password:
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          sm={8}
+                          className={classes.responsive}
+                        >
+                          <TextField
+                            id="outlined-adornment-newpassword"
+                            className={clsx(classes.margin, classes.textField)}
+                            variant="outlined"
+                            type={
+                              this.state.showNewPassword ? "text" : "password"
+                            }
+                            label="New Password"
+                            InputLabelProps={{
+                              classes: { outlined: classes.label }
+                            }}
+                            name="newpassword"
+                            defaultValue={this.state.newpassword}
+                            onKeyUp={this.checkNewPass}
+                            error={this.state.errorNewPass}
+                            helperText={
+                              this.state.errorNewPass
+                                ? "Password is required!"
+                                : " "
+                            }
+                            onBlur={this.checkNewPassBlur}
+                            onFocus={this.onFocusToNewPass}
+                            InputProps={{
+                              classes: { root: classes.input },
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="toggle password visibility"
+                                    onClick={this.handleClickShowNewPassword}
+                                    onMouseDown={this.handleMouseDownPassword}
+                                  >
+                                    {this.state.showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              )
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container className={classes.settingsBtn}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          className={classes.button}
+                          onClick={() => (window.location.href = `/cohorts`)}
+                        >
+                          cancel
+                        </Button>
+                        {this.state.name !== this.state.oldname ||
+                        (this.state.newpassword !== "" &&
+                          this.state.passwordMatch) ||
+                        this.state.status !== this.state.oldStatus ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            className={classes.button}
+                            onClick={() => {
+                              this.submit(
+                                this.state.name,
+                                this.state.oldpassword,
+                                this.state.newpassword,
+                                this.state.status
+                              );
+                            }}
+                          >
+                            save
+                          </Button>
+                        ) : null}
+                      </Grid>
+                      {/* COHORT PASSWORD END */}
+                    </TabPanel>
+                    {/* COHORT PASSWORD END */}
+
+                    <TabPanel
+                      value={this.state.tab}
+                      index={2}
+                      className={classes.tabPanel}
+                    >
+                      {/* ADD CO-MENTOR START */}
+                      <span style={{ marginLeft: "10px" }}>CO-MENTOR</span>
+                      <List>
+                        {this.state.coMentor.map(row => {
+                          return (
+                            <React.Fragment key={row.id}>
+                              <ListItem
+                                alignItems="center"
+                                className={classes.listItem}
+                              >
+                                <ListItemAvatar>
+                                  <Avatar
+                                    className={classes.avatar}
+                                    alt={`${row.id}`}
+                                    src={`${row.avatar}`}
+                                  />
+                                </ListItemAvatar>
+                                <ListItemText>
+                                  <Typography className={classes.list}>
+                                    {`${row.first_name} ${row.last_name}`}
+                                  </Typography>
+                                </ListItemText>
+                              </ListItem>
+                            </React.Fragment>
+                          );
+                        })}
+                        <ListItem
+                          alignItems="center"
+                          className={classes.listItem}
+                        >
+                          <ListItemAvatar
+                            onClick={() => {
+                              this.openACM();
+                            }}
+                          >
+                            <Fab
+                              className={classes.fab}
+                              size="small"
+                              color="primary"
+                              aria-label="add"
+                            >
+                              <AddIcon className={classes.addIcon} />
+                            </Fab>
+                          </ListItemAvatar>
+                          <ListItemText>
+                            <Typography className={classes.list}>
+                              {`ADD CO-MENTOR`}
+                            </Typography>
+                          </ListItemText>
+                        </ListItem>
+                      </List>
+                      {/*ADD CO-MENTOR END */}
+                    </TabPanel>
+                    <TabPanel
+                      value={this.state.tab}
+                      index={3}
+                      className={classes.tabPanel}
+                    >
+                      {/* DELETE COHORT START */}
+                      <Grid item xs={12} sm={12}>
+                        <Typography variant="subtitle1" gutterBottom>
+                          <b style={{ color: "red", letterSpacing: 5 }}>
+                            WARNING:{" "}
+                          </b>
+                          This will delete the cohort along with its contents.
+                          This proccess is <b>irreversible</b>.
+                        </Typography>
+                      </Grid>
+
+                      <Grid container className={classes.settingsBtn}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          className={classes.button}
+                          onClick={() => (window.location.href = `/cohorts`)}
+                        >
+                          cancel
+                        </Button>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          className={classes.deleteBtn}
                           onClick={() => {
-                            this.openACM();
+                            this.openModal();
                           }}
                         >
-                          <Fab
-                            className={classes.fab}
-                            size="small"
-                            color="primary"
-                            aria-label="add"
-                          >
-                            <AddIcon className={classes.addIcon} />
-                          </Fab>
-                        </ListItemAvatar>
-                        <ListItemText>
-                          <Typography className={classes.list}>
-                            {`ADD CO-MENTOR`}
-                          </Typography>
-                        </ListItemText>
-                      </ListItem>
-                    </List>
-                    {/*ADD CO-MENTOR END */}
-                  </TabPanel>
-                  <TabPanel
-                    value={this.state.tab}
-                    index={3}
-                    className={classes.tabPanel}
-                  >
-                    {/* DELETE COHORT START */}
-                    <Grid item xs={12} sm={12}>
-                      <Typography variant="subtitle1" gutterBottom>
-                        <b style={{ color: "red", letterSpacing: 5 }}>
-                          WARNING:{" "}
-                        </b>
-                        This will delete the cohort along with its contents.
-                        This proccess is <b>irreversible</b>.
-                      </Typography>
-                    </Grid>
-
-                    <Grid container className={classes.settingsBtn}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        className={classes.button}
-                        onClick={() => (window.location.href = `/cohorts`)}
-                      >
-                        cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        className={classes.deleteBtn}
-                        onClick={() => {
-                          this.openModal();
-                        }}
-                      >
-                        delete
-                      </Button>
-                    </Grid>
-                    {/*DELETE COHORT END */}
-                  </TabPanel>
-                </div>
+                          delete
+                        </Button>
+                      </Grid>
+                      {/*DELETE COHORT END */}
+                    </TabPanel>
+                  </div>
+                )}
               </Paper>
             </React.Fragment>
           )}
