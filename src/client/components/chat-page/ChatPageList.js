@@ -24,9 +24,37 @@ class ChatPageList extends PureComponent {
     super(props);
   }
 
+
+  convoMessage = (chatListSub, need) => {
+    // console.log(chatListSub, need)
+    let conversation = [];
+    this.props.conversation.map(convo => {
+      if (convo.cohort_id === 'all') {
+        if ((convo.sender_id === this.props.sub && convo.chatmate_id === chatListSub) ||
+          (convo.chatmate_id === this.props.sub && convo.sender_id === chatListSub)) {
+          conversation.push(convo)
+        }
+      }
+      // return conversation
+    })
+    if (conversation.length !== 0) {
+      if (need === 'message') {
+        return conversation[conversation.length - 1].message
+      }
+      else if (need === 'time') {
+        let display = conversation[conversation.length - 1].time.split(" ");
+        return `${display[3]} ${display[4]}`;
+      }
+    }
+    else {
+      if (need === 'message') {
+        return 'No conversation'
+      }
+    }
+  }
+
   render() {
-    console.log(this.props.chatListInfo)
-    console.log(this.props.conversation)
+    // console.log(this.props.chatListInfo)
     const { classes } = this.props;
     return (
       <Grid item md={3} xs={4}>
@@ -70,29 +98,36 @@ class ChatPageList extends PureComponent {
 
           <div className={`${classes.scrollBar} ${classes.chatListWrapper}`}>
             <List>
-              <ListItem alignItems="flex-start" button>
-                <Hidden only="xs">
-                  <ListItemAvatar>
-                    <Avatar> TL </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Trizha Kate Longaza"
-                    secondary=" I'll be in your neighborhood doing errands this"
-                  />
-                </Hidden>
-                <Hidden smUp>
-                  <div
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <Avatar> TL </Avatar>
-                  </div>
-                </Hidden>
-              </ListItem>
-              <Divider />
+              {this.props.chatListInfo.length !== 0 ?
+                this.props.chatListInfo.map((chatmate, i) => (
+                  <React.Fragment key = {i}>
+                  <ListItem alignItems="flex-start" button>
+                    <Hidden only="xs">
+                      <ListItemAvatar>
+                        <Avatar src={chatmate.avatar}/>
+                      </ListItemAvatar>
+                      <ListItemText primary={`${chatmate.first_name} ${chatmate.last_name}`} secondary={this.convoMessage(chatmate.sub, 'message')}>
+                      </ListItemText>
+                    </Hidden>
+                    <Hidden smUp>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center"
+                        }}
+                      >
+                        <Avatar> TLasd </Avatar>
+                      </div>
+                    </Hidden>
+                  </ListItem>
+                  <Divider />
+                  </React.Fragment>
+                ))
+                :
+                null
+              }
+
             </List>
           </div>
         </Paper>

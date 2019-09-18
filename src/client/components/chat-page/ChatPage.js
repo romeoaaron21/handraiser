@@ -50,7 +50,6 @@ class ChatPage extends PureComponent {
     const socket = io(socketUrl);
 
     socket.on("getNormalChat", (conversation) => {
-      // console.log(conversation)
       this.setState({ conversation: conversation[0] });
 
       if (conversation[1] === this.props.match.params.userSub) {
@@ -79,18 +78,23 @@ class ChatPage extends PureComponent {
   }
 
   displayChatList = () => {
+    let sub = [];
+    let UniqueSub = [];
     const data = api.fetch(`/api/getChatList/${this.props.match.params.userSub}`, "get")
     data.then(res => {
       res.data.map(chatListSub => {
-        api.fetch(`/api/getChatListInformation/${chatListSub.sender_id}`, "get")
-          .then(res => {
-            this.setState(prevState => ({
-              chatListInfo: [...prevState.chatListInfo, res.data]
-            }))
-          })
-
+        sub.push(chatListSub.chatsub)
       })
     })
+    .then(() => {
+      UniqueSub = [...new Set(sub)];
+    })
+    .then(() => {
+        api.fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
+          .then(res => {
+            this.setState({ chatListInfo: [...res.data] })
+          })
+      })
   }
 
   componentDidUpdate() {
@@ -117,14 +121,13 @@ class ChatPage extends PureComponent {
   getConversation = () => {
     const data = api.fetch(`/api/getChat`, "get");
     data.then(res => {
-      this.setState({ conversation: res.data })
+      this.setState({ conversation: [...res.data] })
     });
   }
 
   setChatText = (val) => {
-    this.setState({ senderText: val })
     let textVal = [val, this.state.chatmateSub, this.props.match.params.userSub];
-
+    
     socket.emit('setStudentChatText', textVal)
 
   };
@@ -167,6 +170,7 @@ class ChatPage extends PureComponent {
     data.then(res => {
       const chat = [res.data, this.props.match.params.userSub]
       socket.emit('getNormalChat', chat)
+      this.displayChatList();
     });
   };
 
@@ -193,7 +197,7 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation}/>
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.props.match.params.userSub} />
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} />
             <ChatPageInfo />
           </Grid>

@@ -32,7 +32,10 @@ function getChatList(req, res) {
   const db = req.app.get("db");
   const { userSub } = req.params;
 
-  db.query(`SELECT distinct sender_id FROM chat where chatmate_id = '${userSub}' and cohort_id='all' UNION SELECT distinct chatmate_id FROM chat where sender_id = '${userSub}' and cohort_id='all'`)
+  // db.query(`SELECT distinct sender_id, chatmate_id, message, time FROM chat where chatmate_id = '${userSub}' and cohort_id='all' or sender_id = '${userSub}' and cohort_id='all' order by time DESC`)
+  db.query(`SELECT chatSub, id from (SELECT sender_id as chatSub, id FROM chat WHERE chatmate_id = '${userSub}'
+  UNION
+  SELECT chatmate_id as chatSub, id FROM chat WHERE sender_id = '${userSub}') as sub order by id DESC`)
   .then(chatSub => {
     res.status(200).json([...chatSub]);
   })
@@ -42,13 +45,22 @@ function getChatList(req, res) {
 function getChatListInformation(req, res) {
   const db = req.app.get("db");
   const { chatListSub } = req.params;
+  var ChatSub = chatListSub.split(',');
+  let users = []
 
-  db.users
-    .findOne({ sub: chatListSub })
-    .then((user) => {
-      res.status(200).json(user);
+  ChatSub.map((sub, i) => {
+    db.users
+    .findOne({ sub: sub })
+    .then(chatListInfo => {
+      users.push(chatListInfo)
+      if(i === ChatSub.length-1){
+        setTimeout(()=>{
+          res.status(200).json([...users])
+        },200)
+        
+      }
     })
-
+  })
 }
 
 
