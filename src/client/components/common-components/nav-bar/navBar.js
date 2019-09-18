@@ -18,6 +18,7 @@ import MessageIcon from "@material-ui/icons/Message";
 import AuthService from "../../../auth/AuthService";
 import api from "../../../services/fetchApi";
 import io from "socket.io-client";
+import HeaderBg from "../../../images/header.jpg"
 
 const socket = io("http://boom-handraiser.com:3001/");
 
@@ -25,7 +26,11 @@ const drawerWidth = 240;
 
 const styles = theme => ({
   appBarBg: {
-    backgroundColor: "#802694"
+  backgroundColor: "#802694",
+  backgroundImage: `url(${HeaderBg})`,
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
