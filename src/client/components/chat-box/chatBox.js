@@ -453,7 +453,7 @@ class ChatBox extends PureComponent {
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
-                      fullWidth
+                      fullWidth 
                       variant="outlined"
                       value={this.props.chat}
                       onClick={() => this.props.sendChatSub(this.props.chatmateInfo.sub)}
@@ -466,14 +466,14 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChat(this.props.helpingStudent_sub)
+                            this.props.sendChat()
                           }
                         }
                       }}
                     />
                     <IconButton
                       className={classes.sendIcon}
-                      onClick={this.props.sendChat}
+                      onClick={() => this.props.sendChat()}
                       disabled={
                         this.props.chat.replace(/^\s+/, "")
                           .replace(/\s+$/, "") === ""
