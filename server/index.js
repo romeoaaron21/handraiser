@@ -217,6 +217,7 @@ massive({
     comentor.availableMentor
   );
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
+  app.get("/api/fetchAssist/:student_id/:mentor_id", comentor.fetchAssist);
 
 
   //START of Normal Chatting
