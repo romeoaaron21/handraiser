@@ -147,7 +147,7 @@ class Student extends PureComponent {
       classHeaderImage: null,
 
       assist_id: "",
-      assist:[]
+      assist:[],
       //end added dh
 
       //image chat

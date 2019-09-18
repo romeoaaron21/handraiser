@@ -85,6 +85,7 @@ class ChatBox extends PureComponent {
       imgWidth: null,
       imgSrc: null,
       imgSrcExt: null,
+      assist:[]
     };
   }
 
