@@ -76,7 +76,21 @@ function availableMentor(req, res) {
     .catch(err => {
       console.log(err);
       res.status(500).end();
-    });
+    })
+}
+
+function fetchAssist(req, res) {
+  const db = req.app.get("db");
+  // SELECT requests.*,users.id as user_id from requests,users,member WHERE member.student_id=users.id AND member.id = requests.member_id AND users.id= 4 AND requests.assist_id=1
+  // SELECT *,users.id from requests,users,member WHERE member.student_id=users.id AND member.id = requests.member_id AND requests.member_id=${req.params.student_id} AND requests.assist_id=${req.params.mentor_id}
+  db.query(`SELECT requests.*,users.sub,users.id as user_id from requests,users,member WHERE member.student_id=users.id AND member.id = requests.member_id AND users.id= ${req.params.student_id} AND requests.assist_id=${req.params.mentor_id}`)
+    .then(data => {
+      res.status(200).json(data)
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).end();
+    })
 }
 
 module.exports = {
@@ -85,5 +99,6 @@ module.exports = {
   fetchMentors,
   fetchCoMentorCohorts,
   fetchCohorts,
-  availableMentor
+  availableMentor,
+  fetchAssist
 };

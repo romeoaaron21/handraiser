@@ -93,6 +93,23 @@ class ChatBox extends PureComponent {
 
   componentDidMount() {
     this.scrollToBottom();
+
+    if (this.props.privileged === "mentor") {
+      // console.log(this.props.senderInfo.id);
+      // console.log(this.props.chatmateInfo.id);
+      api.fetch(
+        `/api/fetchAssist/${this.props.chatmateInfo.id}/${this.props.senderInfo.id}`,
+        "get"
+      ).then(data => {
+        data.data.map(val => {
+          this.setState({ assist: val })
+        })
+        // console.log(data);
+
+      })
+
+    }
+
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -289,17 +306,23 @@ class ChatBox extends PureComponent {
               open={Boolean(this.state.openMenu)}
               onClose={this.handleClose}
             >
-              <StyledMenuItem onClick={this.props.viewChatBox}>
-                <ListItemIcon>
-                  <Close />
-                </ListItemIcon>
-                <ListItemText primary="Close Chat Box" />
-              </StyledMenuItem>
+              {this.state.assist.sub !== this.props.chatmateInfo.sub ?
+                <StyledMenuItem onClick={this.props.viewChatBox}>
+                  <ListItemIcon>
+                    <Close />
+                  </ListItemIcon>
+                  <ListItemText primary="Close Chat Box" />
+                </StyledMenuItem>
+                : null}
 
 
-              {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
+
+              {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
                 <React.Fragment>
-                  <StyledMenuItem onClick={() => this.removeFromQueue(this.props.helpingStudent)}>
+                  <StyledMenuItem onClick={() => {
+                    this.removeFromQueue(this.props.helpingStudent)
+                    this.props.viewChatBox();
+                  }}>
                     <ListItemIcon>
                       <BackToQueue />
                     </ListItemIcon>
@@ -315,13 +338,6 @@ class ChatBox extends PureComponent {
                   </StyledMenuItem>
                 </React.Fragment>
                 : null}
-
-
-
-
-
-
-
 
 
             </StyledMenu>
@@ -340,13 +356,13 @@ class ChatBox extends PureComponent {
           <Grid
             container
             className={`${classes.chatBoxBody} ${classes.scrollBar}`}
-            style={this.props.privileged === "mentor"? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}
+            style={this.props.privileged === "mentor" ? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}
           >
 
 
 
-
-            {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
+            {/* CURRENTLY HELPING TEXT */}
+            {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
               <Paper className={classes.helpStatus}>
                 <Typography variant="subtitle4">Currently Helping....</Typography>
               </Paper>
@@ -355,7 +371,7 @@ class ChatBox extends PureComponent {
 
 
 
-            <div className={`${classes.chatBoxBody} ${classes.scrollBar}`} style={this.props.privileged === "mentor"? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}>
+            <div className={`${classes.chatBoxBody} ${classes.scrollBar}`} style={this.props.privileged === "mentor" ? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}>
               <Grid
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
