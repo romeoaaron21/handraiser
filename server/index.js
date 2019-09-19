@@ -110,6 +110,9 @@ massive({
     socket.on("setStudentChatText", chatText => {
       io.emit("setStudentChatText", chatText);
     });
+    socket.on("seenNormalChat", chat => {
+      io.emit("seenNormalChat", chat);
+    });
     //END of Normal Student Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
@@ -235,6 +238,10 @@ massive({
 
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
   app.post("/api/sendStudentChat", chat.sendStudentChat);
+  app.get("/api/getChatList/:userSub", chat.getChatList);
+  app.get("/api/getChatListInformation/:chatListSub", chat.getChatListInformation);
+  app.patch("/api/seenNormalChat/", chat.seenNormalChat);
+  
 
   //END of Normal Chatting
 
