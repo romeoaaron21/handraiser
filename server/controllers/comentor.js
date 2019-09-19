@@ -93,6 +93,16 @@ function fetchAssist(req, res) {
     })
 }
 
+function studentBeingHelped(req,res){
+  const db = req.app.get("db")
+
+  db.query(
+    `SELECT users.*, requests.status,requests.assist_id, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${req.params.cohort_id} and requests.status = 'inprogress'`
+  ).then(student => {
+    return res.status(200).send(student);
+  });
+}
+
 module.exports = {
   addCoMentor,
   fetchCoMentor,
@@ -100,5 +110,6 @@ module.exports = {
   fetchCoMentorCohorts,
   fetchCohorts,
   availableMentor,
-  fetchAssist
+  fetchAssist,
+  studentBeingHelped
 };

@@ -413,6 +413,15 @@ class Settings extends PureComponent {
         errorOldPass: true
       });
     }
+    if (this.state.oldpassword !== this.state.password) {
+      this.setState({
+        passwordMatch: false
+      });
+    } else {
+      this.setState({
+        passwordMatch: true
+      });
+    }
   };
 
   checkNewPass = e => {
@@ -666,16 +675,16 @@ class Settings extends PureComponent {
                             }}
                             name="oldpassword"
                             defaultValue={this.state.oldpassword}
-                            onKeyUp={this.checkOldPass}
+                            onChange={this.checkOldPass}
                             error={
                               this.state.errorOldPass ||
                               !this.state.passwordMatch
                             }
                             helperText={
                               this.state.errorOldPass
-                                ? "Password is required!"
+                                ? "Old password is required!"
                                 : !this.state.passwordMatch
-                                ? "Password is incorrect!"
+                                ? "Old password is incorrect!"
                                 : " "
                             }
                             onBlur={this.checkOldPassBlur}
@@ -734,7 +743,7 @@ class Settings extends PureComponent {
                             error={this.state.errorNewPass}
                             helperText={
                               this.state.errorNewPass
-                                ? "Password is required!"
+                                ? "New password is required!"
                                 : " "
                             }
                             onBlur={this.checkNewPassBlur}

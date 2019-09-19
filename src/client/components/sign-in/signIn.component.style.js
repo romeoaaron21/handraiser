@@ -53,6 +53,31 @@ const styles = theme => ({
   },
   footer: {
     margin: "10% auto 0 auto"
+  },
+  inputLabel: {
+    "&.Mui-focused": {
+      color: "#802693"
+    }
+  },
+  inputField: {
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#802693"
+    },
+    "&:after": {
+      borderColor: "#802693"
+    }
+  },
+  signInBtn: {
+    color: "white",
+    backgroundColor: "#802693",
+    "&.Mui-disabled": {
+      color: "rgba(0, 0, 0, 0.26)",
+      backgroundColor: "white"
+    },
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#9932af"
+    }
   }
 });
 export default styles;

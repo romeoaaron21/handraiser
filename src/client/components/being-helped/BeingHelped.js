@@ -46,6 +46,10 @@ const styles = theme => ({
 class BeingHelped extends Component {
   render() {
     const { classes } = this.props;
+
+
+    console.log(this.props.currentlyHelping.length)
+
     return (
       <div>
         <Paper className={classes.leftNav}>
@@ -56,7 +60,8 @@ class BeingHelped extends Component {
           >
             Being helped
           </Typography>
-          <ListItem className={classes.list}>
+
+          {/* <ListItem className={classes.list}>
             {parseInt(this.props.helpingStudent.cohort_id) ===
             parseInt(this.props.cohort_id) ? (
               <React.Fragment>
@@ -91,7 +96,55 @@ class BeingHelped extends Component {
                 </Typography>
               </ListItemText>
             )}
-          </ListItem>
+          </ListItem> */}
+          {this.props.currentlyHelping.length > 0 ?
+
+            this.props.currentlyHelping.map(helpingStudent => {
+              return (<React.Fragment>
+                <ListItem className={classes.list}>
+
+                  <ListItemAvatar>
+                    <Avatar
+                      src={helpingStudent.avatar}
+                      className={classes.userAvatar}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText>
+                    <Typography component="p" className={classes.queueName}>
+                      {helpingStudent.first_name
+                        .charAt(0)
+                        .toUpperCase() +
+                        helpingStudent.first_name.slice(1)}{" "}
+                      {helpingStudent.last_name
+                        .charAt(0)
+                        .toUpperCase() +
+                        helpingStudent.last_name.slice(1)}
+                    </Typography>
+                  </ListItemText>
+
+                </ListItem>
+              </React.Fragment>)
+            })
+
+
+
+            : (<React.Fragment>
+              <ListItem className={classes.list}>
+                <ListItemText>
+                  <Typography
+                    style={{
+                      color: "#9e9e9e",
+                      textAlign: "center"
+                    }}
+                  >
+                    {"None"}
+                  </Typography>
+                </ListItemText>
+              </ListItem>
+            </React.Fragment>)
+          }
+
+
         </Paper>
       </div>
     );

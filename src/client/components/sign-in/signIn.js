@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import decode from "jwt-decode";
+import $ from "jquery";
 
 import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -9,6 +10,11 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Person from "@material-ui/icons/Person";
 import Typography from "@material-ui/core/Typography";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import TextField from "@material-ui/core/TextField";
 import GoogleLogin from "react-google-login";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,6 +25,7 @@ import api from "../../services/fetchApi";
 import AuthService from "../../auth/AuthService";
 import SignInKey from "./dialogs/validateKey";
 import GoogleSignIn from "./dialogs/googleSignIn";
+import PageLoader from "../../../admin/components/common-components/loader/loader";
 import io from "socket.io-client";
 
 const socket = io("http://boom-handraiser.com:3001/");
@@ -31,9 +38,19 @@ class SignInSide extends Component {
     this.state = {
       validateKeyDialog: false,
       signInGoogleDialog: false,
+      hiddenSignInDialog: false,
+      pageLoader: false,
+      usernameAdmin: " ",
+      passwordAdmin: " ",
       validatedKey: ""
     };
   }
+
+  handleChange = (e, options) => {
+    this.setState({
+      [options]: e.target.value
+    });
+  };
 
   componentDidMount() {
     document.title = "Welcome to Handraiser";
@@ -47,6 +64,14 @@ class SignInSide extends Component {
         window.location.href = "/404";
       }
     }
+
+    const changeState = this;
+
+    $(document).on("keydown", function(e) {
+      if (e.altKey && e.ctrlKey && e.shiftKey && e.which === 33) {
+        changeState.setState({ hiddenSignInDialog: true });
+      }
+    });
   }
 
   openValidateKeyDialog = () => this.setState({ validateKeyDialog: true });
@@ -58,6 +83,7 @@ class SignInSide extends Component {
   openSignInGoogle = key => this.setState({ signInGoogleDialog: true });
   closeSignInGoogle = () => this.setState({ signInGoogleDialog: false });
 
+  // UNCOMMENT THIS WHEN DEPLOY
   // responseGoogleStudent = google => {
   //   if(google.expectedDomain === 'boom.camp') {
   //     toast.error("Sorry, invalid email!", {
@@ -115,69 +141,115 @@ class SignInSide extends Component {
     });
   };
 
+  loginAdmin = e => {
+    this.Auth.login(this.state.usernameAdmin, this.state.passwordAdmin).then(
+      res => {
+        if (res.token === null) {
+          toast.error("Invalid username or password", {
+            hideProgressBar: true,
+            draggable: false
+          });
+        } else {
+          this.setState({ hiddenSignInDialog: false });
+          this.Auth.setToken(res.token);
+          if (this.state.passwordAdmin === "Admin123") {
+            this.setState({ pageLoader: true });
+            setTimeout(() => {
+              window.location.href = "/admin/default";
+            }, 4000);
+          } else {
+            this.setState({ pageLoader: true });
+            setTimeout(() => {
+              window.location.href = "/admin/keys";
+            }, 2000);
+          }
+        }
+      }
+    );
+  };
+
   render() {
     const { classes } = this.props;
+
     return (
       <React.Fragment>
-        <Container component="main" maxWidth="xs">
-          <ToastContainer
-            enableMultiContainer
-            position={toast.POSITION.TOP_RIGHT}
+        {this.state.pageLoader ? (
+          <PageLoader
+            content={
+              this.state.password === "Admin123"
+                ? "Redirecting, please bear for a second..."
+                : "Logging in..."
+            }
+            width="600px"
+            color="white"
           />
-          <div className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <Person />
-            </Avatar>
-            <Typography component="h1" variant="h6" className={classes.title}>
-              Sign in as..
-            </Typography>
-            <form className={classes.form}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <GoogleLogin
-                    clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
-                    // hostedDomain="boom.camp"
-                    onSuccess={this.responseGoogleStudent}
-                    onFailure={this.responseGoogleStudent}
-                    cookiePolicy={"single_host_origin"}
-                    render={renderProps => (
+        ) : (
+          <Container component="main" maxWidth="xs">
+            <ToastContainer
+              enableMultiContainer
+              position={toast.POSITION.TOP_RIGHT}
+            />
+            {this.state.hiddenSignInDialog ? null : (
+              <div className={classes.paper}>
+                <Avatar className={classes.avatar}>
+                  <Person />
+                </Avatar>
+                <Typography
+                  component="h1"
+                  variant="h6"
+                  className={classes.title}
+                >
+                  Sign in as..
+                </Typography>
+                <form className={classes.form}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <GoogleLogin
+                        clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
+                        // hostedDomain="boom.camp"
+                        onSuccess={this.responseGoogleStudent}
+                        onFailure={this.responseGoogleStudent}
+                        cookiePolicy={"single_host_origin"}
+                        render={renderProps => (
+                          <Button
+                            fullWidth={true}
+                            className={`${classes.submit} ${classes.studentBtn}`}
+                            onClick={renderProps.onClick}
+                            disabled={renderProps.disabled}
+                          >
+                            Student
+                          </Button>
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
                       <Button
-                        fullWidth={true}
-                        className={`${classes.submit} ${classes.studentBtn}`}
-                        onClick={renderProps.onClick}
-                        disabled={renderProps.disabled}
+                        fullWidth
+                        className={classes.submit}
+                        onClick={this.openValidateKeyDialog}
                       >
-                        Student
+                        Mentor
                       </Button>
-                    )}
-                  />
-                </Grid>
+                    </Grid>
+                  </Grid>
 
-                <Grid item xs={12}>
-                  <Button
-                    fullWidth
-                    className={classes.submit}
-                    onClick={this.openValidateKeyDialog}
-                  >
-                    Mentor
-                  </Button>
-                </Grid>
-              </Grid>
-
-              <Grid container alignItems="center">
-                <Grid item className={classes.footer}>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    align="center"
-                  >
-                    {"Hand Raiser 2019. Created by Team 3."}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </form>
-          </div>
-        </Container>
+                  <Grid container alignItems="center">
+                    <Grid item className={classes.footer}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        align="center"
+                      >
+                        {"Hand Raiser 2019. Created by Team 3."}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </form>
+              </div>
+            )}
+          </Container>
+        )}
 
         <Dialog open={this.state.validateKeyDialog}>
           <SignInKey
@@ -201,6 +273,86 @@ class SignInSide extends Component {
             }
             title="Successfully, validated"
           />
+        </Dialog>
+
+        {/* HIDDEN SIGN IN FOR SUPER ADMIN */}
+        <Dialog
+          open={this.state.hiddenSignInDialog}
+          aria-labelledby="form-dialog-title"
+          maxWidth="xs"
+        >
+          <DialogTitle id="form-dialog-title">
+            <Typography
+              style={{
+                color: "#802693",
+                textAlign: "center",
+                fontSize: "25px"
+              }}
+            >
+              Welcome Admin!
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText style={{ color: "#888888" }}>
+              This sign is just for you, please always secure your shortcut
+              keys.
+            </DialogContentText>
+            <TextField
+              style={{ marginTop: "2%", marginBottom: "-5px" }}
+              margin="dense"
+              id="name"
+              label="Username"
+              type="text"
+              fullWidth
+              onChange={e => this.handleChange(e, "usernameAdmin")}
+              onBlur={e => this.handleChange(e, "usernameAdmin")}
+              error={this.state.usernameAdmin === "" ? true : false}
+              helperText={
+                this.state.usernameAdmin === "" ? "Username is required" : " "
+              }
+              InputLabelProps={{ classes: { root: classes.inputLabel } }}
+              InputProps={{ classes: { root: classes.inputField } }}
+            />
+
+            <TextField
+              margin="dense"
+              id="name"
+              label="Password"
+              type="password"
+              fullWidth
+              onChange={e => this.handleChange(e, "passwordAdmin")}
+              onBlur={e => this.handleChange(e, "passwordAdmin")}
+              error={this.state.passwordAdmin === "" ? true : false}
+              helperText={
+                this.state.passwordAdmin === "" ? "Password is required" : " "
+              }
+              InputLabelProps={{ classes: { root: classes.inputLabel } }}
+              InputProps={{ classes: { root: classes.inputField } }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => this.setState({ hiddenSignInDialog: false })}
+              style={{ color: "#9600b5e0" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              classes={{ root: classes.signInBtn }}
+              onClick={() => this.loginAdmin()}
+              disabled={
+                this.state.usernameAdmin === " " ||
+                this.state.passwordAdmin === " " ||
+                this.state.usernameAdmin === "" ||
+                this.state.passwordAdmin === ""
+                  ? true
+                  : false
+              }
+              color="primary"
+            >
+              Sign in
+            </Button>
+          </DialogActions>
         </Dialog>
       </React.Fragment>
     );
