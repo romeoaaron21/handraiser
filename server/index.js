@@ -111,6 +111,11 @@ massive({
       io.emit("setStudentChatText", chatText);
     });
     //END of Normal Student Chat
+
+    socket.on("currentlyHelping", currentlyHelping => {
+      io.emit("currentlyHelping", currentlyHelping);
+    })
+
   });
   //WEBSOCKETS END
 
@@ -224,7 +229,8 @@ massive({
   );
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
   app.get("/api/fetchAssist/:student_id/:mentor_id", comentor.fetchAssist);
-
+  app.get("/api/studentBeingHelped/:cohort_id", comentor.studentBeingHelped);
+  //comentors END
   //START of Normal Chatting
 
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);

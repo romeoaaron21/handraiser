@@ -82,7 +82,7 @@ function requestHelp(req, res) {
       res.status(500).end();
     });
 }
- 
+  
 function deleteRequest(req, res) {
   const db = req.app.get("db");
   const { student_id, cohort_id } = req.params;

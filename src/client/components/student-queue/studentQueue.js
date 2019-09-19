@@ -155,7 +155,8 @@ class Student extends PureComponent {
 
       //image chat
       imageChat: null,
-      imageChatName: ""
+      imageChatName: "",
+      currently_helping: []
       //end image chat
     };
   }
@@ -277,14 +278,18 @@ class Student extends PureComponent {
     );
     data.then(res => {
       // this.fetchAssist(memberid,assistid); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<< request
+      // console.log(res.data[0]);
+      // this.setState(currently_helping);
+      this.setState({ currently_helping: res.data });
       this.fetchStudents();
       socket.emit("helpStudent", res.data[0]);
+      socket.emit("currentlyHelping", res.data);
     });
   };
 
   helpStudentClose = () => {
     socket.emit("close", "1");
-    // this.setState({ mentorChatBox: false });  //<<<<<<<<<<<<<<<<<<<<<<<<<<< SOCKET CLOSE CHAT BOX
+    this.setState({ mentorChatBox: false }); //<<<<<<<<<<<<<<<<<<<<<<<<<<< SOCKET CLOSE CHAT BOX
   };
 
   removeStudentRequest = id => {
@@ -308,6 +313,13 @@ class Student extends PureComponent {
 
     socket.on("displayBadge", () => {
       this.setState({ badge: false });
+    });
+
+    socket.on("currentlyHelping", data => {
+      // console.log(currentlyHelping)
+      if (this.state.previledge == "student") {
+        this.setState({ currently_helping: data });
+      }
     });
 
     socket.on("handleChat", priv => {
@@ -444,6 +456,7 @@ class Student extends PureComponent {
         });
       }
       this.fetchStudents();
+      this.fetchBeingHelped();
     });
 
     socket.on("displayStudents", students => {
@@ -471,7 +484,7 @@ class Student extends PureComponent {
               this.setState({
                 helpingStudent: member
               });
-              // if (this.state.previledge == "mentor") {
+              //   {
               //   this.selectChatmate(member.sub);           //<< SOCKET ON CHATBOX
               // }
             } else {
@@ -547,7 +560,17 @@ class Student extends PureComponent {
     api.fetch(`/specific/${this.props.cohort_id}`, "get").then(res => {
       this.setState({ classHeaderImage: res.data[0].class_header });
     });
+
+    this.fetchBeingHelped();
   }
+
+  fetchBeingHelped = () => {
+    api
+      .fetch(`/api/studentBeingHelped/${this.props.cohort_id}`, "get")
+      .then(res => {
+        this.setState({ currently_helping: res.data });
+      });
+  };
 
   requestHelp = () => {
     const data = api.fetch(
@@ -697,6 +720,7 @@ class Student extends PureComponent {
                         <BeingHelped
                           helpingStudent={this.state.helpingStudent}
                           cohort_id={this.props.cohort_id}
+                          currentlyHelping={this.state.currently_helping}
                         />
                       </Box>
                     </React.Fragment>
@@ -751,6 +775,7 @@ class Student extends PureComponent {
                           <BeingHelped
                             helpingStudent={this.state.helpingStudent}
                             cohort_id={this.props.cohort_id}
+                            currentlyHelping={this.state.currently_helping}
                           />
                         </div>
 
@@ -763,7 +788,6 @@ class Student extends PureComponent {
                           // /*BADGE*/ badge={this.state.badge}
                           // /*BADGE*/ displayBadge={this.displayBadge}
                           //     cohort_id={this.props.cohort_id}
-
                           //     sendChatSub={this.selectChatmate}
 
                           sendChatSub={this.selectChatmate}
@@ -814,25 +838,27 @@ class Student extends PureComponent {
                   </React.Fragment>
                 ) : this.state.mentorChatBox &&
                   this.state.previledge === "mentor" ? (
-                  <Grid item xs={12} sm={8}>
-                    <ChatBox
-                      viewChatBox={this.viewChatBox}
-                      sendChatM={this.sendChat}
-                      handleChatM={this.setChatText}
-                      chatM={this.state.mentorChatText}
-                      conversation={this.state.conversation}
-                      senderInfo={this.state.senderInfo}
-                      chatmateInfo={this.state.chatmateInfo}
-                      privileged={this.state.previledge}
-                      helpingStudent_sub={this.state.helpingStudent.sub}
-                      cohort_id={this.props.cohort_id}
-                      chat={this.state.studentChatText}
-                      displayBadge={this.displayBadge}
-                      helpStudentClose={this.helpStudentClose}
-                      helpingStudent={this.state.helpingStudent}
-                      sendChatSub={this.selectChatmate}
-                    />
-                  </Grid>
+                  <React.Fragment>
+                    <Grid item xs={12} sm={8}>
+                      <ChatBox
+                        viewChatBox={this.viewChatBox}
+                        sendChatM={this.sendChat}
+                        handleChatM={this.setChatText}
+                        chatM={this.state.mentorChatText}
+                        conversation={this.state.conversation}
+                        senderInfo={this.state.senderInfo}
+                        chatmateInfo={this.state.chatmateInfo}
+                        privileged={this.state.previledge}
+                        helpingStudent_sub={this.state.helpingStudent.sub}
+                        cohort_id={this.props.cohort_id}
+                        chat={this.state.studentChatText}
+                        displayBadge={this.displayBadge}
+                        helpStudentClose={this.helpStudentClose}
+                        helpingStudent={this.state.helpingStudent}
+                        sendChatSub={this.selectChatmate}
+                      />
+                    </Grid>
+                  </React.Fragment>
                 ) : (
                   <React.Fragment>
                     <Grid item xs={12} sm={8}>
