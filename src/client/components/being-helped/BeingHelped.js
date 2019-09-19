@@ -46,10 +46,6 @@ const styles = theme => ({
 class BeingHelped extends Component {
   render() {
     const { classes } = this.props;
-
-
-    console.log(this.props.currentlyHelping.length)
-
     return (
       <div>
         <Paper className={classes.leftNav}>

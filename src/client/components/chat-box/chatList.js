@@ -189,6 +189,16 @@ class ChatList extends PureComponent {
 
   render() {
     const { classes } = this.props;
+
+    const mentorFilter = this.props.mentor.filter((data) => {
+      let fname = data.first_name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      let lname = data.last_name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      if (fname) {
+        return fname;
+      } else {
+        return lname;
+      }
+    }) 
     return (
       <React.Fragment>
       {/* Chat List Header*/}
@@ -214,7 +224,7 @@ class ChatList extends PureComponent {
       >
         {/* Chat List */}
 
-        {this.props.mentor.map(mentor => (
+        {mentorFilter.map(mentor => (
           <ListItem className={classes.list} key={mentor.id} onClick={() => {
             this.props.sendChatSub(mentor.sub);
             this.unreadChat(mentor.sub)
@@ -290,9 +300,9 @@ export default withStyles(styles)(ChatList);
 //     "&::-webkit-scrollbar-thumb": {
 //       backgroundColor: "rgba(0,0,0,.1)",
 //       borderRadius: "10px",
-//       outline: "1px solid slategrey"
-//     }
-//   },
+//       outline: "1px solid slategrey"Queue Students
+//     }Queue Students
+//   },Queue Students
 //   leftNav: {
 //     marginTop: theme.spacing(2),
 //     padding: theme.spacing(1, 1),
@@ -327,7 +337,7 @@ export default withStyles(styles)(ChatList);
 //   },
 //   userAvatar: {
 //     width: 35,
-//     height: 35,
+//     height: 35,Queue Students
 //     "@media (max-width: 425px)": {
 //       width: 29,
 //       height: 29
