@@ -251,7 +251,7 @@ class ChatList extends PureComponent {
             </div>
           </ListItem>
         ))}
-        </List>
+      
         {/* End Chat List */}
 
         {/* End No Message Display */}
