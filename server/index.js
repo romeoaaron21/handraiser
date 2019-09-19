@@ -110,6 +110,9 @@ massive({
     socket.on("setStudentChatText", chatText => {
       io.emit("setStudentChatText", chatText);
     });
+    socket.on("seenNormalChat", chat => {
+      io.emit("seenNormalChat", chat);
+    });
     //END of Normal Student Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
@@ -148,7 +151,7 @@ massive({
   app.get("/api/cohorts/api", cohorts.getAll);
   app.get("/api/student/:id/cohorts/", cohorts.getCohortsByStudentID);
   app.get("/api/mentor/:id/cohorts/", cohorts.getByMentorID);
-  app.get("/api/cohorts/:id/:classHeader/delete", cohorts.deleteCohort);
+  app.post("/api/cohorts/:id/delete", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
   app.get(
@@ -207,7 +210,6 @@ massive({
 
   //UPLOAD IMAGE START
   //image chat try
-  app.post("/api/sendChat/image/:fileName", upload.imageChat);
   app.post("/upload/:cohortId", upload.image);
   app.get("/setToDeFault/:cohortId", upload.setToDefault);
   app.get("/specific/:cohortId", upload.cohort);
@@ -236,6 +238,10 @@ massive({
 
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
   app.post("/api/sendStudentChat", chat.sendStudentChat);
+  app.get("/api/getChatList/:userSub", chat.getChatList);
+  app.get("/api/getChatListInformation/:chatListSub", chat.getChatListInformation);
+  app.patch("/api/seenNormalChat/", chat.seenNormalChat);
+  
 
   //END of Normal Chatting
 

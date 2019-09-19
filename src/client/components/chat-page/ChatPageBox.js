@@ -144,12 +144,29 @@ class ChatPageBox extends Component {
                 placeholder="Send Message"
                 color="primary"
                 style={{ marginRight: 5 }}
-
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
+                onClick={()=>this.props.displayBadge(this.props.chatmateInfo.sub)}
+                onKeyUp={(e) => {
+                  if (e.target.value
+                    .replace(/^\s+/, "")
+                    .replace(/\s+$/, "") !== "") {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      this.props.sendChat()
+                    }
+                  }
+                }}
 
               />
-              <IconButton onClick={() => this.props.sendChat()}>
+              <IconButton 
+              onClick={() => this.props.sendChat()}
+              disabled={
+                this.props.senderText.replace(/^\s+/, "")
+                  .replace(/\s+$/, "") === ""
+                  ? true
+                  : false
+              }
+              >
                 <SendIcon />
               </IconButton>
             </div>

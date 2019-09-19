@@ -37,7 +37,7 @@ const styles = theme => ({
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)"
   },
   list: {
-    maxHeight: "60px",
+    maxHeight: "60px"
   },
   chatList: {
     maxHeight: "380px",
@@ -46,7 +46,7 @@ const styles = theme => ({
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
     overflowY: "scroll",
     borderBottomRightRadius: "5px",
-    borderBottomLeftRadius: "5px",
+    borderBottomLeftRadius: "5px"
   },
   emptyQueue: {
     marginTop: 65,
@@ -134,131 +134,154 @@ class ChatList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      search: "",
+      search: ""
     };
   }
 
-  unreadChat = (studentSub) => {
+  unreadChat = studentSub => {
     let count = 0;
     this.props.conversation.map(convo => {
       if (parseInt(convo.cohort_id) === parseInt(this.props.cohort_id)) {
-        if (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub) {
+        if (
+          convo.chatmate_id === this.props.sub &&
+          convo.sender_id === studentSub
+        ) {
           if (convo.seen === 0) {
-            count = count + 1
+            count = count + 1;
           }
         }
       }
-    })
-    return count
-  }
+    });
+    return count;
+  };
 
   convoMessage = (mentorSub, need) => {
     let conversation = [];
     this.props.conversation.map(convo => {
       if (parseInt(convo.cohort_id) === parseInt(this.props.cohort_id)) {
-        if ((convo.sender_id === this.props.sub && convo.chatmate_id === mentorSub) ||
-          (convo.chatmate_id === this.props.sub && convo.sender_id === mentorSub)) {
-          conversation.push(convo)
+        if (
+          (convo.sender_id === this.props.sub &&
+            convo.chatmate_id === mentorSub) ||
+          (convo.chatmate_id === this.props.sub &&
+            convo.sender_id === mentorSub)
+        ) {
+          conversation.push(convo);
         }
       }
-      return conversation
-    })
-    if(conversation.length !== 0){
-      if (need === 'message') {
-        if(conversation[conversation.length - 1].chat_type !== "text"){
-          return "Sent an image"
+      return conversation;
+    });
+    if (conversation.length !== 0) {
+      if (need === "message") {
+        if (conversation[conversation.length - 1].chat_type !== "text") {
+          return "Sent an image";
+        } else {
+          return conversation[conversation.length - 1].message;
         }
-        else {
-          return conversation[conversation.length - 1].message
-        }
-      } else if (need === 'time') {
+      } else if (need === "time") {
         let display = conversation[conversation.length - 1].time.split(" ");
         return `${display[3]} ${display[4]}`;
       }
-    }else{
-      if (need === 'message') {
-        return 'No conversation'
-      } 
+    } else {
+      if (need === "message") {
+        return "No conversation";
+      }
     }
-  }
+  };
 
   render() {
     const { classes } = this.props;
+
+    const mentorFilter = this.props.mentor.filter(data => {
+      let fname =
+        data.first_name
+          .toLowerCase()
+          .indexOf(this.state.search.toLowerCase()) !== -1;
+      let lname =
+        data.last_name
+          .toLowerCase()
+          .indexOf(this.state.search.toLowerCase()) !== -1;
+      if (fname) {
+        return fname;
+      } else {
+        return lname;
+      }
+    });
     return (
       <React.Fragment>
-      {/* Chat List Header*/}
-      <Paper className={classes.leftNav} square={true}>
-        <div className={classes.search}>
-          <div className={classes.searchIcon} />
-          <InputBase
-            className={classes.margin}
-            placeholder="Search Mentor"
-            inputProps={{ "aria-label": "naked" }}
-            fullWidth
-            onChange={e => this.setState({ search: e.target.value })}
-          />
-          <SearchIcon style={{ color: "#8c929c" }} />
-        </div>
-      </Paper>
-      {/* End Chat List Header*/}
+        {/* Chat List Header*/}
+        <Paper className={classes.leftNav} square={true}>
+          <div className={classes.search}>
+            <div className={classes.searchIcon} />
+            <InputBase
+              className={classes.margin}
+              placeholder="Search Mentor"
+              inputProps={{ "aria-label": "naked" }}
+              fullWidth
+              onChange={e => this.setState({ search: e.target.value })}
+            />
+            <SearchIcon style={{ color: "#8c929c" }} />
+          </div>
+        </Paper>
+        {/* End Chat List Header*/}
 
-      {/* Chat List Container*/}
-      <Paper
-        className={`${classes.chatList} ${classes.scrollBar}`}
-        square={true}
-      >
-        {/* Chat List */}
-        <List>
-        {this.props.mentor.map(mentor => (
-          <ListItem className={classes.list} key={mentor.id} onClick={() => {
-            this.props.sendChatSub(mentor.sub);
-            this.unreadChat(mentor.sub)
-          }} button>
-            <ListItemAvatar>
-              <Avatar src={mentor.avatar} className={classes.userAvatar} />
-            </ListItemAvatar>
-            <div className={classes.multiline}>
-              <Typography className={classes.chatName}>
-                {mentor.first_name + " " + mentor.last_name}
-              </Typography>
-              <Typography className={classes.chatDetails}>
-                {this.convoMessage(mentor.sub, 'message')}
-              </Typography>
-            </div>
-            <div className={classes.chatAction}>
-              <Typography className={classes.chatTime}>
-                {" "}
-                {this.convoMessage(mentor.sub, 'time')}{" "}
-              </Typography>
-              <Typography className={classes.chatBadge}>
-                <Badge
-                  color="secondary"
-                  badgeContent={this.unreadChat(mentor.sub)}
-                  invisible = {this.unreadChat(mentor.sub) === 0? true : false}
-                  className={classes.margin}
-                ></Badge>
-              </Typography>
-            </div>
-          </ListItem>
-        ))}
-        </List>
-        {/* End Chat List */}
+        {/* Chat List Container*/}
+        <Paper
+          className={`${classes.chatList} ${classes.scrollBar}`}
+          square={true}
+        >
+          {/* Chat List */}
+          <List>
+            {mentorFilter.map(mentor => (
+              <ListItem
+                className={classes.list}
+                key={mentor.id}
+                onClick={() => {
+                  this.props.sendChatSub(mentor.sub);
+                  this.unreadChat(mentor.sub);
+                }}
+                button
+              >
+                <ListItemAvatar>
+                  <Avatar src={mentor.avatar} className={classes.userAvatar} />
+                </ListItemAvatar>
+                <div className={classes.multiline}>
+                  <Typography className={classes.chatName}>
+                    {mentor.first_name + " " + mentor.last_name}
+                  </Typography>
+                  <Typography className={classes.chatDetails}>
+                    {this.convoMessage(mentor.sub, "message")}
+                  </Typography>
+                </div>
+                <div className={classes.chatAction}>
+                  <Typography className={classes.chatTime}>
+                    {" "}
+                    {this.convoMessage(mentor.sub, "time")}{" "}
+                  </Typography>
+                  <Typography className={classes.chatBadge}>
+                    <Badge
+                      color="secondary"
+                      badgeContent={this.unreadChat(mentor.sub)}
+                      invisible={
+                        this.unreadChat(mentor.sub) === 0 ? true : false
+                      }
+                      className={classes.margin}
+                    ></Badge>
+                  </Typography>
+                </div>
+              </ListItem>
+            ))}
+          </List>
+          {/* End Chat List */}
 
-        {/* End No Message Display */}
-      </Paper>
-      {/* End Chat List Container*/}
-    </React.Fragment>
+          {/* End No Message Display */}
+        </Paper>
+        {/* End Chat List Container*/}
+      </React.Fragment>
     );
   }
 }
 
 export default withStyles(styles)(ChatList);
-
-
-
-
-
-
 
 // import React, { PureComponent } from "react";
 // import { withStyles } from "@material-ui/core/styles";
@@ -286,9 +309,9 @@ export default withStyles(styles)(ChatList);
 //     "&::-webkit-scrollbar-thumb": {
 //       backgroundColor: "rgba(0,0,0,.1)",
 //       borderRadius: "10px",
-//       outline: "1px solid slategrey"
-//     }
-//   },
+//       outline: "1px solid slategrey"Queue Students
+//     }Queue Students
+//   },Queue Students
 //   leftNav: {
 //     marginTop: theme.spacing(2),
 //     padding: theme.spacing(1, 1),
@@ -323,7 +346,7 @@ export default withStyles(styles)(ChatList);
 //   },
 //   userAvatar: {
 //     width: 35,
-//     height: 35,
+//     height: 35,Queue Students
 //     "@media (max-width: 425px)": {
 //       width: 29,
 //       height: 29
@@ -550,7 +573,7 @@ export default withStyles(styles)(ChatList);
 //                 <React.Fragment key={i}>
 //                 {this.state.conversation.map(convo => (
 //                   this.state.conversation[this.state.conversation.length-1] === convo?
-                  
+
 //                     <ListItem
 //                       className={classes.list}
 //                       onClick={() => {
