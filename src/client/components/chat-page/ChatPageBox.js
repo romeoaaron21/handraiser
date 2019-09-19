@@ -146,6 +146,7 @@ class ChatPageBox extends Component {
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
+                onClick={()=>this.props.displayBadge()}
                 onKeyUp={(e) => {
                   if (e.target.value
                     .replace(/^\s+/, "")
@@ -157,7 +158,15 @@ class ChatPageBox extends Component {
                 }}
 
               />
-              <IconButton onClick={() => this.props.sendChat()}>
+              <IconButton 
+              onClick={() => this.props.sendChat()}
+              disabled={
+                this.props.senderText.replace(/^\s+/, "")
+                  .replace(/\s+$/, "") === ""
+                  ? true
+                  : false
+              }
+              >
                 <SendIcon />
               </IconButton>
             </div>

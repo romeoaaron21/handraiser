@@ -82,10 +82,25 @@ function getChatListInformation(req, res) {
   })
 }
 
+function seenNormalChat(req, res){
+    const db = req.app.get("db");
+    const sender_id = req.body.sender;
+    const chatmate_id = req.body.chatmate;
+  
+      db.query(
+        `UPDATE chat SET seen=1 WHERE chatmate_id='${chatmate_id}' AND sender_id='${sender_id}'`
+      ).then(() => {
+        db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
+          res.status(201).json(chats);
+        });
+      });
+}
+
 
 module.exports = {
   getChatUsersInfo,
   sendStudentChat,
   getChatList,
   getChatListInformation,
+  seenNormalChat
 }

@@ -61,6 +61,20 @@ class ChatPageList extends PureComponent {
     this.setState({ searchChatName })
   }
 
+  unreadChat = (studentSub) => {
+    let count = 0;
+    this.props.conversation.map(convo => {
+      if (convo.cohort_id === 'all') {
+        if (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub) {
+          if (convo.seen === 0) {
+            count = count + 1
+          }
+        }
+      }
+    })
+    return count
+  }
+
 
 
 
@@ -139,7 +153,10 @@ class ChatPageList extends PureComponent {
                       //   <Divider />
                       // </React.Fragment>
                       <React.Fragment key={i}>
-                      <ListItem alignItems="flex-start" button onClick={() => this.props.changeChatmate(chatmate.sub)}>
+                      <ListItem alignItems="flex-start" button onClick={() => {
+                        this.props.changeChatmate(chatmate.sub);
+                        this.props.displayBadge()
+                        }}>
                         <Hidden only="xs">
                           <ListItemAvatar style={{marginTop: '-0.2px'}}>
                             <Avatar src={chatmate.avatar} />
@@ -160,7 +177,12 @@ class ChatPageList extends PureComponent {
                             <div className={classes.timeBadgeWrap}>
                               <Typography variant="caption">{this.convoMessage(chatmate.sub, "time")}</Typography>
                               <div style={{marginTop:3}}>
-                                <Badge badgeContent={10} color="secondary" />
+                                <Badge 
+                                badgeContent={10} 
+                                color="secondary" 
+                                badgeContent={this.unreadChat(chatmate.sub)}
+                                invisible = {this.unreadChat(chatmate.sub) === 0? true : false}
+                                />
                               </div>
                             </div>
                           </div>
