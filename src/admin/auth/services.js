@@ -9,7 +9,6 @@ export default class AuthService {
         password
       })
     }).then(res => {
-      this.setToken(res.token);
       return Promise.resolve(res);
     });
   };

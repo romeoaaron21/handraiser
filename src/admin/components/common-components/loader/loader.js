@@ -46,11 +46,15 @@ class Loader extends Component {
             variant="h4"
             component="h2"
             className={classes.loaderText}
+            style={{ color: this.props.color }}
           >
             {this.props.content}
           </Typography>
           <LinearProgress
-            style={{ width: this.props.width, marginTop: "2%" }}
+            style={{
+              width: this.props.width,
+              marginTop: "2%"
+            }}
             classes={{ barColorPrimary: classes.linearSpinner }}
           />
         </Grid>

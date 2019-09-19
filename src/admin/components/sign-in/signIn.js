@@ -90,6 +90,7 @@ class signIn extends Component {
           draggable: false
         });
       } else {
+        this.Auth.setToken(res.token);
         if (this.state.password === "Admin123") {
           this.setState({ pageLoader: true });
           setTimeout(() => {
