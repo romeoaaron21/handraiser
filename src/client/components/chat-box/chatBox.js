@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, lighten } from "@material-ui/core/styles";
 import MoreSettings from "@material-ui/icons/MoreVert";
 import SendIcon from "@material-ui/icons/Send";
 import Close from "@material-ui/icons/Close";
@@ -11,8 +11,8 @@ import Photo from '@material-ui/icons/Photo'
 import RemoveCircle from '@material-ui/icons/RemoveCircle'
 import Dialog from "@material-ui/core/Dialog";
 import ConfirmationDialog from "../being-helped/doneCofirmationmodal";
-import TextareaAutosize from "react-textarea-autosize"
-
+import TextareaAutosize from "react-textarea-autosize";
+import LinearProgress from '@material-ui/core/LinearProgress';
 //api
 import api from "../../services/fetchApi";
 
@@ -64,6 +64,17 @@ const StyledMenuItem = withStyles(theme => ({
   }
 }))(MenuItem);
 
+const Progress = withStyles({
+  root: {
+    height: 10,
+    backgroundColor: lighten('#775aa5', 0.5),
+  },
+  bar: {
+    borderRadius: 20,
+    backgroundColor: '#775aa5',
+  },
+})(LinearProgress);
+
 // UPLOAD IMAGE ATTRIBUTES
 const imageMaxSize = 1000000000; // bytes
 const acceptedFileTypes =
@@ -80,6 +91,7 @@ class ChatBox extends PureComponent {
       preview: null,
       openMenu: null,
       image: null,
+      progress: 0,
       assist:[]
     };
   }
@@ -203,11 +215,14 @@ class ChatBox extends PureComponent {
   }
   handleSendImage = priv => {
     const {image} = this.state;
+    let progress;
     const imageName = this.makeid(image.name)
     const uploadTask = storage.ref(`chat-images/${imageName}`).put(image)
     uploadTask.on('state_changed', 
     (snapshot) => {
-
+      this.setState({
+        progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
+      })
     }, (error) => {
       console.log(error);
     }, () => {
@@ -218,6 +233,9 @@ class ChatBox extends PureComponent {
         }else{
           this.props.sendChatM(url)
         }
+        this.setState({
+          progress: 0
+        })
       })
     })
     this.setState({ image: null })
@@ -240,6 +258,7 @@ class ChatBox extends PureComponent {
   }
   // end image echo
   render() {
+    console.log(this.state.progress)
     const { classes } = this.props;
     return (
       <React.Fragment>
@@ -254,7 +273,6 @@ class ChatBox extends PureComponent {
               </Typography>
             </div>
           </Typography>
-
           <Box>
             <IconButton className={classes.settings} onClick={this.handleClick}>
               <MoreSettings />
@@ -303,6 +321,10 @@ class ChatBox extends PureComponent {
             </StyledMenu>
           </Box>
         </Paper>
+        {this.state.progress > 0 &&
+          <Progress variant="determinate" style={{ height: 7 }} value={this.state.progress}/>
+        }
+
         <Paper
           elevation={0}
           classes={{ root: classes.mentorStyle1 }}
