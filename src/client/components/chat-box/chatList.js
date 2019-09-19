@@ -46,12 +46,12 @@ const styles = theme => ({
   },
   chatList: {
     maxHeight: "380px",
-    minHeight: "268px",
+    minHeight: 205,
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
     overflowY: "scroll",
     borderBottomRightRadius: "5px",
-    borderBottomLeftRadius: "5px"
+    borderBottomLeftRadius: "5px",
   },
   emptyQueue: {
     marginTop: 65,
