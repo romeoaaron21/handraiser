@@ -16,6 +16,7 @@ import CreateIcon from "@material-ui/icons/Create";
 import IconButton from "@material-ui/core/IconButton";
 import Hidden from "@material-ui/core/Hidden";
 import Grid from "@material-ui/core/Grid"
+import Badge from "@material-ui/core/Badge"
 
 import api from "../../services/fetchApi";
 
@@ -114,28 +115,64 @@ class ChatPageList extends PureComponent {
                 this.props.chatListInfo.map((chatmate, i) => {
                   if (chatmate.first_name.toLowerCase().includes(this.state.searchChatName.toLowerCase()) || chatmate.last_name.toLowerCase().includes(this.state.searchChatName.toLowerCase())) {
                     return (
+                      // <React.Fragment key={i}>
+                      //   <ListItem alignItems="flex-start" onClick={() => this.props.changeChatmate(chatmate.sub)} button>
+                      //     <Hidden only="xs">
+                      //       <ListItemAvatar>
+                      //         <Avatar src={chatmate.avatar} />
+                      //       </ListItemAvatar>
+                      //       <ListItemText primary={`${chatmate.first_name} ${chatmate.last_name}`} secondary={this.convoMessage(chatmate.sub, 'message')}>
+                      //       </ListItemText>
+                      //     </Hidden>
+                      //     <Hidden smUp>
+                      //       <div
+                      //         style={{
+                      //           width: "100%",
+                      //           display: "flex",
+                      //           justifyContent: "center"
+                      //         }}
+                      //       >
+                      //         <Avatar> TLasd </Avatar>
+                      //       </div>
+                      //     </Hidden>
+                      //   </ListItem>
+                      //   <Divider />
+                      // </React.Fragment>
                       <React.Fragment key={i}>
-                        <ListItem alignItems="flex-start" onClick={() => this.props.changeChatmate(chatmate.sub)} button>
-                          <Hidden only="xs">
-                            <ListItemAvatar>
-                              <Avatar src={chatmate.avatar} />
-                            </ListItemAvatar>
-                            <ListItemText primary={`${chatmate.first_name} ${chatmate.last_name}`} secondary={this.convoMessage(chatmate.sub, 'message')}>
-                            </ListItemText>
-                          </Hidden>
-                          <Hidden smUp>
-                            <div
-                              style={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "center"
-                              }}
-                            >
-                              <Avatar> TLasd </Avatar>
+                      <ListItem alignItems="flex-start" button onClick={() => this.props.changeChatmate(chatmate.sub)}>
+                        <Hidden only="xs">
+                          <ListItemAvatar style={{marginTop: '-0.2px'}}>
+                            <Avatar src={chatmate.avatar} />
+                          </ListItemAvatar>
+                          <div className={classes.chatDetails}>
+                            <div style={{ width: "80%"}}>
+                              <Typography variant="body1">
+                                {`${chatmate.first_name} ${chatmate.last_name}`}
+                              </Typography>
+                              <Typography
+                                variant="subtitle2"
+                                className={classes.chatPrev}
+                              >
+                                {this.convoMessage(chatmate.sub, "message")}
+                              </Typography>
                             </div>
-                          </Hidden>
-                        </ListItem>
-                        <Divider />
+
+                            <div className={classes.timeBadgeWrap}>
+                              <Typography variant="caption">{this.convoMessage(chatmate.sub, "time")}</Typography>
+                              <div style={{marginTop:3}}>
+                                <Badge badgeContent={10} color="secondary" />
+                              </div>
+                            </div>
+                          </div>
+                        </Hidden>
+                        <Hidden smUp>
+                          <div className={classes.smBP}>
+                            <Avatar src={chatmate.avatar} />
+                            <Badge badgeContent={10} color="secondary" />
+                          </div>
+                        </Hidden>
+                      </ListItem>
+                      <Divider />
                       </React.Fragment>
                     )
                   }

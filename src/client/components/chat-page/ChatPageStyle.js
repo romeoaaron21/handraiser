@@ -41,7 +41,41 @@ const styles = theme => ({
 
   chatListWrapper: {
     height: "660px",
-    overflowY: "auto"
+    overflowY: "auto",
+    overflowX: "hidden"
+  },
+
+  chatDetails: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "90%",
+    [theme.breakpoints.down("md")]: {
+      width: "80%"
+    }
+  },
+
+  chatPrev: {
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    width: "86%",
+    color: "#263238"
+  },
+
+  timeBadgeWrap: {
+    display: "flex",
+    flexDirection: "column",
+    width: "20%",
+    alignItems: "center",
+    [theme.breakpoints.down("md")]: {
+      width: "30%"
+    }
+  },
+
+  smBP: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center"
   },
   //End ChatPageList
 
@@ -69,7 +103,7 @@ const styles = theme => ({
 
   chatBoxContainer: {
     height: "auto",
-    padding: 20,
+    padding: 20
   },
 
   senderChatWrapper: {
@@ -114,7 +148,7 @@ const styles = theme => ({
     height: "auto"
   },
   // End ChatPageBox
-  
+
   // ChatInfo
   chatInfoHeader: {
     padding: 15,
@@ -140,22 +174,30 @@ const styles = theme => ({
     overflowY: "auto",
     padding: 5
   },
-  photosGrid:{
+  photosGrid: {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-around",
     overflow: "hidden"
   },
   textAreaChat: {
-    resize:'none',
-    background:'none',
-    border: 'none',
-    overflow: 'auto',
-    outline: 'none',
-    lineHeight: '1.5',
-    boxShadow:'none',
-    fontSize: '16px',
-    fontFamily: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+    resize: "none",
+    background: "none",
+    border: "none",
+    overflow: "auto",
+    outline: "none",
+    lineHeight: "1.5",
+    boxShadow: "none",
+    fontSize: "16px",
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      "Segoe UI",
+      "Roboto",
+      "Helvetica",
+      "Arial",
+      "sans-serif"
+    ]
   }
   // End ChatInfo
 });
