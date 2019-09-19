@@ -54,13 +54,17 @@ class ChatPage extends PureComponent {
 
     socket.on("getNormalChat", (conversation) => {
       this.setState({ conversation: conversation[0] });
+      console.log(conversation)
 
       if (conversation[1] === this.props.match.params.userSub) {
-        this.setState({ senderText: "" })
         this.displayChatList();
+        this.setState({ senderText: "" })
       }
       else if (conversation[1] === this.state.chatmateSub) {
+        this.displayChatList();
         this.setState({ chatmateText: "" })
+      }
+      if(conversation[2] === this.props.match.params.userSub){
         this.displayChatList();
       }
 
@@ -182,14 +186,15 @@ class ChatPage extends PureComponent {
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
       this.displayBadge();
-      const chat = [res.data, this.props.match.params.userSub]
+      const chat = [res.data, this.props.match.params.userSub, this.state.chatmateSub]
       socket.emit('getNormalChat', chat)
     });
   };
 
 
-  displayBadge = () => {
-    let sub = { chatmate: this.props.match.params.userSub, sender: this.state.chatmateSub };
+  displayBadge = (chatmate) => {
+    let sub = { chatmate: this.props.match.params.userSub, sender: chatmate };
+    console.log(sub)
     const data = api.fetch(
       `/api/seenNormalChat`,
       "patch",

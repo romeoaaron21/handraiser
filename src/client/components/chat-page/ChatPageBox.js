@@ -146,7 +146,7 @@ class ChatPageBox extends Component {
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
-                onClick={()=>this.props.displayBadge()}
+                onClick={()=>this.props.displayBadge(this.props.chatmateInfo.sub)}
                 onKeyUp={(e) => {
                   if (e.target.value
                     .replace(/^\s+/, "")
