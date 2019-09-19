@@ -42,6 +42,7 @@ const styles = theme => ({
     marginTop: "25px",
     maxWidth: "1200px",
     margin: "0 auto",
+    backgroundColor: "#775aa5",
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
     backgroundImage: `radial-gradient(25rem 18.75rem ellipse at bottom right, #883dca, transparent), url(${ClassroomBg})`,
@@ -233,11 +234,10 @@ class Student extends PureComponent {
     });
     var datetime = formatted_date + " " + time;
     let convo = {
-      message: 
+      message:
         this.state.previledge === "student"
-        ? this.state.studentChatText
-        : this.state.mentorChatText
-      ,
+          ? this.state.studentChatText
+          : this.state.mentorChatText,
       sender_sub: this.state.sub,
       chatmate_sub: this.state.chatmateSub,
       cohort_id: this.props.cohort_id,
@@ -643,10 +643,7 @@ class Student extends PureComponent {
                       style={
                         this.state.classHeaderImage !== null
                           ? {
-                              backgroundImage:
-                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #3e3e3e, transparent), url(" +
-                                require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
-                                ")"
+                              backgroundImage: `radial-gradient(23rem 10.75rem at right bottom, #a685b7, #780aaf00), url(${this.state.classHeaderImage})`
                             }
                           : {
                               backgroundImage: require(`../../images/cardBg.jpg`)
@@ -667,10 +664,7 @@ class Student extends PureComponent {
                       style={
                         this.state.classHeaderImage !== null
                           ? {
-                              backgroundImage:
-                                "radial-gradient(25rem 18.75rem ellipse at bottom right, #3e3e3e, transparent), url(" +
-                                require(`../../images/class-header-images/${this.state.classHeaderImage}`) +
-                                ")"
+                              backgroundImage: `radial-gradient(23rem 10.75rem at right bottom, #a685b7, #780aaf00), url(${this.state.classHeaderImage})`
                             }
                           : {
                               backgroundImage: require(`../../images/cardBg.jpg`)

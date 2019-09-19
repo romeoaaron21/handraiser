@@ -52,7 +52,8 @@ const styles = theme => ({
   },
   media: {
     height: "45%",
-    width: 300
+    width: 300,
+    backgroundColor: "#775aa5"
   },
   bigAvatar: {
     margin: 10,
@@ -77,6 +78,7 @@ class AvailClass extends React.Component {
       openLeave,
       openStudentList
     } = this.props;
+
     return (
       <React.Fragment>
         {this.props.enrolledClasses.length !== 0
@@ -110,7 +112,7 @@ class AvailClass extends React.Component {
                               image={
                                 cohort.class_header === null
                                   ? DefaultBackground
-                                  : require(`../../../images/class-header-images/${cohort.class_header}`)
+                                  : cohort.class_header
                               }
                               title={cohort.name}
                             />
@@ -188,7 +190,7 @@ class AvailClass extends React.Component {
                             image={
                               cohort.class_header === null
                                 ? DefaultBackground
-                                : require(`../../../images/class-header-images/${cohort.class_header}`)
+                                : cohort.class_header
                             }
                             title={cohort.name}
                           />
@@ -202,7 +204,9 @@ class AvailClass extends React.Component {
                                 {cohort.name}
                               </Typography>
                               <Avatar
-                                alt={cohort.first_name + " " + cohort.last_name}
+                                alt={
+                                  cohort.first_name + "s " + cohort.last_name
+                                }
                                 src={cohort.avatar}
                                 className={classes.bigAvatar}
                               />
@@ -273,7 +277,7 @@ class AvailClass extends React.Component {
                             image={
                               cohort.class_header === null
                                 ? DefaultBackground
-                                : require(`../../../images/class-header-images/${cohort.class_header}`)
+                                : cohort.class_header
                             }
                             title={cohort.name}
                           />
@@ -287,7 +291,9 @@ class AvailClass extends React.Component {
                                 {cohort.name}
                               </Typography>
                               <Avatar
-                                alt={cohort.first_name + " " + cohort.last_name}
+                                alt={
+                                  cohort.first_name + "s " + cohort.last_name
+                                }
                                 src={cohort.avatar}
                                 className={classes.bigAvatar}
                               />
@@ -349,7 +355,7 @@ class AvailClass extends React.Component {
                           image={
                             cohort.class_header === null
                               ? DefaultBackground
-                              : require(`../../../images/class-header-images/${cohort.class_header}`)
+                              : cohort.class_header
                           }
                           title={cohort.name}
                         />

@@ -55,7 +55,8 @@ const styles = theme => ({
   },
   media: {
     height: "45%",
-    width: 300
+    width: 300,
+    backgroundColor: "#775aa5"
   },
   bigAvatar: {
     margin: 10,
@@ -136,7 +137,7 @@ class StudentClassCards extends React.Component {
                         image={
                           cohort.class_header === null
                             ? DefaultBackground
-                            : require(`../../../images/class-header-images/${cohort.class_header}`)
+                            : cohort.class_header
                         }
                         title={cohort.name}
                       />
@@ -220,7 +221,7 @@ class StudentClassCards extends React.Component {
                       image={
                         cohort.class_header === null
                           ? DefaultBackground
-                          : require(`../../../images/class-header-images/${cohort.class_header}`)
+                          : cohort.class_header
                       }
                       title={cohort.name}
                     />

@@ -68,22 +68,14 @@ function addCohort(req, res) {
 
 function deleteCohort(req, res) {
   const db = req.app.get("db");
-  const { id, classHeader } = req.params;
+  const { id } = req.params;
+  const { classHeader } = req.body;
 
   db.query(
     `DELETE FROM member WHERE cohort_id = ${id};
     DELETE FROM cohorts WHERE id = ${id};`
   )
     .then(cohort => {
-      // delete file
-      if (classHeader !== "null") {
-        fs.unlink(
-          `${__dirname}/../../src/client/images/class-header-images/${classHeader}`,
-          function(err) {
-            if (err) throw err;
-          }
-        );
-      }
       res.status(201).json({ cohort });
     })
     .catch(err => {

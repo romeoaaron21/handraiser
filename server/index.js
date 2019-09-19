@@ -143,7 +143,7 @@ massive({
   app.get("/api/cohorts/api", cohorts.getAll);
   app.get("/api/student/:id/cohorts/", cohorts.getCohortsByStudentID);
   app.get("/api/mentor/:id/cohorts/", cohorts.getByMentorID);
-  app.get("/api/cohorts/:id/:classHeader/delete", cohorts.deleteCohort);
+  app.post("/api/cohorts/:id/delete", cohorts.deleteCohort);
   app.get("/api/cohorts/:cid/students/:sid", cohorts.leave);
   app.get("/api/mentors/", cohorts.getAllMentors);
   app.get(
@@ -202,7 +202,6 @@ massive({
 
   //UPLOAD IMAGE START
   //image chat try
-  app.post("/api/sendChat/image/:fileName", upload.imageChat);
   app.post("/upload/:cohortId", upload.image);
   app.get("/setToDeFault/:cohortId", upload.setToDefault);
   app.get("/specific/:cohortId", upload.cohort);

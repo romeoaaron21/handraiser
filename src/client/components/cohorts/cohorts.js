@@ -96,7 +96,6 @@ class Cohorts extends React.Component {
       selected: "",
       cohort_id: "",
       search: "",
-      searchCount: 0,
       socket: null,
       tabValue: 0,
       sub: ""
@@ -362,8 +361,7 @@ class Cohorts extends React.Component {
 
   search = e => {
     this.setState({
-      search: e.target.value,
-      searchCount: document.getElementById("mentorCard").childElementCount
+      search: e.target.value
     });
   };
 
@@ -438,7 +436,6 @@ class Cohorts extends React.Component {
                 ) : null}
                 {this.state.privilege !== "student" ? (
                   <div className={classes.mentor} id="mentorCard">
-                    {console.log(this.state.searchCount)}
                     <MentorClassCards
                       search={this.state.search}
                       cohorts={this.state.cohorts}
@@ -518,6 +515,7 @@ class Cohorts extends React.Component {
                                     </Grid>
                                   ) : (
                                     <AvailClass
+                                      search={this.state.search}
                                       user_id={this.state.id}
                                       enrolledClasses={
                                         this.state.enrolledClasses
@@ -584,6 +582,7 @@ class Cohorts extends React.Component {
                         >
                           <Grid container>
                             <AvailClass
+                              search={this.state.search}
                               user_id={this.state.id}
                               enrolledClasses={this.state.enrolledClasses}
                               cohorts={this.state.cohorts}

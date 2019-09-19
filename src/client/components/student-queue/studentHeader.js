@@ -160,57 +160,57 @@ class StudentHeader extends Component {
                 className={classes.userAvatar}
               />
             </ListItemAvatar>
-            {this.props.privilege === "student"?
-            <ListItemText>
-              <Typography
-                variant="h6"
-                component="h3"
-                className={classes.responsiveHeader}
-                style={{ color: "whitesmoke", marginLeft: 7}}
-              >
-                {this.props.user.first_name.charAt(0).toUpperCase() +
-                  this.props.user.first_name.slice(1)}{" "}
-                {this.props.user.last_name.charAt(0).toUpperCase() +
-                  this.props.user.last_name.slice(1)}
-              </Typography>
-              <Breadcrumbs
-                aria-label="breadcrumb"
-                style={{marginTop: 3}}
-              >
-                <StyledBreadcrumb
-                  component="a"
-                  href="#"
-                  label="Students"
-                  avatar={
-                    <Avatar className={classes.avatar}>
-                      <ClassIcon />
-                    </Avatar>
-                  }
-                  onClick={this.handleClick}
-                />
-                <StyledBreadcrumb
-                  onClick={this.openHistory}
-                  component="a"
-                  href="#"
-                  label="My Activities"
-                />
-              </Breadcrumbs>
-            </ListItemText>
-            :
-            <ListItemText>
-              <Typography
-                variant="h6"
-                component="h3"
-                className={classes.responsiveHeader}
-                style={{ color: "whitesmoke" }}
-              >
-                {this.props.user.first_name.charAt(0).toUpperCase() +
-                  this.props.user.first_name.slice(1)}{" "}
-                {this.props.user.last_name.charAt(0).toUpperCase() +
-                  this.props.user.last_name.slice(1)}
-              </Typography>
-            </ListItemText>
-            }
+            {this.props.privilege === "student" ? (
+              <ListItemText>
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  className={classes.responsiveHeader}
+                  style={{ color: "whitesmoke", marginLeft: 7 }}
+                >
+                  {this.props.user.first_name.charAt(0).toUpperCase() +
+                    this.props.user.first_name.slice(1)}{" "}
+                  {this.props.user.last_name.charAt(0).toUpperCase() +
+                    this.props.user.last_name.slice(1)}
+                </Typography>
+                <Breadcrumbs
+                  aria-label="breadcrumb"
+                  style={{ marginTop: 3, color: "#f4f4f4" }}
+                >
+                  <StyledBreadcrumb
+                    component="a"
+                    href="#"
+                    label="Students"
+                    avatar={
+                      <Avatar className={classes.avatar}>
+                        <ClassIcon />
+                      </Avatar>
+                    }
+                    onClick={this.handleClick}
+                  />
+                  <StyledBreadcrumb
+                    onClick={this.openHistory}
+                    component="a"
+                    href="#"
+                    label="My Activities"
+                  />
+                </Breadcrumbs>
+              </ListItemText>
+            ) : (
+              <ListItemText>
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  className={classes.responsiveHeader}
+                  style={{ color: "whitesmoke" }}
+                >
+                  {this.props.user.first_name.charAt(0).toUpperCase() +
+                    this.props.user.first_name.slice(1)}{" "}
+                  {this.props.user.last_name.charAt(0).toUpperCase() +
+                    this.props.user.last_name.slice(1)}
+                </Typography>
+              </ListItemText>
+            )}
 
             {this.props.privilege === "student" ? (
               <div>

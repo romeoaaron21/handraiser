@@ -15,6 +15,12 @@ import Dropzone from "react-dropzone";
 
 import UploadIcon from "../../../images/upload.png";
 
+//API
+import api from "../../../services/fetchApi";
+
+//Firebase
+import { storage } from "./firebase/firebase";
+
 import {
   base64StringtoFile,
   extractImageFileExtensionFromBase64,
@@ -183,7 +189,7 @@ class UploadPhoto extends React.Component {
     this.fileInputRef = React.createRef();
     this.state = {
       file: [],
-      imgWidth: null,
+      imgUrl: "",
       imgSrc: null,
       imgSrcExt: null,
       errorMsg: false,
@@ -202,7 +208,6 @@ class UploadPhoto extends React.Component {
     document.getElementById("file").value = null;
     this.setState({
       file: [],
-      imgWidth: null,
       imgSrc: null,
       imgSrcExt: null,
       errorMsg: false
@@ -216,7 +221,6 @@ class UploadPhoto extends React.Component {
   handleImageLoaded = image => {};
 
   handleOnCropChange = crop => {
-    console.log(crop);
     this.setState({ crop: crop });
   };
 
@@ -332,30 +336,49 @@ class UploadPhoto extends React.Component {
 
       const { imgSrcExt } = this.state;
       const imageData64 = canvasRef.toDataURL("image/" + imgSrcExt);
-      
+
       const myFilename = "previewFile." + imgSrcExt;
 
       // file to be uploaded
       const myNewCroppedFile = base64StringtoFile(imageData64, myFilename);
 
-      //UPLOAD TO DIRECTORY
-      const data = new FormData();
-      data.append("file", myNewCroppedFile);
-      data.append("filename", `${this.props.cohortId}.png`);
-
-      fetch(`/upload/${this.props.cohortId}`, {
-        method: "POST",
-        body: data
-      }).then(response => {
-        response.json().then(body => {
-          this.setState({ imageURL: `${body.file}` });
-          this.props.handleClose();
-          this.props.loadStateFn();
-        });
-      });
+      const uploadTask = storage
+        .ref(`class-header/${this.props.cohortId}`)
+        .put(myNewCroppedFile);
+      uploadTask.on(
+        "state_changed",
+        snapshot => {
+          // progrss function ....
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          this.setState({ progress });
+        },
+        error => {
+          // error function ....
+          console.log(error);
+        },
+        () => {
+          // complete function ....
+          storage
+            .ref("class-header")
+            .child(`${this.props.cohortId}`)
+            .getDownloadURL()
+            .then(url => {
+              this.setState({ imgUrl: url });
+              api
+                .fetch(`/upload/${this.props.cohortId}`, "POST", { url })
+                .then(res => {
+                  this.setState({ imageURL: `${res.file}` });
+                  this.props.handleClose();
+                  this.props.loadStateFn();
+                });
+            });
+        }
+      );
     }
   };
-  
+
   render() {
     const { classes } = this.props;
     return (
@@ -472,7 +495,7 @@ class UploadPhoto extends React.Component {
               </Grid>
               <Grid container className={classes.cropContainer}>
                 <Grid item>
-                  {this.state.imgWidth === null ? (
+                  {this.state.imgSrc !== null ? (
                     <React.Fragment>
                       <ReactCrop
                         imageStyle={{ height: "340px" }}
@@ -500,10 +523,10 @@ class UploadPhoto extends React.Component {
             color="primary"
             disabled={
               this.state.imgSrc === null ||
-              (this.state.crop.height === 37 &&
-                this.state.crop.width === 100 &&
-                this.state.crop.x === 5.329070518200751e-15 &&
-                this.state.crop.y === 30)
+              (this.state.crop.height === 16.10294117647059 &&
+                this.state.crop.width === 48.34437086092716 &&
+                this.state.crop.x === 25 &&
+                this.state.crop.y === 43)
                 ? true
                 : false
             }

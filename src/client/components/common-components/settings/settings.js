@@ -36,6 +36,9 @@ import api from "./../../../services/fetchApi";
 //LOADER
 import Loader from "../loader/loader";
 
+//Firebase
+import { storage } from "../upload-photo/firebase/firebase";
+
 import DeleteClass from "./modal/delete";
 import AddCoMentor from "./modal/addCoMentor";
 
@@ -328,7 +331,19 @@ class Settings extends PureComponent {
   };
 
   delete = (id, classHeader) => {
-    api.fetch(`/api/cohorts/${id}/${classHeader}/delete`, "get").then(() => {
+    api.fetch(`/api/cohorts/${id}/delete`, "post").then(() => {
+      // Create a reference to the file to delete
+      var desertRef = storage.refFromURL(classHeader);
+
+      // Delete the file
+      desertRef
+        .delete()
+        .then(function() {
+          // File deleted successfully
+        })
+        .catch(function(error) {
+          // Uh-oh, an error occurred!
+        });
       window.location.href = `/cohorts`;
     });
   };
