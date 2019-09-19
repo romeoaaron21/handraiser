@@ -22,6 +22,9 @@ import api from "../../services/fetchApi";
 class ChatPageList extends PureComponent {
   constructor(props) {
     super(props);
+    this.state = {
+      searchChatName: "",
+    }
   }
 
 
@@ -53,6 +56,14 @@ class ChatPageList extends PureComponent {
     }
   }
 
+  searchChatName = (searchChatName) => {
+    this.setState({ searchChatName })
+  }
+
+
+
+
+
   render() {
     // console.log(this.props.chatListInfo)
     const { classes } = this.props;
@@ -62,10 +73,10 @@ class ChatPageList extends PureComponent {
           <div style={{ padding: 13 }}>
             <div className={classes.chatListHeader}>
               <span className={classes.avatarWrapper}>
-                <Avatar style={{ marginRight: "10px" }}>
+                <Avatar style={{ marginRight: "10px" }} src={this.props.userInfo.avatar}>
                   ME
               </Avatar>
-                <Typography variant="h5">Chats</Typography>
+                <Typography variant="h5">Messages</Typography>
               </span>
               <Hidden xsDown>
                 <IconButton>
@@ -75,8 +86,9 @@ class ChatPageList extends PureComponent {
             </div>
             <div>
               <TextField
+                onChange={e => this.searchChatName(e.target.value)}
                 id="outlined-search"
-                label="Search"
+                label="Search Name"
                 inputProps={{
                   style: {
                     height: "4px"
@@ -99,31 +111,35 @@ class ChatPageList extends PureComponent {
           <div className={`${classes.scrollBar} ${classes.chatListWrapper}`}>
             <List>
               {this.props.chatListInfo.length !== 0 ?
-                this.props.chatListInfo.map((chatmate, i) => (
-                  <React.Fragment key = {i}>
-                  <ListItem alignItems="flex-start" onClick={()=>this.props.changeChatmate(chatmate.sub)} button>
-                    <Hidden only="xs">
-                      <ListItemAvatar>
-                        <Avatar src={chatmate.avatar}/>
-                      </ListItemAvatar>
-                      <ListItemText primary={`${chatmate.first_name} ${chatmate.last_name}`} secondary={this.convoMessage(chatmate.sub, 'message')}>
-                      </ListItemText>
-                    </Hidden>
-                    <Hidden smUp>
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "center"
-                        }}
-                      >
-                        <Avatar> TLasd </Avatar>
-                      </div>
-                    </Hidden>
-                  </ListItem>
-                  <Divider />
-                  </React.Fragment>
-                ))
+                this.props.chatListInfo.map((chatmate, i) => {
+                  if (chatmate.first_name.toLowerCase().includes(this.state.searchChatName.toLowerCase()) || chatmate.last_name.toLowerCase().includes(this.state.searchChatName.toLowerCase())) {
+                    return (
+                      <React.Fragment key={i}>
+                        <ListItem alignItems="flex-start" onClick={() => this.props.changeChatmate(chatmate.sub)} button>
+                          <Hidden only="xs">
+                            <ListItemAvatar>
+                              <Avatar src={chatmate.avatar} />
+                            </ListItemAvatar>
+                            <ListItemText primary={`${chatmate.first_name} ${chatmate.last_name}`} secondary={this.convoMessage(chatmate.sub, 'message')}>
+                            </ListItemText>
+                          </Hidden>
+                          <Hidden smUp>
+                            <div
+                              style={{
+                                width: "100%",
+                                display: "flex",
+                                justifyContent: "center"
+                              }}
+                            >
+                              <Avatar> TLasd </Avatar>
+                            </div>
+                          </Hidden>
+                        </ListItem>
+                        <Divider />
+                      </React.Fragment>
+                    )
+                  }
+                })
                 :
                 null
               }

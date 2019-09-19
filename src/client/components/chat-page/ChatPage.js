@@ -204,7 +204,7 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.props.match.params.userSub} changeChatmate={this.changeChatmate} />
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.props.match.params.userSub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} />
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} />
             <ChatPageInfo />
           </Grid>
