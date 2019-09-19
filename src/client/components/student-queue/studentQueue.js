@@ -317,7 +317,6 @@ class Student extends PureComponent {
       ) {
         if(!priv[3]){
           this.setState({ studentChatText: priv[0] });
-          console.log(this.state.studentChatText)
         }
         else {
           this.setState({ imageChat: priv[0], imageChatName: priv[3] });
