@@ -30,11 +30,8 @@ import {
   ListItemText
 } from "@material-ui/core";
 
-import {
-  base64StringtoFile,
-  extractImageFileExtensionFromBase64,
-  image64toCanvasRef
-} from "../common-components/upload-photo/ReusableUtils";
+//Firebase
+import {storage} from '../common-components/upload-photo/firebase/firebase'; 
 
 const StyledMenu = withStyles({
   paper: {
@@ -82,10 +79,7 @@ class ChatBox extends PureComponent {
       confirmationDialog: false,
       preview: null,
       openMenu: null,
-      file: null,
-      imgWidth: null,
-      imgSrc: null,
-      imgSrcExt: null,
+      image: null,
       assist:[]
     };
   }
@@ -95,10 +89,7 @@ class ChatBox extends PureComponent {
 
   componentDidMount() {
     this.scrollToBottom();
-
     if (this.props.privileged === "mentor") {
-      // console.log(this.props.senderInfo.id);
-      // console.log(this.props.chatmateInfo.id);
       api.fetch(
         `/api/fetchAssist/${this.props.chatmateInfo.id}/${this.props.senderInfo.id}`,
         "get"
@@ -106,12 +97,8 @@ class ChatBox extends PureComponent {
         data.data.map(val => {
           this.setState({ assist: val })
         })
-        // console.log(data);
-
       })
-
     }
-
   }
   componentDidUpdate(){
     this.scrollToBottom();
@@ -120,23 +107,15 @@ class ChatBox extends PureComponent {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
   //End of Added Scroll Bottom
-
   handleClick = e => {
     this.setState({ openMenu: e.currentTarget });
   };
-
   handleClose = () => {
     this.setState({ openMenu: null });
   };
-
-
-
-
   //added dh
   openConfirmationDialog = () => this.setState({ confirmationDialog: true });
   closeConfirmationDialog = () => this.setState({ confirmationDialog: false });
-
-
   //move back student to the queue
   removeFromQueue = student => {
     const data = api.fetch(
@@ -147,7 +126,6 @@ class ChatBox extends PureComponent {
       this.props.helpStudentClose();
     });
   };
-
   //done helping student
   doneHelp = student => {
     const months = [
@@ -187,16 +165,8 @@ class ChatBox extends PureComponent {
       this.setState({ confirmationDialog: false });
     });
   };
-
-
-
   //end of added dh
-
-
-
-
   // image echo
-
   verifyFile = files => {
     if (files && files.length > 0) {
       const currentFile = files[0];
@@ -219,73 +189,56 @@ class ChatBox extends PureComponent {
   // ANCHOR here upload
   handleUpload = event => {
     if (event.target.files){
-      this.setState({
-        preview: URL.createObjectURL(event.target.files[0])
-      })
       const files = event.target.files;
       if (files && files.length > 0) {
         const isVerified = this.verifyFile(files);
         if (isVerified) {
-          // imageBase64Data
-          const currentFile = files[0];
-          const myFileItemReader = new FileReader();
-
-          var changeState = this; // set the this to changeState for setState in line 214
-
-          myFileItemReader.addEventListener(
-            "load",
-            () => {
-              var img = new Image();
-              img.src = myFileItemReader.result;
-
-              img.onload = function() {
-                if (img.width >= 800 && img.height >= 200) {
-                  const myResult = myFileItemReader.result;
-                  changeState.setState({
-                    file: files,
-                    imgSrc: myResult,
-                    imgSrcExt: extractImageFileExtensionFromBase64(myResult)
-                  });
-                } else {
-                  //changeState.setState({ errorMsg: true });
-                }
-              };
-            },
-            false
-          );
-          myFileItemReader.readAsDataURL(currentFile);
-        }
+          this.setState({
+            preview: URL.createObjectURL(event.target.files[0]),
+            image: event.target.files[0]
+          })
+        } 
       }
-      this.props.handleChatM(event.target.files[0], this.props.chatmateInfo.sub, this.props.senderInfo.sub, event.target.files[0].name);
     }
   }
+  handleSendImage = priv => {
+    const {image} = this.state;
+    const imageName = this.makeid(image.name)
+    const uploadTask = storage.ref(`chat-images/${imageName}`).put(image)
+    uploadTask.on('state_changed', 
+    (snapshot) => {
 
-  handleSendImage = () => {
-    const myFilename = "previewFile." + this.state.imgSrcExt;
-    const myImage = base64StringtoFile(this.state.imgSrc, myFilename);
-    this.setState({ file: null })
-    this.props.sendChatM(myImage)
+    }, (error) => {
+      console.log(error);
+    }, () => {
+      storage.ref('chat-images').child(imageName).getDownloadURL()
+      .then(url => {
+        if (priv === 'student'){
+          this.props.sendChat(url)
+        }else{
+          this.props.sendChatM(url)
+        }
+      })
+    })
+    this.setState({ image: null })
   }
-
+  makeid = (name, length = 15) => {
+    var ext = name.replace(/^.*\./, '');
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result + "." + ext;
+  };
   cancelUpload = () => {
     this.setState({
-      file: null
+      image: null
     })
   }
-
   // end image echo
-
-
-
-
-
-
-
-
-
-
-
-
   render() {
     const { classes } = this.props;
     return (
@@ -421,8 +374,8 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                  {convo.chat_type === "image" 
-                                  ? <img style={{ width: "100%" }} src={`/images/chat-images/${convo.message}`} alt="" />
+                                  {convo.chat_type !== "text" 
+                                  ? <img style={{ width: "100%" }} src={convo.chat_type} alt="" />
                                   : <TextareaAutosize
                                     readOnly
                                     className={classes.textAreaChat}
@@ -465,7 +418,28 @@ class ChatBox extends PureComponent {
                     src={this.props.senderInfo.avatar}
                     className={classes.userAvatar}
                   />
-
+                  <input 
+                      type="file" 
+                      onChange={this.handleUpload}
+                      style={{ display: "none" }}
+                      ref={fileInput => this.fileInput = fileInput}
+                    />
+                    {!this.state.image && (
+                      <IconButton onClick={() => this.fileInput.click()}>
+                        <Photo />
+                      </IconButton>
+                    )}
+                    {this.state.image && (
+                    <div>                      
+                      <img style={{ width: 300 }} src={this.state.preview} alt="" />
+                      <IconButton 
+                        style={{ position: 'absolute', marginLeft: '-47px' }}
+                        onClick={this.cancelUpload}
+                      >
+                        <RemoveCircle style={{ color: 'white' }}/>
+                      </IconButton>
+                    </div>
+                  )}
 
                   <React.Fragment>
                     <TextField
@@ -496,10 +470,14 @@ class ChatBox extends PureComponent {
                     />
                     <IconButton
                       className={classes.sendIcon}
-                      onClick={() => this.props.sendChat()}
+                      onClick={() => {
+                        this.state.image
+                        ? this.handleSendImage('student')
+                        : this.props.sendChat();
+                      }}
                       disabled={
-                        this.props.chat.replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === ""
+                        this.props.chatM.replace(/^\s+/, "")
+                          .replace(/\s+$/, "") === "" && !this.state.image
                           ? true
                           : false
                       }
@@ -524,12 +502,12 @@ class ChatBox extends PureComponent {
                       style={{ display: "none" }}
                       ref={fileInput => this.fileInput = fileInput}
                     />
-                    {!this.state.file && (
+                    {!this.state.image && (
                       <IconButton onClick={() => this.fileInput.click()}>
                         <Photo />
                       </IconButton>
                     )}
-                    {this.state.file && (
+                    {this.state.image && (
                     <div>                      
                       <img style={{ width: 300 }} src={this.state.preview} alt="" />
                       <IconButton 
@@ -568,13 +546,13 @@ class ChatBox extends PureComponent {
                     <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
-                        this.state.file
-                        ? this.handleSendImage()
+                        this.state.image
+                        ? this.handleSendImage('mentor')
                         : this.props.sendChatM();
                       }}
                       disabled={
                         this.props.chatM.replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === "" && !this.state.file
+                          .replace(/\s+$/, "") === "" && !this.state.image
                           ? true
                           : false
                       }

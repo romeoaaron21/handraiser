@@ -223,7 +223,7 @@ class ChatList extends PureComponent {
 
     if(conversation.length !== 0){
       if (need === 'message') {
-        if(conversation[conversation.length - 1].chat_type === "image"){
+        if(conversation[conversation.length - 1].chat_type !== "text"){
           return "Sent an image"
         }
         else {
