@@ -97,12 +97,14 @@ class ChatPage extends PureComponent {
       .then(() => {
         api.fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
           .then(res => {
+            console.log(res.data)
             this.setState({ chatListInfo: [...res.data] })
           })
       })
   }
 
   componentDidUpdate() {
+    this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub:this.props.match.params.chatmateSub })
     this.selectChatmate();
   }
 
@@ -208,13 +210,17 @@ class ChatPage extends PureComponent {
           </Grid>
         </Container>
 
+
         {this.state.newChatmateSub !== this.state.chatmateSub ?
           <Redirect
             to={{
               pathname: `/chat/${this.state.newChatmateSub}/${this.props.match.params.userSub}`
             }}
           /> 
-          : null}
+          : 
+          null
+          }
+
 
       </div>
     );

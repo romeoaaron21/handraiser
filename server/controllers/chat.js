@@ -46,21 +46,38 @@ function getChatListInformation(req, res) {
   const db = req.app.get("db");
   const { chatListSub } = req.params;
   var ChatSub = chatListSub.split(',');
-  let users = []
+  let users = [];
 
-  ChatSub.map(sub => {
+//   let userss = []
+
+// ChatSub.map((sub, i) => {
+
+//     db.users
+//       .findOne({ sub: sub })
+//       .then(chatListInfo => {
+//           userss.push(chatListInfo)
+//         // if (userss.length === ChatSub.length) {
+//         //   setTimeout(() => {
+//         //     res.status(200).json([...userss])
+//         //   }, 100)
+//         // }
+//       })
+//       return userss
+      
+//   })
+//   console.log(userss)
+
+  ChatSub.map((sub, i) => {
     db.users
       .findOne({ sub: sub })
       .then(chatListInfo => {
         users.push(chatListInfo)
-        if (ChatSub[ChatSub.length-1] === chatListInfo.sub) {
+        if (users.length === ChatSub.length) {
           setTimeout(() => {
             res.status(200).json([...users])
           }, 100)
         }
         
-      }).then(()=> {
-        console.log(users)
       })
   })
 }
