@@ -10,7 +10,7 @@ module.exports = {
           `UPDATE requests SET status = 'inprogress',assist_id = ${assistid}  WHERE member_id=${member.id}`
         ).then(() => {
           db.query(
-            `SELECT users.*, requests.status,member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${cohort_id} and requests.status = 'inprogress'`
+            `SELECT users.*, requests.status,requests.assist_id, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${cohort_id} and requests.status = 'inprogress'`
           ).then(student => {
             return res.status(200).send(student);
           });

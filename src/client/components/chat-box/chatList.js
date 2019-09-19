@@ -7,6 +7,7 @@ import {
   Grid,
   Typography,
   Avatar,
+  List,
   ListItem,
   ListItemAvatar,
   InputBase,
@@ -36,22 +37,16 @@ const styles = theme => ({
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)"
   },
   list: {
-    maxHeight: "52px",
-    marginTop: "15px",
-    cursor: "pointer",
-    "&:hover": {
-      backgroundColor: "#f1f1f1",
-      minHeight: 51
-    }
+    maxHeight: "60px",
   },
   chatList: {
     maxHeight: "380px",
-    minHeight: "380px",
+    minHeight: 205,
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
     overflowY: "scroll",
     borderBottomRightRadius: "5px",
-    borderBottomLeftRadius: "5px"
+    borderBottomLeftRadius: "5px",
   },
   emptyQueue: {
     marginTop: 65,
@@ -170,9 +165,13 @@ class ChatList extends PureComponent {
     })
     if (conversation.length !== 0) {
       if (need === 'message') {
-        return conversation[conversation.length - 1].message
-      }
-      else if (need === 'time') {
+        if(conversation[conversation.length - 1].chat_type !== "text"){
+          return "Sent an image"
+        }
+        else {
+          return conversation[conversation.length - 1].message
+        }
+      } else if (need === 'time') {
         let display = conversation[conversation.length - 1].time.split(" ");
         return `${display[3]} ${display[4]}`;
       }
@@ -186,6 +185,16 @@ class ChatList extends PureComponent {
 
   render() {
     const { classes } = this.props;
+
+    const mentorFilter = this.props.mentor.filter((data) => {
+      let fname = data.first_name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      let lname = data.last_name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      if (fname) {
+        return fname;
+      } else {
+        return lname;
+      }
+    }) 
     return (
       <React.Fragment>
         {/* Chat List Header*/}
@@ -211,39 +220,40 @@ class ChatList extends PureComponent {
         >
           {/* Chat List */}
 
-          {this.props.mentor.map(mentor => (
-            <ListItem className={classes.list} key={mentor.id} onClick={() => {
-              this.props.sendChatSub(mentor.sub);
-              this.unreadChat(mentor.sub)
-            }}>
-              <ListItemAvatar>
-                <Avatar src={mentor.avatar} className={classes.userAvatar} />
-              </ListItemAvatar>
-              <div className={classes.multiline}>
-                <Typography className={classes.chatName}>
-                  {mentor.first_name + " " + mentor.last_name}
-                </Typography>
-                <Typography className={classes.chatDetails}>
-                  {this.convoMessage(mentor.sub, 'message')}
-                </Typography>
-              </div>
-              <div className={classes.chatAction}>
-                <Typography className={classes.chatTime}>
-                  {" "}
-                  {this.convoMessage(mentor.sub, 'time')}{" "}
-                </Typography>
-                <Typography className={classes.chatBadge}>
-                  <Badge
-                    color="secondary"
-                    badgeContent={this.unreadChat(mentor.sub)}
-                    invisible={this.unreadChat(mentor.sub) === 0 ? true : false}
-                    className={classes.margin}
-                  ></Badge>
-                </Typography>
-              </div>
-            </ListItem>
-          ))}
-          {/* End Chat List */}
+        {mentorFilter.map(mentor => (
+          <ListItem className={classes.list} key={mentor.id} onClick={() => {
+            this.props.sendChatSub(mentor.sub);
+            this.unreadChat(mentor.sub)
+          }} button>
+            <ListItemAvatar>
+              <Avatar src={mentor.avatar} className={classes.userAvatar} />
+            </ListItemAvatar>
+            <div className={classes.multiline}>
+              <Typography className={classes.chatName}>
+                {mentor.first_name + " " + mentor.last_name}
+              </Typography>
+              <Typography className={classes.chatDetails}>
+                {this.convoMessage(mentor.sub, 'message')}
+              </Typography>
+            </div>
+            <div className={classes.chatAction}>
+              <Typography className={classes.chatTime}>
+                {" "}
+                {this.convoMessage(mentor.sub, 'time')}{" "}
+              </Typography>
+              <Typography className={classes.chatBadge}>
+                <Badge
+                  color="secondary"
+                  badgeContent={this.unreadChat(mentor.sub)}
+                  invisible = {this.unreadChat(mentor.sub) === 0? true : false}
+                  className={classes.margin}
+                ></Badge>
+              </Typography>
+            </div>
+          </ListItem>
+        ))}
+      
+        {/* End Chat List */}
 
           {/* End No Message Display */}
         </Paper>
@@ -287,9 +297,9 @@ export default withStyles(styles)(ChatList);
 //     "&::-webkit-scrollbar-thumb": {
 //       backgroundColor: "rgba(0,0,0,.1)",
 //       borderRadius: "10px",
-//       outline: "1px solid slategrey"
-//     }
-//   },
+//       outline: "1px solid slategrey"Queue Students
+//     }Queue Students
+//   },Queue Students
 //   leftNav: {
 //     marginTop: theme.spacing(2),
 //     padding: theme.spacing(1, 1),
@@ -324,7 +334,7 @@ export default withStyles(styles)(ChatList);
 //   },
 //   userAvatar: {
 //     width: 35,
-//     height: 35,
+//     height: 35,Queue Students
 //     "@media (max-width: 425px)": {
 //       width: 29,
 //       height: 29

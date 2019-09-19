@@ -12,6 +12,9 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 
 import AuthService from "../../auth/services";
+import PageLoader from "../common-components/loader/loader";
+
+import api from "../../services/fetchApi";
 
 const styles = {
   paper: {
@@ -47,6 +50,7 @@ class signIn extends Component {
     this.Auth = new AuthService();
 
     this.state = {
+      pageLoader: false,
       username: " ",
       password: " ",
       showSpinner: false
@@ -58,9 +62,15 @@ class signIn extends Component {
     if (this.Auth.getToken() !== null) {
       const decodedToken = decode(this.Auth.getToken());
       if (decodedToken.adminId !== undefined) {
-        if (this.Auth.loggedIn()) {
-          window.location.href = "/admin/keys";
-        }
+        api.fetch(`/admin/details/${decodedToken.adminId}`, "get").then(res => {
+          if (res.data.admin[0].password === "Admin123") {
+            window.location.href = "/admin/default";
+          } else {
+            if (this.Auth.loggedIn()) {
+              window.location.href = "/admin/keys";
+            }
+          }
+        });
       } else {
         window.location.href = "/404";
       }
@@ -80,7 +90,18 @@ class signIn extends Component {
           draggable: false
         });
       } else {
-        window.location.href = "/admin/keys";
+        this.Auth.setToken(res.token);
+        if (this.state.password === "Admin123") {
+          this.setState({ pageLoader: true });
+          setTimeout(() => {
+            window.location.href = "/admin/default";
+          }, 4000);
+        } else {
+          this.setState({ pageLoader: true });
+          setTimeout(() => {
+            window.location.href = "/admin/keys";
+          }, 2000);
+        }
       }
     });
   };
@@ -89,66 +110,82 @@ class signIn extends Component {
     const { classes } = this.props;
 
     return (
-      <Container component="main" maxWidth="xs" mt={100}>
+      <Container
+        component="main"
+        maxWidth={this.state.pageLoader ? "sm" : "xs"}
+        mt={100}
+      >
         <ToastContainer
           enableMultiContainer
           position={toast.POSITION.TOP_RIGHT}
         />
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <Person />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Admin
-          </Typography>
-          <form className={classes.form} onSubmit={this.login}>
-            <TextField
-              style={{ marginBottom: "-3px" }}
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Username"
-              error={this.state.username === "" ? true : false}
-              helperText={
-                this.state.username === "" ? "Username is required" : " "
+        {this.state.pageLoader ? (
+          <div style={{ marginTop: "50%" }}>
+            <PageLoader
+              content={
+                this.state.password === "Admin123"
+                  ? "Redirecting, please bear for a second..."
+                  : "Logging in..."
               }
-              InputLabelProps={{ required: false }}
-              onBlur={e => this.inputChecker(e.target.value, "username")}
-              onChange={e => this.inputChecker(e.target.value, "username")}
+              width="600px"
             />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              error={this.state.password === "" ? true : false}
-              helperText={
-                this.state.password === "" ? "Password is required" : " "
-              }
-              InputLabelProps={{ required: false }}
-              onBlur={e => this.inputChecker(e.target.value, "password")}
-              onChange={e => this.inputChecker(e.target.value, "password")}
-            />
-            ​
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={this.login}
-            >
-              Sign In
-            </Button>
-          </form>
-        </div>
+          </div>
+        ) : (
+          <div className={classes.paper}>
+            <Avatar className={classes.avatar}>
+              <Person />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Admin
+            </Typography>
+            <form className={classes.form} onSubmit={this.login}>
+              <TextField
+                style={{ marginBottom: "-3px" }}
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Username"
+                error={this.state.username === "" ? true : false}
+                helperText={
+                  this.state.username === "" ? "Username is required" : " "
+                }
+                InputLabelProps={{ required: false }}
+                onBlur={e => this.inputChecker(e.target.value, "username")}
+                onChange={e => this.inputChecker(e.target.value, "username")}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                error={this.state.password === "" ? true : false}
+                helperText={
+                  this.state.password === "" ? "Password is required" : " "
+                }
+                InputLabelProps={{ required: false }}
+                onBlur={e => this.inputChecker(e.target.value, "password")}
+                onChange={e => this.inputChecker(e.target.value, "password")}
+              />
+              ​
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                onClick={this.login}
+              >
+                Sign In
+              </Button>
+            </form>
+          </div>
+        )}
       </Container>
     );
   }

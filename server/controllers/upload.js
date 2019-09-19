@@ -33,7 +33,7 @@ function imageChat(req, res) {
     return res.status(400).json({ msg: 'No file uploaded' });
   }
   imageFile.mv(
-    `${__dirname}/../../src/client/images/chat-images/${fileName}`,
+    `${__dirname}/../../public/images/chat-images/${fileName}`,
     function(err) {
       if (err) {
         return res.status(500).send(err);

@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, lighten } from "@material-ui/core/styles";
 import MoreSettings from "@material-ui/icons/MoreVert";
 import SendIcon from "@material-ui/icons/Send";
 import Close from "@material-ui/icons/Close";
@@ -11,8 +11,8 @@ import Photo from '@material-ui/icons/Photo'
 import RemoveCircle from '@material-ui/icons/RemoveCircle'
 import Dialog from "@material-ui/core/Dialog";
 import ConfirmationDialog from "../being-helped/doneCofirmationmodal";
-import TextareaAutosize from "react-textarea-autosize"
-
+import TextareaAutosize from "react-textarea-autosize";
+import LinearProgress from '@material-ui/core/LinearProgress';
 //api
 import api from "../../services/fetchApi";
 
@@ -30,11 +30,8 @@ import {
   ListItemText
 } from "@material-ui/core";
 
-import {
-  base64StringtoFile,
-  extractImageFileExtensionFromBase64,
-  image64toCanvasRef
-} from "../common-components/upload-photo/ReusableUtils";
+//Firebase
+import {storage} from '../common-components/upload-photo/firebase/firebase'; 
 
 const StyledMenu = withStyles({
   paper: {
@@ -67,6 +64,17 @@ const StyledMenuItem = withStyles(theme => ({
   }
 }))(MenuItem);
 
+const Progress = withStyles({
+  root: {
+    height: 10,
+    backgroundColor: lighten('#775aa5', 0.5),
+  },
+  bar: {
+    borderRadius: 20,
+    backgroundColor: '#775aa5',
+  },
+})(LinearProgress);
+
 // UPLOAD IMAGE ATTRIBUTES
 const imageMaxSize = 1000000000; // bytes
 const acceptedFileTypes =
@@ -79,12 +87,12 @@ class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      confirmationDialog: false,
       preview: null,
       openMenu: null,
-      file: null,
-      imgWidth: null,
-      imgSrc: null,
-      imgSrcExt: null,
+      image: null,
+      progress: 0,
+      assist:[]
     };
   }
 
@@ -93,28 +101,33 @@ class ChatBox extends PureComponent {
 
   componentDidMount() {
     this.scrollToBottom();
+    if (this.props.privileged === "mentor") {
+      api.fetch(
+        `/api/fetchAssist/${this.props.chatmateInfo.id}/${this.props.senderInfo.id}`,
+        "get"
+      ).then(data => {
+        data.data.map(val => {
+          this.setState({ assist: val })
+        })
+      })
+    }
+  }
+  componentDidUpdate(){
+    this.scrollToBottom();
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
   //End of Added Scroll Bottom
-
   handleClick = e => {
     this.setState({ openMenu: e.currentTarget });
   };
-
   handleClose = () => {
     this.setState({ openMenu: null });
   };
-
-
-
-
   //added dh
   openConfirmationDialog = () => this.setState({ confirmationDialog: true });
   closeConfirmationDialog = () => this.setState({ confirmationDialog: false });
-
-
   //move back student to the queue
   removeFromQueue = student => {
     const data = api.fetch(
@@ -125,7 +138,6 @@ class ChatBox extends PureComponent {
       this.props.helpStudentClose();
     });
   };
-
   //done helping student
   doneHelp = student => {
     const months = [
@@ -165,16 +177,8 @@ class ChatBox extends PureComponent {
       this.setState({ confirmationDialog: false });
     });
   };
-
-
-
   //end of added dh
-
-
-
-
   // image echo
-
   verifyFile = files => {
     if (files && files.length > 0) {
       const currentFile = files[0];
@@ -196,73 +200,65 @@ class ChatBox extends PureComponent {
   };
   // ANCHOR here upload
   handleUpload = event => {
-    this.setState({
-      preview: URL.createObjectURL(event.target.files[0])
-    })
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const isVerified = this.verifyFile(files);
-      if (isVerified) {
-        // imageBase64Data
-        const currentFile = files[0];
-        const myFileItemReader = new FileReader();
-
-        var changeState = this; // set the this to changeState for setState in line 214
-
-        myFileItemReader.addEventListener(
-          "load",
-          () => {
-            var img = new Image();
-            img.src = myFileItemReader.result;
-
-            img.onload = function() {
-              if (img.width >= 800 && img.height >= 200) {
-                const myResult = myFileItemReader.result;
-                changeState.setState({
-                  file: files,
-                  imgSrc: myResult,
-                  imgSrcExt: extractImageFileExtensionFromBase64(myResult)
-                });
-              } else {
-                //changeState.setState({ errorMsg: true });
-              }
-            };
-          },
-          false
-        );
-        myFileItemReader.readAsDataURL(currentFile);
+    if (event.target.files){
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        const isVerified = this.verifyFile(files);
+        if (isVerified) {
+          this.setState({
+            preview: URL.createObjectURL(event.target.files[0]),
+            image: event.target.files[0]
+          })
+        } 
       }
     }
-    this.props.handleChatM(event.target.files[0], this.props.chatmateInfo.sub, this.props.senderInfo.sub, event.target.files[0].name);
   }
-
-  handleSendImage = () => {
-    //console.log(this.state)
-    const myFilename = "previewFile." + this.state.imgSrcExt;
-    const myImage = base64StringtoFile(this.state.imgSrc, myFilename);
-    this.props.sendChatM(myImage)
+  handleSendImage = priv => {
+    const {image} = this.state;
+    let progress;
+    const imageName = this.makeid(image.name)
+    const uploadTask = storage.ref(`chat-images/${imageName}`).put(image)
+    uploadTask.on('state_changed', 
+    (snapshot) => {
+      this.setState({
+        progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
+      })
+    }, (error) => {
+      console.log(error);
+    }, () => {
+      storage.ref('chat-images').child(imageName).getDownloadURL()
+      .then(url => {
+        if (priv === 'student'){
+          this.props.sendChat(url)
+        }else{
+          this.props.sendChatM(url)
+        }
+        this.setState({
+          progress: 0
+        })
+      })
+    })
+    this.setState({ image: null })
   }
-
+  makeid = (name, length = 15) => {
+    var ext = name.replace(/^.*\./, '');
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result + "." + ext;
+  };
   cancelUpload = () => {
     this.setState({
-      file: null
+      image: null
     })
   }
-
   // end image echo
-
-
-
-
-
-
-
-
-
-
-
-
   render() {
+    console.log(this.state.progress)
     const { classes } = this.props;
     return (
       <React.Fragment>
@@ -277,7 +273,6 @@ class ChatBox extends PureComponent {
               </Typography>
             </div>
           </Typography>
-
           <Box>
             <IconButton className={classes.settings} onClick={this.handleClick}>
               <MoreSettings />
@@ -289,17 +284,23 @@ class ChatBox extends PureComponent {
               open={Boolean(this.state.openMenu)}
               onClose={this.handleClose}
             >
-              <StyledMenuItem onClick={this.props.viewChatBox}>
-                <ListItemIcon>
-                  <Close />
-                </ListItemIcon>
-                <ListItemText primary="Close Chat Box" />
-              </StyledMenuItem>
+              {this.state.assist.sub !== this.props.chatmateInfo.sub ?
+                <StyledMenuItem onClick={this.props.viewChatBox}>
+                  <ListItemIcon>
+                    <Close />
+                  </ListItemIcon>
+                  <ListItemText primary="Close Chat Box" />
+                </StyledMenuItem>
+                : null}
 
 
-              {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
-                <React.Fragment>
-                  <StyledMenuItem onClick={() => this.removeFromQueue(this.props.helpingStudent)}>
+
+              {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
+                <Box>
+                  <StyledMenuItem onClick={() => {
+                    this.removeFromQueue(this.props.helpingStudent)
+                    this.props.viewChatBox();
+                  }}>
                     <ListItemIcon>
                       <BackToQueue />
                     </ListItemIcon>
@@ -313,20 +314,17 @@ class ChatBox extends PureComponent {
                     </ListItemIcon>
                     <ListItemText primary="Done" />
                   </StyledMenuItem>
-                </React.Fragment>
+                </Box>
                 : null}
-
-
-
-
-
-
-
 
 
             </StyledMenu>
           </Box>
         </Paper>
+        {this.state.progress > 0 &&
+          <Progress variant="determinate" style={{ height: 7 }} value={this.state.progress}/>
+        }
+
         <Paper
           elevation={0}
           classes={{ root: classes.mentorStyle1 }}
@@ -340,22 +338,22 @@ class ChatBox extends PureComponent {
           <Grid
             container
             className={`${classes.chatBoxBody} ${classes.scrollBar}`}
-            style={this.props.privileged === "mentor"? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}
+            style={this.props.privileged === "mentor" ? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}
           >
 
 
 
-
-            {this.props.privileged === 'mentor' && this.props.helpingStudent_sub === this.props.chatmateInfo.sub ?
+            {/* CURRENTLY HELPING TEXT */}
+            {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
               <Paper className={classes.helpStatus}>
-                <Typography variant="subtitle4">Currently Helping....</Typography>
+                <Typography variant="subtitle2">Currently Helping....</Typography>
               </Paper>
               : null}
 
 
 
 
-            <div className={`${classes.chatBoxBody} ${classes.scrollBar}`} style={this.props.privileged === "mentor"? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}>
+            <div className={`${classes.chatBoxBody} ${classes.scrollBar}`} style={this.props.privileged === "mentor" ? { minHeight: "570px", maxHeight: "570px" } : { minHeight: "520px", maxHeight: "520px" }}>
               <Grid
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
@@ -398,8 +396,8 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                  {convo.chat_type === "image" 
-                                  ? <img style={{ width: "100%" }} src={require(`../../images/chat-images/${convo.message}`)} alt="" />
+                                  {convo.chat_type !== "text" 
+                                  ? <img style={{ width: "100%" }} src={convo.chat_type} alt="" />
                                   : <TextareaAutosize
                                     readOnly
                                     className={classes.textAreaChat}
@@ -442,7 +440,28 @@ class ChatBox extends PureComponent {
                     src={this.props.senderInfo.avatar}
                     className={classes.userAvatar}
                   />
-
+                  <input 
+                      type="file" 
+                      onChange={this.handleUpload}
+                      style={{ display: "none" }}
+                      ref={fileInput => this.fileInput = fileInput}
+                    />
+                    {!this.state.image && (
+                      <IconButton onClick={() => this.fileInput.click()}>
+                        <Photo />
+                      </IconButton>
+                    )}
+                    {this.state.image && (
+                    <div>                      
+                      <img style={{ width: 300 }} src={this.state.preview} alt="" />
+                      <IconButton 
+                        style={{ position: 'absolute', marginLeft: '-47px' }}
+                        onClick={this.cancelUpload}
+                      >
+                        <RemoveCircle style={{ color: 'white' }}/>
+                      </IconButton>
+                    </div>
+                  )}
 
                   <React.Fragment>
                     <TextField
@@ -453,7 +472,7 @@ class ChatBox extends PureComponent {
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
-                      fullWidth
+                      fullWidth 
                       variant="outlined"
                       value={this.props.chat}
                       onClick={() => this.props.sendChatSub(this.props.chatmateInfo.sub)}
@@ -466,17 +485,21 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChat(this.props.helpingStudent_sub)
+                            this.props.sendChat()
                           }
                         }
                       }}
                     />
                     <IconButton
                       className={classes.sendIcon}
-                      onClick={this.props.sendChat}
+                      onClick={() => {
+                        this.state.image
+                        ? this.handleSendImage('student')
+                        : this.props.sendChat();
+                      }}
                       disabled={
-                        this.props.chat.replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === ""
+                        this.props.chatM.replace(/^\s+/, "")
+                          .replace(/\s+$/, "") === "" && !this.state.image
                           ? true
                           : false
                       }
@@ -501,12 +524,12 @@ class ChatBox extends PureComponent {
                       style={{ display: "none" }}
                       ref={fileInput => this.fileInput = fileInput}
                     />
-                    {!this.state.file && (
+                    {!this.state.image && (
                       <IconButton onClick={() => this.fileInput.click()}>
                         <Photo />
                       </IconButton>
                     )}
-                    {this.state.file && (
+                    {this.state.image && (
                     <div>                      
                       <img style={{ width: 300 }} src={this.state.preview} alt="" />
                       <IconButton 
@@ -537,7 +560,7 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChatM(this.props.helpingStudent_sub)
+                            this.props.sendChatM()
                           }
                         }
                       }}
@@ -545,13 +568,13 @@ class ChatBox extends PureComponent {
                     <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
-                        this.state.file
-                        ? this.handleSendImage()
+                        this.state.image
+                        ? this.handleSendImage('mentor')
                         : this.props.sendChatM();
                       }}
                       disabled={
                         this.props.chatM.replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === "" && !this.state.file
+                          .replace(/\s+$/, "") === "" && !this.state.image
                           ? true
                           : false
                       }

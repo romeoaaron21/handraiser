@@ -221,9 +221,9 @@ class ChatList extends PureComponent {
       return conversation
     })
 
-    if(conversation.length !== 0){
+    if (conversation.length !== 0) {
       if (need === 'message') {
-        if(conversation[conversation.length - 1].chat_type === "image"){
+        if (conversation[conversation.length - 1].chat_type !== "text") {
           return "Sent an image"
         }
         else {
@@ -233,15 +233,25 @@ class ChatList extends PureComponent {
         let display = conversation[conversation.length - 1].time.split(" ");
         return `${display[3]} ${display[4]}`;
       }
-    }else{
+    } else {
       if (need === 'message') {
         return 'No conversation'
-      } 
+      }
     }
   }
 
   render() {
     const { classes } = this.props;
+    const studentFilter = this.state.students.filter((data) => {
+      let fname = data.first_name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      let lname = data.last_name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      if (fname) {
+        return fname;
+      } else {
+        return lname;
+      }
+    }) 
+
     return (
       <React.Fragment>
         {/* Chat List Header*/}
@@ -267,7 +277,7 @@ class ChatList extends PureComponent {
         >
           {/* Chat List */}
 
-          {this.state.students.map(student => (
+          {studentFilter.map(student => (
             <ListItem className={classes.list} key={student.id} onClick={() => {
               this.props.sendChatSub(student.sub);
               this.unreadChat(student.sub)
@@ -292,7 +302,7 @@ class ChatList extends PureComponent {
                   <Badge
                     color="secondary"
                     badgeContent={this.unreadChat(student.sub)}
-                    invisible = {this.unreadChat(student.sub) === 0? true : false}
+                    invisible={this.unreadChat(student.sub) === 0 ? true : false}
                     className={classes.margin}
                   ></Badge>
                 </Typography>

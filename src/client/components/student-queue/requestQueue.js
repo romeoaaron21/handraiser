@@ -86,7 +86,7 @@ const styles = theme => ({
     }
   },
   emptyQueue: {
-    marginTop: 120,
+    marginTop: 60,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
@@ -201,14 +201,14 @@ class requestQueue extends Component {
           style={
             this.props.priv === "mentor"
               ? { minHeight: "570px", maxHeight: "570px" }
-              : { minHeight: "520px", maxHeight: "520px" }
+              : { minHeight: "455px", maxHeight: "520px" }
           }
         >
           {insideCohort.length !== 0 ? (
             <Box item="true" xs={12} sm={8} mt={2}>
               <Grid container>
                 {this.props.members.length > 0 ? (
-                  this.props.members.map(member =>
+                  this.props.members.map((member, i) =>
                     member.status === "waiting" &&
                     parseInt(this.props.cohort_id) ===
                       parseInt(member.cohort_id) ? (
@@ -304,7 +304,7 @@ class requestQueue extends Component {
                           member.status === "waiting" &&
                           member.cohort_id === parseInt(this.props.cohort_id)
                       ).length === 0 ? (
-                      <Grid container className={classes.emptyQueue}>
+                      <Grid container className={classes.emptyQueue} key={i}>
                         <img
                           src={EmptyQueue}
                           alt="img"

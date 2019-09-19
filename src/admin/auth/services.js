@@ -9,7 +9,6 @@ export default class AuthService {
         password
       })
     }).then(res => {
-      this.setToken(res.token);
       return Promise.resolve(res);
     });
   };
@@ -65,5 +64,13 @@ export default class AuthService {
       headers,
       ...options
     }).then(response => response.json());
+  };
+
+  getDecodedToken = () => {
+    try {
+      return decode(localStorage.getItem("id_token"));
+    } catch (err) {
+      return (window.location.href = "/");
+    }
   };
 }

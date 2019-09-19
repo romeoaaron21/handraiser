@@ -45,7 +45,7 @@ class MentorKeys extends React.Component {
 
     this.state = {
       loader: true,
-      open: false,
+      open: true,
       generateDialog: false,
       confirmationDialog: false,
       filter: "all",
@@ -64,7 +64,10 @@ class MentorKeys extends React.Component {
     });
 
     api.fetch("/mentors", "get").then(res => {
-      this.setState({ mentors: res.data.mentors, loader: false });
+      this.setState({ mentors: res.data.mentors });
+      setTimeout(() => {
+        this.setState({ loader: false });
+      }, 1000);
     });
   }
 
