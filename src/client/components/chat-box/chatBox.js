@@ -488,7 +488,12 @@ class ChatBox extends PureComponent {
                       </IconButton>
                     </div>
                   )}
-                  <ImageMenu open={this.state.imageMenu} handleClose={this.handleImageMenuClose} />
+                  <ImageMenu 
+                    openSplash={this.handleSplash}
+                    fileRef={this.fileInput}
+                    open={this.state.imageMenu} 
+                    handleClose={this.handleImageMenuClose} 
+                  />
 
                   <React.Fragment>
                     <TextField
