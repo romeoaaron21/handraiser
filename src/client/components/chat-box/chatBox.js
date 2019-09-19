@@ -33,6 +33,12 @@ import {
 //Firebase
 import {storage} from '../common-components/upload-photo/firebase/firebase'; 
 
+//menu
+import ImageMenu from './imageMenu'
+
+//splash
+import Splash from './splash'
+
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5"
@@ -86,15 +92,34 @@ const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
 class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
+    //ANCHOR state
     this.state = {
       confirmationDialog: false,
       preview: null,
       openMenu: null,
       image: null,
       progress: 0,
-      assist:[]
+      assist:[],
+      //splash try
+      imageMenu: null,
+      splashDialog: false,
     };
   }
+
+  //ANCHOR splash start
+  handleImageMenu = (event) => {
+    this.setState({ imageMenu: event.currentTarget })
+  }
+  handleImageMenuClose = () => {
+    this.setState({ imageMenu: null })
+  }
+  handleSplash = () => {
+    this.setState({ splashDialog: true })
+  }
+  closeSplash = () => {
+    this.setState({ splashDialog: false })
+  }
+  //splash end
 
   //Start of Added Scroll Bottom
   messagesEndRef = React.createRef();
@@ -258,7 +283,6 @@ class ChatBox extends PureComponent {
   }
   // end image echo
   render() {
-    console.log(this.state.progress)
     const { classes } = this.props;
     return (
       <React.Fragment>
@@ -444,10 +468,12 @@ class ChatBox extends PureComponent {
                       type="file" 
                       onChange={this.handleUpload}
                       style={{ display: "none" }}
-                      ref={fileInput => this.fileInput = fileInput}
+                      //ref={fileInput => this.fileInput = fileInput}
                     />
                     {!this.state.image && (
-                      <IconButton onClick={() => this.fileInput.click()}>
+                      <IconButton onClick={/*() => this.fileInput.click()*/
+                        this.handleImageMenu  
+                      }>
                         <Photo />
                       </IconButton>
                     )}
@@ -462,6 +488,7 @@ class ChatBox extends PureComponent {
                       </IconButton>
                     </div>
                   )}
+                  <ImageMenu open={this.state.imageMenu} handleClose={this.handleImageMenuClose} />
 
                   <React.Fragment>
                     <TextField
@@ -525,7 +552,7 @@ class ChatBox extends PureComponent {
                       ref={fileInput => this.fileInput = fileInput}
                     />
                     {!this.state.image && (
-                      <IconButton onClick={() => this.fileInput.click()}>
+                      <IconButton onClick={this.handleImageMenu}>
                         <Photo />
                       </IconButton>
                     )}
@@ -540,6 +567,13 @@ class ChatBox extends PureComponent {
                       </IconButton>
                     </div>
                     )}
+                    {/*ANCHOR IMAGE MENU*/}
+                    <ImageMenu
+                    openSplash={this.handleSplash}
+                    fileRef={this.fileInput}
+                    open={this.state.imageMenu} 
+                    handleClose={this.handleImageMenuClose} 
+                    />
                     <TextField
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
@@ -596,6 +630,13 @@ class ChatBox extends PureComponent {
               helpingStudent={this.props.helpingStudent}
             />
           </Dialog>
+
+
+          {/*ANCHOR splash*/}
+          <Splash 
+          open={this.state.splashDialog}
+          handleClose={this.closeSplash}
+          />
         </Paper>
       </React.Fragment>
     );
