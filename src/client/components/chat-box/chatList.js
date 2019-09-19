@@ -7,6 +7,7 @@ import {
   Grid,
   Typography,
   Avatar,
+  List,
   ListItem,
   ListItemAvatar,
   InputBase,
@@ -36,22 +37,16 @@ const styles = theme => ({
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)"
   },
   list: {
-    maxHeight: "52px",
-    marginTop: "15px",
-    cursor: "pointer",
-    "&:hover": {
-      backgroundColor: "#f1f1f1",
-      minHeight: 51
-    }
+    maxHeight: "60px",
   },
   chatList: {
     maxHeight: "380px",
-    minHeight: "268px",
+    minHeight: 205,
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",
     overflowY: "scroll",
     borderBottomRightRadius: "5px",
-    borderBottomLeftRadius: "5px"
+    borderBottomLeftRadius: "5px",
   },
   emptyQueue: {
     marginTop: 65,
@@ -213,12 +208,12 @@ class ChatList extends PureComponent {
         square={true}
       >
         {/* Chat List */}
-
+        <List>
         {this.props.mentor.map(mentor => (
           <ListItem className={classes.list} key={mentor.id} onClick={() => {
             this.props.sendChatSub(mentor.sub);
             this.unreadChat(mentor.sub)
-          }}>
+          }} button>
             <ListItemAvatar>
               <Avatar src={mentor.avatar} className={classes.userAvatar} />
             </ListItemAvatar>
@@ -246,6 +241,7 @@ class ChatList extends PureComponent {
             </div>
           </ListItem>
         ))}
+        </List>
         {/* End Chat List */}
 
         {/* End No Message Display */}
