@@ -374,7 +374,7 @@ class SideNav extends React.Component {
         {this.state.chatmateSub ? (
           <Redirect
             to={{
-              pathname: `/chat/${this.state.chatmateSub}/${this.state.user.sub}`
+              pathname: `/chat/${this.state.chatmateSub}`
             }}
           />
         ) : null}

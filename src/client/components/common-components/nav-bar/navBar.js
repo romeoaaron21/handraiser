@@ -19,6 +19,7 @@ import AuthService from "../../../auth/AuthService";
 import api from "../../../services/fetchApi";
 import io from "socket.io-client";
 import HeaderBg from "../../../images/header.jpg"
+import { Redirect } from "react-router-dom";
 
 const socket = io("http://boom-handraiser.com:3001/");
 
@@ -26,11 +27,11 @@ const drawerWidth = 240;
 
 const styles = theme => ({
   appBarBg: {
-  backgroundColor: "#802694",
-  backgroundImage: `url(${HeaderBg})`,
-  backgroundPosition: "center",
-  backgroundRepeat: "no-repeat",
-  backgroundSize: "cover",
+    backgroundColor: "#802694",
+    backgroundImage: `url(${HeaderBg})`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
@@ -119,7 +120,8 @@ class NavBar extends React.Component {
     this.profile = decode(this.token);
 
     this.state = {
-      anchor: null
+      anchor: null,
+      chat: false,
     };
   }
 
@@ -164,7 +166,7 @@ class NavBar extends React.Component {
             style={{ marginRight: 8 }}
             onClick={() => (window.location.href = "/chat")}
           >
-            <MessageIcon />
+            <MessageIcon onClick={() => this.setState({ chat: true })} />
           </IconButton>
           <HtmlTooltip
             title={
@@ -226,6 +228,13 @@ class NavBar extends React.Component {
             </Grid>
           </Menu>
         </Toolbar>
+        {this.state.chat ? (
+            <Redirect
+              to={{
+                pathname: `/chat/${'view'}`
+              }}
+            />
+          ) : null}
       </AppBar>
     );
   }

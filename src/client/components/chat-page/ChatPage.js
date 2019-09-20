@@ -21,15 +21,22 @@ import { Socket } from "net";
 import io from "socket.io-client";
 import { Redirect } from "react-router-dom";
 
+
+import AuthService from "../../auth/AuthService";
+
+
 const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
 
 class ChatPage extends PureComponent {
   constructor(props) {
     super(props);
+    this.Auth = new AuthService();
+    this.fetch = this.Auth.getFetchedTokenAPI();
     this.state = {
       open: false,
       conversation: [],
+      sub: "",
 
       chatmateSub: "",
 
@@ -56,7 +63,7 @@ class ChatPage extends PureComponent {
       this.setState({ conversation: conversation[0] });
       console.log(conversation)
 
-      if (conversation[1] === this.props.match.params.userSub) {
+      if (conversation[1] === this.state.sub) {
         this.displayChatList();
         this.setState({ senderText: "" })
       }
@@ -64,17 +71,17 @@ class ChatPage extends PureComponent {
         this.displayChatList();
         this.setState({ chatmateText: "" })
       }
-      if(conversation[2] === this.props.match.params.userSub){
+      if(conversation[2] === this.state.sub){
         this.displayChatList();
       }
 
     });
 
     socket.on("setStudentChatText", (chatText) => {
-      if (chatText[2] === this.props.match.params.userSub && chatText[1] === this.state.chatmateSub) {
+      if (chatText[2] === this.state.sub && chatText[1] === this.state.chatmateSub) {
         this.setState({ senderText: chatText[0] });
       }
-      else if (chatText[1] === this.props.match.params.userSub && chatText[2] === this.state.chatmateSub) {
+      else if (chatText[1] === this.state.sub && chatText[2] === this.state.chatmateSub) {
         this.setState({ chatmateText: chatText[0] });
       }
     })
@@ -88,14 +95,20 @@ class ChatPage extends PureComponent {
 
 
   componentDidMount() {
-    this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub:this.props.match.params.chatmateSub })
-    this.selectChatmate();
+    this.fetch.then(fetch => {
+      this.setState({sub:fetch.data.user[0].sub})
+    })
+    .then(()=> {
+      this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub:this.props.match.params.chatmateSub })
+      this.selectChatmate();
+    })
+
   }
 
   displayChatList = () => {
     let sub = [];
     let UniqueSub = [];
-    const data = api.fetch(`/api/getChatList/${this.props.match.params.userSub}`, "get")
+    const data = api.fetch(`/api/getChatList/${this.state.sub}`, "get")
     data.then(res => {
       res.data.map(chatListSub => {
         sub.push(chatListSub.chatsub)
@@ -123,11 +136,11 @@ class ChatPage extends PureComponent {
 
   selectChatmate = () => {
     if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
-      const data = api.fetch(`/api/getChatUsersInfo/${this.props.match.params.userSub}/${this.props.match.params.chatmateSub}`, "get")
+      const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${this.props.match.params.chatmateSub}`, "get")
       data.then(res => {
         this.setState({ chatmateSub: this.props.match.params.chatmateSub })
         res.data.map(chatUser => {
-          if (chatUser.sub === this.props.match.params.userSub) {
+          if (chatUser.sub === this.state.sub) {
             this.setState({ userInfo: chatUser })
           } else { this.setState({ chatmateInfo: chatUser }) }
         })
@@ -145,7 +158,7 @@ class ChatPage extends PureComponent {
   }
 
   setChatText = (val) => {
-    let textVal = [val, this.state.chatmateSub, this.props.match.params.userSub];
+    let textVal = [val, this.state.chatmateSub, this.state.sub];
     socket.emit('setStudentChatText', textVal)
   };
 
@@ -179,21 +192,21 @@ class ChatPage extends PureComponent {
     var datetime = formatted_date + " " + time;
     let convo = {
       message: this.state.senderText,
-      sender_sub: this.props.match.params.userSub,
+      sender_sub: this.state.sub,
       chatmate_sub: this.state.chatmateSub,
       time: datetime
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
       this.displayBadge();
-      const chat = [res.data, this.props.match.params.userSub, this.state.chatmateSub]
+      const chat = [res.data, this.state.sub, this.state.chatmateSub]
       socket.emit('getNormalChat', chat)
     });
   };
 
 
   displayBadge = (chatmate) => {
-    let sub = { chatmate: this.props.match.params.userSub, sender: chatmate };
+    let sub = { chatmate: this.state.sub, sender: chatmate };
     console.log(sub)
     const data = api.fetch(
       `/api/seenNormalChat`,
@@ -228,7 +241,7 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.props.match.params.userSub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge}/>
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge}/>
 
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge}/>
 
@@ -240,7 +253,7 @@ class ChatPage extends PureComponent {
         {this.state.newChatmateSub !== this.state.chatmateSub ?
           <Redirect
             to={{
-              pathname: `/chat/${this.state.newChatmateSub}/${this.props.match.params.userSub}`
+              pathname: `/chat/${this.state.newChatmateSub}`
             }}
           /> 
           : 

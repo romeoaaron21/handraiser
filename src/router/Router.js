@@ -29,10 +29,9 @@ function Router() {
           : null}
         <Route path="/sign-in" component={SignIn} />
         <Route exact path="/cohorts" component={Cohorts} />
-        <Route exact path="/chat/:chatmateSub/:userSub" component={ChatPage} />
+        <Route exact path="/chat/:chatmateSub" component={ChatPage} />
         <Route path="/queue/:cid" component={Queue} />
         <Route path="/settings/:cid" component={Settings} />
-
         {/* ADMIN */}
         <Route path="/admin/keys" component={MentorKeys} />
         <Route path="/admin/mentors" component={Mentor} />
