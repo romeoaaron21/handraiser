@@ -155,7 +155,8 @@ class ChatPageList extends PureComponent {
                       <React.Fragment key={i}>
                       <ListItem alignItems="flex-start" button onClick={() => {
                         this.props.changeChatmate(chatmate.sub);
-                        this.props.displayBadge(chatmate.sub)
+                        this.props.displayBadge(chatmate.sub);
+                        this.props.selectChatmate(chatmate.sub)
                         }}>
                         <Hidden only="xs">
                           <ListItemAvatar style={{marginTop: '-0.2px'}}>
