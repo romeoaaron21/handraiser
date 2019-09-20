@@ -383,7 +383,7 @@ class ChatBox extends PureComponent {
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
                 style={
                   this.props.privileged === "mentor"
-                    ? { minHeight: "443px", maxHeight: "443px" }
+                    ? { minHeight: "443px", maxHeight: "488px" }
                     : { minHeight: "443px", maxHeight: "443px" }
                 }
 
