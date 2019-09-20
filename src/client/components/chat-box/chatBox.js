@@ -468,7 +468,7 @@ class ChatBox extends PureComponent {
                       type="file" 
                       onChange={this.handleUpload}
                       style={{ display: "none" }}
-                      //ref={fileInput => this.fileInput = fileInput}
+                      ref={fileInput => this.fileInput = fileInput}
                     />
                     {!this.state.image && (
                       <IconButton onClick={/*() => this.fileInput.click()*/
