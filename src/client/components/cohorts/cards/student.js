@@ -112,7 +112,6 @@ class StudentClassCards extends React.Component {
     return (
       <React.Fragment>
         {cohorts.map(cohort => {
-          console.log(cohort.class_header);
           if (this.props.search) {
             if (
               cohort.name

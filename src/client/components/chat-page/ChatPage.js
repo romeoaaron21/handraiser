@@ -263,7 +263,7 @@ class ChatPage extends PureComponent {
 
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
 
-            <ChatPageInfo />
+            <ChatPageInfo chatmateInfo={this.state.chatmateInfo} />
           </Grid>
         </Container>
 

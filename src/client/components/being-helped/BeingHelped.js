@@ -80,15 +80,15 @@ class BeingHelped extends Component {
               Being Helped ({this.props.currentlyHelping.length})
             </Typography>
           </div>
+          <div
+            className={classes.scrollBar}
+            style={{ height: 240, overflowY: "auto" }}
+          >
+            {this.props.currentlyHelping.length > 0 ? (
+              this.props.currentlyHelping.map(helpingStudent => {
+                return (
+                  <React.Fragment>
 
-          {this.props.currentlyHelping.length > 0 ? (
-            this.props.currentlyHelping.map(helpingStudent => {
-              return (
-                <React.Fragment>
-                  <div
-                    className={classes.scrollBar}
-                    style={{ height: 240, overflowY: "auto" }}
-                  >
                     <List>
                       <ListItem className={classes.list}>
                         <ListItemAvatar>
@@ -109,27 +109,28 @@ class BeingHelped extends Component {
                       </ListItem>
                       <Divider />
                     </List>
-                  </div>
+
+                  </React.Fragment>
+                );
+              })
+            ) : (
+                <React.Fragment>
+                  <ListItem className={classes.list}>
+                    <ListItemText>
+                      <Typography
+                        style={{
+                          color: "#9e9e9e",
+                          textAlign: "center",
+                          marginTop: 40
+                        }}
+                      >
+                        {"None"}
+                      </Typography>
+                    </ListItemText>
+                  </ListItem>
                 </React.Fragment>
-              );
-            })
-          ) : (
-            <React.Fragment>
-              <ListItem className={classes.list}>
-                <ListItemText>
-                  <Typography
-                    style={{
-                      color: "#9e9e9e",
-                      textAlign: "center",
-                      marginTop: 40
-                    }}
-                  >
-                    {"None"}
-                  </Typography>
-                </ListItemText>
-              </ListItem>
-            </React.Fragment>
-          )}
+              )}
+          </div>
         </Paper>
       </div>
     );

@@ -16,7 +16,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 //api
 import api from "../../services/fetchApi";
 
-import {InputAdornment } from '@material-ui/core'
+import { InputAdornment } from '@material-ui/core'
 import InsertEmoticon from '@material-ui/icons/InsertEmoticon'
 import {
   Paper,
@@ -33,7 +33,7 @@ import {
 } from "@material-ui/core";
 
 //Firebase
-import {storage} from '../common-components/upload-photo/firebase/firebase'; 
+import { storage } from '../common-components/upload-photo/firebase/firebase';
 
 //menu
 import ImageMenu from './imageMenu'
@@ -103,7 +103,7 @@ class ChatBox extends PureComponent {
       openMenu: null,
       image: null,
       progress: 0,
-      assist:[],
+      assist: [],
       //splash try
       imageMenu: null,
       splashDialog: false,
@@ -142,7 +142,7 @@ class ChatBox extends PureComponent {
       })
     }
   }
-  componentDidUpdate(){
+  componentDidUpdate() {
     this.scrollToBottom();
   }
   scrollToBottom = () => {
@@ -230,7 +230,7 @@ class ChatBox extends PureComponent {
   };
   // ANCHOR here upload
   handleUpload = event => {
-    if (event.target.files){
+    if (event.target.files) {
       const files = event.target.files;
       if (files && files.length > 0) {
         const isVerified = this.verifyFile(files);
@@ -238,40 +238,40 @@ class ChatBox extends PureComponent {
           this.setState({
             image: files[0]
           })
-          if (this.props.privileged === "student"){
+          if (this.props.privileged === "student") {
             this.props.handleChat(files[0].name, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
           }
           else {
             this.props.handleChatM(files[0].name, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
           }
-        } 
+        }
       }
     }
   }
   handleSendImage = priv => {
-    const {image} = this.state;
+    const { image } = this.state;
     const imageName = this.makeid(image.name)
     const uploadTask = storage.ref(`chat-images/${imageName}`).put(image)
-    uploadTask.on('state_changed', 
-    (snapshot) => {
-      this.setState({
-        progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
-      })
-    }, (error) => {
-      console.log(error);
-    }, () => {
-      storage.ref('chat-images').child(imageName).getDownloadURL()
-      .then(url => {
-        if (priv === 'student'){
-          this.props.sendChat(url)
-        }else{
-          this.props.sendChatM(url)
-        }
+    uploadTask.on('state_changed',
+      (snapshot) => {
         this.setState({
-          progress: 0
+          progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
         })
+      }, (error) => {
+        console.log(error);
+      }, () => {
+        storage.ref('chat-images').child(imageName).getDownloadURL()
+          .then(url => {
+            if (priv === 'student') {
+              this.props.sendChat(url)
+            } else {
+              this.props.sendChatM(url)
+            }
+            this.setState({
+              progress: 0
+            })
+          })
       })
-    })
     this.setState({ image: null })
   }
   makeid = (name, length = 15) => {
@@ -292,17 +292,17 @@ class ChatBox extends PureComponent {
   }
   uploadGif = gif => {
     this.closeSplash()
-    if (this.props.privileged === "student"){
+    if (this.props.privileged === "student") {
       this.props.sendChat(gif.images.downsized.url)
-    }else{
+    } else {
       this.props.sendChatM(gif.images.downsized.url)
-    }   
+    }
   }
   //ANCHOR emoji
   openPicker = event => {
-    if(!event){
+    if (!event) {
       this.setState({ emoji: null })
-    }else{
+    } else {
       if (this.state.emoji) {
         this.setState({ emoji: null })
       }
@@ -313,7 +313,7 @@ class ChatBox extends PureComponent {
   }
   handleEmoji = (emoji) => {
     let param
-    if (this.props.privileged === "student"){
+    if (this.props.privileged === "student") {
       param = this.props.chat + emoji.native
       this.props.handleChat(param, this.props.chatmateInfo.sub, this.props.senderInfo.sub);
     }
@@ -387,7 +387,7 @@ class ChatBox extends PureComponent {
           </Box>
         </Paper>
         {this.state.progress > 0 &&
-          <Progress variant="determinate" style={{ height: 7 }} value={this.state.progress}/>
+          <Progress variant="determinate" style={{ height: 7 }} value={this.state.progress} />
         }
 
         <Paper
@@ -452,10 +452,10 @@ class ChatBox extends PureComponent {
                             <Box
                               className={
                                 (convo.chat_type !== "text")
-                                ? classes.chatImage
-                                : (this.props.senderInfo.sub === convo.chatmate_id
-                                  ? classes.chatDetails
-                                  : classes.chatDetails2)
+                                  ? classes.chatImage
+                                  : (this.props.senderInfo.sub === convo.chatmate_id
+                                    ? classes.chatDetails
+                                    : classes.chatDetails2)
                               }
                             >
                               <div className={classes.chatText}>
@@ -463,13 +463,13 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                  {convo.chat_type !== "text" 
-                                  ? <img style={{ width: "100%" }} src={convo.chat_type} alt="" />
-                                  : <TextareaAutosize
-                                    readOnly
-                                    className={classes.textAreaChat}
-                                    style={{ color: this.props.senderInfo.sub === convo.chatmate_id ? '#263238' : 'white', }}
-                                    value={convo.message.replace(/\n$/, "")}
+                                  {convo.chat_type !== "text"
+                                    ? <img style={{ width: "100%" }} src={convo.chat_type} alt="" />
+                                    : <TextareaAutosize
+                                      readOnly
+                                      className={classes.textAreaChat}
+                                      style={{ color: this.props.senderInfo.sub === convo.chatmate_id ? '#263238' : 'white', }}
+                                      value={convo.message.replace(/\n$/, "")}
                                     />
                                   }
                                 </Typography>
@@ -508,22 +508,22 @@ class ChatBox extends PureComponent {
                     src={this.props.senderInfo.avatar}
                     className={classes.userAvatar}
                   />
-                  <input 
-                      type="file" 
-                      onChange={this.handleUpload}
-                      style={{ display: "none" }}
-                      ref={fileInput => this.fileInput = fileInput}
-                    />
-                      <IconButton onClick={/*() => this.fileInput.click()*/
-                        this.handleImageMenu  
-                      }>
-                        <Photo />
-                      </IconButton>
+                  <input
+                    type="file"
+                    onChange={this.handleUpload}
+                    style={{ display: "none" }}
+                    ref={fileInput => this.fileInput = fileInput}
+                  />
+                  <IconButton onClick={/*() => this.fileInput.click()*/
+                    this.handleImageMenu
+                  }>
+                    <Photo />
+                  </IconButton>
                   <ImageMenu
                     openSplash={this.handleSplash}
                     fileRef={this.fileInput}
-                    open={this.state.imageMenu} 
-                    handleClose={this.handleImageMenuClose} 
+                    open={this.state.imageMenu}
+                    handleClose={this.handleImageMenuClose}
                   />
 
                   <React.Fragment>
@@ -535,7 +535,7 @@ class ChatBox extends PureComponent {
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
-                      fullWidth 
+                      fullWidth
                       variant="outlined"
                       value={this.props.chat}
                       onClick={() => this.props.sendChatSub(this.props.chatmateInfo.sub)}
@@ -548,7 +548,11 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChat()
+                            this.state.image
+                              ? this.handleSendImage('student')
+                              :
+                              this.props.sendChat();
+                            this.openPicker()
                           }
                         }
                       }}
@@ -559,7 +563,7 @@ class ChatBox extends PureComponent {
                               edge="end"
                               onClick={this.openPicker}
                             >
-                                <InsertEmoticon />
+                              <InsertEmoticon />
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -569,9 +573,9 @@ class ChatBox extends PureComponent {
                       className={classes.sendIcon}
                       onClick={() => {
                         this.state.image
-                        ? this.handleSendImage('student')
-                        : 
-                        this.props.sendChat();
+                          ? this.handleSendImage('student')
+                          :
+                          this.props.sendChat();
                         this.openPicker()
                       }}
                       disabled={
@@ -595,21 +599,21 @@ class ChatBox extends PureComponent {
                       src={this.props.senderInfo.avatar}
                       className={classes.userAvatar}
                     />
-                    <input 
-                      type="file" 
+                    <input
+                      type="file"
                       onChange={this.handleUpload}
                       style={{ display: "none" }}
                       ref={fileInput => this.fileInput = fileInput}
                     />
-                      <IconButton onClick={this.handleImageMenu}>
-                        <Photo />
-                      </IconButton>             
+                    <IconButton onClick={this.handleImageMenu}>
+                      <Photo />
+                    </IconButton>
                     {/*ANCHOR IMAGE MENU*/}
                     <ImageMenu
-                    openSplash={this.handleSplash}
-                    fileRef={this.fileInput}
-                    open={this.state.imageMenu} 
-                    handleClose={this.handleImageMenuClose} 
+                      openSplash={this.handleSplash}
+                      fileRef={this.fileInput}
+                      open={this.state.imageMenu}
+                      handleClose={this.handleImageMenuClose}
                     />
                     <TextField
                       classes={{ root: "MenuItem" }}
@@ -631,7 +635,11 @@ class ChatBox extends PureComponent {
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== "") {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            this.props.sendChatM()
+                            this.state.image
+                              ? this.handleSendImage('mentor')
+                              :
+                              this.props.sendChatM();
+                            this.openPicker()
                           }
                         }
                       }}
@@ -642,7 +650,7 @@ class ChatBox extends PureComponent {
                               edge="end"
                               onClick={this.openPicker}
                             >
-                                <InsertEmoticon />
+                              <InsertEmoticon />
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -652,9 +660,9 @@ class ChatBox extends PureComponent {
                       className={classes.sendIcon}
                       onClick={() => {
                         this.state.image
-                        ? this.handleSendImage('mentor')
-                        : 
-                        this.props.sendChatM();
+                          ? this.handleSendImage('mentor')
+                          :
+                          this.props.sendChatM();
                         this.openPicker()
                       }}
                       disabled={
@@ -685,14 +693,14 @@ class ChatBox extends PureComponent {
 
           {/*ANCHOR splash*/}
           <Splash
-          uploadGif={this.uploadGif}
-          open={this.state.splashDialog}
-          handleClose={this.closeSplash}
+            uploadGif={this.uploadGif}
+            open={this.state.splashDialog}
+            handleClose={this.closeSplash}
           />
 
           <Emoji
-          anchorEl={this.state.emoji}
-          handleEmoji={this.handleEmoji}
+            anchorEl={this.state.emoji}
+            handleEmoji={this.handleEmoji}
           />
         </Paper>
       </React.Fragment>

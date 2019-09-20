@@ -20,10 +20,10 @@ class ChatPageInfo extends Component {
       <Grid item md={3} xs={12} style={{ height: "800px"}}>
         <Paper>
           <div className={classes.chatInfoHeader}>
-            <Avatar className={classes.avatarLarge}>TL</Avatar>
-            <Typography variant="h6">Trizha Kate Longaza</Typography>
+            <Avatar className={classes.avatarLarge} src={this.props.chatmateInfo.avatar}></Avatar>
+            <Typography variant="h6">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
             <Typography variant="subtitle2">
-              trizha.longaza@boom.camp
+            {this.props.chatmateInfo.first_name}
             </Typography>
           </div>
           <Divider />
