@@ -161,6 +161,17 @@ const styles = theme => ({
       padding: "6px 12px"
     }
   },
+  chatImage: {
+    color: "#000",
+    maxWidth: 270,
+    overflowWrap: "break-word",
+    borderRadius: "4px",
+    backgroundColor: "#ffffff",
+    "@media (max-width: 425px)": {
+      maxWidth: "191px",
+      padding: "6px 12px"
+    }
+  },
   chatText: {
     fontSize: 15,
     "@media (max-width: 425px)": {

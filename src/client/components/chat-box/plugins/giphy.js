@@ -3,19 +3,11 @@ import { withStyles } from "@material-ui/core/styles";
 import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle,
   Typography, withWidth, TextField, IconButton, InputAdornment,
-  GridList, GridListTile
 } from '@material-ui/core';
 import Search from '@material-ui/icons/Search'
 import axios from 'axios'
 
 const styles = theme => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-        backgroundColor: theme.palette.background.paper,
-    },
     title: {
       paddingTop: 35,
       minHeight: 100,
@@ -35,10 +27,25 @@ const styles = theme => ({
     subtitle: {
       marginTop: 20
     },
-    gridList: {
-        width: 500,
-        height: 450,
+    gifItem: {
+        display: 'grid',
+        alignItems: 'center',
+        cursor: 'pointer',
+        boxShadow: '2px 2px 4px 0 #ccc',
+        boxSizing: 'border-box',
+        margin: '0 0 1.5em',
+        padding: '1em',
+        width: '100%'
     },
+    gifList: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        columnGap: '1.5em',
+        fontSize: '.85em',
+        margin: '1.5em 0',
+        padding: 0
+    }
+    
 });
 
 class Splash extends React.Component {
@@ -53,25 +60,10 @@ class Splash extends React.Component {
         this.setState({ query })
     }
     handleSubmit = () => {
-        let arr = []
-        axios.get('https://api.unsplash.com/search/photos', {
-            params: { query: this.state.query},
-            headers: {
-                Authorization: 'Client-ID dfa4c436eb3c108f49a31f09cdc4940abd45a370aad6c90260aec587a58421c7'
-            }
-        })
+        axios.get(`http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS`)
         .then(res => {
-            arr = [...res.data.results] 
-            arr.map((result,i) => {
-                if (result.height > result.width){
-                    arr[i].col = 2
-                }
-                else {
-                    arr[i].col = 3
-                }
-            })
             this.setState({
-                results: arr
+                results: [...res.data.data]
             })
         })
         .catch(err => {
@@ -90,6 +82,7 @@ class Splash extends React.Component {
             classes,
             open, 
             handleClose,
+            uploadGif
         } = this.props;
         return (
             <Dialog
@@ -103,7 +96,7 @@ class Splash extends React.Component {
             >
                 <DialogTitle disableTypography className={classes.title}>
                     <Typography variant="h4">Search for images</Typography>
-                    <Typography variant="overline">&copy; Unsplash.com</Typography>
+                    <Typography variant="overline">&copy; giphy</Typography>
                 </DialogTitle>
                 <DialogContent>
                 <TextField
@@ -126,15 +119,16 @@ class Splash extends React.Component {
                         ),
                       }}
                 />
-                <div className={classes.root}>
-                    <GridList cellHeight={170} cols={10}>
+                {this.state.results.length
+                ?   <div className={classes.gifList}>
                         {this.state.results.map(tile => (
-                        <GridListTile key={tile.id} className={classes.gridList} cols={tile.col}>
-                            <img style={{ width: '100%' }} src={tile.urls.regular} alt="" />
-                        </GridListTile>
+                            <div className={classes.gifItem} onClick={() => uploadGif(tile)}>
+                                <img style={{ width: '100%' }} src={tile.images.downsized.url} alt="" />
+                            </div>
                         ))}
-                    </GridList>
-                </div>
+                    </div>
+                : null
+                }
                 </DialogContent>
                 <DialogActions>
                 <Button onClick={handleClose} color="primary">
