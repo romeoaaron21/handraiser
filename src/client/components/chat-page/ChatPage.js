@@ -61,7 +61,6 @@ class ChatPage extends PureComponent {
 
     socket.on("getNormalChat", (conversation) => {
       this.setState({ conversation: conversation[0] });
-      console.log(conversation)
 
       if (conversation[1] === this.state.sub) {
         this.displayChatList();
@@ -71,7 +70,7 @@ class ChatPage extends PureComponent {
         this.displayChatList();
         this.setState({ chatmateText: "" })
       }
-      if(conversation[2] === this.state.sub){
+      if (conversation[2] === this.state.sub) {
         this.displayChatList();
       }
 
@@ -96,16 +95,21 @@ class ChatPage extends PureComponent {
 
   componentDidMount() {
     this.fetch.then(fetch => {
-      this.setState({sub:fetch.data.user[0].sub})
+      this.setState({ sub: fetch.data.user[0].sub })
     })
-    .then(()=> {
-      this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub:this.props.match.params.chatmateSub })
-      this.selectChatmate();
-    })
-
+      .then(() => {
+        if (this.props.match.params.chatmateSub === 'allMessages') {
+          this.displayChatList('allMessages');
+        }
+        else{
+          this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
+          this.selectChatmate();
+          //fix component didmount after allmessages
+        }
+      })
   }
 
-  displayChatList = () => {
+  displayChatList = (view) => {
     let sub = [];
     let UniqueSub = [];
     const data = api.fetch(`/api/getChatList/${this.state.sub}`, "get")
@@ -123,22 +127,36 @@ class ChatPage extends PureComponent {
             this.setState({ chatListInfo: [...res.data] })
           })
       })
+      .then(() => {
+        if(view === 'allMessages'){
+          this.componentDidUpdate(UniqueSub[0]);
+        }
+      })
   }
 
-  componentDidUpdate() {
-    this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub:this.props.match.params.chatmateSub })
-    this.selectChatmate();
+  componentDidUpdate(sub) {
+    if(this.props.match.params.chatmateSub == 'allMessages'){
+      if(sub.length > 0){
+        this.setState({ chatmateSub: sub, newChatmateSub: sub })
+      this.selectChatmate(sub); 
+      }
+    }
+    else{
+      this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
+      this.selectChatmate(this.props.match.params.chatmateSub); 
+    }
+    
   }
 
   changeChatmate = (chatmate) => {
     this.setState({ newChatmateSub: chatmate })
   }
 
-  selectChatmate = () => {
+  selectChatmate = (chatmateSub) => {
     if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
-      const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${this.props.match.params.chatmateSub}`, "get")
+      const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
       data.then(res => {
-        this.setState({ chatmateSub: this.props.match.params.chatmateSub })
+        this.setState({ chatmateSub: chatmateSub })
         res.data.map(chatUser => {
           if (chatUser.sub === this.state.sub) {
             this.setState({ userInfo: chatUser })
@@ -207,7 +225,6 @@ class ChatPage extends PureComponent {
 
   displayBadge = (chatmate) => {
     let sub = { chatmate: this.state.sub, sender: chatmate };
-    console.log(sub)
     const data = api.fetch(
       `/api/seenNormalChat`,
       "patch",
@@ -221,6 +238,7 @@ class ChatPage extends PureComponent {
 
 
   render() {
+    console.log(this.state.chatmateSub)
     const { classes } = this.props;
     return (
       <div>
@@ -241,24 +259,25 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge}/>
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate}/>
 
-            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge}/>
+            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
 
             <ChatPageInfo />
           </Grid>
         </Container>
 
 
-        {this.state.newChatmateSub !== this.state.chatmateSub ?
-          <Redirect
-            to={{
-              pathname: `/chat/${this.state.newChatmateSub}`
-            }}
-          /> 
-          : 
-          null
-          }
+        {
+          this.state.newChatmateSub !== this.state.chatmateSub ?
+            <Redirect
+              to={{
+                pathname: `/chat/${this.state.newChatmateSub}`
+              }}
+            />
+            :
+            null
+        }
 
 
       </div>

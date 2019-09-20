@@ -70,7 +70,7 @@ export default function ImageMenu(props) {
           <ListItemIcon>
             <ImageSearch />
           </ListItemIcon>
-          <ListItemText primary="Search for image" />
+          <ListItemText primary="Search for GIF" />
         </StyledMenuItem>
       </StyledMenu>
   );
