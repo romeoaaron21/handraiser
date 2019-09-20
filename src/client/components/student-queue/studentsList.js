@@ -12,7 +12,8 @@ import {
   InputBase,
   IconButton,
   Tooltip,
-  Badge
+  Badge,
+  List
 } from "@material-ui/core";
 
 import api from "../../services/fetchApi";
@@ -40,15 +41,12 @@ const styles = theme => ({
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)"
   },
   list: {
-    maxHeight: "52px",
-    marginTop: "15px",
-    cursor: "pointer",
-    "&:hover": {
-      backgroundColor: "#f1f1f1",
-      minHeight: 51
-    },
+    maxHeight: "63px",
+    // marginTop: "15px",
     "&:hover .actionShow": {
-      display: "inline-block"
+      display: "block",
+      marginLeft: "-42px",
+      marginTop: "13px"
     }
   },
   queueAction: {
@@ -139,7 +137,8 @@ const styles = theme => ({
     alignItems: "flex-end",
     marginLeft: "16px",
     flexDirection: "column",
-    marginBottom: "10px"
+    marginBottom: 3
+
   },
   chatTime: {
     color: "#546e7a",
@@ -170,8 +169,8 @@ const styles = theme => ({
   },
   chatBadge: {
     float: "right",
-    marginRight: "12px",
-    marginTop: "0px"
+    marginRight: "21px",
+    // marginTop: "0px"
   }
 });
 
@@ -275,13 +274,13 @@ class ChatList extends PureComponent {
           className={`${classes.chatList} ${classes.scrollBar}`}
           square={true}
         >
+          <List>
           {/* Chat List */}
-
           {studentFilter.map(student => (
             <ListItem className={classes.list} key={student.id} onClick={() => {
               this.props.sendChatSub(student.sub);
               this.unreadChat(student.sub)
-            }}>
+            }} button>
               <ListItemAvatar>
                 <Avatar src={student.avatar} className={classes.userAvatar} />
               </ListItemAvatar>
@@ -303,12 +302,18 @@ class ChatList extends PureComponent {
                     color="secondary"
                     badgeContent={this.unreadChat(student.sub)}
                     invisible={this.unreadChat(student.sub) === 0 ? true : false}
-                    className={classes.margin}
                   ></Badge>
                 </Typography>
               </div>
               <div className={`${classes.queueAction} actionShow`}>
-                <Tooltip title="Move To Queue" placement="top">
+                <Tooltip title={this.props.members.filter(
+                          requested =>
+                            requested.sub === student.sub &&
+                            parseInt(this.props.cohort_id) ===
+                            parseInt(requested.cohort_id)
+                        ).length !== 0
+                          ? "Already on Queue"
+                          : "Move To Queue"} placement="top">
                   <div>
                     <IconButton
                       disabled={
@@ -335,7 +340,7 @@ class ChatList extends PureComponent {
             </ListItem>
           ))}
           {/* End Chat List */}
-
+          </List>
           {/* End No Message Display */}
         </Paper>
         {/* End Chat List Container*/}

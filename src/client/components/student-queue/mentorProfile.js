@@ -79,19 +79,23 @@ class MentorProfile extends PureComponent {
 
     this.state = {
       students: [],
-      cohort_pass: ""
+      cohort_pass: "",
     };
   }
   componentDidMount() {
     api
       .fetch(`/api/cohort/${this.props.cohort_id}/members/list`, "get")
       .then(res => {
+        console.log(res)
         this.setState({
           students: res.data.students,
-          cohort_pass: res.data.students.password
+          cohort_pass: res.data.students[0].password
         });
-      });
+      })
+      ;
   }
+
+  
 
   render() {
     const { classes } = this.props;
@@ -111,16 +115,28 @@ class MentorProfile extends PureComponent {
                 }
               </Typography>
               <Typography variant="subtitle1" className={classes.labelQues}>
-                Student on Queue
+                Student{
+                  this.props.members.filter(
+                    member =>
+                      member.status === "waiting" &&
+                      parseInt(this.props.cohort_id) ===
+                        parseInt(member.cohort_id)
+                  ).length>1?'s':''
+                } on Queue
               </Typography>
             </CardMedia>
             <CardContent className={classes.cardContent}>
               <Typography variant="overline" color="textSecondary">
                 Students Enrolled: {this.state.students.length}
               </Typography>
+              <span>
               <Typography variant="overline" color="textSecondary">
-                Cohort Password: {this.state.cohort_pass}
+                Cohort Password: 
               </Typography>
+              <Typography variant="caption" color="textSecondary" style={{marginLeft: 2}}>
+              {this.state.cohort_pass}
+              </Typography>
+             </span>
             </CardContent>
           </CardActions>
         </Card>
