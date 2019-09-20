@@ -18,7 +18,6 @@ import Grid from "@material-ui/core/Grid";
 import Badge from "@material-ui/core/Badge";
 import MessageIcon from "@material-ui/icons/Message";
 import GroupIcon from "@material-ui/icons/Group";
-
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
@@ -259,7 +258,18 @@ class ChatPageList extends PureComponent {
                               <Hidden smUp>
                                 <div className={classes.smBP}>
                                   <Avatar src={chatmate.avatar} />
-                                  <Badge badgeContent={10} color="secondary" />
+                                  <Badge
+                                        badgeContent={10}
+                                        color="secondary"
+                                        badgeContent={this.unreadChat(
+                                          chatmate.sub
+                                        )}
+                                        invisible={
+                                          this.unreadChat(chatmate.sub) === 0
+                                            ? true
+                                            : false
+                                        }
+                                      />
                                 </div>
                               </Hidden>
                             </ListItem>
@@ -272,7 +282,48 @@ class ChatPageList extends PureComponent {
               </List>
             </TabPanel>
             <TabPanel value={this.state.value} index={1}>
-              Item Two
+              <List>
+                <React.Fragment>
+                  <ListItem alignItems="flex-start" button>
+                    <Hidden only="xs">
+                      <ListItemAvatar style={{ marginTop: "-0.2px" }}>
+                        <Avatar> <GroupIcon/> </Avatar>
+                      </ListItemAvatar>
+                      <div className={classes.chatDetails}>
+                        <div style={{ width: "80%" }}>
+                          <Typography variant="body1">bmsrc-dev</Typography>
+                          <Typography
+                            variant="subtitle2"
+                            className={classes.chatPrev}
+                          >
+                            Handraiser team update: We're still working on
+                            finishing the chat feature. We're also making
+                            changes to the design so as to not make the users
+                            confused on some features. Some other updates: 1.
+                            Used Firebase as storage for the uploaded images. 2.
+                            Unsplash feature is almost done.
+                          </Typography>
+                        </div>
+
+                        <div className={classes.timeBadgeWrap}>
+                          <Typography variant="caption">12:35 A.M</Typography>
+                          <div style={{ marginTop: 3 }}>
+                            <Badge color="secondary" badgeContent={1} />
+                          </div>
+                        </div>
+                      </div>
+                    </Hidden>
+                    <Hidden smUp>
+                      <div className={classes.smBP}>
+                        <Avatar> <GroupIcon/> </Avatar>
+                        <Badge badgeContent={10} color="secondary" />
+                      </div>
+                    </Hidden>
+                  </ListItem>
+                  <Divider />
+                  
+                </React.Fragment>
+              </List>
             </TabPanel>
           </div>
         </Paper>
