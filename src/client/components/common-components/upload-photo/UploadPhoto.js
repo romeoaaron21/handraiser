@@ -18,6 +18,8 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import UploadIcon from "../../../images/upload.png";
 import SearchImageIcon from "../../../images/searchImage.png";
@@ -197,6 +199,7 @@ const styles = theme => ({
     width: "100%"
   },
   imageList: {
+    height: "361px",
     maxHeight: "361px",
     overflow: "auto",
     display: "grid",
@@ -305,7 +308,10 @@ class UploadPhoto extends React.Component {
         aspect: 16 / 3
       },
       images: [],
-      imageFound: ""
+      imageFound: "",
+      page: 1,
+      countPrevImages: 0,
+      noMoreImages: false
     };
   }
 
@@ -505,8 +511,9 @@ class UploadPhoto extends React.Component {
 
   searchImage = () => {
     this.setState({ searchLoader: true });
+    this.setState({ noMoreImages: false, countPrevImages: 0 });
     axios
-      .get("https://api.unsplash.com/search/photos", {
+      .get(`https://api.unsplash.com/search/photos?page=1`, {
         params: { query: this.state.search },
         headers: {
           Authorization:
@@ -530,10 +537,57 @@ class UploadPhoto extends React.Component {
       });
   };
 
+  more = () => {
+    axios
+      .get(
+        `https://api.unsplash.com/search/photos?page=${this.state.page + 1}`,
+        {
+          params: { query: this.state.search },
+          headers: {
+            Authorization:
+              "Client-ID dfa4c436eb3c108f49a31f09cdc4940abd45a370aad6c90260aec587a58421c7"
+          }
+        }
+      )
+
+      .then(res => {
+        this.setState({
+          images: this.state.images.concat(res.data.results),
+          imageFound: res.data.results.length,
+          page: this.state.page + 1
+        });
+
+        if (this.state.countPrevImages === this.state.images.length) {
+          this.setState({ noMoreImages: true });
+          toast.info("No more images", {
+            hideProgressBar: true,
+            draggable: false
+          });
+        } else {
+          this.setState({
+            countPrevImages: this.state.images.length
+          });
+        }
+
+        setTimeout(() => {
+          this.setState({
+            searchLoader: false
+          });
+        }, 2000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   render() {
     const { classes } = this.props;
     return (
       <React.Fragment>
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
+        />
         <DialogTitle
           id="customized-dialog-title"
           onClose={this.props.handleClose}
@@ -765,6 +819,30 @@ class UploadPhoto extends React.Component {
                           />
                         </div>
                       ))}
+
+                      {this.state.images.length >= 10 &&
+                      this.state.noMoreImages === false ? (
+                        <div
+                          className={classes.imageItem}
+                          style={{ cursor: "pointer", height: "309px" }}
+                          onClick={this.more}
+                        >
+                          <img
+                            style={{ width: "12%", margin: "auto auto 0 auto" }}
+                            src={
+                              "https://www.pngarts.com/files/3/Next-Button-PNG-Free-Download.png"
+                            }
+                          />
+                          <p
+                            style={{
+                              margin: "-74px auto 0 auto",
+                              color: "#656565"
+                            }}
+                          >
+                            more images
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                   </Grid>
                 </Grid>
