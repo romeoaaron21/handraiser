@@ -50,6 +50,9 @@ class ChatPage extends PureComponent {
 
       newChatmateSub: "",
 
+
+      groupListInfo: [],
+
     };
   }
 
@@ -104,6 +107,7 @@ class ChatPage extends PureComponent {
         else {
           this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
           this.selectChatmate();
+          this.displayGroupList();
         }
       })
   }
@@ -154,20 +158,34 @@ class ChatPage extends PureComponent {
     this.setState({ newChatmateSub: chatmate })
   }
 
-  selectChatmate = (chatmateSub) => {
-    if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
-      const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
-      data.then(res => {
-        this.setState({ chatmateSub: chatmateSub })
-        res.data.map(chatUser => {
-          if (chatUser.sub === this.state.sub) {
-            this.setState({ userInfo: chatUser })
-          } else { this.setState({ chatmateInfo: chatUser }) }
+
+
+  selectChatmate = (chatmateSub, type) => {
+    if (type !== 'gc') {
+      if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
+
+        const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
+        data.then(res => {
+          this.setState({ chatmateSub: chatmateSub })
+          res.data.map(chatUser => {
+            if (chatUser.sub === this.state.sub) {
+              this.setState({ userInfo: chatUser })
+            } else { this.setState({ chatmateInfo: chatUser }) }
+          })
         })
-      })
-        .then(() => this.getConversation())
-        .then(() => this.displayChatList())
+          .then(() => this.getConversation())
+          .then(() => this.displayChatList())
+      }
     }
+    else{
+
+      const data = api.fetch(`/api/getGroupChatInfo/${chatmateSub}`, "get")
+      data.then((res)=> {
+        this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data })
+      })
+
+    }
+
   }
 
   getConversation = () => {
@@ -239,6 +257,31 @@ class ChatPage extends PureComponent {
 
 
 
+
+
+
+  displayGroupList = () => {
+    const data = api.fetch(
+      `/api/getGroupList/${this.state.sub}`,
+      "get"
+    );
+    data.then(res => {
+      this.setState({ groupListInfo: res.data })
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
   render() {
     const { classes } = this.props;
     return (
@@ -260,7 +303,7 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate} />
+            <ChatPageList groupListInfo={this.state.groupListInfo} chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate} chatmateInfo={this.state.chatmateInfo} />
 
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
 

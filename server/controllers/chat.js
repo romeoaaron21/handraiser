@@ -85,11 +85,39 @@ function seenNormalChat(req, res){
       });
 }
 
+function getGroupList(req, res){
+  const db = req.app.get("db");
+  const { userSub } = req.params
+
+  db.query(`select groupchat.id as id, name as name from groupchat, groupmembers WHERE groupchat.id = groupmembers.groupchat_id AND member_sub = '${userSub}'`)
+  .then((groupchat) => {
+    res.status(200).json(groupchat)
+  })
+  .catch(()=> {
+    res.statis(500).end()
+  })
+}
+
+
+function getGroupChatInfo(req, res){
+  const db = req.app.get("db");
+  const { gc_id } = req.params;
+
+  db.groupchat
+  .findOne({id:gc_id})
+  .then(groupchat => {
+    res.status(200).json(groupchat)
+  })
+
+}
+
 
 module.exports = {
   getChatUsersInfo,
   sendStudentChat,
   getChatList,
   getChatListInformation,
-  seenNormalChat
+  seenNormalChat,
+  getGroupList,
+  getGroupChatInfo
 }

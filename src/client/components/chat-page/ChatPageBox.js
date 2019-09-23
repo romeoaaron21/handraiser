@@ -58,7 +58,13 @@ class ChatPageBox extends Component {
               <div className={classes.chatBoxHeader}>
                 <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar}>TL</Avatar>
                 <div>
-                  <Typography variant="body">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
+                  <Typography variant="body">
+                  {this.props.chatmateInfo.first_name === undefined?
+                  this.props.chatmateInfo.name
+                  :
+                  `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`
+                  }
+                  </Typography>
                   {this.props.chatmateInfo.status === 'active' ?
                     <div className={classes.activeNowWrapper}>
                       <div className={classes.activeNowCircle} />
