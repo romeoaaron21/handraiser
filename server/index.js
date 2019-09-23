@@ -235,7 +235,7 @@ massive({
     comentor.availableMentor
   );
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
-  app.get("/api/fetchAssist/:student_id/:mentor_id", comentor.fetchAssist);
+  app.get("/api/fetchAssist/:mentor_id", comentor.fetchAssist);
   app.get("/api/studentBeingHelped/:cohort_id", comentor.studentBeingHelped);
   app.get("/api/fetchCohortsSubCohorts/:id/:privilege", comentor.fetch_Cohort_SubCohort);
   //comentors END
