@@ -288,7 +288,7 @@ class UploadPhoto extends React.Component {
     this.imagePreviewCanvasRef = React.createRef();
     this.fileInputRef = React.createRef();
     this.state = {
-      tabValue: 1,
+      tabValue: 0,
       search: "",
       searchLoader: false,
       file: [],
