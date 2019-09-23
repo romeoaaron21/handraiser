@@ -1,4 +1,5 @@
 import React, { createRef } from "react";
+import axios from "axios";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -15,7 +16,6 @@ import Dropzone from "react-dropzone";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
-import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
 
@@ -27,6 +27,9 @@ import api from "../../../services/fetchApi";
 
 //Firebase
 import { storage } from "./firebase/firebase";
+
+//Loader
+import Loader from "../loader/loader";
 
 import {
   base64StringtoFile,
@@ -69,7 +72,7 @@ const styles = theme => ({
     height: "30px",
     padding: theme.spacing(1, 1, 1, 7),
     transition: theme.transitions.create("width"),
-    width: "100%",
+    width: "896px",
     [theme.breakpoints.up("md")]: {
       width: "896px"
     }
@@ -100,9 +103,9 @@ const styles = theme => ({
     }
   },
   container: {
-    paddingTop: "13%",
+    paddingTop: "14%",
     paddingBottom: "14%",
-    textAlign: "center",
+    alignItems: "center",
     display: "flex",
     flexDirection: "column"
   },
@@ -121,15 +124,18 @@ const styles = theme => ({
     marginLeft: "auto"
   },
   uploadIcon: {
+    cursor: "pointer",
     backgroundImage: `url(${UploadIcon})`,
-    height: "93px",
-    weight: "200px",
+    height: "80px",
+    width: "84px",
+    marginLeft: "13%",
     backgroundRepeat: "no-repeat"
   },
   searchImageIcon: {
     backgroundImage: `url(${SearchImageIcon})`,
-    height: "93px",
-    weight: "200px",
+    height: "80px",
+    width: "84px",
+    marginLeft: "12%",
     backgroundRepeat: "no-repeat"
   },
   selectBtn: {
@@ -179,6 +185,36 @@ const styles = theme => ({
     right: "11%",
     opacity: "0",
     transition: "opacity 1s linear"
+  },
+  imageItem: {
+    display: "grid",
+    alignItems: "center",
+    cursor: "pointer",
+    boxShadow: "2px 2px 4px 0 #ccc",
+    boxSizing: "border-box",
+    margin: "0 0 1.5em",
+    padding: "1em",
+    width: "100%"
+  },
+  imageList: {
+    maxHeight: "361px",
+    overflow: "auto",
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    columnGap: "1.5em",
+    fontSize: ".85em",
+    padding: "2%",
+    "&::-webkit-scrollbar": {
+      width: "0.3em"
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+      borderRadius: "10px",
+      outline: "1px solid slategrey"
+    }
   }
 });
 
@@ -254,6 +290,7 @@ class UploadPhoto extends React.Component {
     this.state = {
       tabValue: 1,
       search: "",
+      searchLoader: false,
       file: [],
       imgUrl: "",
       imgSrc: null,
@@ -266,18 +303,30 @@ class UploadPhoto extends React.Component {
         x: 25,
         y: 43,
         aspect: 16 / 3
-      }
+      },
+      images: [],
+      imageFound: ""
     };
   }
 
-  dismiss = () => {
-    document.getElementById("file").value = null;
-    this.setState({
-      file: [],
-      imgSrc: null,
-      imgSrcExt: null,
-      errorMsg: false
-    });
+  dismiss = option => {
+    if (option === "upload") {
+      this.setState({
+        file: [],
+        imgSrc: null,
+        imgSrcExt: null,
+        errorMsg: false
+      });
+    } else {
+      this.setState({
+        search: "",
+        images: [],
+        file: [],
+        imgSrc: null,
+        imgSrcExt: null,
+        errorMsg: false
+      });
+    }
   };
 
   clickUploadFile = () => {
@@ -364,6 +413,7 @@ class UploadPhoto extends React.Component {
       if (isVerified) {
         // imageBase64Data
         const currentFile = files[0];
+        console.log(currentFile);
         const myFileItemReader = new FileReader();
 
         var changeState = this; // set the this to changeState for setState in line 214
@@ -451,6 +501,35 @@ class UploadPhoto extends React.Component {
     this.setState({ tabValue: newValue });
   };
 
+  /* SEARCH IMAGE */
+
+  searchImage = () => {
+    this.setState({ searchLoader: true });
+    axios
+      .get("https://api.unsplash.com/search/photos", {
+        params: { query: this.state.search },
+        headers: {
+          Authorization:
+            "Client-ID dfa4c436eb3c108f49a31f09cdc4940abd45a370aad6c90260aec587a58421c7"
+        }
+      })
+
+      .then(res => {
+        this.setState({
+          images: [...res.data.results],
+          imageFound: res.data.results.length
+        });
+        setTimeout(() => {
+          this.setState({
+            searchLoader: false
+          });
+        }, 2000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -467,14 +546,22 @@ class UploadPhoto extends React.Component {
             textColor="primary"
             style={{ width: "100%", marginTop: "1%" }}
           >
-            <Tab label="Upload" classes={{ textColorPrimary: classes.tabs }} />
-            <Tab label="Search" classes={{ textColorPrimary: classes.tabs }} />
+            <Tab
+              label="Upload"
+              classes={{ textColorPrimary: classes.tabs }}
+              onClick={() => this.dismiss("upload")}
+            />
+            <Tab
+              label="Search"
+              classes={{ textColorPrimary: classes.tabs }}
+              onClick={() => this.dismiss("search")}
+            />
           </Tabs>
         </DialogTitle>
         <TabPanel value={this.state.tabValue} index={0}>
           <DialogContent
             dividers
-            style={{ height: "450px" }}
+            style={{ height: "451px" }}
             className={classes.uploadContent}
           >
             <div
@@ -513,8 +600,14 @@ class UploadPhoto extends React.Component {
                       container
                       {...getRootProps({ className: classes.container })}
                     >
-                      <Grid item className={classes.uploadDiv}>
-                        <div className={classes.uploadIcon} />
+                      <Grid
+                        item
+                        className={classes.upload112121212121212121211Div}
+                      >
+                        <div
+                          className={classes.uploadIcon}
+                          onClick={() => this.clickUploadFile()}
+                        />
                       </Grid>
                       <Grid item>
                         <Typography
@@ -602,11 +695,7 @@ class UploadPhoto extends React.Component {
         </TabPanel>
 
         <TabPanel value={this.state.tabValue} index={1}>
-          <DialogContent
-            dividers
-            style={{ height: "482px", padding: "0" }}
-            className={classes.uploadContent}
-          >
+          <DialogContent dividers style={{ height: "483px", padding: "0" }}>
             <Grid container style={{ backgroundColor: "#efefef" }}>
               <Grid item>
                 <div className={classes.search}>
@@ -620,6 +709,18 @@ class UploadPhoto extends React.Component {
                       input: classes.inputInput
                     }}
                     onChange={e => this.setState({ search: e.target.value })}
+                    // onClick={() => this.props.displayBadge()}
+                    onKeyUp={e => {
+                      if (
+                        e.target.value
+                          .replace(/^\s+/, "")
+                          .replace(/\s+$/, "") !== ""
+                      ) {
+                        if (e.key === "Enter") {
+                          this.searchImage();
+                        }
+                      }
+                    }}
                     value={this.state.search}
                     fullWidth
                     inputProps={{ "aria-label": "search" }}
@@ -628,23 +729,63 @@ class UploadPhoto extends React.Component {
               </Grid>
             </Grid>
 
-            <Grid
-              container
-              className={classes.container}
-              style={{ paddingTop: "140px" }}
-            >
-              <Grid item className={classes.uploadDiv}>
-                <div className={classes.searchImageIcon} />
+            {this.state.images.length === 0 ? (
+              <Grid
+                container
+                className={classes.container}
+                style={{ paddingTop: "140px" }}
+              >
+                <Grid item className={classes.uploadDiv}>
+                  <div className={classes.searchImageIcon} />
+                </Grid>
+                <Grid item>
+                  <Typography
+                    gutterBottom
+                    style={{ fontSize: "25px", color: "#a8a8a8" }}
+                  >
+                    {this.state.imageFound === ""
+                      ? "Search an image"
+                      : "No image found"}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item>
-                <Typography
-                  gutterBottom
-                  style={{ fontSize: "25px", color: "#a8a8a8" }}
-                >
-                  Search an image
-                </Typography>
-              </Grid>
-            </Grid>
+            ) : this.state.searchLoader ? (
+              <Loader content="Loading..." />
+            ) : (
+              <React.Fragment>
+                <Grid container>
+                  <Grid item>
+                    <div className={classes.imageList}>
+                      {this.state.images.map(tile => (
+                        <div className={classes.imageItem}>
+                          <img
+                            style={{ width: "100%" }}
+                            src={tile.urls.regular}
+                            alt={tile.alt_description}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </Grid>
+                </Grid>
+
+                <Grid>
+                  <div>
+                    <Typography
+                      align="center"
+                      style={{
+                        fontSize: "12px",
+                        color: "#868686",
+                        marginTop: "1%",
+                        marginBottom: "1%"
+                      }}
+                    >
+                      © Unplash Image
+                    </Typography>
+                  </div>
+                </Grid>
+              </React.Fragment>
+            )}
           </DialogContent>
         </TabPanel>
 
