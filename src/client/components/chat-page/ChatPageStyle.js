@@ -198,6 +198,20 @@ const styles = theme => ({
       "Arial",
       "sans-serif"
     ]
+  },
+
+  chip: {
+    margin: theme.spacing(1),
+  },
+
+  dense: {
+    marginTop: theme.spacing(2),
+  },
+
+  flex:{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
   }
   // End ChatInfo
 });
