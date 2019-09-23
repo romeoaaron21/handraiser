@@ -15,7 +15,6 @@ import Dropzone from "react-dropzone";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
-import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
 
@@ -238,13 +237,6 @@ const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
 });
 
 const dropzoneRef = createRef();
-const openDialog = () => {
-  // Note that the ref is set async,
-  // so it might be null at some point
-  if (dropzoneRef.current) {
-    dropzoneRef.current.open();
-  }
-};
 
 class UploadPhoto extends React.Component {
   constructor() {

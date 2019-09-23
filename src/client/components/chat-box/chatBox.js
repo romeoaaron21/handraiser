@@ -8,7 +8,6 @@ import Done from "@material-ui/icons/Done";
 import styles from "./chatBoxStyle";
 import TypingEffect from "./typingEffect";
 import Photo from '@material-ui/icons/Photo'
-import RemoveCircle from '@material-ui/icons/RemoveCircle'
 import Dialog from "@material-ui/core/Dialog";
 import ConfirmationDialog from "../being-helped/doneCofirmationmodal";
 import TextareaAutosize from "react-textarea-autosize";
@@ -104,7 +103,6 @@ class ChatBox extends PureComponent {
       image: null,
       progress: 0,
       assist: [],
-      //splash try
       imageMenu: null,
       splashDialog: false,
       emoji: false,
@@ -136,7 +134,7 @@ class ChatBox extends PureComponent {
         `/api/fetchAssist/${this.props.chatmateInfo.id}/${this.props.senderInfo.id}`,
         "get"
       ).then(data => {
-        data.data.map(val => {
+        data.data.forEach(val => {
           this.setState({ assist: val })
         })
       })
@@ -273,6 +271,7 @@ class ChatBox extends PureComponent {
           })
       })
     this.setState({ image: null })
+    this.fileInput.value = "";
   }
   makeid = (name, length = 15) => {
     var ext = name.replace(/^.*\./, '');
@@ -514,7 +513,7 @@ class ChatBox extends PureComponent {
                     style={{ display: "none" }}
                     ref={fileInput => this.fileInput = fileInput}
                   />
-                  <IconButton onClick={/*() => this.fileInput.click()*/
+                  <IconButton onClick={
                     this.handleImageMenu
                   }>
                     <Photo />
@@ -531,7 +530,6 @@ class ChatBox extends PureComponent {
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
                       className={classes.textField}
-                      InputProps={{ classes: { root: classes.custom } }}
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
@@ -552,7 +550,7 @@ class ChatBox extends PureComponent {
                               ? this.handleSendImage('student')
                               :
                               this.props.sendChat();
-                            this.openPicker()
+                              this.openPicker()
                           }
                         }
                       }}
@@ -567,6 +565,7 @@ class ChatBox extends PureComponent {
                             </IconButton>
                           </InputAdornment>
                         ),
+                        classes: { root: classes.custom }
                       }}
                     />
                     <IconButton
@@ -619,7 +618,6 @@ class ChatBox extends PureComponent {
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
                       className={classes.textField}
-                      InputProps={{ classes: { root: classes.custom } }}
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
@@ -654,6 +652,7 @@ class ChatBox extends PureComponent {
                             </IconButton>
                           </InputAdornment>
                         ),
+                        classes: { root: classes.custom }
                       }}
                     />
                     <IconButton

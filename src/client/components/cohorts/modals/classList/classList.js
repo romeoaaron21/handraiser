@@ -44,7 +44,6 @@ class ClassList extends React.Component {
       handleClose,
       students
     } = this.props;
-    console.log(students);
     return (
       <Dialog
         maxWidth="xs"
