@@ -61,10 +61,14 @@ if(ChatSub.length !== 0){
         if (users.length === ChatSub.length) {
             res.status(200).json([...users])
         }
+        if (x-1 !== i) {
+          res.status(500).send('error')
+        }
       })
+      
+      
   })
 }
-  
 }
 
 function seenNormalChat(req, res){
