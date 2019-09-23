@@ -128,7 +128,7 @@ class ChatPage extends PureComponent {
           })
       })
       .then(() => {
-        if(view === 'allMessages'){
+        if(view === 'allMessages' && UniqueSub.length > 0){
           this.componentDidUpdate(UniqueSub[0]);
         }
       })
