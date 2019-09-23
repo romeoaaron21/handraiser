@@ -108,20 +108,15 @@ class StudentHeader extends Component {
 
     this.state = {
       uploadPhotoDialog: false,
+      uploadPhotoLoader: false,
       classHeaderImage: null,
 
       history: [],
       cohort: [],
       openHistory: false,
       openClassList: false,
-      students: [],
+      students: []
     };
-  }
-
-  componentDidMount() {
-    api.fetch(`/specific/${this.props.cohortId}`, "get").then(res => {
-      this.setState({ classHeaderImage: res.data[0].class_header });
-    });
   }
 
   onDrop = picture => {
@@ -147,7 +142,6 @@ class StudentHeader extends Component {
   };
 
   openClassList = () => {
-
     api
       .fetch(`/api/cohorts/${this.props.cohortId}/students`, "get")
       .then(res => {
@@ -158,10 +152,10 @@ class StudentHeader extends Component {
               openClassList: true,
               students: res.data.students,
               cohort: response.data.cohort[0]
-            })
+            });
           });
-      })
-  }
+      });
+  };
 
   handleCloseHistory = () => {
     this.setState({
@@ -172,8 +166,11 @@ class StudentHeader extends Component {
   handleCloseClassList = () => {
     this.setState({
       openClassList: false
-    })
-  }
+    });
+  };
+  uploadPhoto = () => {
+    this.setState({ uploadPhotoLoader: !this.state.uploadPhotoLoader });
+  };
 
   render() {
     const { classes } = this.props;
@@ -190,7 +187,7 @@ class StudentHeader extends Component {
             {this.props.user.name.charAt(0).toUpperCase() +
               this.props.user.name.slice(1)}
           </Typography>
-          <ListItem>
+          <ListItem style={{ height: "110px" }}>
             <ListItemAvatar>
               <Avatar
                 src={this.props.user.avatar}
@@ -229,20 +226,20 @@ class StudentHeader extends Component {
                 />
               </ListItemText>
             ) : (
-                <ListItemText>
-                  <Typography
-                    variant="h6"
-                    component="h3"
-                    className={classes.responsiveHeader}
-                    style={{ color: "whitesmoke" }}
-                  >
-                    {this.props.user.first_name.charAt(0).toUpperCase() +
-                      this.props.user.first_name.slice(1)}{" "}
-                    {this.props.user.last_name.charAt(0).toUpperCase() +
-                      this.props.user.last_name.slice(1)}
-                  </Typography>
-                </ListItemText>
-              )}
+              <ListItemText>
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  className={classes.responsiveHeader}
+                  style={{ color: "whitesmoke" }}
+                >
+                  {this.props.user.first_name.charAt(0).toUpperCase() +
+                    this.props.user.first_name.slice(1)}{" "}
+                  {this.props.user.last_name.charAt(0).toUpperCase() +
+                    this.props.user.last_name.slice(1)}
+                </Typography>
+              </ListItemText>
+            )}
 
             {this.props.privilege === "student" ? (
               <div>
@@ -284,35 +281,37 @@ class StudentHeader extends Component {
                 </Tooltip>
               </div>
             ) : (
-                <div style={{ marginTop: "auto" }}>
-                  <div>
-                    <Link
-                      style={{
-                        color: "#f3f3f3",
-                        fontSize: "13px",
-                        cursor: "pointer"
-                      }}
-                      onClick={() => this.setState({ uploadPhotoDialog: true })}
-                    >
-                      Upload photo
+              <div style={{ marginTop: "auto" }}>
+                <div>
+                  <Link
+                    style={{
+                      color: "#f3f3f3",
+                      fontSize: "13px",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => this.setState({ uploadPhotoDialog: true })}
+                  >
+                    {this.state.uploadPhotoLoader
+                      ? "Changing..."
+                      : "Upload photo"}
                   </Link>
-                  </div>
-
-                  {this.state.classHeaderImage !== null ? (
-                    <Link
-                      style={{
-                        color: "#f3f3f3",
-                        fontSize: "13px",
-                        textDecoration: "underline",
-                        cursor: "pointer"
-                      }}
-                      onClick={this.props.setToDefaultHeaderFn}
-                    >
-                      Set to default
-                  </Link>
-                  ) : null}
                 </div>
-              )}
+
+                {this.props.classHeaderImage !== null ? (
+                  <Link
+                    style={{
+                      color: "#f3f3f3",
+                      fontSize: "13px",
+                      textDecoration: "underline",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => this.props.setToDefaultHeaderFn()}
+                  >
+                    Set to default
+                  </Link>
+                ) : null}
+              </div>
+            )}
           </ListItem>
         </Box>
 
@@ -325,6 +324,7 @@ class StudentHeader extends Component {
         >
           <UploadPhoto
             loadStateFn={this.props.loadStateFn}
+            uploadPhotoFn={this.uploadPhoto}
             handleClose={() => this.setState({ uploadPhotoDialog: false })}
             cohortId={this.props.cohortId}
           />

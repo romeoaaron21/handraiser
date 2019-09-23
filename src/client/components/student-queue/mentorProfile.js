@@ -79,7 +79,7 @@ class MentorProfile extends PureComponent {
 
     this.state = {
       students: [],
-      cohort_pass: "",
+      cohort_pass: ""
     };
   }
   componentDidMount() {
@@ -90,11 +90,8 @@ class MentorProfile extends PureComponent {
           students: res.data.students,
           cohort_pass: res.data.students.password
         });
-      })
-      ;
+      });
   }
-
-  
 
   render() {
     const { classes } = this.props;
@@ -114,14 +111,16 @@ class MentorProfile extends PureComponent {
                 }
               </Typography>
               <Typography variant="subtitle1" className={classes.labelQues}>
-                Student{
-                  this.props.members.filter(
-                    member =>
-                      member.status === "waiting" &&
-                      parseInt(this.props.cohort_id) ===
-                        parseInt(member.cohort_id)
-                  ).length>1?'s':''
-                } on Queue
+                Student
+                {this.props.members.filter(
+                  member =>
+                    member.status === "waiting" &&
+                    parseInt(this.props.cohort_id) ===
+                      parseInt(member.cohort_id)
+                ).length > 1
+                  ? "s"
+                  : ""}{" "}
+                on Queue
               </Typography>
             </CardMedia>
             <CardContent className={classes.cardContent}>
@@ -129,13 +128,17 @@ class MentorProfile extends PureComponent {
                 Students Enrolled: {this.state.students.length}
               </Typography>
               <span>
-              <Typography variant="overline" color="textSecondary">
-                Cohort Password: 
-              </Typography>
-              <Typography variant="caption" color="textSecondary" style={{marginLeft: 2}}>
-              {this.state.cohort_pass}
-              </Typography>
-             </span>
+                <Typography variant="overline" color="textSecondary">
+                  Cohort Password:
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  style={{ marginLeft: 2 }}
+                >
+                  {this.state.cohort_pass}
+                </Typography>
+              </span>
             </CardContent>
           </CardActions>
         </Card>

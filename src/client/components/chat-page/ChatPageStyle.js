@@ -40,7 +40,7 @@ const styles = theme => ({
   },
 
   chatListWrapper: {
-    height: "660px",
+    height: "613px",
     overflowY: "auto",
     overflowX: "hidden"
   },

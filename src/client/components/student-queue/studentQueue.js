@@ -329,7 +329,6 @@ class Student extends PureComponent {
       ) {
         if (!priv[3]) {
           this.setState({ studentChatText: priv[0] });
-          console.log(this.state.studentChatText);
         } else {
           this.setState({ imageChat: priv[0], imageChatName: priv[3] });
         }
@@ -643,7 +642,9 @@ class Student extends PureComponent {
   };
 
   loadState = () => {
-    this.componentDidMount();
+    api.fetch(`/specific/${this.props.cohort_id}`, "get").then(res => {
+      this.setState({ classHeaderImage: res.data[0].class_header });
+    });
   };
   //* CLASS HEADER IMAGE *//
 
@@ -675,6 +676,7 @@ class Student extends PureComponent {
                     >
                       <StudentHeader
                         setToDefaultHeaderFn={this.setToDefaultHeader}
+                        classHeaderImage={this.state.classHeaderImage}
                         loadStateFn={this.loadState}
                         user={this.state.user[0]}
                         cohortId={this.props.cohort_id}
@@ -696,6 +698,7 @@ class Student extends PureComponent {
                     >
                       <StudentHeader
                         setToDefaultHeaderFn={this.setToDefaultHeader}
+                        classHeaderImage={this.state.classHeaderImage}
                         loadStateFn={this.loadState}
                         user={this.state.user[0]}
                         cohortId={this.props.cohort_id}

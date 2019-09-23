@@ -12,8 +12,15 @@ import Link from "@material-ui/core/Link";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import Dropzone from "react-dropzone";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Box from "@material-ui/core/Box";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import InputBase from "@material-ui/core/InputBase";
 
 import UploadIcon from "../../../images/upload.png";
+import SearchImageIcon from "../../../images/searchImage.png";
 
 //API
 import api from "../../../services/fetchApi";
@@ -30,7 +37,42 @@ import {
 const styles = theme => ({
   root: {
     margin: 0,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    paddingBottom: "0px"
+  },
+  tabs: {
+    minWidth: "50px",
+    padding: "12px 12px 0 12px"
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: "#e0e0e0",
+    "&:hover": {
+      backgroundColor: "#e0e0e0"
+    },
+    width: "100%"
+  },
+  searchIcon: {
+    width: theme.spacing(7),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  inputRoot: {
+    color: "inherit"
+  },
+  inputInput: {
+    height: "30px",
+    padding: theme.spacing(1, 1, 1, 7),
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "896px"
+    }
   },
   closeButton: {
     position: "absolute",
@@ -80,6 +122,12 @@ const styles = theme => ({
   },
   uploadIcon: {
     backgroundImage: `url(${UploadIcon})`,
+    height: "93px",
+    weight: "200px",
+    backgroundRepeat: "no-repeat"
+  },
+  searchImageIcon: {
+    backgroundImage: `url(${SearchImageIcon})`,
     height: "93px",
     weight: "200px",
     backgroundRepeat: "no-repeat"
@@ -134,6 +182,22 @@ const styles = theme => ({
   }
 });
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      <Box>{children}</Box>
+    </Typography>
+  );
+}
 const DialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose } = props;
   return (
@@ -188,6 +252,8 @@ class UploadPhoto extends React.Component {
     this.imagePreviewCanvasRef = React.createRef();
     this.fileInputRef = React.createRef();
     this.state = {
+      tabValue: 1,
+      search: "",
       file: [],
       imgUrl: "",
       imgSrc: null,
@@ -330,6 +396,8 @@ class UploadPhoto extends React.Component {
 
   handleSelectClassHeader = event => {
     event.preventDefault();
+    this.props.handleClose();
+    this.props.uploadPhotoFn();
     const { imgSrc } = this.state;
     if (imgSrc) {
       const canvasRef = this.imagePreviewCanvasRef.current;
@@ -370,13 +438,17 @@ class UploadPhoto extends React.Component {
                 .fetch(`/upload/${this.props.cohortId}`, "POST", { url })
                 .then(res => {
                   this.setState({ imageURL: `${res.file}` });
-                  this.props.handleClose();
                   this.props.loadStateFn();
+                  this.props.uploadPhotoFn();
                 });
             });
         }
       );
     }
+  };
+
+  handleTabValue = (event, newValue) => {
+    this.setState({ tabValue: newValue });
   };
 
   render() {
@@ -387,135 +459,195 @@ class UploadPhoto extends React.Component {
           id="customized-dialog-title"
           onClose={this.props.handleClose}
         >
-          Upload Photo
-        </DialogTitle>
-        <DialogContent
-          dividers
-          style={{ height: "450px" }}
-          className={classes.uploadContent}
-        >
-          <div
-            className={
-              this.state.errorMsg ? `${classes.fadeIn}` : `${classes.fadeOut}`
-            }
+          Gallery
+          <Tabs
+            value={this.state.tabValue}
+            onChange={this.handleTabValue}
+            indicatorColor="primary"
+            textColor="primary"
+            style={{ width: "100%", marginTop: "1%" }}
           >
-            The photo that you uploaded is too small! It must be at least 800
-            pixels wide and 200 pixels tall.
-            <Link
-              onClick={this.dismiss}
-              style={{
-                color: "#fff",
-                textDecoration: "none",
-                cursor: "pointer"
-              }}
+            <Tab label="Upload" classes={{ textColorPrimary: classes.tabs }} />
+            <Tab label="Search" classes={{ textColorPrimary: classes.tabs }} />
+          </Tabs>
+        </DialogTitle>
+        <TabPanel value={this.state.tabValue} index={0}>
+          <DialogContent
+            dividers
+            style={{ height: "450px" }}
+            className={classes.uploadContent}
+          >
+            <div
+              className={
+                this.state.errorMsg ? `${classes.fadeIn}` : `${classes.fadeOut}`
+              }
             >
-              {" "}
-              Dismiss
-            </Link>
-          </div>
+              The photo that you uploaded is too small! It must be at least 800
+              pixels wide and 200 pixels tall.
+              <Link
+                onClick={this.dismiss}
+                style={{
+                  color: "#fff",
+                  textDecoration: "none",
+                  cursor: "pointer"
+                }}
+              >
+                {" "}
+                Dismiss
+              </Link>
+            </div>
 
-          {this.state.imgSrc === null ? (
-            <Dropzone
-              ref={dropzoneRef}
-              noClick
-              noKeyboard
-              onDrop={this.handleOnDrop}
-              accept={acceptedFileTypes}
-              multiple={false}
-              maxSize={imageMaxSize}
-            >
-              {({ getRootProps, getInputProps, acceptedFiles }) => {
-                return (
-                  <Grid
-                    container
-                    {...getRootProps({ className: classes.container })}
-                  >
-                    <Grid item className={classes.uploadDiv}>
-                      <div className={classes.uploadIcon} />
-                    </Grid>
-                    <Grid item>
-                      <Typography
-                        gutterBottom
-                        style={{ fontSize: "25px", color: "#a8a8a8" }}
-                      >
-                        Drag a photo here
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography
-                        gutterBottom
-                        style={{ fontSize: "18px", color: "#a8a8a8" }}
-                      >
-                        - or -
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Button
-                        className={classes.selectBtn}
-                        onClick={() => this.clickUploadFile()}
-                      >
-                        Select a photo from your computer
-                      </Button>
+            {this.state.imgSrc === null ? (
+              <Dropzone
+                ref={dropzoneRef}
+                noClick
+                noKeyboard
+                onDrop={this.handleOnDrop}
+                accept={acceptedFileTypes}
+                multiple={false}
+                maxSize={imageMaxSize}
+              >
+                {({ getRootProps, getInputProps, acceptedFiles }) => {
+                  return (
+                    <Grid
+                      container
+                      {...getRootProps({ className: classes.container })}
+                    >
+                      <Grid item className={classes.uploadDiv}>
+                        <div className={classes.uploadIcon} />
+                      </Grid>
+                      <Grid item>
+                        <Typography
+                          gutterBottom
+                          style={{ fontSize: "25px", color: "#a8a8a8" }}
+                        >
+                          Drag a photo here
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography
+                          gutterBottom
+                          style={{ fontSize: "18px", color: "#a8a8a8" }}
+                        >
+                          - or -
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          className={classes.selectBtn}
+                          onClick={() => this.clickUploadFile()}
+                        >
+                          Select a photo from your computer
+                        </Button>
 
-                      <input
-                        style={{ display: "none" }}
-                        id="file"
-                        ref={ref => {
-                          this.uploadInput = ref;
-                        }}
-                        type="file"
-                        accept={acceptedFileTypes}
-                        multiple={false}
-                        onChange={this.handleFileSelect}
-                      />
+                        <input
+                          style={{ display: "none" }}
+                          id="file"
+                          ref={ref => {
+                            this.uploadInput = ref;
+                          }}
+                          type="file"
+                          accept={acceptedFileTypes}
+                          multiple={false}
+                          onChange={this.handleFileSelect}
+                        />
+                      </Grid>
                     </Grid>
+                  );
+                }}
+              </Dropzone>
+            ) : (
+              <React.Fragment>
+                <Grid container>
+                  <Grid item>
+                    <Typography
+                      gutterBottom
+                      style={{
+                        fontSize: "12px",
+                        overflow: "hidden",
+                        width: "920px"
+                      }}
+                    >
+                      Upload &#8250; <b>{this.state.file[0].name}</b>
+                    </Typography>
+                    <Typography gutterBottom style={{ fontSize: "12px" }}>
+                      To crop this image, drag the region below and then click
+                      "Select class header"
+                    </Typography>
                   </Grid>
-                );
-              }}
-            </Dropzone>
-          ) : (
-            <React.Fragment>
-              <Grid container>
-                <Grid item>
-                  <Typography
-                    gutterBottom
-                    style={{
-                      fontSize: "12px",
-                      overflow: "hidden",
-                      width: "920px"
+                </Grid>
+                <Grid container className={classes.cropContainer}>
+                  <Grid item>
+                    {this.state.imgSrc !== null ? (
+                      <React.Fragment>
+                        <ReactCrop
+                          imageStyle={{ height: "340px" }}
+                          src={this.state.imgSrc}
+                          crop={this.state.crop}
+                          onImageLoaded={this.handleImageLoaded}
+                          onComplete={this.handleOnCropComplete}
+                          onChange={this.handleOnCropChange}
+                        />
+                        <canvas
+                          ref={this.imagePreviewCanvasRef}
+                          style={{ display: "none" }}
+                        ></canvas>
+                      </React.Fragment>
+                    ) : null}
+                  </Grid>
+                </Grid>
+              </React.Fragment>
+            )}
+          </DialogContent>
+        </TabPanel>
+
+        <TabPanel value={this.state.tabValue} index={1}>
+          <DialogContent
+            dividers
+            style={{ height: "482px", padding: "0" }}
+            className={classes.uploadContent}
+          >
+            <Grid container style={{ backgroundColor: "#efefef" }}>
+              <Grid item>
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <InputBase
+                    placeholder="Search…"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput
                     }}
-                  >
-                    Upload &#8250; <b>{this.state.file[0].name}</b>
-                  </Typography>
-                  <Typography gutterBottom style={{ fontSize: "12px" }}>
-                    To crop this image, drag the region below and then click
-                    "Select class header"
-                  </Typography>
-                </Grid>
+                    onChange={e => this.setState({ search: e.target.value })}
+                    value={this.state.search}
+                    fullWidth
+                    inputProps={{ "aria-label": "search" }}
+                  />
+                </div>
               </Grid>
-              <Grid container className={classes.cropContainer}>
-                <Grid item>
-                  {this.state.imgSrc !== null ? (
-                    <React.Fragment>
-                      <ReactCrop
-                        imageStyle={{ height: "340px" }}
-                        src={this.state.imgSrc}
-                        crop={this.state.crop}
-                        onImageLoaded={this.handleImageLoaded}
-                        onComplete={this.handleOnCropComplete}
-                        onChange={this.handleOnCropChange}
-                      />
-                      <canvas
-                        ref={this.imagePreviewCanvasRef}
-                        style={{ display: "none" }}
-                      ></canvas>
-                    </React.Fragment>
-                  ) : null}
-                </Grid>
+            </Grid>
+
+            <Grid
+              container
+              className={classes.container}
+              style={{ paddingTop: "140px" }}
+            >
+              <Grid item className={classes.uploadDiv}>
+                <div className={classes.searchImageIcon} />
               </Grid>
-            </React.Fragment>
-          )}
-        </DialogContent>
+              <Grid item>
+                <Typography
+                  gutterBottom
+                  style={{ fontSize: "25px", color: "#a8a8a8" }}
+                >
+                  Search an image
+                </Typography>
+              </Grid>
+            </Grid>
+          </DialogContent>
+        </TabPanel>
+
         <DialogActions>
           <Button
             classes={{ textPrimary: classes.uploadBtn }}

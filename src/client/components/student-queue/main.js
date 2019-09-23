@@ -27,6 +27,7 @@ const styles = theme => ({
     marginLeft: 0
   },
   drawerHeader: {
+    marginBottom: "-10px",
     display: "flex",
     alignItems: "center",
     padding: "0 8px",

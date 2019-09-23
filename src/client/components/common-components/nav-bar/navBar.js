@@ -164,9 +164,9 @@ class NavBar extends React.Component {
             color="inherit"
             edge="start"
             style={{ marginRight: 8 }}
-            onClick={() => (window.location.href = "/chat")}
+            onClick={() => this.setState({ chat: true })}
           >
-            <MessageIcon onClick={() => this.setState({ chat: true })} />
+            <MessageIcon />
           </IconButton>
           <HtmlTooltip
             title={
@@ -231,7 +231,7 @@ class NavBar extends React.Component {
         {this.state.chat ? (
             <Redirect
               to={{
-                pathname: `/chat/${'view'}`
+                pathname: `/chat/allMessages`
               }}
             />
           ) : null}

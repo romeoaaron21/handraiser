@@ -33,9 +33,9 @@ function getChatList(req, res) {
   const { userSub } = req.params;
 
   // db.query(`SELECT distinct sender_id, chatmate_id, message, time FROM chat where chatmate_id = '${userSub}' and cohort_id='all' or sender_id = '${userSub}' and cohort_id='all' order by time DESC`)
-  db.query(`SELECT chatSub, id from (SELECT sender_id as chatSub, id FROM chat WHERE chatmate_id = '${userSub}'
+  db.query(`SELECT chatSub, id from (SELECT sender_id as chatSub, id FROM chat WHERE chatmate_id = '${userSub}' AND cohort_id='all'
   UNION
-  SELECT chatmate_id as chatSub, id FROM chat WHERE sender_id = '${userSub}') as sub order by id DESC`)
+  SELECT chatmate_id as chatSub, id FROM chat WHERE sender_id = '${userSub}' AND cohort_id='all') as sub order by id DESC`)
     .then(chatSub => {
         res.status(200).json([...chatSub]);
     })
@@ -49,6 +49,7 @@ function getChatListInformation(req, res) {
   let users = [];
   let x = 0;
 
+if(ChatSub.length !== 0){
   ChatSub.map((sub, i) => {
     db.users
       .findOne({ sub: sub })
@@ -62,6 +63,8 @@ function getChatListInformation(req, res) {
         }
       })
   })
+}
+  
 }
 
 function seenNormalChat(req, res){
