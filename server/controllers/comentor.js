@@ -91,14 +91,40 @@ function fetchAssist(req, res) {
     })
 }
 
-function studentBeingHelped(req,res){
-  const db = req.app.get("db")
+function studentBeingHelped(req, res) {
+  const db = req.app.get("db");
 
   db.query(
     `SELECT users.*, requests.status,requests.assist_id, member.cohort_id FROM users, member, requests WHERE users.id = member.student_id AND member.id = requests.member_id AND users.privilege='student' AND member.cohort_id=${req.params.cohort_id} and requests.status = 'inprogress'`
   ).then(student => {
     return res.status(200).send(student);
   });
+}
+
+function fetch_Cohort_SubCohort(req, res) {
+  const db = req.app.get("db");
+  var temp = [];
+  if (req.params.privilege === "mentor") {
+    db.query(
+      `Select cohorts.* from cohorts where cohorts.mentor_id = ${req.params.id}`
+    ).then(data => {
+      temp.push(...data)
+      db.query(
+        `select cohorts.* FROM cohorts,comentor where cohorts.id = comentor.cohort_id AND comentor.mentor_id = ${req.params.id}`
+      ).then(data2 => {
+        temp.push(...data2)
+        res.status(200).json(temp);
+      })
+    })
+  } else {
+    db.query(
+      `select cohorts.* from cohorts,member WHERE cohorts.id = member.cohort_id AND member.student_id = ${req.params.id}`
+    ).then(data => {
+      temp.push(...data)
+      res.status(200).json(temp);
+    })
+  }
+
 }
 
 module.exports = {
@@ -109,5 +135,6 @@ module.exports = {
   fetchCohorts,
   availableMentor,
   fetchAssist,
-  studentBeingHelped
+  studentBeingHelped,
+  fetch_Cohort_SubCohort
 };
