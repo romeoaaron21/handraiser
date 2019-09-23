@@ -2,9 +2,7 @@ import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-
 import Box from "@material-ui/core/Box";
-
 import BeingHelped from "../being-helped/BeingHelped";
 import BeingHelpedModal from "../being-helped/beingHelpedModal";
 import RemoveRequest from "../being-helped/removeRequestModal";
@@ -13,23 +11,17 @@ import RequestQueue from "./requestQueue";
 import StudentNavHeader from "./navHeader";
 import StudentsList from "./studentsList";
 import MentorProfile from "./mentorProfile";
-import TextField from "@material-ui/core/TextField";
-
 import io from "socket.io-client";
 import api from "../../services/fetchApi";
-
 //LOADER
 import Loader from "../common-components/loader/loader";
-
 //AUTH
 import AuthService from "../../auth/AuthService";
-
 //added chatBox
 // import ChatBox from "./chatBox";
 import ClassroomBg from "../../images/classroomBg.jpg";
 import ChatList from "../chat-box/chatList";
 import ChatBox from "../chat-box/chatBox";
-
 //end of added chatBox
 const styles = theme => ({
   root: {
@@ -317,7 +309,7 @@ class Student extends PureComponent {
 
     socket.on("currentlyHelping", data => {
       // console.log(currentlyHelping)
-      if (this.state.previledge == "student") {
+      if (this.state.previledge === "student") {
         this.setState({ currently_helping: data });
       }
     });
@@ -463,7 +455,7 @@ class Student extends PureComponent {
         members: students
       });
       if (this.state.members) {
-        this.state.members.map(member => {
+        this.state.members.forEach(member => {
           if (parseInt(member.cohort_id) === parseInt(this.props.cohort_id)) {
             if (
               member.sub === this.state.sub &&
@@ -680,7 +672,6 @@ class Student extends PureComponent {
                         loadStateFn={this.loadState}
                         user={this.state.user[0]}
                         cohortId={this.props.cohort_id}
-                        user={this.state.user[0]}
                       />
                     </Paper>
                   ) : (
@@ -702,7 +693,6 @@ class Student extends PureComponent {
                         loadStateFn={this.loadState}
                         user={this.state.user[0]}
                         cohortId={this.props.cohort_id}
-                        user={this.state.user[0]}
                         raise={this.state.btntext}
                         btn={this.state.button}
                         requestHelp={this.requestHelp}

@@ -21,8 +21,7 @@ export default function Emoji(props) {
             onSelect={handleEmoji}
             emojiTooltip={true}
             emoji=''
-            title=""
-            
+            title=""    
             />
             </Paper>
           </Fade>

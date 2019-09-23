@@ -17,7 +17,6 @@ import ChatPageInfo from "./ChatPageInfo";
 
 
 import api from "../../services/fetchApi";
-import { Socket } from "net";
 import io from "socket.io-client";
 import { Redirect } from "react-router-dom";
 
@@ -113,7 +112,7 @@ class ChatPage extends PureComponent {
     let UniqueSub = [];
     const data = api.fetch(`/api/getChatList/${this.state.sub}`, "get")
     data.then(res => {
-      res.data.map(chatListSub => {
+      res.data.forEach(chatListSub => {
         sub.push(chatListSub.chatsub)
       })
     })
@@ -159,7 +158,7 @@ class ChatPage extends PureComponent {
       const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
       data.then(res => {
         this.setState({ chatmateSub: chatmateSub })
-        res.data.map(chatUser => {
+        res.data.forEach(chatUser => {
           if (chatUser.sub === this.state.sub) {
             this.setState({ userInfo: chatUser })
           } else { this.setState({ chatmateInfo: chatUser }) }
@@ -182,7 +181,7 @@ class ChatPage extends PureComponent {
     socket.emit('setStudentChatText', textVal)
   };
 
-  sendChat = () => {
+  sendChat = image => {
     const months = [
       "Jan",
       "Feb",
@@ -214,7 +213,8 @@ class ChatPage extends PureComponent {
       message: this.state.senderText,
       sender_sub: this.state.sub,
       chatmate_sub: this.state.chatmateSub,
-      time: datetime
+      time: datetime,
+      type: image ? image : "text"
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
@@ -262,9 +262,20 @@ class ChatPage extends PureComponent {
 
             <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate} />
 
-            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
-
-            <ChatPageInfo chatmateInfo={this.state.chatmateInfo} />
+            <ChatPageBox 
+            userInfo={this.state.userInfo} 
+            chatmateInfo={this.state.chatmateInfo} 
+            senderText={this.state.senderText} 
+            setChatText={this.setChatText} 
+            sendChat={this.sendChat} 
+            conversation={this.state.conversation} 
+            chatmateText={this.state.chatmateText} 
+            displayBadge={this.displayBadge} 
+            />
+            <ChatPageInfo 
+            chatmateInfo={this.state.chatmateInfo} 
+            conversation={this.state.conversation}
+            />
           </Grid>
         </Container>
 

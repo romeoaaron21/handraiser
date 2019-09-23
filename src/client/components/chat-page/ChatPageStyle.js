@@ -199,7 +199,19 @@ const styles = theme => ({
       "sans-serif"
     ]
   },
-
+  
+  chatImage: {
+    color: "#000",
+    maxWidth: "40%",
+    overflowWrap: "break-word",
+    borderRadius: "4px",
+    backgroundColor: "#ffffff",
+    "@media (max-width: 425px)": {
+      maxWidth: "191px",
+      padding: "6px 12px"
+    }
+  },
+  
   chip: {
     margin: theme.spacing(1),
   },

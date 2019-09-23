@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Slide,
   List,
@@ -18,7 +17,6 @@ import {
 
 import api from "./../../../../services/fetchApi";
 import { ToastContainer, toast } from "react-toastify";
-import { purple } from "@material-ui/core/colors";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -187,7 +185,7 @@ class AddCoMentor extends React.Component {
                   close();
                   mount();
                   let cohort_id;
-                  cohortDetails.map(data => {
+                  cohortDetails.forEach(data => {
                     cohort_id = data.id;
                   });
                   this.save(this.state.postData, cohort_id);
