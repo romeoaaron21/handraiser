@@ -95,16 +95,15 @@ class ChatPage extends PureComponent {
 
   componentDidMount() {
     this.fetch.then(fetch => {
-      this.setState({ sub: fetch.data.user[0].sub })
+      this.setState({ sub: fetch.data.user[0].sub, userInfo: fetch.data.user[0] })
     })
       .then(() => {
         if (this.props.match.params.chatmateSub === 'allMessages') {
           this.displayChatList('allMessages');
         }
-        else{
+        else {
           this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
           this.selectChatmate();
-          //fix component didmount after allmessages
         }
       })
   }
@@ -126,26 +125,29 @@ class ChatPage extends PureComponent {
           .then(res => {
             this.setState({ chatListInfo: [...res.data] })
           })
+          .catch(() => {
+            this.displayChatList()
+          })
       })
       .then(() => {
-        if(view === 'allMessages' && UniqueSub.length > 0){
+        if (view === 'allMessages' && UniqueSub.length > 0) {
           this.componentDidUpdate(UniqueSub[0]);
         }
       })
   }
 
   componentDidUpdate(sub) {
-    if(this.props.match.params.chatmateSub == 'allMessages'){
-      if(sub.length > 0){
+    if (this.props.match.params.chatmateSub == 'allMessages') {
+      if (sub.length > 0) {
         this.setState({ chatmateSub: sub, newChatmateSub: sub })
-      this.selectChatmate(sub); 
+        this.selectChatmate(sub);
       }
     }
-    else{
+    else {
       this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
-      this.selectChatmate(this.props.match.params.chatmateSub); 
+      this.selectChatmate(this.props.match.params.chatmateSub);
     }
-    
+
   }
 
   changeChatmate = (chatmate) => {
@@ -238,7 +240,6 @@ class ChatPage extends PureComponent {
 
 
   render() {
-    console.log(this.state.chatmateSub)
     const { classes } = this.props;
     return (
       <div>
@@ -259,7 +260,7 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate}/>
+            <ChatPageList chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate} />
 
             <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
 
