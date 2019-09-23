@@ -167,7 +167,7 @@ class StudentHeader extends Component {
             {this.props.user.name.charAt(0).toUpperCase() +
               this.props.user.name.slice(1)}
           </Typography>
-          <ListItem style={{ height: "110px" }}>
+          <ListItem style={{ height: "125px" }}>
             <ListItemAvatar>
               <Avatar
                 src={this.props.user.avatar}

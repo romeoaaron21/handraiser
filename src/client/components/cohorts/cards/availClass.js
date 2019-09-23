@@ -14,7 +14,7 @@ import { Grid } from "semantic-ui-react";
 
 const styles = theme => ({
   card: {
-    height: 275,
+    height: 250,
     width: 300,
     "@media: (max-width: 425px)": {
       margin: "16px 0"
@@ -193,7 +193,17 @@ class AvailClass extends React.Component {
                                 : cohort.class_header
                             }
                             title={cohort.name}
-                          />
+                            style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}
+                          >
+                            <Avatar
+                                alt={
+                                  cohort.first_name + "s " + cohort.last_name
+                                }
+                                src={cohort.avatar}
+                                className={classes.bigAvatar}
+                              />
+
+                            </CardMedia>
                           <CardContent className={classes.cardContent}>
                             <div className={classes.class}>
                               <Typography
@@ -203,13 +213,7 @@ class AvailClass extends React.Component {
                               >
                                 {cohort.name}
                               </Typography>
-                              <Avatar
-                                alt={
-                                  cohort.first_name + "s " + cohort.last_name
-                                }
-                                src={cohort.avatar}
-                                className={classes.bigAvatar}
-                              />
+                              
                             </div>
                             <Typography
                               variant="body2"
@@ -342,7 +346,7 @@ class AvailClass extends React.Component {
                 }
               } else {
                 return (
-                  <Grid xs={3} key={cohort.id}>
+                  <Grid xs={3} key={cohort.id} >
                     <Card className={classes.card}>
                       <CardActionArea
                         id={cohort.id}
@@ -358,7 +362,16 @@ class AvailClass extends React.Component {
                               : cohort.class_header
                           }
                           title={cohort.name}
-                        />
+                          style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}
+                        >
+                          <div>
+                            <Avatar
+                              alt={cohort.first_name + " " + cohort.last_name}
+                              src={cohort.avatar}
+                              className={classes.bigAvatar}
+                            />
+                            </div>
+                        </CardMedia>
                         <CardContent className={classes.cardContent}>
                           <div className={classes.class}>
                             <Typography
@@ -368,11 +381,11 @@ class AvailClass extends React.Component {
                             >
                               {cohort.name}
                             </Typography>
-                            <Avatar
+                            {/* <Avatar
                               alt={cohort.first_name + " " + cohort.last_name}
                               src={cohort.avatar}
                               className={classes.bigAvatar}
-                            />
+                            /> */}
                           </div>
                           <Typography
                             variant="body2"
@@ -410,7 +423,6 @@ class AvailClass extends React.Component {
                           Students
                         </Button>
                       </CardActions>
-                      }
                     </Card>
                   </Grid>
                 );

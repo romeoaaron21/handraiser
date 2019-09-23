@@ -131,7 +131,7 @@ class ChatBox extends PureComponent {
     this.scrollToBottom();
     if (this.props.privileged === "mentor") {
       api.fetch(
-        `/api/fetchAssist/${this.props.chatmateInfo.id}/${this.props.senderInfo.id}`,
+        `/api/fetchAssist/${this.props.senderInfo.id}`,
         "get"
       ).then(data => {
         data.data.forEach(val => {
@@ -159,7 +159,7 @@ class ChatBox extends PureComponent {
   //move back student to the queue
   removeFromQueue = student => {
     const data = api.fetch(
-      `/api/removebeinghelped/${student.id}/${this.props.cohort_id}`,
+      `/api/removebeinghelped/${student.user_id}/${this.props.cohort_id}`,
       "get"
     );
     data.then(res => {
@@ -196,7 +196,7 @@ class ChatBox extends PureComponent {
     });
     var datetime = formatted_date + " " + time;
     const data = api.fetch(
-      `/api/doneHelp/${student.id}/${this.props.cohort_id}/${this.props.senderInfo.id}`,
+      `/api/doneHelp/${student.user_id}/${this.props.cohort_id}/${this.props.senderInfo.id}`,
       "post",
       { time: datetime }
     );
@@ -362,7 +362,7 @@ class ChatBox extends PureComponent {
               {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
                 <Box>
                   <StyledMenuItem onClick={() => {
-                    this.removeFromQueue(this.props.helpingStudent)
+                    this.removeFromQueue(this.state.assist)
                     this.props.viewChatBox();
                   }}>
                     <ListItemIcon>
@@ -685,7 +685,7 @@ class ChatBox extends PureComponent {
             <ConfirmationDialog
               cancel={this.closeConfirmationDialog}
               doneHelp={this.doneHelp}
-              helpingStudent={this.props.helpingStudent}
+              helpingStudent={this.state.assist}
             />
           </Dialog>
 

@@ -23,7 +23,9 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 
 import api from "../../services/fetchApi";
-import { Tooltip } from "@material-ui/core";
+
+
+import Compose from "./dialogs/Compose";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,7 +55,8 @@ class ChatPageList extends PureComponent {
     super(props);
     this.state = {
       searchChatName: "",
-      value: 0
+      value: 0,
+      openDialog: false
     };
   }
 
@@ -117,6 +120,10 @@ class ChatPageList extends PureComponent {
     this.setState({ value: newValue });
   };
 
+  handleClickOpen = () => this.setState({ openDialog: true });
+
+  handleClose = () => this.setState({ openDialog: false });
+
   render() {
     // console.log(this.props.chatListInfo)
     const { classes } = this.props;
@@ -135,10 +142,18 @@ class ChatPageList extends PureComponent {
                 <Typography variant="h5">Messages</Typography>
               </span>
               <Hidden xsDown>
-                <IconButton>
+                <IconButton onClick={this.handleClickOpen}>
                   <CreateIcon />
                 </IconButton>
               </Hidden>
+              
+              {/* COMPOSE DIALOG */}
+              <Compose
+                openDialog={this.state.openDialog}
+                handleClose={this.handleClose}
+                avatarSample={this.props.userInfo.avatar}
+              /> 
+
             </div>
             <div>
               <TextField
@@ -194,7 +209,7 @@ class ChatPageList extends PureComponent {
                               onClick={() => {
                                 this.props.changeChatmate(chatmate.sub);
                                 this.props.displayBadge(chatmate.sub);
-                                this.props.selectChatmate(chatmate.sub)
+                                this.props.selectChatmate(chatmate.sub);
                               }}
                             >
                               <Hidden only="xs">
@@ -223,7 +238,6 @@ class ChatPageList extends PureComponent {
                                     </Typography>
                                     <div style={{ marginTop: 3 }}>
                                       <Badge
-                                        badgeContent={10}
                                         color="secondary"
                                         badgeContent={this.unreadChat(
                                           chatmate.sub
@@ -242,17 +256,15 @@ class ChatPageList extends PureComponent {
                                 <div className={classes.smBP}>
                                   <Avatar src={chatmate.avatar} />
                                   <Badge
-                                        badgeContent={10}
-                                        color="secondary"
-                                        badgeContent={this.unreadChat(
-                                          chatmate.sub
-                                        )}
-                                        invisible={
-                                          this.unreadChat(chatmate.sub) === 0
-                                            ? true
-                                            : false
-                                        }
-                                      />
+                                    badgeContent={10}
+                                    color="secondary"
+                                    badgeContent={this.unreadChat(chatmate.sub)}
+                                    invisible={
+                                      this.unreadChat(chatmate.sub) === 0
+                                        ? true
+                                        : false
+                                    }
+                                  />
                                 </div>
                               </Hidden>
                             </ListItem>
@@ -270,7 +282,10 @@ class ChatPageList extends PureComponent {
                   <ListItem alignItems="flex-start" button>
                     <Hidden only="xs">
                       <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                        <Avatar> <GroupIcon/> </Avatar>
+                        <Avatar>
+                          {" "}
+                          <GroupIcon />{" "}
+                        </Avatar>
                       </ListItemAvatar>
                       <div className={classes.chatDetails}>
                         <div style={{ width: "80%" }}>
@@ -298,13 +313,15 @@ class ChatPageList extends PureComponent {
                     </Hidden>
                     <Hidden smUp>
                       <div className={classes.smBP}>
-                        <Avatar> <GroupIcon/> </Avatar>
+                        <Avatar>
+                          {" "}
+                          <GroupIcon />{" "}
+                        </Avatar>
                         <Badge badgeContent={10} color="secondary" />
                       </div>
                     </Hidden>
                   </ListItem>
                   <Divider />
-                  
                 </React.Fragment>
               </List>
             </TabPanel>

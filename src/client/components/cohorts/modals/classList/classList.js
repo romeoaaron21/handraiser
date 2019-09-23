@@ -95,10 +95,6 @@ class ClassList extends React.Component {
             </Grid>
 
           }
-
-
-
-
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
