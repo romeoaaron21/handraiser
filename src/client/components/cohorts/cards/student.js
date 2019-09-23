@@ -14,6 +14,7 @@ import History from "./history/history";
 //API
 import api from "../../../services/fetchApi";
 import { Grid } from "semantic-ui-react";
+import Divider from "@material-ui/core/Divider"
 
 const styles = theme => ({
   card: {
@@ -223,17 +224,21 @@ class StudentClassCards extends React.Component {
                           : cohort.class_header
                       }
                       title={cohort.name}
-                    />
+                    >
+                        <Avatar
+                          alt={cohort.first_name + " " + cohort.last_name}
+                          src={cohort.avatar}
+                          className={classes.bigAvatar}
+                        /> 
+                      </CardMedia>
+
+                      
                     <CardContent className={classes.cardContent}>
                       <div className={classes.class}>
                         <Typography gutterBottom variant="h5" component="h2">
                           {cohort.name}
                         </Typography>
-                        <Avatar
-                          alt={cohort.first_name + " " + cohort.last_name}
-                          src={cohort.avatar}
-                          className={classes.bigAvatar}
-                        />
+                     
                       </div>
                       <Typography
                         variant="body2"
@@ -250,7 +255,9 @@ class StudentClassCards extends React.Component {
                         Students: {cohort.members}
                       </Typography>
                     </CardContent>
+                 
                   </CardActionArea>
+                  <Divider/>
                   <CardActions className={classes.buttonContainer}>
                     <Button
                       size="small"
