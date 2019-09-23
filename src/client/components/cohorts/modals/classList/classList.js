@@ -44,7 +44,6 @@ class ClassList extends React.Component {
       handleClose,
       students
     } = this.props;
-    console.log(students);
     return (
       <Dialog
         maxWidth="xs"
@@ -96,10 +95,6 @@ class ClassList extends React.Component {
             </Grid>
 
           }
-
-
-
-
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
