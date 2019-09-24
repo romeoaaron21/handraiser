@@ -15,6 +15,7 @@ import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import { connectableObservableDescriptor } from "rxjs/internal/observable/ConnectableObservable";
 
 import TypingEffect from "../chat-box/typingEffect";
+import GroupIcon from "@material-ui/icons/Group";
 
 class ChatPageBox extends Component {
   constructor(props) {
@@ -56,14 +57,19 @@ class ChatPageBox extends Component {
             {/* Chatbox Header */}
             <div style={{ height: "10%" }}>
               <div className={classes.chatBoxHeader}>
-                <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar}>TL</Avatar>
+                {this.props.chatmateInfo.avatar === undefined ?
+                  <Avatar style={{ marginRight: 10 }}> <GroupIcon /> </Avatar>
+                  :
+                  <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar} />
+                }
+
                 <div>
                   <Typography variant="body">
-                  {this.props.chatmateInfo.first_name === undefined?
-                  this.props.chatmateInfo.name
-                  :
-                  `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`
-                  }
+                    {this.props.chatmateInfo.first_name === undefined ?
+                      this.props.chatmateInfo.name
+                      :
+                      `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`
+                    }
                   </Typography>
                   {this.props.chatmateInfo.status === 'active' ?
                     <div className={classes.activeNowWrapper}>
@@ -91,46 +97,46 @@ class ChatPageBox extends Component {
 
                 {this.props.conversation.map((convo, i) => (
                   convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id ||
-                  convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id?
-                  
-                  <React.Fragment key={i}>
+                    convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id ?
+
+                    <React.Fragment key={i}>
                       {convo.cohort_id === "all" ? (
-                        <div className={convo.sender_id !== this.props.userInfo.sub?classes.senderChatWrapper:classes.receiverChatWrapper}>
+                        <div className={convo.sender_id !== this.props.userInfo.sub ? classes.senderChatWrapper : classes.receiverChatWrapper}>
 
-                          {convo.sender_id !== this.props.userInfo.sub?
-                          <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar}/>
-                          :null
+                          {convo.sender_id !== this.props.userInfo.sub ?
+                            <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar} />
+                            : null
                           }
-                              
 
-                              <Box className={convo.sender_id !== this.props.userInfo.sub?classes.senderBox:classes.receiverBox}>
-                                <TextareaAutosize
-                                  readOnly
-                                  className={classes.textAreaChat}
-                                  style={convo.sender_id !== this.props.userInfo.sub?{ color: "#263238" }:{ color: "#fff" }}
-                                  value={convo.message.replace(/\n$/, "")}
-                                />
-                                <Typography variant="caption" className={classes.time}>
-                                  {convo.time}
-                                </Typography>
-                              </Box>
-                            </div>
-                      ):
-                      null}
-                  </React.Fragment>
+
+                          <Box className={convo.sender_id !== this.props.userInfo.sub ? classes.senderBox : classes.receiverBox}>
+                            <TextareaAutosize
+                              readOnly
+                              className={classes.textAreaChat}
+                              style={convo.sender_id !== this.props.userInfo.sub ? { color: "#263238" } : { color: "#fff" }}
+                              value={convo.message.replace(/\n$/, "")}
+                            />
+                            <Typography variant="caption" className={classes.time}>
+                              {convo.time}
+                            </Typography>
+                          </Box>
+                        </div>
+                      ) :
+                        null}
+                    </React.Fragment>
+                    :
+                    null
+                ))}
+                {this.props.chatmateText.length > 0 ?
+                  <TypingEffect />
                   :
                   null
-                ))}
-                {this.props.chatmateText.length > 0?
-                <TypingEffect />
-                :
-                null
                 }
-                
+
                 {/* <div ref={this.messagesEndRef}>asdasd</div> */}
 
               </div>
-              
+
             </div>
             {/* End Chatbox */}
           </div>
@@ -152,7 +158,7 @@ class ChatPageBox extends Component {
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
-                onClick={()=>this.props.displayBadge(this.props.chatmateInfo.sub)}
+                onClick={() => this.props.displayBadge(this.props.chatmateInfo.sub)}
                 onKeyUp={(e) => {
                   if (e.target.value
                     .replace(/^\s+/, "")
@@ -164,14 +170,14 @@ class ChatPageBox extends Component {
                 }}
 
               />
-              <IconButton 
-              onClick={() => this.props.sendChat()}
-              disabled={
-                this.props.senderText.replace(/^\s+/, "")
-                  .replace(/\s+$/, "") === ""
-                  ? true
-                  : false
-              }
+              <IconButton
+                onClick={() => this.props.sendChat()}
+                disabled={
+                  this.props.senderText.replace(/^\s+/, "")
+                    .replace(/\s+$/, "") === ""
+                    ? true
+                    : false
+                }
               >
                 <SendIcon />
               </IconButton>

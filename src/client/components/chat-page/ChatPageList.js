@@ -140,11 +140,11 @@ class ChatPageList extends PureComponent {
               </span>
               <Hidden xsDown>
                 <IconButton onClick={
-                  this.state.value == 0?
-                  this.handleClickOpen
-                  :
-                  this.handleClickOpenGroup
-                  }>
+                  this.state.value == 0 ?
+                    this.handleClickOpen
+                    :
+                    this.handleClickOpenGroup
+                }>
                   <CreateIcon />
                 </IconButton>
               </Hidden>
@@ -159,10 +159,11 @@ class ChatPageList extends PureComponent {
                   avatarSample={this.props.userInfo.avatar}
                   sendChat={this.props.sendChat}
                   chatListInfo={this.props.chatListInfo}
+                  sub={this.props.sub}
                 />
                 :
                 null
-                /*INSERT CREATE GROUP CHAT DIALOG*/ 
+                /*INSERT CREATE GROUP CHAT DIALOG*/
 
               }
 
@@ -223,10 +224,17 @@ class ChatPageList extends PureComponent {
                               this.props.displayBadge(chatmate.sub);
                               this.props.selectChatmate(chatmate.sub);
                             }}
+                            style={this.props.chatmateInfo.sub === chatmate.sub ?
+                              { backgroundColor: '#cfd8f987' }
+                              :
+                              null
+                            }
                           >
                             <Hidden only="xs">
                               <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                                <Avatar src={chatmate.avatar} />
+                                <Avatar
+                                  src={chatmate.avatar}
+                                />
                               </ListItemAvatar>
                               <div className={classes.chatDetails}>
                                 <div style={{ width: "80%" }}>
@@ -300,6 +308,11 @@ class ChatPageList extends PureComponent {
                         this.props.changeChatmate(gc.id);
                         this.props.selectChatmate(gc.id);
                       }}
+                      style={this.props.chatmateInfo.id === gc.id ?
+                        { backgroundColor: '#cfd8f987' }
+                        :
+                        null
+                      }
                     >
                       <Hidden only="xs">
                         <ListItemAvatar style={{ marginTop: "-0.2px" }}>

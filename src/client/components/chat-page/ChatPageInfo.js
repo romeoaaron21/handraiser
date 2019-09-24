@@ -12,18 +12,29 @@ import Avatar from "@material-ui/core/Avatar";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import Samplepic from "../../images/bg.jpg";
+import GroupIcon from "@material-ui/icons/Group";
 
 class ChatPageInfo extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <Grid item md={3} xs={12} style={{ height: "800px"}}>
+      <Grid item md={3} xs={12} style={{ height: "800px" }}>
         <Paper>
           <div className={classes.chatInfoHeader}>
-            <Avatar className={classes.avatarLarge} src={this.props.chatmateInfo.avatar}></Avatar>
-            <Typography variant="h6">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
+            {this.props.chatmateInfo.avatar === undefined ?
+              <Avatar className={classes.avatarLarge}> <GroupIcon style={{ fontSize: "48px" }} /> </Avatar>
+              :
+              <Avatar className={classes.avatarLarge} src={this.props.chatmateInfo.avatar}></Avatar>
+            }
+            <Typography variant="h6">
+              {this.props.chatmateInfo.first_name === undefined ?
+                this.props.chatmateInfo.name
+                :
+                `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`
+              }
+            </Typography>
             <Typography variant="subtitle2">
-            {this.props.chatmateInfo.first_name}
+              {this.props.chatmateInfo.first_name}
             </Typography>
           </div>
           <Divider />

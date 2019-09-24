@@ -111,10 +111,10 @@ class Compose extends Component {
               {this.state.students.map((stud, i) => {
                 if (stud.first_name
                   .toLowerCase()
-                  .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student' ||
+                  .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student' && this.props.sub !== stud.sub||
                   stud.last_name
                     .toLowerCase()
-                    .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student') {
+                    .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student' && this.props.sub !== stud.sub) {
                   return (
                     <React.Fragment key={i}>
                       <ListItem alignItems="flex-start" button onClick={() => this.selectChatmate(stud)}>
