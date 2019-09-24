@@ -56,10 +56,11 @@ const styles = theme => ({
     backgroundColor: "#775aa5"
   },
   bigAvatar: {
-    margin: 10,
-    width: 60,
+    position: "absolute",
+    top: 52,
+    right: 14,
     height: 60,
-    float: "right"
+    width: 60
   },
   class: {
     display: "flex",
@@ -193,17 +194,18 @@ class AvailClass extends React.Component {
                                 : cohort.class_header
                             }
                             title={cohort.name}
-                            style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "flex-end"
+                            }}
                           >
                             <Avatar
-                                alt={
-                                  cohort.first_name + "s " + cohort.last_name
-                                }
-                                src={cohort.avatar}
-                                className={classes.bigAvatar}
-                              />
-
-                            </CardMedia>
+                              alt={cohort.first_name + "s " + cohort.last_name}
+                              src={cohort.avatar}
+                              className={classes.bigAvatar}
+                            />
+                          </CardMedia>
                           <CardContent className={classes.cardContent}>
                             <div className={classes.class}>
                               <Typography
@@ -213,7 +215,6 @@ class AvailClass extends React.Component {
                               >
                                 {cohort.name}
                               </Typography>
-                              
                             </div>
                             <Typography
                               variant="body2"
@@ -346,7 +347,7 @@ class AvailClass extends React.Component {
                 }
               } else {
                 return (
-                  <Grid xs={3} key={cohort.id} >
+                  <Grid xs={3} key={cohort.id}>
                     <Card className={classes.card}>
                       <CardActionArea
                         id={cohort.id}
@@ -362,7 +363,11 @@ class AvailClass extends React.Component {
                               : cohort.class_header
                           }
                           title={cohort.name}
-                          style={{display: "flex", alignItems: "center", justifyContent: "flex-end"}}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "flex-end"
+                          }}
                         >
                           <div>
                             <Avatar
@@ -370,7 +375,7 @@ class AvailClass extends React.Component {
                               src={cohort.avatar}
                               className={classes.bigAvatar}
                             />
-                            </div>
+                          </div>
                         </CardMedia>
                         <CardContent className={classes.cardContent}>
                           <div className={classes.class}>
