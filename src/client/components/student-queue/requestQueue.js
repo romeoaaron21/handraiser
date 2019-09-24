@@ -280,36 +280,38 @@ class requestQueue extends Component {
                                     </IconButton>
                                   </Tooltip>
 
-                            {member.privilege === "student" &&
-                            member.sub === this.props.sub ? (
-                              <Tooltip title="Cancel Request" placement="top">
-                                <IconButton
-                                  className={classes.responsive}
-                                  onClick={() =>
-                                    this.props.removeStudentRequest(member.id)
+                                  {member.privilege === "student" &&
+                                    member.sub === this.props.sub ? (
+                                      <Tooltip title="Cancel Request" placement="top">
+                                        <IconButton
+                                          className={classes.responsive}
+                                          onClick={() =>
+                                            this.props.removeStudentRequest(member.id)
+                                          }
+                                        >
+                                          <Delete className={classes.actionIcon} />
+                                        </IconButton>
+                                      </Tooltip>
+                                    ) : null}
+
+
+                                  {this.props.helping? null:
+                                    (<Tooltip title="Help Student" placement="top">
+                                      <IconButton
+                                        className={classes.responsive}
+                                        onClick={() => {
+                                          this.props.fetchAssist(this.props.assist_id);
+                                          this.props.helpStudent(
+                                            member.id,
+                                            this.props.assist_id
+                                          );
+                                          this.props.sendChatSub(member.sub);
+                                        }}
+                                      >
+                                        <ThumbsUp className={classes.actionIcon} />
+                                      </IconButton>
+                                    </Tooltip>)
                                   }
-                                >
-                                  <Delete className={classes.actionIcon} />
-                                </IconButton>
-                              </Tooltip>
-                            ) : null}
-
-
-                                <Tooltip title="Help Student" placement="top">
-                                  <IconButton
-                                    className={classes.responsive}
-                                    onClick={() => {
-                                      // console.log(this.props.assist_id)
-                                      this.props.helpStudent(
-                                        member.id,
-                                        this.props.assist_id
-                                      );
-                                      this.props.sendChatSub(member.sub);
-                                    }}
-                                  >
-                                    <ThumbsUp className={classes.actionIcon} />
-                                  </IconButton>
-                                </Tooltip>
 
                                   <Tooltip title="Remove Request" placement="top">
                                     <IconButton
@@ -363,24 +365,24 @@ class requestQueue extends Component {
               </Grid>
             </Box>
           ) : (
-            <Grid
-              container
-              className={classes.emptyQueue}
-              style={
-                this.props.priv === "mentor"
-                  ? { marginTop: "130px" }
-                  : { marginTop: "60px" }
-              }
-            >
-              <img
-                src={EmptyQueue}
-                className={classes.emptyImgSize}
-                alt="img"
-                width="280"
-                height="250"
-              />
-              <Typography variant="overline" display="block">
-                No one needs help...
+              <Grid
+                container
+                className={classes.emptyQueue}
+                style={
+                  this.props.priv === "mentor"
+                    ? { marginTop: "130px" }
+                    : { marginTop: "60px" }
+                }
+              >
+                <img
+                  src={EmptyQueue}
+                  className={classes.emptyImgSize}
+                  alt="img"
+                  width="280"
+                  height="250"
+                />
+                <Typography variant="overline" display="block">
+                  No one needs help...
               </Typography>
               </Grid>
             )}

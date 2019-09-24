@@ -134,6 +134,7 @@ class ChatBox extends PureComponent {
         `/api/fetchAssist/${this.props.senderInfo.id}`,
         "get"
       ).then(data => {
+        this.props.fetchAssist(this.props.senderInfo.id);
         data.data.forEach(val => {
           this.setState({ assist: val })
         })
@@ -164,6 +165,7 @@ class ChatBox extends PureComponent {
     );
     data.then(res => {
       this.props.helpStudentClose();
+      this.props.fetchAssist(this.props.senderInfo.id);
     });
   };
   //done helping student
@@ -202,6 +204,7 @@ class ChatBox extends PureComponent {
     );
     data.then(res => {
       this.props.helpStudentClose();
+      this.props.fetchAssist(this.props.senderInfo.id);
       this.setState({ confirmationDialog: false });
     });
   };
@@ -550,7 +553,7 @@ class ChatBox extends PureComponent {
                               ? this.handleSendImage('student')
                               :
                               this.props.sendChat();
-                              this.openPicker()
+                            this.openPicker()
                           }
                         }
                       }}
