@@ -16,9 +16,7 @@ export default function Carousel(props) {
         }}
         >
             {images.map(image => (
-                image.chat_type !== 'text'
-                ? <GalleryImage objectFit="contain" key={image.id} src={image.chat_type} />
-                : null
+                <GalleryImage objectFit="contain" key={image.id} src={image.link} />
             ))}
         </Gallery>
     );

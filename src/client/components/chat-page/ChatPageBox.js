@@ -13,11 +13,11 @@ import SendIcon from "@material-ui/icons/Send";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import TypingEffect from "../chat-box/typingEffect";
-import GroupIcon from "@material-ui/icons/Group";
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Photo from '@material-ui/icons/Photo'
 import { InputAdornment } from '@material-ui/core'
-import InsertEmoticon from '@material-ui/icons/InsertEmoticon'
+import InsertEmoticon from '@material-ui/icons/InsertEmoticon';
+import Link from '@material-ui/core/Link';
 
 //Firebase
 import { storage } from '../common-components/upload-photo/firebase/firebase';
@@ -61,6 +61,8 @@ class ChatPageBox extends Component {
       imageMenu: null,
       splashDialog: false,
       emoji: false,
+      //document
+      document: null
     }
   }
   //Start of Added Scroll Bottom
@@ -73,7 +75,7 @@ class ChatPageBox extends Component {
   //   this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   // };
   //End of Added Scroll Bottom
-
+    
   //ANCHOR splash start
   handleImageMenu = (event) => {
     this.setState({ imageMenu: event.currentTarget })
@@ -118,10 +120,10 @@ class ChatPageBox extends Component {
           this.setState({
             image: files[0]
           })
-          this.props.setChatText(files[0].name);
+            this.props.setChatText(files[0].name);
+          }
         }
       }
-    }
   }
   handleSendImage = () => {
     const { image } = this.state;
@@ -137,8 +139,7 @@ class ChatPageBox extends Component {
       }, () => {
         storage.ref('chat-images').child(imageName).getDownloadURL()
           .then(url => {
-            console.log(url)
-            this.props.sendChat(url)
+            this.props.sendChat(url, undefined, undefined, 'image')
             this.setState({
               progress: 0
             })
@@ -165,7 +166,7 @@ class ChatPageBox extends Component {
   }
   uploadGif = gif => {
     this.closeSplash()
-    this.props.sendChat(gif.images.downsized.url)
+    this.props.sendChat(gif.images.downsized.url, undefined, undefined, 'gif')
   }
   //ANCHOR emoji
   openPicker = event => {
@@ -180,10 +181,48 @@ class ChatPageBox extends Component {
       }
     }
   }
-  handleEmoji = (emoji) => {
+  handleEmoji = emoji => {
     const param = this.props.senderText + emoji.native
     this.props.setChatText(param);
   }
+  //ANCHOR FILE UPLOAD START
+  handleDocumentUpload = event => {
+    if (event.target.files) {
+      const files = event.target.files;
+      this.setState({
+        document: files[0]
+      })
+      this.props.setChatText(files[0].name);
+    }
+  }
+  cancelUploadDocument = () => {
+    this.setState({
+      document: null
+    })
+  }
+  handleSendDocument = () => {
+    const { document } = this.state;
+    const uploadTask = storage.ref(`documents/${document.name}`).put(document)
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        this.setState({
+          progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
+        })
+      }, (error) => {
+        console.log(error);
+      }, () => {
+        storage.ref('documents').child(document.name).getDownloadURL()
+          .then(url => {
+            this.props.sendChat(url, undefined, undefined, 'file')
+            this.setState({
+              progress: 0
+            })
+          })
+      })
+    this.setState({ document: null })
+    this.documentInput.value = "";
+  }
+  //FILE UPLOAD END
   render() {
     const { classes } = this.props;
     return (
@@ -206,20 +245,9 @@ class ChatPageBox extends Component {
             {/* Chatbox Header */}
             <div style={{ height: "10%" }}>
               <div className={classes.chatBoxHeader}>
-                {this.props.chatmateInfo.avatar === undefined ?
-                  <Avatar style={{ marginRight: 10 }}> <GroupIcon /> </Avatar>
-                  :
-                  <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar} />
-                }
-
+                <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar}>TL</Avatar>
                 <div>
-                  <Typography variant="body">
-                    {this.props.chatmateInfo.first_name === undefined ?
-                      this.props.chatmateInfo.name
-                      :
-                      `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`
-                    }
-                  </Typography>
+                  <Typography variant="body">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
                   {this.props.chatmateInfo.status === 'active' ?
                     <div className={classes.activeNowWrapper}>
                       <div className={classes.activeNowCircle} />
@@ -248,66 +276,75 @@ class ChatPageBox extends Component {
 
                 {this.props.conversation.map((convo, i) => (
                   (convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                    (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id)
-                    ?
-                    <React.Fragment key={i}>
+                  (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id)
+                  ? 
+                  <React.Fragment key={i}>
                       {convo.cohort_id === "all" ? (
-                        <div className={convo.sender_id !== this.props.userInfo.sub ? classes.senderChatWrapper : classes.receiverChatWrapper}>
+                        <div className={convo.sender_id !== this.props.userInfo.sub?classes.senderChatWrapper:classes.receiverChatWrapper}>
 
-                          {convo.sender_id !== this.props.userInfo.sub ?
-                            <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar} />
-                            : null
+                          {convo.sender_id !== this.props.userInfo.sub?
+                          <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar}/>
+                          :null
                           }
+                              
 
-
-                          <Box className={
-                            (convo.chat_type !== "text")
-                              ? classes.chatImage
-                              : (convo.sender_id !== this.props.userInfo.sub)
-                                ? classes.senderBox
-                                : classes.receiverBox
-                          }>
-                            {convo.chat_type !== "text"
-                              ? <img style={{ width: "100%" }} src={convo.chat_type} alt="" />
-                              :
-                              <TextareaAutosize
-                                readOnly
-                                className={classes.textAreaChat}
-                                style={convo.sender_id !== this.props.userInfo.sub ? { color: "#263238" } : { color: "#fff" }}
-                                value={convo.message.replace(/\n$/, "")}
-                              />
-                            }
-                            <Typography variant="caption" className={classes.time}>
-                              {convo.time}
-                            </Typography>
-                          </Box>
-                        </div>
-                      ) :
-                        null}
-                    </React.Fragment>
-                    :
-                    null
-                ))}
-                {this.props.chatmateText.length > 0 ?
-                  <TypingEffect />
+                              <Box 
+                              className={
+                                  (convo.chat_type === "image" || 
+                                    convo.chat_type === 'gif')
+                                  ? classes.chatImage
+                                  : (convo.sender_id !== this.props.userInfo.sub)
+                                    ? classes.senderBox
+                                    : classes.receiverBox
+                              }>
+                              {convo.chat_type === "text"
+                                ? <TextareaAutosize
+                                  readOnly
+                                  className={classes.textAreaChat}
+                                  style={convo.sender_id !== this.props.userInfo.sub?{ color: "#263238" }:{ color: "#fff" }}
+                                  value={convo.message.replace(/\n$/, "")}
+                                  />
+                                : (convo.chat_type === "file")
+                                  ?  <Link href={convo.link} color="inherit" variant="body2">{convo.message}</Link>
+                                  :  <img style={{ width: "100%" }} src={convo.link} alt="" />
+                              }
+                                <Typography variant="caption" className={classes.time}>
+                                  {convo.time}
+                                </Typography>
+                              </Box>
+                            </div>
+                      ):
+                      null}
+                  </React.Fragment>
                   :
                   null
+                ))}
+                {this.props.chatmateText.length > 0
+                ?
+                <TypingEffect />
+                :
+                null
                 }
-
+                
                 {/* <div ref={this.messagesEndRef}>asdasd</div> */}
 
               </div>
-
+              
             </div>
             {/* End Chatbox */}
           </div>
-
           {/* Message Box */}
           <div style={{ height: "auto" }}>
             <Divider />
             <div className={classes.messageWrapper}>
-              <IconButton style={{ marginRight: 4 }}>
-                <AttachFileIcon />
+              <input
+                type="file"
+                onChange={this.handleDocumentUpload}
+                style={{ display: "none" }}
+                ref={documentInput => this.documentInput = documentInput}
+              />
+              <IconButton style={{ marginRight: 4 }} onClick={() => this.documentInput.click()}>
+                <AttachFileIcon/>
               </IconButton>
               <input
                 type="file"
@@ -334,18 +371,18 @@ class ChatPageBox extends Component {
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
                 onChange={(e) => this.props.setChatText(e.target.value)}
-                onClick={() => this.props.displayBadge(this.props.chatmateInfo.sub)}
+                onClick={()=>this.props.displayBadge(this.props.chatmateInfo.sub)}
                 onKeyUp={(e) => {
                   if (e.target.value
                     .replace(/^\s+/, "")
                     .replace(/\s+$/, "") !== "") {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      this.state.image
-                        ? this.handleSendImage()
-                        :
-                        this.props.sendChat();
-                      this.openPicker()
-                    }
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        this.state.image
+                          ? this.handleSendImage()
+                          :
+                          this.props.sendChat();
+                          this.openPicker()
+                      }
                   }
                 }}
                 InputProps={{
@@ -362,21 +399,21 @@ class ChatPageBox extends Component {
                 }}
 
               />
-              <IconButton
-                //  onClick={() => this.props.chatmateInfo.sub !== undefined? this.props.sendChat() : this.props.sendChatGroup()}
-                onClick={() => {
-                  this.state.image
-                    ? this.handleSendImage('student')
-                    :
-                    this.props.sendChat();
-                  this.openPicker()
-                }}
-                disabled={
-                  this.props.senderText.replace(/^\s+/, "")
-                    .replace(/\s+$/, "") === ""
-                    ? true
-                    : false
-                }
+              <IconButton 
+              onClick={() => {
+                (this.state.image)
+                  ? this.handleSendImage('student')
+                  : (this.state.document)
+                    ? this.handleSendDocument()
+                    :this.props.sendChat();
+                     this.openPicker()
+              }}
+              disabled={
+                this.props.senderText.replace(/^\s+/, "")
+                  .replace(/\s+$/, "") === ""
+                  ? true
+                  : false
+              }
               >
                 <SendIcon />
               </IconButton>

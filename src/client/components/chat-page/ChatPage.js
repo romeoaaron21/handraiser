@@ -140,7 +140,7 @@ class ChatPage extends PureComponent {
   }
 
   componentDidUpdate(sub) {
-    if (this.props.match.params.chatmateSub == 'allMessages') {
+    if (this.props.match.params.chatmateSub === 'allMessages') {
       if (sub.length > 0) {
         this.setState({ chatmateSub: sub, newChatmateSub: sub })
         this.selectChatmate(sub);
@@ -205,7 +205,7 @@ class ChatPage extends PureComponent {
     socket.emit('setStudentChatText', textVal)
   };
 
-  sendChat = (image, chatText, sub ) => {
+  sendChat = (url, chatText, sub, type ) => {
     const months = [
       "Jan",
       "Feb",
@@ -238,7 +238,8 @@ class ChatPage extends PureComponent {
       sender_sub: this.state.sub,
       chatmate_sub: sub === undefined ? this.state.chatmateSub : sub,
       time: datetime,
-      type: image ? image : "text"
+      type: type ? type : "text",
+      link: url ? url : null
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
@@ -247,9 +248,6 @@ class ChatPage extends PureComponent {
       socket.emit('getNormalChat', chat)
     });
   };
-
-
-
 
   sendChatGroup = () => {
     console.log(this.state.senderText)
@@ -341,7 +339,18 @@ class ChatPage extends PureComponent {
             style={{ height: "800px", maxHeight: "700px" }}
           >
 
-            <ChatPageList groupListInfo={this.state.groupListInfo} chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate} chatmateInfo={this.state.chatmateInfo} sendChat={this.sendChat}/>
+            <ChatPageList 
+            groupListInfo={this.state.groupListInfo} 
+            chatListInfo={this.state.chatListInfo} 
+            conversation={this.state.conversation} 
+            sub={this.state.sub} 
+            userInfo={this.state.userInfo} 
+            changeChatmate={this.changeChatmate} 
+            displayBadge={this.displayBadge} 
+            selectChatmate={this.selectChatmate} 
+            chatmateInfo={this.state.chatmateInfo} 
+            sendChat={this.sendChat}
+            />
 
             <ChatPageBox 
             userInfo={this.state.userInfo} 
@@ -353,9 +362,10 @@ class ChatPage extends PureComponent {
             chatmateText={this.state.chatmateText} 
             displayBadge={this.displayBadge} 
             />
-            <ChatPageInfo 
+            <ChatPageInfo
+            userInfo={this.state.userInfo} 
             chatmateInfo={this.state.chatmateInfo} 
-            conversation={this.state.conversation}
+            conversation={[...this.state.conversation].reverse()}
             />
           </Grid>
         </Container>
@@ -371,7 +381,6 @@ class ChatPage extends PureComponent {
             :
             null
         }
-
 
       </div>
     );
