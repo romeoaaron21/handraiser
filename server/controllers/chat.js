@@ -111,6 +111,15 @@ function getGroupChatInfo(req, res){
 
 }
 
+function getGroupChat(req, res){
+  const db = req.app.get("db");
+
+  db.query(`SELECT * from groupmessage ORDER BY id ASC`).then(chats => {
+    res.status(201).json(chats);
+  });
+
+}
+
 
 module.exports = {
   getChatUsersInfo,
@@ -119,5 +128,6 @@ module.exports = {
   getChatListInformation,
   seenNormalChat,
   getGroupList,
-  getGroupChatInfo
+  getGroupChatInfo,
+  getGroupChat
 }

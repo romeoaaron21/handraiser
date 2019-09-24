@@ -244,7 +244,7 @@ class requestQueue extends Component {
                                   onClick={() =>
                                     this.props.removeStudentRequest(member.id)
                                   }
-                                > 
+                                >
                                   <Delete className={classes.actionIcon} />
                                 </IconButton>
                               </Tooltip>
@@ -268,7 +268,10 @@ class requestQueue extends Component {
                                     className={classes.responsive}
                                     onClick={() => {
                                       // console.log(this.props.assist_id)
-                                      this.props.helpStudent(member.id, this.props.assist_id);
+                                      this.props.helpStudent(
+                                        member.id,
+                                        this.props.assist_id
+                                      );
                                       this.props.sendChatSub(member.sub);
                                     }}
                                   >
@@ -328,7 +331,15 @@ class requestQueue extends Component {
               </Grid>
             </Box>
           ) : (
-            <Grid container className={classes.emptyQueue}>
+            <Grid
+              container
+              className={classes.emptyQueue}
+              style={
+                this.props.priv === "mentor"
+                  ? { marginTop: "130px" }
+                  : { marginTop: "60px" }
+              }
+            >
               <img
                 src={EmptyQueue}
                 className={classes.emptyImgSize}

@@ -256,6 +256,7 @@ massive({
 
   app.get("/api/getGroupList/:userSub", chat.getGroupList)
   app.get("/api/getGroupChatInfo/:gc_id", chat.getGroupChatInfo)
+  app.get("/api/getGroupChat", chat.getGroupChat)
 
   //End of Group Chat
 

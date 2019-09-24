@@ -52,6 +52,7 @@ class ChatPage extends PureComponent {
 
 
       groupListInfo: [],
+      groupConversation: [],
 
     };
   }
@@ -106,8 +107,7 @@ class ChatPage extends PureComponent {
         }
         else {
           this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
-          this.selectChatmate();
-          this.displayGroupList();
+          this.selectChatmate(this.props.match.params.chatmateSub);
         }
       })
   }
@@ -160,10 +160,9 @@ class ChatPage extends PureComponent {
 
 
 
-  selectChatmate = (chatmateSub, type) => {
-    if (type !== 'gc') {
-      if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
-
+  selectChatmate = (chatmateSub) => {
+    if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
+      if (chatmateSub.length > 15) {
         const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
         data.then(res => {
           this.setState({ chatmateSub: chatmateSub })
@@ -173,25 +172,32 @@ class ChatPage extends PureComponent {
             } else { this.setState({ chatmateInfo: chatUser }) }
           })
         })
-          .then(() => this.getConversation())
-          .then(() => this.displayChatList())
       }
+      else {
+        const data = api.fetch(`/api/getGroupChatInfo/${chatmateSub}`, "get")
+        data.then((res) => {
+          this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data })
+        })
+      }
+      this.displayChatList();
+      this.getConversation();
+
+      this.displayGroupList();
+      this.getGroupConversation();
     }
-    else{
-
-      const data = api.fetch(`/api/getGroupChatInfo/${chatmateSub}`, "get")
-      data.then((res)=> {
-        this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data })
-      })
-
-    }
-
   }
 
   getConversation = () => {
     const data = api.fetch(`/api/getChat`, "get");
     data.then(res => {
       this.setState({ conversation: [...res.data] })
+    });
+  }
+
+  getGroupConversation = () => {
+    const data = api.fetch(`/api/getGroupChat`, "get");
+    data.then(res => {
+      this.setState({ groupConversation: [...res.data] })
     });
   }
 
@@ -260,6 +266,10 @@ class ChatPage extends PureComponent {
 
 
 
+
+
+
+
   displayGroupList = () => {
     const data = api.fetch(
       `/api/getGroupList/${this.state.sub}`,
@@ -269,9 +279,6 @@ class ChatPage extends PureComponent {
       this.setState({ groupListInfo: res.data })
     });
   }
-
-
-
 
 
 
