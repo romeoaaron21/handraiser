@@ -127,6 +127,19 @@ function fetch_Cohort_SubCohort(req, res) {
 
 }
 
+function check_Helping(req, res){
+  const db = req.app.get("db");
+
+  db.query(
+    ``
+  ).then(data => {
+    
+
+  })
+
+
+}
+
 module.exports = {
   addCoMentor,
   fetchCoMentor,

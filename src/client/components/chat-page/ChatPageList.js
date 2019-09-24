@@ -21,11 +21,14 @@ import GroupIcon from "@material-ui/icons/Group";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
 import api from "../../services/fetchApi";
 
-
+//DIALOGS
 import Compose from "./dialogs/Compose";
+import CreateGroup from "./dialogs/CreateGroup";
+import { Tooltip } from "@material-ui/core";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -57,7 +60,7 @@ class ChatPageList extends PureComponent {
       searchChatName: "",
       value: 0,
       openDialog: false,
-      openDialogGroup: false,
+      openDialogGroup: false
     };
   }
 
@@ -80,9 +83,8 @@ class ChatPageList extends PureComponent {
     if (conversation.length !== 0) {
       if (need === "message") {
         if (conversation[conversation.length - 1].chat_type !== "text") {
-          return "Sent an image"
-        }
-        else {
+          return "Sent an image";
+        } else {
           return conversation[conversation.length - 1].message;
         }
       } else if (need === "time") {
@@ -126,6 +128,9 @@ class ChatPageList extends PureComponent {
 
   handleClose = () => this.setState({ openDialog: false });
 
+  handleClickOpenGroup = () => this.setState({ openDialogGroup: true });
+  handleCloseGroup = () => this.setState({ openDialogGroup: false });
+
   render() {
     // console.log(this.props.chatListInfo)
     const { classes } = this.props;
@@ -144,40 +149,42 @@ class ChatPageList extends PureComponent {
                 <Typography variant="h5">Messages</Typography>
               </span>
               <Hidden xsDown>
-                <IconButton onClick={
-                  this.state.value == 0 ?
-                    this.handleClickOpen
-                    :
-                    this.handleClickOpenGroup
-                }>
-                  <CreateIcon />
-                </IconButton>
+                {this.state.value === 0 ? (
+                  <Tooltip title="Create Message" placement="left">
+                  <IconButton onClick={this.handleClickOpen}>
+                    <CreateIcon />
+                  </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Create Group" placement="left">
+                  <IconButton onClick={this.handleClickOpenGroup}>
+                    <GroupAddIcon />
+                  </IconButton>
+                  </Tooltip>
+                )}
               </Hidden>
 
               {/* COMPOSE DIALOG */}
+              <Compose
+                openDialog={this.state.openDialog}
+                handleClose={this.handleClose}
+                avatarSample={this.props.userInfo.avatar}
+                sendChat={this.props.sendChat}
+                chatListInfo={this.props.chatListInfo}
+                sub={this.props.sub}
+              />
 
-              {this.state.value === 0 ?
-
-                <Compose
-                  openDialog={this.state.openDialog}
-                  handleClose={this.handleClose}
-                  avatarSample={this.props.userInfo.avatar}
-                  sendChat={this.props.sendChat}
-                  chatListInfo={this.props.chatListInfo}
-                  sub={this.props.sub}
-                />
-                :
-                null
-                /*INSERT CREATE GROUP CHAT DIALOG*/
-
-              }
-
+              <CreateGroup
+                openDialog={this.state.openDialogGroup}
+                handleClose={this.handleCloseGroup}
+                avatarSample={this.props.userInfo.avatar}
+              />
             </div>
             <div>
               <TextField
                 onChange={e => this.searchChatName(e.target.value)}
                 id="outlined-search"
-                label="Search Name"
+                label={this.state.value===0?'Search Name': 'Search Group'}
                 inputProps={{
                   style: {
                     height: "4px"
