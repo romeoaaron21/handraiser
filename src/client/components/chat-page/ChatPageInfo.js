@@ -23,15 +23,16 @@ class ChatPageInfo extends Component {
     }
   }
   openGallery = index => {
-      const images = this.props.conversation.filter(convo => {
-        return convo.chat_type !== 'text'
-      })
-      const selected = images.findIndex(image => image.id === index);
-      this.setState({
-        open: true,
-        selected,
-        imgArray: images
-      })
+    const images = this.props.conversation.filter(convo => {
+      return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+    })
+    const selected = images.findIndex(image => image.id === index);
+    this.setState({
+      open: true,
+      selected,
+      imgArray: images
+    })
   }
   closeGallery = () => {
     this.setState({
@@ -63,11 +64,12 @@ class ChatPageInfo extends Component {
               <div className={classes.photosGrid}>
                 <GridList cellHeight={160} style={{ width: 500 }} cols={3}>
                   {this.props.conversation.map(convo => (
-                    convo.chat_type !== 'text'
-                    ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
-                        <img src={convo.chat_type} />
-                      </GridListTile>
-                    : null
+                  convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                  (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                      ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                          <img src={convo.link} />
+                        </GridListTile>
+                      : null
                   ))}
                 </GridList>
               </div>

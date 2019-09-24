@@ -462,14 +462,14 @@ class ChatBox extends PureComponent {
                                   variant="subtitle1"
                                   className={classes.chatText}
                                 >
-                                  {convo.chat_type !== "text"
-                                    ? <img style={{ width: "100%" }} src={convo.chat_type} alt="" />
-                                    : <TextareaAutosize
+                                  {convo.chat_type === "text"
+                                    ? <TextareaAutosize
                                       readOnly
                                       className={classes.textAreaChat}
                                       style={{ color: this.props.senderInfo.sub === convo.chatmate_id ? '#263238' : 'white', }}
                                       value={convo.message.replace(/\n$/, "")}
-                                    />
+                                      />
+                                    : <img style={{ width: "100%" }} src={convo.link} alt="" />
                                   }
                                 </Typography>
                               </div>

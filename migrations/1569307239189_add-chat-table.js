@@ -34,6 +34,10 @@ exports.up = pgm => {
       type: "text",
       default: "text",
       notNull: true
+    },
+    link: {
+      type: "text",
+      default: null
     }
   });
 };

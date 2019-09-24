@@ -78,8 +78,14 @@ class ChatPageList extends PureComponent {
     });
     if (conversation.length !== 0) {
       if (need === "message") {
-        if (conversation[conversation.length - 1].chat_type !== "text") {
+        if (conversation[conversation.length - 1].chat_type === "image") {
           return "Sent an image"
+        }
+        else if (conversation[conversation.length - 1].chat_type === "gif") {
+          return "Sent a GIF"
+        }
+        else if (conversation[conversation.length - 1].chat_type === "file") {
+          return "Sent a file"
         }
         else {
           return conversation[conversation.length - 1].message;

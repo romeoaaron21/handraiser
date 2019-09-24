@@ -10,7 +10,7 @@ function getChatUsersInfo(req, res) {
 
 function sendStudentChat(req, res) {
   const db = req.app.get("db");
-  const { message, sender_sub, chatmate_sub, time, type } = req.body
+  const { message, sender_sub, chatmate_sub, time, type, link } = req.body
   db.chat
     .insert({
       message: message,
@@ -19,7 +19,8 @@ function sendStudentChat(req, res) {
       cohort_id: 'all',
       time: time,
       seen: 0,
-      chat_type: type
+      chat_type: type,
+      link: link
     })
     .then(() => {
       db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
