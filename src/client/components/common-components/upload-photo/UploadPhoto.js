@@ -18,8 +18,7 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import UploadIcon from "../../../images/upload.png";
 import SearchImageIcon from "../../../images/searchImage.png";
@@ -292,6 +291,7 @@ class UploadPhoto extends React.Component {
       imgSrc: null,
       imgSrcExt: null,
       errorMsg: false,
+      warnNoMoreImages: false,
       crop: {
         unit: "%",
         height: 16.10294117647059,
@@ -304,7 +304,8 @@ class UploadPhoto extends React.Component {
       imageFound: "",
       page: 1,
       countPrevImages: 0,
-      noMoreImages: false
+      noMoreImages: false,
+      loadingCrop: null
     };
   }
 
@@ -503,8 +504,16 @@ class UploadPhoto extends React.Component {
   /* SEARCH IMAGE */
 
   searchImage = () => {
-    this.setState({ searchLoader: true });
-    this.setState({ noMoreImages: false, countPrevImages: 0 });
+    this.setState({
+      loadingCrop: false,
+      searchLoader: true,
+      noMoreImages: false,
+      countPrevImages: 0,
+      page: 1,
+      file: [],
+      imgSrc: null,
+      imgSrcExt: null
+    });
     axios
       .get(`https://api.unsplash.com/search/photos?page=1`, {
         params: { query: this.state.search },
@@ -551,11 +560,7 @@ class UploadPhoto extends React.Component {
         });
 
         if (this.state.countPrevImages === this.state.images.length) {
-          this.setState({ noMoreImages: true });
-          toast.info("No more images", {
-            hideProgressBar: true,
-            draggable: false
-          });
+          this.setState({ noMoreImages: true, warnNoMoreImages: true });
         } else {
           this.setState({
             countPrevImages: this.state.images.length
@@ -573,14 +578,47 @@ class UploadPhoto extends React.Component {
       });
   };
 
+  dismissNoMoreImages = () => {
+    this.setState({ warnNoMoreImages: false });
+  };
+
+  getBase64Image = (img, url, height, width) => {
+    this.setState({ loadingCrop: true });
+    var filename = url.split("/");
+    filename = filename[3].split("?");
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    c.width = width;
+    c.height = height;
+    ctx.drawImage(img, 0, 0, width, height);
+    this.setState({
+      file: [
+        {
+          name: filename[0] + ".jpeg"
+        }
+      ],
+      imgSrc: c.toDataURL(),
+      imgSrcExt: "jpeg"
+    });
+    setTimeout(() => {
+      this.setState({
+        loadingCrop: false
+      });
+    }, 2000);
+  };
+
+  back = () => {
+    this.setState({
+      imgSrc: null
+    });
+  };
+
   render() {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        <ToastContainer
-          enableMultiContainer
-          position={toast.POSITION.TOP_RIGHT}
-        />
+        <canvas id="myCanvas" style={{ display: "none" }} />
+
         <DialogTitle
           id="customized-dialog-title"
           onClose={this.props.handleClose}
@@ -796,21 +834,109 @@ class UploadPhoto extends React.Component {
                   </Typography>
                 </Grid>
               </Grid>
-            ) : this.state.searchLoader ? (
-              <Loader content="Loading..." />
+            ) : this.state.searchLoader || this.state.loadingCrop ? (
+              <Loader
+                content={
+                  this.state.searchLoader ? "Loading..." : "Uploading image"
+                }
+                linear={this.state.loadingCrop ? true : false}
+                width="500px"
+              />
+            ) : this.state.imgSrc !== null ? (
+              <React.Fragment>
+                <Grid container style={{ padding: "16px 0 0 16px" }}>
+                  <Grid item>
+                    <Typography
+                      gutterBottom
+                      style={{
+                        fontSize: "12px",
+                        overflow: "hidden",
+                        width: "920px"
+                      }}
+                    >
+                      Upload &#8250; <b>{this.state.file[0].name}</b>
+                    </Typography>
+                    <Typography gutterBottom style={{ fontSize: "12px" }}>
+                      To crop this image, drag the region below and then click
+                      "Select class header"
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid
+                  container
+                  className={classes.cropContainer}
+                  style={{ marginTop: "-25px" }}
+                >
+                  <Grid item>
+                    {this.state.imgSrc !== null ? (
+                      <React.Fragment>
+                        <ReactCrop
+                          imageStyle={{ height: "340px" }}
+                          src={this.state.imgSrc}
+                          crop={this.state.crop}
+                          onImageLoaded={this.handleImageLoaded}
+                          onComplete={this.handleOnCropComplete}
+                          onChange={this.handleOnCropChange}
+                        />
+                        <canvas
+                          ref={this.imagePreviewCanvasRef}
+                          style={{ display: "none" }}
+                        ></canvas>
+                      </React.Fragment>
+                    ) : null}
+                  </Grid>
+                </Grid>
+              </React.Fragment>
             ) : (
               <React.Fragment>
                 <Grid container>
                   <Grid item>
+                    <div
+                      className={
+                        this.state.warnNoMoreImages
+                          ? `${classes.fadeIn}`
+                          : `${classes.fadeOut}`
+                      }
+                      style={{ marginTop: "1%" }}
+                    >
+                      Sorry, no more images found.
+                      <Link
+                        onClick={this.dismissNoMoreImages}
+                        style={{
+                          color: "#fff",
+                          textDecoration: "none",
+                          cursor: "pointer"
+                        }}
+                      >
+                        {" "}
+                        Dismiss
+                      </Link>
+                    </div>
+                  </Grid>
+                  <Grid item>
                     <div className={classes.imageList}>
-                      {this.state.images.map(tile => (
-                        <div className={classes.imageItem}>
-                          <img
-                            style={{ width: "100%" }}
-                            src={tile.urls.regular}
-                            alt={tile.alt_description}
-                          />
-                        </div>
+                      {this.state.images.map((tile, i) => (
+                        <Tooltip title="Select image to crop" placement="right">
+                          <div
+                            className={classes.imageItem}
+                            onClick={() =>
+                              this.getBase64Image(
+                                document.getElementById(i),
+                                tile.urls.regular,
+                                tile.height,
+                                tile.width
+                              )
+                            }
+                          >
+                            <img
+                              id={i}
+                              style={{ width: "100%" }}
+                              src={tile.urls.regular}
+                              alt={tile.alt_description}
+                              crossorigin="anonymous"
+                            />
+                          </div>
+                        </Tooltip>
                       ))}
 
                       {this.state.images.length >= 10 &&
@@ -821,7 +947,10 @@ class UploadPhoto extends React.Component {
                           onClick={this.more}
                         >
                           <img
-                            style={{ width: "12%", margin: "auto auto 0 auto" }}
+                            style={{
+                              width: "12%",
+                              margin: "auto auto 0 auto"
+                            }}
                             src={
                               "https://www.pngarts.com/files/3/Next-Button-PNG-Free-Download.png"
                             }
@@ -861,6 +990,15 @@ class UploadPhoto extends React.Component {
         </TabPanel>
 
         <DialogActions>
+          {this.state.imgSrc !== null && this.state.loadingCrop !== null ? (
+            <Button
+              onClick={this.back}
+              color="primary"
+              style={{ position: "absolute", left: "0" }}
+            >
+              Back
+            </Button>
+          ) : null}
           <Button
             classes={{ textPrimary: classes.uploadBtn }}
             onClick={e => this.handleSelectClassHeader(e)}
