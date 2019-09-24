@@ -207,7 +207,6 @@ class ChatPage extends PureComponent {
   };
 
   sendChat = (sub, chatText) => {
-    console.log(sub)
     const months = [
       "Jan",
       "Feb",
@@ -250,6 +249,55 @@ class ChatPage extends PureComponent {
   };
 
 
+
+
+  sendChatGroup = () => {
+    console.log(this.state.senderText)
+    // const months = [
+    //   "Jan",
+    //   "Feb",
+    //   "Mar",
+    //   "Apr",
+    //   "May",
+    //   "Jun",
+    //   "Jul",
+    //   "Aug",
+    //   "Sep",
+    //   "Oct",
+    //   "Nov",
+    //   "Dec"
+    // ];
+    // let current_datetime = new Date();
+    // let formatted_date =
+    //   months[current_datetime.getMonth()] +
+    //   " " +
+    //   current_datetime.getDate() +
+    //   ", " +
+    //   current_datetime.getFullYear();
+    // var time = current_datetime.toLocaleString("en-US", {
+    //   hour: "numeric",
+    //   minute: "numeric",
+    //   hour12: true
+    // });
+    // var datetime = formatted_date + " " + time;
+    // let convo = {
+    //   message: this.state.senderText,
+    //   sender_sub: this.state.sub,
+    //   chatmate_sub: this.state.chatmateSub,
+    //   time: datetime
+    // };
+    // const data = api.fetch(`/api/sendStudentChat`, "post", convo);
+    // data.then(res => {
+    //   this.displayBadge();
+    //   const chat = [res.data, this.state.sub, this.state.chatmateSub]
+    //   socket.emit('getNormalChat', chat)
+    // });
+  };
+
+
+
+
+
   displayBadge = (chatmate) => {
     let sub = { chatmate: this.state.sub, sender: chatmate };
     const data = api.fetch(
@@ -262,15 +310,6 @@ class ChatPage extends PureComponent {
     });
   }
 
-
-
-
-
-
-
-
-
-
   displayGroupList = () => {
     const data = api.fetch(
       `/api/getGroupList/${this.state.sub}`,
@@ -280,15 +319,6 @@ class ChatPage extends PureComponent {
       this.setState({ groupListInfo: res.data })
     });
   }
-
-
-
-
-
-
-
-
-
 
   render() {
     const { classes } = this.props;
@@ -313,7 +343,7 @@ class ChatPage extends PureComponent {
 
             <ChatPageList groupListInfo={this.state.groupListInfo} chatListInfo={this.state.chatListInfo} conversation={this.state.conversation} sub={this.state.sub} userInfo={this.state.userInfo} changeChatmate={this.changeChatmate} displayBadge={this.displayBadge} selectChatmate={this.selectChatmate} chatmateInfo={this.state.chatmateInfo} sendChat={this.sendChat}/>
 
-            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
+            <ChatPageBox userInfo={this.state.userInfo} chatmateInfo={this.state.chatmateInfo} senderText={this.state.senderText} setChatText={this.setChatText} sendChat={this.sendChat} sendChatGroup={this.sendChatGroup} conversation={this.state.conversation} chatmateText={this.state.chatmateText} displayBadge={this.displayBadge} />
 
             <ChatPageInfo chatmateInfo={this.state.chatmateInfo} />
           </Grid>

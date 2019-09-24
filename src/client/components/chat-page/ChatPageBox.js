@@ -171,7 +171,7 @@ class ChatPageBox extends Component {
 
               />
               <IconButton
-                onClick={() => this.props.sendChat()}
+                onClick={() => this.props.chatmateInfo.sub !== undefined? this.props.sendChat() : this.props.sendChatGroup()}
                 disabled={
                   this.props.senderText.replace(/^\s+/, "")
                     .replace(/\s+$/, "") === ""
