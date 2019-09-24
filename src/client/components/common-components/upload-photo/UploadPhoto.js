@@ -413,7 +413,6 @@ class UploadPhoto extends React.Component {
       if (isVerified) {
         // imageBase64Data
         const currentFile = files[0];
-        console.log(currentFile);
         const myFileItemReader = new FileReader();
 
         var changeState = this; // set the this to changeState for setState in line 214
@@ -929,11 +928,11 @@ class UploadPhoto extends React.Component {
                             }
                           >
                             <img
+                              crossorigin="Anonymous"
                               id={i}
                               style={{ width: "100%" }}
                               src={tile.urls.regular}
                               alt={tile.alt_description}
-                              crossorigin="anonymous"
                             />
                           </div>
                         </Tooltip>
