@@ -120,6 +120,19 @@ function getGroupChat(req, res){
 
 }
 
+function getAllUsers(req, res){
+  const db = req.app.get("db");
+
+  db.query(`SELECT * from users order by first_name ASC`)
+  .then(users => {
+    res.status(200).json(users)
+  })
+  .catch(() => {
+    res.status(500).end()
+  })
+
+}
+
 
 module.exports = {
   getChatUsersInfo,
@@ -129,5 +142,6 @@ module.exports = {
   seenNormalChat,
   getGroupList,
   getGroupChatInfo,
-  getGroupChat
+  getGroupChat,
+  getAllUsers
 }
