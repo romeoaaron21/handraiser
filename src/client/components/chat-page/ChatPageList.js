@@ -21,11 +21,14 @@ import GroupIcon from "@material-ui/icons/Group";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
 import api from "../../services/fetchApi";
 
-
+//DIALOGS
 import Compose from "./dialogs/Compose";
+import CreateGroup from "./dialogs/CreateGroup";
+import { Tooltip } from "@material-ui/core";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -56,7 +59,8 @@ class ChatPageList extends PureComponent {
     this.state = {
       searchChatName: "",
       value: 0,
-      openDialog: false
+      openDialog: false,
+      openDialogGroup: false
     };
   }
 
@@ -127,8 +131,12 @@ class ChatPageList extends PureComponent {
   };
 
   handleClickOpen = () => this.setState({ openDialog: true });
+  handleClickOpenGroup = () => this.setState({ openDialogGroup: true });
 
   handleClose = () => this.setState({ openDialog: false });
+
+  handleClickOpenGroup = () => this.setState({ openDialogGroup: true });
+  handleCloseGroup = () => this.setState({ openDialogGroup: false });
 
   render() {
     // console.log(this.props.chatListInfo)
@@ -148,24 +156,42 @@ class ChatPageList extends PureComponent {
                 <Typography variant="h5">Messages</Typography>
               </span>
               <Hidden xsDown>
-                <IconButton onClick={this.handleClickOpen}>
-                  <CreateIcon />
-                </IconButton>
+                {this.state.value === 0 ? (
+                  <Tooltip title="Create Message" placement="left">
+                  <IconButton onClick={this.handleClickOpen}>
+                    <CreateIcon />
+                  </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Create Group" placement="left">
+                  <IconButton onClick={this.handleClickOpenGroup}>
+                    <GroupAddIcon />
+                  </IconButton>
+                  </Tooltip>
+                )}
               </Hidden>
-              
+
               {/* COMPOSE DIALOG */}
               <Compose
                 openDialog={this.state.openDialog}
                 handleClose={this.handleClose}
                 avatarSample={this.props.userInfo.avatar}
-              /> 
+                sendChat={this.props.sendChat}
+                chatListInfo={this.props.chatListInfo}
+                sub={this.props.sub}
+              />
 
+              <CreateGroup
+                openDialog={this.state.openDialogGroup}
+                handleClose={this.handleCloseGroup}
+                avatarSample={this.props.userInfo.avatar}
+              />
             </div>
             <div>
               <TextField
                 onChange={e => this.searchChatName(e.target.value)}
                 id="outlined-search"
-                label="Search Name"
+                label={this.state.value===0?'Search Name': 'Search Group'}
                 inputProps={{
                   style: {
                     height: "4px"
@@ -199,140 +225,162 @@ class ChatPageList extends PureComponent {
               <List>
                 {this.props.chatListInfo.length !== 0
                   ? this.props.chatListInfo.map((chatmate, i) => {
-                      if (
-                        chatmate.first_name
-                          .toLowerCase()
-                          .includes(this.state.searchChatName.toLowerCase()) ||
-                        chatmate.last_name
-                          .toLowerCase()
-                          .includes(this.state.searchChatName.toLowerCase())
-                      ) {
-                        return (
-                          <React.Fragment key={i}>
-                            <ListItem
-                              alignItems="flex-start"
-                              button
-                              onClick={() => {
-                                this.props.changeChatmate(chatmate.sub);
-                                this.props.displayBadge(chatmate.sub);
-                                this.props.selectChatmate(chatmate.sub);
-                              }}
-                            >
-                              <Hidden only="xs">
-                                <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                                  <Avatar src={chatmate.avatar} />
-                                </ListItemAvatar>
-                                <div className={classes.chatDetails}>
-                                  <div style={{ width: "80%" }}>
-                                    <Typography variant="body1">
-                                      {`${chatmate.first_name} ${chatmate.last_name}`}
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle2"
-                                      className={classes.chatPrev}
-                                    >
-                                      {this.convoMessage(
-                                        chatmate.sub,
-                                        "message"
-                                      )}
-                                    </Typography>
-                                  </div>
+                    if (
+                      chatmate.first_name
+                        .toLowerCase()
+                        .includes(this.state.searchChatName.toLowerCase()) ||
+                      chatmate.last_name
+                        .toLowerCase()
+                        .includes(this.state.searchChatName.toLowerCase())
+                    ) {
+                      return (
+                        <React.Fragment key={i}>
+                          <ListItem
+                            alignItems="flex-start"
+                            button
+                            onClick={() => {
+                              this.props.changeChatmate(chatmate.sub);
+                              this.props.displayBadge(chatmate.sub);
+                              this.props.selectChatmate(chatmate.sub);
+                            }}
+                            style={this.props.chatmateInfo.sub === chatmate.sub ?
+                              { backgroundColor: '#cfd8f987' }
+                              :
+                              null
+                            }
+                          >
+                            <Hidden only="xs">
+                              <ListItemAvatar style={{ marginTop: "-0.2px" }}>
+                                <Avatar
+                                  src={chatmate.avatar}
+                                />
+                              </ListItemAvatar>
+                              <div className={classes.chatDetails}>
+                                <div style={{ width: "80%" }}>
+                                  <Typography variant="body1">
+                                    {`${chatmate.first_name} ${chatmate.last_name}`}
+                                  </Typography>
+                                  <Typography
+                                    variant="subtitle2"
+                                    className={classes.chatPrev}
+                                  >
+                                    {this.convoMessage(
+                                      chatmate.sub,
+                                      "message"
+                                    )}
+                                  </Typography>
+                                </div>
 
-                                  <div className={classes.timeBadgeWrap}>
-                                    <Typography variant="caption">
-                                      {this.convoMessage(chatmate.sub, "time")}
-                                    </Typography>
-                                    <div style={{ marginTop: 3 }}>
-                                      <Badge
-                                        color="secondary"
-                                        badgeContent={this.unreadChat(
-                                          chatmate.sub
-                                        )}
-                                        invisible={
-                                          this.unreadChat(chatmate.sub) === 0
-                                            ? true
-                                            : false
-                                        }
-                                      />
-                                    </div>
+                                <div className={classes.timeBadgeWrap}>
+                                  <Typography variant="caption">
+                                    {this.convoMessage(chatmate.sub, "time")}
+                                  </Typography>
+                                  <div style={{ marginTop: 3 }}>
+                                    <Badge
+                                      color="secondary"
+                                      badgeContent={this.unreadChat(
+                                        chatmate.sub
+                                      )}
+                                      invisible={
+                                        this.unreadChat(chatmate.sub) === 0
+                                          ? true
+                                          : false
+                                      }
+                                    />
                                   </div>
                                 </div>
-                              </Hidden>
-                              <Hidden smUp>
-                                <div className={classes.smBP}>
-                                  <Avatar src={chatmate.avatar} />
-                                  <Badge
-                                    badgeContent={10}
-                                    color="secondary"
-                                    badgeContent={this.unreadChat(chatmate.sub)}
-                                    invisible={
-                                      this.unreadChat(chatmate.sub) === 0
-                                        ? true
-                                        : false
-                                    }
-                                  />
-                                </div>
-                              </Hidden>
-                            </ListItem>
-                            <Divider />
-                          </React.Fragment>
-                        );
-                      }
-                    })
+                              </div>
+                            </Hidden>
+                            <Hidden smUp>
+                              <div className={classes.smBP}>
+                                <Avatar src={chatmate.avatar} />
+                                <Badge
+                                  badgeContent={10}
+                                  color="secondary"
+                                  badgeContent={this.unreadChat(chatmate.sub)}
+                                  invisible={
+                                    this.unreadChat(chatmate.sub) === 0
+                                      ? true
+                                      : false
+                                  }
+                                />
+                              </div>
+                            </Hidden>
+                          </ListItem>
+                          <Divider />
+                        </React.Fragment>
+                      );
+                    }
+                  })
                   : null}
               </List>
             </TabPanel>
             <TabPanel value={this.state.value} index={1}>
               <List>
-                <React.Fragment>
-                  <ListItem alignItems="flex-start" button>
-                    <Hidden only="xs">
-                      <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                        <Avatar>
-                          {" "}
-                          <GroupIcon />{" "}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <div className={classes.chatDetails}>
-                        <div style={{ width: "80%" }}>
-                          <Typography variant="body1">bmsrc-dev</Typography>
-                          <Typography
-                            variant="subtitle2"
-                            className={classes.chatPrev}
-                          >
-                            Handraiser team update: We're still working on
-                            finishing the chat feature. We're also making
-                            changes to the design so as to not make the users
-                            confused on some features. Some other updates: 1.
-                            Used Firebase as storage for the uploaded images. 2.
-                            Unsplash feature is almost done.
-                          </Typography>
-                        </div>
 
-                        <div className={classes.timeBadgeWrap}>
-                          <Typography variant="caption">12:35 A.M</Typography>
-                          <div style={{ marginTop: 3 }}>
-                            <Badge color="secondary" badgeContent={1} />
+                {this.props.groupListInfo.map(gc => (
+
+                  <React.Fragment>
+                    <ListItem alignItems="flex-start"
+                      button
+                      onClick={() => {
+                        this.props.changeChatmate(gc.id);
+                        this.props.selectChatmate(gc.id);
+                      }}
+                      style={this.props.chatmateInfo.id === gc.id ?
+                        { backgroundColor: '#cfd8f987' }
+                        :
+                        null
+                      }
+                    >
+                      <Hidden only="xs">
+                        <ListItemAvatar style={{ marginTop: "-0.2px" }}>
+                          <Avatar> <GroupIcon /> </Avatar>
+                        </ListItemAvatar>
+                        <div className={classes.chatDetails}>
+                          <div style={{ width: "80%" }}>
+                            <Typography variant="body1">{gc.name}</Typography>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.chatPrev}
+                            >
+                              Handraiser team update: We're still working on
+                              finishing the chat feature. We're also making
+                              changes to the design so as to not make the users
+                              confused on some features. Some other updates: 1.
+                              Used Firebase as storage for the uploaded images. 2.
+                              Unsplash feature is almost done.
+                        </Typography>
+                          </div>
+
+                          <div className={classes.timeBadgeWrap}>
+                            <Typography variant="caption">12:35 A.M</Typography>
+                            <div style={{ marginTop: 3 }}>
+                              <Badge color="secondary" badgeContent={1} />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Hidden>
-                    <Hidden smUp>
-                      <div className={classes.smBP}>
-                        <Avatar>
-                          {" "}
-                          <GroupIcon />{" "}
-                        </Avatar>
-                        <Badge badgeContent={10} color="secondary" />
-                      </div>
-                    </Hidden>
-                  </ListItem>
-                  <Divider />
-                </React.Fragment>
+                      </Hidden>
+                      <Hidden smUp>
+                        <div className={classes.smBP}>
+                          <Avatar> <GroupIcon /> </Avatar>
+                          <Badge badgeContent={10} color="secondary" />
+                        </div>
+                      </Hidden>
+                    </ListItem>
+                    <Divider />
+
+                  </React.Fragment>
+
+                ))}
+
+
               </List>
             </TabPanel>
           </div>
         </Paper>
+
+
       </Grid>
     );
   }

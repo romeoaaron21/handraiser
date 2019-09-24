@@ -199,7 +199,7 @@ const styles = theme => ({
       "sans-serif"
     ]
   },
-  
+
   chatImage: {
     color: "#000",
     maxWidth: "40%",
@@ -211,19 +211,29 @@ const styles = theme => ({
       padding: "6px 12px"
     }
   },
-  
+
   chip: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
 
   dense: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
 
-  flex:{
+  flex: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
+  },
+
+  memberList: {
+    display: "flex",
+    justifyContent: "flex-start",
+    flexWrap: "wrap",
+    alignItems: "center",
+    maxHeight: 70,
+    padding: 5,
+    overflowY: "auto"
   }
   // End ChatInfo
 });

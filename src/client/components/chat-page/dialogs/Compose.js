@@ -22,9 +22,34 @@ import Chip from "@material-ui/core/Chip";
 
 import { ListItemText } from "@material-ui/core";
 
+import api from "../../../services/fetchApi";
+
 class Compose extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      students: [],
+      chatmate: [],
+      chatText: "",
+      searchChatName: "",
+    }
+  }
+
+  componentDidMount() {
+    const data = api.fetch(`/api/getAllUsers/`, "get")
+    data.then(res => {
+      this.setState({ students: [...res.data] })
+    })
+  }
+
+  selectChatmate = (chatmate) => {
+    this.setState({ chatmate })
+  }
+
+  sendNewChat = () => {
+    this.props.sendChat(null, this.state.chatText, this.state.chatmate.sub)
+    this.setState({ chatText: "", chatmate: [] })
+    this.props.handleClose()
   }
 
   render() {
@@ -36,7 +61,7 @@ class Compose extends Component {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">
-          Compose New Message
+          Create New Message
           <IconButton
             size="small"
             style={{ float: "right" }}
@@ -47,21 +72,27 @@ class Compose extends Component {
         </DialogTitle>
         <Divider />
         <DialogContent>
-          <div
-            className={classes.flex}
-            style={{ justifyContent: "flex-start" }}
-          >
-            <Typography variant="subtitle2" size="small">
-              To:{" "}
-            </Typography>
-            <Chip
-              avatar={<Avatar alt="sender" src={this.props.avatarSample} />}
-              label="John Doe"
-              onDelete={this.props.handleClose}
-              className={classes.chip}
-              size="small"
-            />
-          </div>
+          {this.state.chatmate.sub ?
+            <div
+              className={classes.flex}
+              style={{ justifyContent: "flex-start" }}
+            >
+              <Typography variant="subtitle2" size="small">
+                To:{" "}
+              </Typography>
+
+              <Chip
+                avatar={<Avatar alt="sender" src={this.state.chatmate.avatar} />}
+                label={`${this.state.chatmate.first_name}`}
+                onDelete={() => {
+                  this.setState({ chatmate: [] })
+                }}
+                className={classes.chip}
+                size="small"
+              />
+            </div>
+            :
+            null}
           <TextField
             label="Search"
             className={clsx(classes.textField, classes.dense)}
@@ -69,6 +100,7 @@ class Compose extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
+            onChange={(e) => this.setState({ searchChatName: e.target.value })}
           />
           <Paper
             style={{ width: 450, height: 180, overflowY: "auto" }}
@@ -76,18 +108,29 @@ class Compose extends Component {
           >
             <List>
               {/* map here */}
-              <ListItem alignItems="flex-start" button>
-                <ListItemAvatar style={{ marginTop: "3px" }}>
-                  <Avatar
-                    style={{ width: 25, height: 25 }}
-                    src={this.props.avatarSample}
-                  >
-                    ME
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText>John Doe</ListItemText>
-              </ListItem>
-              <Divider />
+              {this.state.students.map((stud, i) => {
+                if (stud.first_name
+                  .toLowerCase()
+                  .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student' && this.props.sub !== stud.sub||
+                  stud.last_name
+                    .toLowerCase()
+                    .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student' && this.props.sub !== stud.sub) {
+                  return (
+                    <React.Fragment key={i}>
+                      <ListItem alignItems="flex-start" button onClick={() => this.selectChatmate(stud)}>
+                        <ListItemAvatar style={{ marginTop: "3px" }}>
+                          <Avatar
+                            style={{ width: 25, height: 25 }}
+                            src={stud.avatar}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText>{stud.first_name} {stud.last_name}</ListItemText>
+                      </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  )
+                }
+              })}
             </List>
           </Paper>
           <div className={classes.flex}>
@@ -98,8 +141,25 @@ class Compose extends Component {
               multiline
               margin="normal"
               rowsMax="4"
+              onChange={(e) => this.setState({ chatText: e.target.value })}
+              onKeyUp={(e) => {
+                if (e.target.value
+                  .replace(/^\s+/, "")
+                  .replace(/\s+$/, "") !== "") {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    this.sendNewChat()
+                  }
+                }
+              }}
             />
-            <IconButton style={{ marginLeft: 3, marginTop: 3 }}>
+            <IconButton style={{ marginLeft: 3, marginTop: 3 }} onClick={() => this.sendNewChat()}
+              disabled={
+                this.state.chatText.replace(/^\s+/, "")
+                  .replace(/\s+$/, "") === ""
+                  ? true
+                  : false
+              }
+            >
               <SendIcon />
             </IconButton>
           </div>

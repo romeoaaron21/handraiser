@@ -11,10 +11,12 @@ import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
+import Samplepic from "../../images/bg.jpg";
+import GroupIcon from "@material-ui/icons/Group";
 import Gallery from './gallery/galleryDialog'
 
 class ChatPageInfo extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
       open: false,
@@ -44,15 +46,32 @@ class ChatPageInfo extends Component {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        <Grid item md={3} xs={12} style={{ height: "800px"}}>
+        <Grid item md={3} xs={12} style={{ height: "800px" }}>
           <Paper>
             <div className={classes.chatInfoHeader}>
+              {this.props.chatmateInfo.avatar === undefined ?
+                <Avatar className={classes.avatarLarge}> <GroupIcon style={{ fontSize: "48px" }} /> </Avatar>
+                :
+                <Avatar className={classes.avatarLarge} src={this.props.chatmateInfo.avatar}></Avatar>
+              }
+              <Typography variant="h6">
+                {this.props.chatmateInfo.first_name === undefined ?
+                  this.props.chatmateInfo.name
+                  :
+                  `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`
+                }
+              </Typography>
+              <Typography variant="subtitle2">
+                {this.props.chatmateInfo.first_name}
+              </Typography>
+            </div>
+            {/* <div className={classes.chatInfoHeader}>
               <Avatar className={classes.avatarLarge} src={this.props.chatmateInfo.avatar}></Avatar>
               <Typography variant="h6">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
               <Typography variant="subtitle2">
               {this.props.chatmateInfo.first_name}
               </Typography>
-            </div>
+            </div> */}
             <Divider />
             <span className={classes.photosTitle}>
               <Typography variant="overline">SHARED PHOTOS</Typography>
@@ -78,11 +97,11 @@ class ChatPageInfo extends Component {
         </Grid>
         {/*GALLERY */}
         {this.state.imgArray.length &&
-         <Gallery
-          conversation={this.state.imgArray}
-          open={this.state.open}
-          handleClose={this.closeGallery}
-          selected={this.state.selected}
+          <Gallery
+            conversation={this.state.imgArray}
+            open={this.state.open}
+            handleClose={this.closeGallery}
+            selected={this.state.selected}
           />
         }
       </React.Fragment>

@@ -49,6 +49,10 @@ class ChatPage extends PureComponent {
 
       newChatmateSub: "",
 
+
+      groupListInfo: [],
+      groupConversation: [],
+
     };
   }
 
@@ -102,7 +106,7 @@ class ChatPage extends PureComponent {
         }
         else {
           this.setState({ chatmateSub: this.props.match.params.chatmateSub, newChatmateSub: this.props.match.params.chatmateSub })
-          this.selectChatmate();
+          this.selectChatmate(this.props.match.params.chatmateSub);
         }
       })
   }
@@ -153,19 +157,32 @@ class ChatPage extends PureComponent {
     this.setState({ newChatmateSub: chatmate })
   }
 
+
+
   selectChatmate = (chatmateSub) => {
     if (this.state.chatmateSub !== this.props.match.params.chatmateSub) {
-      const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
-      data.then(res => {
-        this.setState({ chatmateSub: chatmateSub })
-        res.data.forEach(chatUser => {
-          if (chatUser.sub === this.state.sub) {
-            this.setState({ userInfo: chatUser })
-          } else { this.setState({ chatmateInfo: chatUser }) }
+      if (chatmateSub.length > 15) {
+        const data = api.fetch(`/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`, "get")
+        data.then(res => {
+          this.setState({ chatmateSub: chatmateSub })
+          res.data.map(chatUser => {
+            if (chatUser.sub === this.state.sub) {
+              this.setState({ userInfo: chatUser })
+            } else { this.setState({ chatmateInfo: chatUser }) }
+          })
         })
-      })
-        .then(() => this.getConversation())
-        .then(() => this.displayChatList())
+      }
+      else {
+        const data = api.fetch(`/api/getGroupChatInfo/${chatmateSub}`, "get")
+        data.then((res) => {
+          this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data })
+        })
+      }
+      this.displayChatList();
+      this.getConversation();
+
+      this.displayGroupList();
+      this.getGroupConversation();
     }
   }
 
@@ -176,12 +193,19 @@ class ChatPage extends PureComponent {
     });
   }
 
+  getGroupConversation = () => {
+    const data = api.fetch(`/api/getGroupChat`, "get");
+    data.then(res => {
+      this.setState({ groupConversation: [...res.data] })
+    });
+  }
+
   setChatText = (val) => {
     let textVal = [val, this.state.chatmateSub, this.state.sub];
     socket.emit('setStudentChatText', textVal)
   };
 
-  sendChat = (url, type) => {
+  sendChat = (url, chatText, sub, type ) => {
     const months = [
       "Jan",
       "Feb",
@@ -210,9 +234,9 @@ class ChatPage extends PureComponent {
     });
     var datetime = formatted_date + " " + time;
     let convo = {
-      message: this.state.senderText,
+      message: chatText === undefined ? this.state.senderText : chatText,
       sender_sub: this.state.sub,
-      chatmate_sub: this.state.chatmateSub,
+      chatmate_sub: sub === undefined ? this.state.chatmateSub : sub,
       time: datetime,
       type: type ? type : "text",
       link: url ? url : null
@@ -220,10 +244,56 @@ class ChatPage extends PureComponent {
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
       this.displayBadge();
-      const chat = [res.data, this.state.sub, this.state.chatmateSub]
+      const chat = [res.data, this.state.sub, sub === undefined ? this.state.chatmateSub: sub]
       socket.emit('getNormalChat', chat)
     });
   };
+
+  sendChatGroup = () => {
+    console.log(this.state.senderText)
+    // const months = [
+    //   "Jan",
+    //   "Feb",
+    //   "Mar",
+    //   "Apr",
+    //   "May",
+    //   "Jun",
+    //   "Jul",
+    //   "Aug",
+    //   "Sep",
+    //   "Oct",
+    //   "Nov",
+    //   "Dec"
+    // ];
+    // let current_datetime = new Date();
+    // let formatted_date =
+    //   months[current_datetime.getMonth()] +
+    //   " " +
+    //   current_datetime.getDate() +
+    //   ", " +
+    //   current_datetime.getFullYear();
+    // var time = current_datetime.toLocaleString("en-US", {
+    //   hour: "numeric",
+    //   minute: "numeric",
+    //   hour12: true
+    // });
+    // var datetime = formatted_date + " " + time;
+    // let convo = {
+    //   message: this.state.senderText,
+    //   sender_sub: this.state.sub,
+    //   chatmate_sub: this.state.chatmateSub,
+    //   time: datetime
+    // };
+    // const data = api.fetch(`/api/sendStudentChat`, "post", convo);
+    // data.then(res => {
+    //   this.displayBadge();
+    //   const chat = [res.data, this.state.sub, this.state.chatmateSub]
+    //   socket.emit('getNormalChat', chat)
+    // });
+  };
+
+
+
 
 
   displayBadge = (chatmate) => {
@@ -235,6 +305,16 @@ class ChatPage extends PureComponent {
     );
     data.then(res => {
       socket.emit("seenNormalChat", res.data);
+    });
+  }
+
+  displayGroupList = () => {
+    const data = api.fetch(
+      `/api/getGroupList/${this.state.sub}`,
+      "get"
+    );
+    data.then(res => {
+      this.setState({ groupListInfo: res.data })
     });
   }
 
@@ -260,13 +340,18 @@ class ChatPage extends PureComponent {
           >
 
             <ChatPageList 
+            groupListInfo={this.state.groupListInfo} 
             chatListInfo={this.state.chatListInfo} 
             conversation={this.state.conversation} 
-            sub={this.state.sub} userInfo={this.state.userInfo} 
+            sub={this.state.sub} 
+            userInfo={this.state.userInfo} 
             changeChatmate={this.changeChatmate} 
             displayBadge={this.displayBadge} 
             selectChatmate={this.selectChatmate} 
+            chatmateInfo={this.state.chatmateInfo} 
+            sendChat={this.sendChat}
             />
+
             <ChatPageBox 
             userInfo={this.state.userInfo} 
             chatmateInfo={this.state.chatmateInfo} 

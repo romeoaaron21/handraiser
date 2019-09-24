@@ -239,6 +239,8 @@ massive({
   app.get("/api/studentBeingHelped/:cohort_id", comentor.studentBeingHelped);
   app.get("/api/fetchCohortsSubCohorts/:id/:privilege", comentor.fetch_Cohort_SubCohort);
   //comentors END
+
+
   //START of Normal Chatting
 
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
@@ -246,9 +248,18 @@ massive({
   app.get("/api/getChatList/:userSub", chat.getChatList);
   app.get("/api/getChatListInformation/:chatListSub", chat.getChatListInformation);
   app.patch("/api/seenNormalChat/", chat.seenNormalChat);
-  
 
   //END of Normal Chatting
+
+
+  //START of Group Chat
+
+  app.get("/api/getGroupList/:userSub", chat.getGroupList)
+  app.get("/api/getGroupChatInfo/:gc_id", chat.getGroupChatInfo)
+  app.get("/api/getGroupChat", chat.getGroupChat)
+  app.get("/api/getAllUsers", chat.getAllUsers)
+
+  //End of Group Chat
 
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);

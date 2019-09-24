@@ -139,7 +139,7 @@ class ChatPageBox extends Component {
       }, () => {
         storage.ref('chat-images').child(imageName).getDownloadURL()
           .then(url => {
-            this.props.sendChat(url, 'image')
+            this.props.sendChat(url, undefined, undefined, 'image')
             this.setState({
               progress: 0
             })
@@ -166,7 +166,7 @@ class ChatPageBox extends Component {
   }
   uploadGif = gif => {
     this.closeSplash()
-    this.props.sendChat(gif.images.downsized.url, 'gif')
+    this.props.sendChat(gif.images.downsized.url, undefined, undefined, 'gif')
   }
   //ANCHOR emoji
   openPicker = event => {
@@ -213,7 +213,7 @@ class ChatPageBox extends Component {
       }, () => {
         storage.ref('documents').child(document.name).getDownloadURL()
           .then(url => {
-            this.props.sendChat(url, 'file')
+            this.props.sendChat(url, undefined, undefined, 'file')
             this.setState({
               progress: 0
             })
