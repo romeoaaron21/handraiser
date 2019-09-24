@@ -231,10 +231,8 @@ const styles = theme => ({
     justifyContent: "flex-start",
     flexWrap: "wrap",
     alignItems: "center",
-    width: 472,
-    maxHeight: 80,
-    marginTop: 10,
-    padding: 4,
+    maxHeight: 70,
+    padding: 5,
     overflowY: "auto"
   }
   // End ChatInfo

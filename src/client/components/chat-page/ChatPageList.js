@@ -28,6 +28,7 @@ import api from "../../services/fetchApi";
 //DIALOGS
 import Compose from "./dialogs/Compose";
 import CreateGroup from "./dialogs/CreateGroup";
+import { Tooltip } from "@material-ui/core";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -148,13 +149,17 @@ class ChatPageList extends PureComponent {
               </span>
               <Hidden xsDown>
                 {this.state.value === 0 ? (
+                  <Tooltip title="Create Message" placement="left">
                   <IconButton onClick={this.handleClickOpen}>
                     <CreateIcon />
                   </IconButton>
+                  </Tooltip>
                 ) : (
+                  <Tooltip title="Create Group" placement="left">
                   <IconButton onClick={this.handleClickOpenGroup}>
                     <GroupAddIcon />
                   </IconButton>
+                  </Tooltip>
                 )}
               </Hidden>
 

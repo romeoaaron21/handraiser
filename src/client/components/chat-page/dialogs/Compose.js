@@ -36,7 +36,7 @@ class Compose extends Component {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">
-          Compose New Message
+          Create New Message
           <IconButton
             size="small"
             style={{ float: "right" }}

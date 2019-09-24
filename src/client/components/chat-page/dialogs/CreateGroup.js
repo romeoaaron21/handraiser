@@ -138,9 +138,21 @@ class CreateGroup extends Component {
               })}
             </List>
           </Paper>
-          <Paper className={clsx(classes.memberList, classes.scrollBar)}>
-            {this.state.checked.length > 0 ? (
-              this.state.checked.map(val => (
+          <Paper
+            style={{
+              width: 480,
+              marginTop: 10,
+              display: this.state.checked.length > 0 ? "block" : "none"
+            }}
+          >
+            {/* <div className={classes.flex}> */}
+              <Typography variant="caption" style={{ padding: 8 }}>
+                Selected Members - {this.state.checked.length}
+              </Typography>
+            {/* </div> */}
+            <Divider />
+            <div className={clsx(classes.memberList, classes.scrollBar)}>
+              {this.state.checked.map(val => (
                 <Chip
                   avatar={<Avatar alt="sender" src={this.props.avatarSample} />}
                   label={val}
@@ -148,12 +160,8 @@ class CreateGroup extends Component {
                   className={classes.chip}
                   size="small"
                 />
-              ))
-            ) : (
-              <Typography variant="overline" style={{ alignSelf: "center" }}>
-                Select a member
-              </Typography>
-            )}
+              ))}
+            </div>
           </Paper>
         </DialogContent>
         <Divider />
