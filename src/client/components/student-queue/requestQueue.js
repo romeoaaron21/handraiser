@@ -218,7 +218,7 @@ class requestQueue extends Component {
           style={
             this.props.priv === "mentor"
               ? { minHeight: "570px", maxHeight: "570px" }
-              : { minHeight: "455px", maxHeight: "520px" }
+              : { minHeight: "498px", maxHeight: "520px" }
           }
         >
           {insideCohort.length !== 0 ? (

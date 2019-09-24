@@ -31,7 +31,7 @@ const styles = theme => ({
   },
   header: {
     padding: theme.spacing(3, 2),
-    marginTop: "25px",
+    marginTop: "10px",
     maxWidth: "1200px",
     margin: "0 auto",
     backgroundColor: "#775aa5",
