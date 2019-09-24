@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import decode from "jwt-decode";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Card from "@material-ui/core/Card";

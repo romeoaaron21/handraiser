@@ -1,5 +1,4 @@
 import React from "react";
-
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -9,12 +8,9 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
-
 import AddIcon from "@material-ui/icons/Add";
 import LockIcon from "@material-ui/icons/Lock";
-
 import DefaultBackground from "../../../images/cardBg.jpg";
-
 import History from "./history/history";
 //API
 import api from "../../../services/fetchApi";
@@ -129,7 +125,9 @@ class MentorClassCards extends React.Component {
             if (search) {
               if (cohort.name.toLowerCase().includes(search.toLowerCase())) {
                 {
-                  this.state.countSearch = this.state.countSearch + 1;
+                  this.setState(prev => ({
+                    countSearch: prev.countSearch + 1
+                  }))
                 }
                 return (
                   <Card className={classes.card} key={cohort.id}>

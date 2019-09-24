@@ -47,7 +47,7 @@ class Compose extends Component {
   }
 
   sendNewChat = () => {
-    this.props.sendChat(this.state.chatmate.sub, this.state.chatText)
+    this.props.sendChat(null, this.state.chatText, this.state.chatmate.sub)
     this.setState({ chatText: "", chatmate: [] })
     this.props.handleClose()
   }

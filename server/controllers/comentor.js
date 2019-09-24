@@ -81,7 +81,7 @@ function availableMentor(req, res) {
 
 function fetchAssist(req, res) {
   const db = req.app.get("db");
-  db.query(`SELECT requests.*,users.sub,users.id as user_id from requests,users,member WHERE member.student_id=users.id AND member.id = requests.member_id AND users.id= ${req.params.student_id} AND requests.assist_id=${req.params.mentor_id}`)
+  db.query(`SELECT requests.*,users.sub,users.id as user_id from requests,users,member WHERE member.student_id=users.id AND member.id = requests.member_id AND requests.assist_id=${req.params.mentor_id}`)
     .then(data => {
       res.status(200).json(data)
     })

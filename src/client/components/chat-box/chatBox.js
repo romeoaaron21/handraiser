@@ -8,7 +8,6 @@ import Done from "@material-ui/icons/Done";
 import styles from "./chatBoxStyle";
 import TypingEffect from "./typingEffect";
 import Photo from '@material-ui/icons/Photo'
-import RemoveCircle from '@material-ui/icons/RemoveCircle'
 import Dialog from "@material-ui/core/Dialog";
 import ConfirmationDialog from "../being-helped/doneCofirmationmodal";
 import TextareaAutosize from "react-textarea-autosize";
@@ -104,7 +103,6 @@ class ChatBox extends PureComponent {
       image: null,
       progress: 0,
       assist: [],
-      //splash try
       imageMenu: null,
       splashDialog: false,
       emoji: false,
@@ -133,10 +131,10 @@ class ChatBox extends PureComponent {
     this.scrollToBottom();
     if (this.props.privileged === "mentor") {
       api.fetch(
-        `/api/fetchAssist/${this.props.chatmateInfo.id}/${this.props.senderInfo.id}`,
+        `/api/fetchAssist/${this.props.senderInfo.id}`,
         "get"
       ).then(data => {
-        data.data.map(val => {
+        data.data.forEach(val => {
           this.setState({ assist: val })
         })
       })
@@ -161,7 +159,7 @@ class ChatBox extends PureComponent {
   //move back student to the queue
   removeFromQueue = student => {
     const data = api.fetch(
-      `/api/removebeinghelped/${student.id}/${this.props.cohort_id}`,
+      `/api/removebeinghelped/${student.user_id}/${this.props.cohort_id}`,
       "get"
     );
     data.then(res => {
@@ -198,7 +196,7 @@ class ChatBox extends PureComponent {
     });
     var datetime = formatted_date + " " + time;
     const data = api.fetch(
-      `/api/doneHelp/${student.id}/${this.props.cohort_id}/${this.props.senderInfo.id}`,
+      `/api/doneHelp/${student.user_id}/${this.props.cohort_id}/${this.props.senderInfo.id}`,
       "post",
       { time: datetime }
     );
@@ -273,6 +271,7 @@ class ChatBox extends PureComponent {
           })
       })
     this.setState({ image: null })
+    this.fileInput.value = "";
   }
   makeid = (name, length = 15) => {
     var ext = name.replace(/^.*\./, '');
@@ -363,7 +362,7 @@ class ChatBox extends PureComponent {
               {this.props.privileged === 'mentor' && this.state.assist.sub === this.props.chatmateInfo.sub ?
                 <Box>
                   <StyledMenuItem onClick={() => {
-                    this.removeFromQueue(this.props.helpingStudent)
+                    this.removeFromQueue(this.state.assist)
                     this.props.viewChatBox();
                   }}>
                     <ListItemIcon>
@@ -514,7 +513,7 @@ class ChatBox extends PureComponent {
                     style={{ display: "none" }}
                     ref={fileInput => this.fileInput = fileInput}
                   />
-                  <IconButton onClick={/*() => this.fileInput.click()*/
+                  <IconButton onClick={
                     this.handleImageMenu
                   }>
                     <Photo />
@@ -531,7 +530,6 @@ class ChatBox extends PureComponent {
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
                       className={classes.textField}
-                      InputProps={{ classes: { root: classes.custom } }}
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
@@ -552,7 +550,7 @@ class ChatBox extends PureComponent {
                               ? this.handleSendImage('student')
                               :
                               this.props.sendChat();
-                            this.openPicker()
+                              this.openPicker()
                           }
                         }
                       }}
@@ -567,6 +565,7 @@ class ChatBox extends PureComponent {
                             </IconButton>
                           </InputAdornment>
                         ),
+                        classes: { root: classes.custom }
                       }}
                     />
                     <IconButton
@@ -619,7 +618,6 @@ class ChatBox extends PureComponent {
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
                       className={classes.textField}
-                      InputProps={{ classes: { root: classes.custom } }}
                       multiline={true}
                       rowsMax='4'
                       margin="normal"
@@ -654,6 +652,7 @@ class ChatBox extends PureComponent {
                             </IconButton>
                           </InputAdornment>
                         ),
+                        classes: { root: classes.custom }
                       }}
                     />
                     <IconButton
@@ -686,7 +685,7 @@ class ChatBox extends PureComponent {
             <ConfirmationDialog
               cancel={this.closeConfirmationDialog}
               doneHelp={this.doneHelp}
-              helpingStudent={this.props.helpingStudent}
+              helpingStudent={this.state.assist}
             />
           </Dialog>
 

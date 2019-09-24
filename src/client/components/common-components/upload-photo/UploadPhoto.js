@@ -277,13 +277,6 @@ const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
 });
 
 const dropzoneRef = createRef();
-const openDialog = () => {
-  // Note that the ref is set async,
-  // so it might be null at some point
-  if (dropzoneRef.current) {
-    dropzoneRef.current.open();
-  }
-};
 
 class UploadPhoto extends React.Component {
   constructor() {

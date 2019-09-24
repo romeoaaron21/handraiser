@@ -196,7 +196,7 @@ class ChatList extends PureComponent {
 
   unreadChat = (studentSub) => {
     let count = 0;
-    this.props.conversation.map(convo => {
+    this.props.conversation.forEach(convo => {
       if (parseInt(convo.cohort_id) === parseInt(this.props.cohort_id)) {
         if (convo.chatmate_id === this.props.sub && convo.sender_id === studentSub) {
           if (convo.seen === 0) {

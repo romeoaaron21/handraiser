@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withStyles, emphasize } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -12,9 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Link from "@material-ui/core/Link";
 import Dialog from "@material-ui/core/Dialog";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Chip from "@material-ui/core/Chip";
-import Grid from "@material-ui/core/Grid";
 import ClassIcon from "@material-ui/icons/Group";
 import History from "../cohorts/cards/history/history";
 import UploadPhoto from "../common-components/upload-photo/UploadPhoto";
@@ -83,24 +81,6 @@ const styles = theme => ({
     }
   }
 });
-
-const StyledBreadcrumb = withStyles(theme => ({
-  root: {
-    backgroundColor: "whitesmoke",
-    height: 21,
-    cursor: "pointer",
-    color: theme.palette.grey[800],
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: theme.palette.white[100],
-      color: "black"
-    },
-    "&:active": {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(theme.palette.grey[300], 0.12)
-    }
-  }
-}))(Chip);
 
 class StudentHeader extends Component {
   constructor() {
@@ -221,7 +201,7 @@ class StudentHeader extends Component {
                 <Chip
                   className={classes.chip}
                   size="small"
-                  label="My Activies"
+                  label="My Activities"
                   onClick={this.openHistory}
                 />
               </ListItemText>

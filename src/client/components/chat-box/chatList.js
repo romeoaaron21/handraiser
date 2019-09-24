@@ -1,10 +1,8 @@
 import React, { PureComponent } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
-import EmptyQueue from "../../images/empty.svg";
 import {
   Paper,
-  Grid,
   Typography,
   Avatar,
   List,
@@ -140,7 +138,7 @@ class ChatList extends PureComponent {
 
   unreadChat = studentSub => {
     let count = 0;
-    this.props.conversation.map(convo => {
+    this.props.conversation.forEach(convo => {
       if (parseInt(convo.cohort_id) === parseInt(this.props.cohort_id)) {
         if (
           convo.chatmate_id === this.props.sub &&

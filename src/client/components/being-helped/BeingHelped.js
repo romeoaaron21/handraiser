@@ -87,7 +87,7 @@ class BeingHelped extends Component {
             {this.props.currentlyHelping.length > 0 ? (
               this.props.currentlyHelping.map(helpingStudent => {
                 return (
-                  <React.Fragment>
+                  <React.Fragment key={helpingStudent.avatar}>
 
                     <List>
                       <ListItem className={classes.list}>

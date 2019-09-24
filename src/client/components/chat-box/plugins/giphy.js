@@ -39,7 +39,7 @@ const styles = theme => ({
     },
     gifList: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         columnGap: '1.5em',
         fontSize: '.85em',
         margin: '1.5em 0',
@@ -52,17 +52,32 @@ class Splash extends React.Component {
     constructor(){
         super();
         this.state = {
+            trending: [],
             query: ' ',
+            showTrend: true,
             results: []
         }
+    }
+    componentDidMount = () => {
+        axios.get(`http://api.giphy.com/v1/gifs/trending?api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS&limit=100`)
+        .then(res => {
+            this.setState({
+                trending: [...res.data.data]
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
     }
     handleChange = (query) => {
         this.setState({ query })
     }
     handleSubmit = () => {
-        axios.get(`http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS`)
+        axios.get(`http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS&limit=100`)
         .then(res => {
             this.setState({
+                showTrend: false,
                 results: [...res.data.data]
             })
         })
@@ -73,7 +88,8 @@ class Splash extends React.Component {
     closeDialog = () => {
         this.setState({
             query: ' ',
-            results: []
+            results: [],
+            showTrend: true
         })
     }
     render(){
@@ -86,7 +102,7 @@ class Splash extends React.Component {
         } = this.props;
         return (
             <Dialog
-                maxWidth="md"
+                maxWidth="sm"
                 fullWidth
                 fullScreen={width === 'xs' ? true : false}
                 disableBackdropClick
@@ -95,7 +111,7 @@ class Splash extends React.Component {
                 onExited={this.closeDialog}
             >
                 <DialogTitle disableTypography className={classes.title}>
-                    <Typography variant="h4">Search for images</Typography>
+                    <Typography variant="h4">Search for GIFs</Typography>
                     <Typography variant="overline">&copy; giphy</Typography>
                 </DialogTitle>
                 <DialogContent>
@@ -119,15 +135,21 @@ class Splash extends React.Component {
                         ),
                       }}
                 />
-                {this.state.results.length
+                {this.state.showTrend
                 ?   <div className={classes.gifList}>
-                        {this.state.results.map(tile => (
-                            <div className={classes.gifItem} onClick={() => uploadGif(tile)}>
+                        {this.state.trending.map(tile => (
+                            <div key={tile.id} className={classes.gifItem} onClick={() => uploadGif(tile)}>
                                 <img style={{ width: '100%' }} src={tile.images.downsized.url} alt="" />
                             </div>
                         ))}
                     </div>
-                : null
+                :   <div className={classes.gifList}>
+                        {this.state.results.map(tile => (
+                            <div key={tile.id}  className={classes.gifItem} onClick={() => uploadGif(tile)}>
+                                <img style={{ width: '100%' }} src={tile.images.downsized.url} alt="" />
+                            </div>
+                        ))}
+                    </div>
                 }
                 </DialogContent>
                 <DialogActions>
