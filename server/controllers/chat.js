@@ -133,6 +133,19 @@ function getAllUsers(req, res){
 
 }
 
+function sendGroupChat(req, res){
+  const db = req.app.get("db");
+  const { sender_sub, groupchat_id, message, time } = req.body;
+
+  db.query(`INSERT INTO groupmessage(sender_sub, groupchat_id, message, time, seen) VALUES('${sender_sub}', ${groupchat_id}, '${message}', '${time}', 0)`)
+  .then(()=>{
+    db.groupmessage.find()
+    .then(conversation => {
+      res.status(201).json(conversation)
+    })
+  })
+}
+
 
 module.exports = {
   getChatUsersInfo,
@@ -140,8 +153,11 @@ module.exports = {
   getChatList,
   getChatListInformation,
   seenNormalChat,
+
   getGroupList,
   getGroupChatInfo,
   getGroupChat,
-  getAllUsers
+
+  getAllUsers,
+  sendGroupChat
 }
