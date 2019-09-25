@@ -71,8 +71,7 @@ class MentorClassCards extends React.Component {
     this.state = {
       openHistory: false,
       history: [],
-      selectedCohort: [],
-      countSearch: 0
+      selectedCohort: []
     };
   }
 
@@ -124,11 +123,6 @@ class MentorClassCards extends React.Component {
           if (cohort.mentor_id === this.props.user.id) {
             if (search) {
               if (cohort.name.toLowerCase().includes(search.toLowerCase())) {
-                {
-                  this.setState(prev => ({
-                    countSearch: prev.countSearch + 1
-                  }))
-                }
                 return (
                   <Card className={classes.card} key={cohort.id}>
                     <CardActionArea
