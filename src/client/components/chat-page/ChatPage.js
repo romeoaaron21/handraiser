@@ -93,12 +93,19 @@ class ChatPage extends PureComponent {
     });
 
     socket.on("getNormalGroupChat", conversation => {
-      this.setState({groupConversation: conversation[0]})
+      this.setState({ groupConversation: conversation[0] });
 
       if (conversation[1] === this.state.sub) {
         this.setState({ senderText: "" });
       }
-    })
+    });
+
+    socket.on("seenNormalGroupChat", chat => {
+      // console.log(chat)
+      this.setState({
+        groupConversation: [...chat]
+      });
+    });
   }
 
   componentDidMount() {
@@ -258,7 +265,7 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
-      this.displayBadge();
+      this.displayBadge(sub === undefined ? this.state.chatmateSub : sub, "pm");
       const chat = [
         res.data,
         this.state.sub,
@@ -300,28 +307,31 @@ class ChatPage extends PureComponent {
       sender_sub: this.state.sub,
       groupchat_id: parseInt(this.state.chatmateSub),
       message: this.state.senderText,
-      time: datetime,
+      time: datetime
     };
-    const data = api.fetch(`/api/sendGroupChat`, "post", convo)
+    const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-        const chat = [res.data, this.state.sub, this.state.chatmateSub]
-        socket.emit('getNormalGroupChat', chat)
-    })
-    // console.log(convo)
-    // const data = api.fetch(`/api/sendStudentChat`, "post", convo);
-    // data.then(res => {
-    //   this.displayBadge();
-    //   const chat = [res.data, this.state.sub, this.state.chatmateSub]
-    //   socket.emit('getNormalChat', chat)
-    // });
+      this.displayBadge(parseInt(this.state.chatmateSub), "gc")
+      const chat = [res.data, this.state.sub, this.state.chatmateSub];
+      socket.emit("getNormalGroupChat", chat);
+    });
   };
 
-  displayBadge = chatmate => {
-    let sub = { chatmate: this.state.sub, sender: chatmate };
-    const data = api.fetch(`/api/seenNormalChat`, "patch", sub);
-    data.then(res => {
-      socket.emit("seenNormalChat", res.data);
-    });
+  displayBadge = (chatmate, type) => {
+    if (type === "pm") {
+      let sub = { chatmate: this.state.sub, sender: chatmate };
+      const data = api.fetch(`/api/seenNormalChat`, "patch", sub);
+      data.then(res => {
+        socket.emit("seenNormalChat", res.data);
+      });
+    }
+    else if(type === "gc"){
+      let sub = { chatmate: this.state.sub, groupchat_id: chatmate };
+      const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
+      data.then(res => {
+        socket.emit("seenNormalGroupChat", res.data);
+      })
+    }
   };
 
   displayGroupList = () => {
@@ -374,7 +384,6 @@ class ChatPage extends PureComponent {
               conversation={this.state.conversation}
               chatmateText={this.state.chatmateText}
               displayBadge={this.displayBadge}
-
               groupConversation={this.state.groupConversation}
               sendChatGroup={this.sendChatGroup}
             />

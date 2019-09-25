@@ -31,11 +31,7 @@ import Splash from "../chat-box/plugins/giphy";
 //emoji
 import Emoji from "../chat-box/plugins/emoji";
 
-
-
-
 import api from "../../services/fetchApi";
-
 
 const imageMaxSize = 1000000000; // bytes
 const acceptedFileTypes =
@@ -68,15 +64,19 @@ class ChatPageBox extends Component {
       emoji: false
     };
   }
-  //Start of Added Scroll Bottom
-  // messagesEndRef = React.createRef();
 
-  // componentDidMount() {
-  //   this.scrollToBottom();
-  // }
-  // scrollToBottom = () => {
-  //   this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-  // };
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+  //Start of Added Scroll Bottom
+  messagesEndRef = React.createRef();
+
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+  scrollToBottom = () => {
+    this.messagesEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'nearest', inline: 'start' });
+  };
   //End of Added Scroll Bottom
 
   //ANCHOR splash start
@@ -197,8 +197,6 @@ class ChatPageBox extends Component {
     const param = this.props.senderText + emoji.native;
     this.props.setChatText(param);
   };
-
-
 
   render() {
     const { classes } = this.props;
@@ -336,11 +334,11 @@ class ChatPageBox extends Component {
                             }
                           >
                             {gcConvo.sender_sub !== this.props.userInfo.sub ? (
-                            <Avatar
-                              style={{ marginRight: "10px" }}
-                              src={gcConvo.avatar}
-                            />
-                          ) : null}
+                              <Avatar
+                                style={{ marginRight: "10px" }}
+                                src={gcConvo.avatar}
+                              />
+                            ) : null}
 
                             <Box
                               className={
@@ -384,7 +382,7 @@ class ChatPageBox extends Component {
 
                 {this.props.chatmateText.length > 0 ? <TypingEffect /> : null}
 
-                {/* <div ref={this.messagesEndRef}>asdasd</div> */}
+                <div ref={this.messagesEndRef} />
               </div>
             </div>
             {/* End Chatbox */}
@@ -416,6 +414,7 @@ class ChatPageBox extends Component {
                 handleClose={this.handleImageMenuClose}
               />
               <TextField
+                autoFocus
                 variant="outlined"
                 multiline
                 rowsMax="4"
@@ -425,9 +424,13 @@ class ChatPageBox extends Component {
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
                 onChange={e => this.props.setChatText(e.target.value)}
-                onClick={() =>
-                  this.props.displayBadge(this.props.chatmateInfo.sub)
-                }
+                onClick={() => {
+                  if (this.props.chatmateInfo.sub !== undefined) {
+                    this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
+                  } else {
+                    this.props.displayBadge(this.props.chatmateInfo.sub, "gc");
+                  }
+                }}
                 onKeyUp={e => {
                   if (
                     e.target.value.replace(/^\s+/, "").replace(/\s+$/, "") !==

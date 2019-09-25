@@ -97,42 +97,49 @@ class ChatPageList extends PureComponent {
     }
   };
 
-
   //added group chat
   groupConvoMessage = (gc_id, need) => {
     let conversation = [];
-    this.props.groupConversation.map(convo => {
-      // console.log(convo)
-        // if (
-        //   (parseInt(convo.id) === parseInt(gc_id))
-        // ) {
-        //   console.log(convo)
-        //   // conversation.push(convo);
-        // }
-      // return conversation
+    this.props.groupConversation.map(gcConvo => {
+      if (gcConvo.groupchat_id === parseInt(gc_id)) {
+        conversation.push(gcConvo);
+      }
     });
-    // if (conversation.length !== 0) {
-    //   if (need === "message") {
-    //     if (conversation[conversation.length - 1].chat_type !== "text") {
-    //       return "Sent an image";
-    //     } else {
-    //       return conversation[conversation.length - 1].message;
-    //     }
-    //   } else if (need === "time") {
-    //     let display = conversation[conversation.length - 1].time.split(" ");
-    //     return `${display[3]} ${display[4]}`;
-    //   }
-    // } else {
-    //   if (need === "message") {
-    //     return "No conversation";
-    //   }
-    // }
-  }
-  //end of added group chat
-
-  searchChatName = searchChatName => {
-    this.setState({ searchChatName });
+    if (conversation.length !== 0) {
+      if (need === "message") {
+        return conversation[conversation.length - 1].message;
+      } else if (need === "time") {
+        let display = conversation[conversation.length - 1].time.split(" ");
+        return `${display[3]} ${display[4]}`;
+      }
+    } else {
+      if (need === "message") {
+        return "No conversation";
+      }
+    }
   };
+
+  unreadGroupChat = gc_id => {
+    let count = 0;
+    console.log(gc_id)
+
+    this.props.groupConversation.map(gcConvo => {
+      let x = 0;
+      if (gcConvo.groupchat_id === parseInt(gc_id)) {
+        console.log(gcConvo)
+        gcConvo.seen.split(",").map(seen => {
+          if (parseInt(seen) === parseInt(this.props.sub)) {
+            x++;
+          }
+        });
+      }
+      if (x === 0 && gcConvo.groupchat_id === parseInt(gc_id)) {
+        count++;
+      }
+    });
+    return count;
+  };
+  //end of added group chat
 
   unreadChat = studentSub => {
     let count = 0;
@@ -150,6 +157,12 @@ class ChatPageList extends PureComponent {
     });
     return count;
   };
+
+
+  searchChatName = searchChatName => {
+    this.setState({ searchChatName });
+  };
+
 
   handleChange = (event, newValue) => {
     this.setState({ value: newValue });
@@ -264,7 +277,7 @@ class ChatPageList extends PureComponent {
                               button
                               onClick={() => {
                                 this.props.changeChatmate(chatmate.sub);
-                                this.props.displayBadge(chatmate.sub);
+                                this.props.displayBadge(chatmate.sub, "pm");
                                 this.props.selectChatmate(chatmate.sub);
                               }}
                               style={
@@ -317,7 +330,6 @@ class ChatPageList extends PureComponent {
                                 <div className={classes.smBP}>
                                   <Avatar src={chatmate.avatar} />
                                   <Badge
-                                    badgeContent={10}
                                     color="secondary"
                                     badgeContent={this.unreadChat(chatmate.sub)}
                                     invisible={
@@ -347,6 +359,7 @@ class ChatPageList extends PureComponent {
                       onClick={() => {
                         this.props.changeChatmate(gc.id);
                         this.props.selectChatmate(gc.id);
+                        this.props.displayBadge(gc.id, "gc");
                       }}
                       style={
                         this.props.chatmateInfo.id === gc.id
@@ -368,14 +381,24 @@ class ChatPageList extends PureComponent {
                               variant="subtitle2"
                               className={classes.chatPrev}
                             >
-                              {this.groupConvoMessage(gc.id, 'time')}
+                              {this.groupConvoMessage(gc.id, "message")}
                             </Typography>
                           </div>
 
                           <div className={classes.timeBadgeWrap}>
-                            <Typography variant="caption">12:35 A.M</Typography>
+                            <Typography variant="caption">
+                              {this.groupConvoMessage(gc.id, "time")}
+                            </Typography>
                             <div style={{ marginTop: 3 }}>
-                              <Badge color="secondary" badgeContent={1} />
+                              <Badge
+                                color="secondary"
+                                badgeContent={this.unreadGroupChat(gc.id)}
+                                invisible={
+                                  this.unreadGroupChat(gc.id) === 0
+                                    ? true
+                                    : false
+                                }
+                              />
                             </div>
                           </div>
                         </div>
@@ -386,7 +409,13 @@ class ChatPageList extends PureComponent {
                             {" "}
                             <GroupIcon />{" "}
                           </Avatar>
-                          <Badge badgeContent={10} color="secondary" />
+                          <Badge
+                            color="secondary"
+                            badgeContent={this.unreadGroupChat(gc.id)}
+                            invisible={
+                              this.unreadGroupChat(gc.id) === 0 ? true : false
+                            }
+                          />
                         </div>
                       </Hidden>
                     </ListItem>

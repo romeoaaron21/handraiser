@@ -24,7 +24,7 @@ exports.up = (pgm) => {
             notNull: "true"
         },
         seen: {
-            type: "integer",
+            type: "text",
             notNull: true
         },
     })

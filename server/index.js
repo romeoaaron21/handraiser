@@ -123,6 +123,9 @@ massive({
     socket.on("getNormalGroupChat", conversation => {
       io.emit("getNormalGroupChat", conversation);
     });
+    socket.on("seenNormalGroupChat", chat => {
+      io.emit("seenNormalGroupChat", chat);
+    });
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
@@ -265,6 +268,8 @@ massive({
   app.get("/api/getGroupChat", chat.getGroupChat)
   app.get("/api/getAllUsers", chat.getAllUsers)
   app.post("/api/sendGroupChat", chat.sendGroupChat)
+  app.patch("/api/seenNormalGroupChat/", chat.seenNormalGroupChat);
+  
 
   //End of Group Chat
 
