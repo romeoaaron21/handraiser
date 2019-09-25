@@ -26,6 +26,7 @@ import ImageMenu from '../chat-box/imageMenu';
 import Splash from '../chat-box/plugins/giphy';
 //emoji
 import Emoji from '../chat-box/plugins/emoji';
+import Gallery from './gallery/galleryDialog';
 
 
 const imageMaxSize = 30000000; // bytes
@@ -63,7 +64,11 @@ class ChatPageBox extends Component {
       splashDialog: false,
       emoji: false,
       //document
-      document: null
+      document: null,
+      //gallery
+      openGallery: false,
+      selected: null,
+      imgArray: []
     }
   }
   //Start of Added Scroll Bottom
@@ -236,9 +241,6 @@ class ChatPageBox extends Component {
       const currentFileSize = currentFile.size;
 
       const result = regex.test(currentFileType);
-      console.log(currentFileType, result)
-      console.log(currentFileType, acceptedDocumentsArray.includes(currentFileType))
-
       if (currentFileSize > imageMaxSize) {
         alert(
           "This file is not allowed. " + currentFileSize + " bytes is too large"
@@ -253,6 +255,26 @@ class ChatPageBox extends Component {
     }
   };
   //FILE UPLOAD END
+  //gallery
+  openGallery = index => {
+    const images = this.props.conversation.filter(convo => {
+      return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+    })
+    const selected = images.findIndex(image => image.id === index);
+    this.setState({
+      openGallery: true,
+      selected,
+      imgArray: images
+    })
+  }
+  closeGallery = () => {
+    this.setState({
+      openGallery: false,
+      selected: null
+    })
+  }
+  //gallery end
   render() {
     const { classes } = this.props;
     return (
@@ -335,8 +357,17 @@ class ChatPageBox extends Component {
                                   value={convo.message.replace(/\n$/, "")}
                                   />
                                 : (convo.chat_type === "file")
-                                  ?  <Link href={convo.link} color="inherit" variant="body2">{convo.message}</Link>
-                                  :  <img style={{ width: "100%" }} src={convo.link} alt="" />
+                                  ? <Box
+                                    component="div"
+                                    my={2}
+                                    textOverflow="ellipsis"
+                                    overflow="hidden"
+                                    >
+                                     <Link style={{ fontWeight: 'bold' }}href={convo.link} color="inherit" variant="body2">{convo.message}</Link>
+                                    </Box>
+                                  :  (convo.chat_type === "image")
+                                      ? <img style={{ width: "100%", cursor: 'pointer' }} src={convo.link} alt="" onClick={() => this.openGallery(convo.id)} />
+                                      : <img style={{ width: "100%"}} src={convo.link} alt=""/>
                               }
                                 <Typography variant="caption" className={classes.time}>
                                   {convo.time}
@@ -460,6 +491,14 @@ class ChatPageBox extends Component {
           <Emoji
             anchorEl={this.state.emoji}
             handleEmoji={this.handleEmoji}
+          />
+
+          {/*GALLERY */}
+          <Gallery
+            conversation={this.state.imgArray}
+            open={this.state.openGallery}
+            handleClose={this.closeGallery}
+            selected={this.state.selected}
           />
         </Paper>
       </Grid>
