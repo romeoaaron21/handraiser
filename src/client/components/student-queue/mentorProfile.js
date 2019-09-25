@@ -87,8 +87,15 @@ class MentorProfile extends PureComponent {
       .fetch(`/api/cohort/${this.props.cohort_id}/members/list`, "get")
       .then(res => {
         this.setState({
-          students: res.data.students,
-          cohort_pass: res.data.students.password
+          students: res.data.students
+        });
+      });
+
+    api
+      .fetch(`/api/cohort/${this.props.cohort_id}/details`, "get")
+      .then(res => {
+        this.setState({
+          cohort_pass: res.data.cohort[0].password
         });
       });
   }

@@ -662,9 +662,6 @@ class Student extends PureComponent {
 
   render() {
     const { classes } = this.props;
-
-    // console.log(this.state.assist);
-    // console.log(this.state.sub);
     return (
       <React.Fragment>
         {this.state.loader ? (
