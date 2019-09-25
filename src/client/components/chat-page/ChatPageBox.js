@@ -18,23 +18,24 @@ import Photo from '@material-ui/icons/Photo'
 import { InputAdornment } from '@material-ui/core'
 import InsertEmoticon from '@material-ui/icons/InsertEmoticon';
 import Link from '@material-ui/core/Link';
-
 //Firebase
 import { storage } from '../common-components/upload-photo/firebase/firebase';
-
 //img
 import ImageMenu from '../chat-box/imageMenu';
-
 //splash
 import Splash from '../chat-box/plugins/giphy';
-
 //emoji
 import Emoji from '../chat-box/plugins/emoji';
 
-const imageMaxSize = 1000000000; // bytes
+
+const imageMaxSize = 30000000; // bytes
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
 const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
+  return item.trim();
+});
+const acceptedDocuments = "text/css, text/html, application/json, text/javascript, text/plain, application/xhtml+xml, application/zip, application/pdf"
+const acceptedDocumentsArray = acceptedDocuments.split(",").map(item => {
   return item.trim();
 });
 
@@ -189,10 +190,15 @@ class ChatPageBox extends Component {
   handleDocumentUpload = event => {
     if (event.target.files) {
       const files = event.target.files;
-      this.setState({
-        document: files[0]
-      })
-      this.props.setChatText(files[0].name);
+      if (files && files.length > 0) {
+        const isVerified = this.verifyDocument(files);
+        if (isVerified) {
+          this.setState({
+            document: files[0]
+          })
+          this.props.setChatText(files[0].name);
+        }
+      }
     }
   }
   cancelUploadDocument = () => {
@@ -222,6 +228,30 @@ class ChatPageBox extends Component {
     this.setState({ document: null })
     this.documentInput.value = "";
   }
+  verifyDocument = files => {
+    if (files && files.length > 0) {
+      const regex = /^application\/vnd/
+      const currentFile = files[0];
+      const currentFileType = currentFile.type;
+      const currentFileSize = currentFile.size;
+
+      const result = regex.test(currentFileType);
+      console.log(currentFileType, result)
+      console.log(currentFileType, acceptedDocumentsArray.includes(currentFileType))
+
+      if (currentFileSize > imageMaxSize) {
+        alert(
+          "This file is not allowed. " + currentFileSize + " bytes is too large"
+        );
+        return false;
+      }
+      if (!result && !acceptedDocumentsArray.includes(currentFileType)) {
+        alert("This file type is not allowed");
+        return false;
+      }
+      return true;
+    }
+  };
   //FILE UPLOAD END
   render() {
     const { classes } = this.props;
@@ -245,7 +275,7 @@ class ChatPageBox extends Component {
             {/* Chatbox Header */}
             <div style={{ height: "10%" }}>
               <div className={classes.chatBoxHeader}>
-                <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar}>TL</Avatar>
+                <Avatar style={{ marginRight: 10 }} src={this.props.chatmateInfo.avatar} />
                 <div>
                   <Typography variant="body">{this.props.chatmateInfo.first_name} {this.props.chatmateInfo.last_name}</Typography>
                   {this.props.chatmateInfo.status === 'active' ?

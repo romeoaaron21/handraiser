@@ -170,7 +170,12 @@ const styles = theme => ({
   },
 
   photosGridContainer: {
-    height: 554,
+    height: 430,
+    overflowY: "auto",
+    padding: 5
+  },
+  filesGridContainer: {
+    height: 406,
     overflowY: "auto",
     padding: 5
   },
