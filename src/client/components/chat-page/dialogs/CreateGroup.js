@@ -27,15 +27,61 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Checkbox from "@material-ui/core/Checkbox";
 import CommentIcon from "@material-ui/icons/Comment";
+import api from "../../../services/fetchApi";
+import { runInThisContext } from "vm";
 
 class CreateGroup extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      checked: []
+      checked: [],
+      groupName: "",
+      search: "",
+      allUsers: [],
+      btnCreate: true,
+      groupLists: [],
+      groupNameExist: false,
+      helperText: '',
     };
   }
+
+  componentDidMount() {
+    api.fetch(`/api/getAllUsers`, "get")
+      .then(res => {
+        this.setState({ allUsers: res.data })
+      })
+    api.fetch(`/api/getAllGroupName`, "get")
+      .then(res => {
+        this.setState({ groupLists: [...res.data] })
+      })
+  }
+
+  btnCreateToggle = (name,groupExist) => {
+    if (name.length > 1 && this.state.checked.length > 1 && !groupExist) {
+      this.setState({ btnCreate: false })
+    } else {
+      this.setState({ btnCreate: true })
+    }
+  }
+
+  checkGroupName = (value) => {
+    let exist = false;
+    this.state.groupLists.map(data => {
+      if (data.name.toLowerCase() === value.toLowerCase()) {
+        exist = true;
+      }
+    })
+    this.setState({ groupNameExist: exist })
+    if (exist) {
+      this.setState({ helperText: "Group Name Already Exist" })
+    } else {
+      this.setState({ helperText: "" })
+    }
+
+    return exist;
+  }
+
   handleToggle = value => () => {
     const currentIndex = this.state.checked.indexOf(value);
     const newChecked = [...this.state.checked];
@@ -46,11 +92,60 @@ class CreateGroup extends Component {
       newChecked.splice(currentIndex, 1);
     }
 
+    if (this.state.groupName.length > 1 && newChecked.length > 1 && !this.state.groupNameExist) {
+      this.setState({ btnCreate: false })
+    } else {
+      this.setState({ btnCreate: true })
+    }
+
     this.setState({ checked: newChecked });
   };
 
+  handleDelete = (id) => {
+    const currentIndex = this.state.checked.indexOf(id);
+    const newChecked = [...this.state.checked];
+    newChecked.splice(currentIndex, 1);
+
+    this.setState({ checked: newChecked })
+  }
+
+  createGroup = () => {
+    var postData = {
+      groupName: this.state.groupName,
+      creatorId: this.props.sub,
+      userId: [this.props.sub, ...this.state.checked]
+    }
+    api.fetch(`/api/createGroupChat`, "post", postData)
+      .then(data => {
+        console.log(data)
+      })
+    this.setState({
+      groupName: "",
+      creatorId: "",
+      checked: [],
+      btnCreate: true
+    })
+  }
+
+
   render() {
     const { classes } = this.props;
+    const userFilter = this.state.allUsers.filter(data => {
+      let fname =
+        data.first_name
+          .toLowerCase()
+          .indexOf(this.state.search.toLowerCase()) !== -1;
+      let lname =
+        data.last_name
+          .toLowerCase()
+          .indexOf(this.state.search.toLowerCase()) !== -1;
+      if (fname) {
+        return fname;
+      } else {
+        return lname;
+      }
+    });
+    console.log(this.state.groupNameExist)
     return (
       <Dialog
         open={this.props.openDialog}
@@ -77,6 +172,16 @@ class CreateGroup extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
+            onChange={(event) => {
+              this.setState({ groupName: event.target.value })
+              this.btnCreateToggle(event.target.value,this.checkGroupName(event.target.value))
+            }}
+            onBlur={(event) => {
+              this.checkGroupName(event.target.value);
+            }}
+
+            helperText={this.state.helperText}
+            error={this.state.groupNameExist}
           />
 
           <TextField
@@ -86,39 +191,30 @@ class CreateGroup extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
+            onChange={(event) => {
+              this.setState({ search: event.target.value })
+            }}
           />
           <Paper
             style={{ width: 480, height: 180, overflowY: "auto" }}
             className={classes.scrollBar}
           >
             <List>
-              {[
-                "Earl Raquion",
-                "Romeo Lumibao",
-                "Trizha Longaza",
-                "Paolo Barbin",
-                "ASdasdasd",
-                "ASDASDASDSAD",
-                "Zxczxczxczxc",
-                "qweqweqweqwe",
-                "ASdasda",
-                "Asdasdasda",
-                "ASdasdasdasd"
-              ].map(value => {
-                const labelId = `checkbox-list-label-${value}`;
+              {userFilter.map(value => {
+                const labelId = `checkbox-list-label-${value.id}`;
 
                 return (
                   <ListItem
-                    key={value}
+                    key={value.id}
                     role={undefined}
                     dense
                     button
-                    onClick={this.handleToggle(value)}
+                    onClick={this.handleToggle(value.sub)}
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={this.state.checked.indexOf(value) !== -1}
+                        checked={this.state.checked.indexOf(value.sub) !== -1}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
@@ -127,12 +223,11 @@ class CreateGroup extends Component {
                     <ListItemAvatar style={{ marginTop: "3px" }}>
                       <Avatar
                         style={{ width: 25, height: 25 }}
-                        src={this.props.avatarSample}
+                        src={value.avatar}
                       >
-                        ME
                       </Avatar>
                     </ListItemAvatar>
-                    <ListItemText id={labelId} primary={value} />
+                    <ListItemText id={labelId} primary={`${value.first_name} ${value.last_name}`} />
                   </ListItem>
                 );
               })}
@@ -146,31 +241,43 @@ class CreateGroup extends Component {
             }}
           >
             {/* <div className={classes.flex}> */}
-              <Typography variant="caption" style={{ padding: 8 }}>
-                Selected Members - {this.state.checked.length}
-              </Typography>
+            <Typography variant="caption" style={{ padding: 8 }}>
+              Selected Members - {this.state.checked.length}
+            </Typography>
             {/* </div> */}
             <Divider />
             <div className={clsx(classes.memberList, classes.scrollBar)}>
-              {this.state.checked.map(val => (
-                <Chip
-                  avatar={<Avatar alt="sender" src={this.props.avatarSample} />}
-                  label={val}
-                  onDelete={this.props.handleClose}
-                  className={classes.chip}
-                  size="small"
-                />
-              ))}
+              {this.state.checked.map(val => {
+                return this.state.allUsers.map(data => {
+                  if (data.sub === val) {
+                    return (
+                      <Chip
+                        avatar={<Avatar alt="sender" src={data.avatar} />}
+                        label={`${data.first_name} ${data.last_name}`}
+                        onDelete={() => { this.handleDelete(val) }}
+                        className={classes.chip}
+                        size="small"
+                      />
+                    )
+                  }
+                })
+              })}
             </div>
           </Paper>
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={this.props.handleClose} color="primary">
-            Save
+          <Button
+            disabled={this.state.btnCreate}
+            onClick={() => {
+              this.props.handleClose();
+              this.createGroup();
+            }} color="primary"
+          >
+            Create
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog >
     );
   }
 }

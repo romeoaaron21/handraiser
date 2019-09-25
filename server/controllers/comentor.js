@@ -124,21 +124,8 @@ function fetch_Cohort_SubCohort(req, res) {
       res.status(200).json(temp);
     })
   }
-
 }
 
-function check_Helping(req, res){
-  const db = req.app.get("db");
-
-  db.query(
-    ``
-  ).then(data => {
-    
-
-  })
-
-
-}
 
 module.exports = {
   addCoMentor,

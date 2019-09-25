@@ -259,6 +259,8 @@ massive({
   app.get("/api/getGroupChat", chat.getGroupChat)
   app.get("/api/getAllUsers", chat.getAllUsers)
 
+  app.post("/api/createGroupChat", chat.createGroupChat)
+  app.get("/api/getAllGroupName", chat.getAllGroupName)
   //End of Group Chat
 
   server.listen(PORT, () => {

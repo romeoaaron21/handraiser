@@ -185,6 +185,8 @@ class ChatPageList extends PureComponent {
                 openDialog={this.state.openDialogGroup}
                 handleClose={this.handleCloseGroup}
                 avatarSample={this.props.userInfo.avatar}
+                sub={this.props.sub}
+                userInfo={this.props.userInfo}
               />
             </div>
             <div>

@@ -38,7 +38,7 @@ function getChatList(req, res) {
   UNION
   SELECT chatmate_id as chatSub, id FROM chat WHERE sender_id = '${userSub}' AND cohort_id='all') as sub order by id DESC`)
     .then(chatSub => {
-        res.status(200).json([...chatSub]);
+      res.status(200).json([...chatSub]);
     })
 
 }
@@ -50,69 +50,69 @@ function getChatListInformation(req, res) {
   let users = [];
   let x = 0;
 
-if(ChatSub.length !== 0){
-  ChatSub.map((sub, i) => {
-    db.users
-      .findOne({ sub: sub })
-      .then(chatListInfo => {
-        if(i === x){
-          users.push(chatListInfo)
-          x++
-        }
-        if (users.length === ChatSub.length) {
+  if (ChatSub.length !== 0) {
+    ChatSub.map((sub, i) => {
+      db.users
+        .findOne({ sub: sub })
+        .then(chatListInfo => {
+          if (i === x) {
+            users.push(chatListInfo)
+            x++
+          }
+          if (users.length === ChatSub.length) {
             res.status(200).json([...users])
-        }
-        if (x-1 !== i) {
-          res.status(500).send('error')
-        }
-      })
-      
-      
-  })
-}
+          }
+          if (x - 1 !== i) {
+            res.status(500).send('error')
+          }
+        })
+
+
+    })
+  }
 }
 
-function seenNormalChat(req, res){
-    const db = req.app.get("db");
-    const sender_id = req.body.sender;
-    const chatmate_id = req.body.chatmate;
-  
-      db.query(
-        `UPDATE chat SET seen=1 WHERE chatmate_id='${chatmate_id}' AND sender_id='${sender_id}'`
-      ).then(() => {
-        db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
-          res.status(201).json(chats);
-        });
-      });
+function seenNormalChat(req, res) {
+  const db = req.app.get("db");
+  const sender_id = req.body.sender;
+  const chatmate_id = req.body.chatmate;
+
+  db.query(
+    `UPDATE chat SET seen=1 WHERE chatmate_id='${chatmate_id}' AND sender_id='${sender_id}'`
+  ).then(() => {
+    db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
+      res.status(201).json(chats);
+    });
+  });
 }
 
-function getGroupList(req, res){
+function getGroupList(req, res) {
   const db = req.app.get("db");
   const { userSub } = req.params
 
   db.query(`select groupchat.id as id, name as name from groupchat, groupmembers WHERE groupchat.id = groupmembers.groupchat_id AND member_sub = '${userSub}'`)
-  .then((groupchat) => {
-    res.status(200).json(groupchat)
-  })
-  .catch(()=> {
-    res.statis(500).end()
-  })
+    .then((groupchat) => {
+      res.status(200).json(groupchat)
+    })
+    .catch(() => {
+      res.statis(500).end()
+    })
 }
 
 
-function getGroupChatInfo(req, res){
+function getGroupChatInfo(req, res) {
   const db = req.app.get("db");
   const { gc_id } = req.params;
 
   db.groupchat
-  .findOne({id:gc_id})
-  .then(groupchat => {
-    res.status(200).json(groupchat)
-  })
+    .findOne({ id: gc_id })
+    .then(groupchat => {
+      res.status(200).json(groupchat)
+    })
 
 }
 
-function getGroupChat(req, res){
+function getGroupChat(req, res) {
   const db = req.app.get("db");
 
   db.query(`SELECT * from groupmessage ORDER BY id ASC`).then(chats => {
@@ -121,17 +121,44 @@ function getGroupChat(req, res){
 
 }
 
-function getAllUsers(req, res){
+function getAllUsers(req, res) {
   const db = req.app.get("db");
 
   db.query(`SELECT * from users order by first_name ASC`)
-  .then(users => {
-    res.status(200).json(users)
-  })
-  .catch(() => {
-    res.status(500).end()
-  })
+    .then(users => {
+      res.status(200).json(users)
+    })
+    .catch(() => {
+      res.status(500).end()
+    })
 
+}
+
+function createGroupChat(req, res) {
+  const db = req.app.get("db");
+  db.groupchat
+  .insert(
+    {
+      user_sub: req.body.creatorId,
+      name: req.body.groupName
+    }
+  ).then(data => {
+    // map user Id
+    req.body.userId.map(value => {
+      db.query(
+        `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${data.id}) `
+      )
+    })
+    res.status(201).json({groupName: `${req.body.groupName}`})
+  })
+}
+
+function getAllGroupName(req, res) {
+  const db = req.app.get("db");
+  db.query(`SELECT * FROM groupchat`)
+  .then(data => {
+    res.status(200).json(data)
+  })
 }
 
 
@@ -144,5 +171,7 @@ module.exports = {
   getGroupList,
   getGroupChatInfo,
   getGroupChat,
-  getAllUsers
+  getAllUsers,
+  createGroupChat,
+  getAllGroupName
 }
