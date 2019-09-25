@@ -680,7 +680,7 @@ class Student extends PureComponent {
                       style={
                         this.state.classHeaderImage !== null
                           ? {
-                              backgroundImage: `radial-gradient(171rem 28.75rem at right bottom, rgba(97, 95, 95, 0.4), rgba(120, 10, 175, 0)), url(${this.state.classHeaderImage})`
+                              backgroundImage: `radial-gradient(171rem 28.75rem at right bottom, rgba(97, 95, 95, 0.82), rgba(120, 10, 175, 0)), url(${this.state.classHeaderImage})`
                             }
                           : {
                               backgroundImage: require(`../../images/cardBg.jpg`)
@@ -701,7 +701,7 @@ class Student extends PureComponent {
                       style={
                         this.state.classHeaderImage !== null
                           ? {
-                              backgroundImage: `radial-gradient(171rem 28.75rem at right bottom, rgba(97, 95, 95, 0.4), rgba(120, 10, 175, 0)), url(${this.state.classHeaderImage})`
+                              backgroundImage: `radial-gradient(171rem 28.75rem at right bottom, rgba(97, 95, 95, 0.82), rgba(120, 10, 175, 0)), url(${this.state.classHeaderImage})`
                             }
                           : {
                               backgroundImage: require(`../../images/cardBg.jpg`)
