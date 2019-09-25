@@ -43,6 +43,9 @@ import Splash from "./plugins/giphy";
 //emoji
 import Emoji from "./plugins/emoji";
 
+//gallery
+import Gallery from '../chat-page/gallery/galleryDialog'
+
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5"
@@ -105,7 +108,11 @@ class ChatBox extends PureComponent {
       assist: [],
       imageMenu: null,
       splashDialog: false,
-      emoji: false
+      emoji: false,
+      //gallery
+      openGallery: false,
+      selected: null,
+      imgArray: [],
     };
   }
 
@@ -346,6 +353,29 @@ class ChatBox extends PureComponent {
     }
   };
   // end image echo
+  //gallery
+  openGallery = index => {
+    const images = this.props.conversation.filter(convo => {
+      return (convo.chat_type === 'image' || convo.chat_type === 'gif') 
+      && ((this.props.senderInfo.sub === convo.sender_id &&
+        this.props.chatmateInfo.sub === convo.chatmate_id) ||
+      (this.props.senderInfo.sub === convo.chatmate_id &&
+        this.props.chatmateInfo.sub === convo.sender_id))
+    })
+    const selected = images.findIndex(image => image.id === index);
+    this.setState({
+      openGallery: true,
+      selected,
+      imgArray: images
+    })
+  }
+  closeGallery = () => {
+    this.setState({
+      openGallery: false,
+      selected: null
+    })
+  }
+  //end gallery
   render() {
     const { classes } = this.props;
     return (
@@ -511,10 +541,10 @@ class ChatBox extends PureComponent {
                                     value={convo.message.replace(/\n$/, "")}
                                   />
                                 ) : (
-                                  <img
-                                    style={{ width: "100%" }}
-                                    src={convo.link}
-                                    alt=""
+                                  <img 
+                                    style={{ width: "100%", cursor: 'pointer' }} 
+                                    src={convo.link} alt="" 
+                                    onClick={() => this.openGallery(convo.id)} 
                                   />
                                 )}
                               </Typography>
@@ -748,7 +778,18 @@ class ChatBox extends PureComponent {
             handleClose={this.closeSplash}
           />
 
-          <Emoji anchorEl={this.state.emoji} handleEmoji={this.handleEmoji} />
+          <Emoji 
+            anchorEl={this.state.emoji} 
+            handleEmoji={this.handleEmoji} 
+          />
+
+          {/*GALLERY */}
+          <Gallery
+            conversation={this.state.imgArray}
+            open={this.state.openGallery}
+            handleClose={this.closeGallery}
+            selected={this.state.selected}
+          />
         </Paper>
       </React.Fragment>
     );
