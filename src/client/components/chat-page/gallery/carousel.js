@@ -8,7 +8,7 @@ export default function Carousel(props) {
         <Gallery
         style={{
             background: "black",
-            height: "90vh",
+            height: "90vh"
         }}
         index={index}
         onRequestChange={i => {
