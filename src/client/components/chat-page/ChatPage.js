@@ -91,6 +91,14 @@ class ChatPage extends PureComponent {
         conversation: [...chat]
       });
     });
+
+    socket.on("getNormalGroupChat", conversation => {
+      this.setState({groupConversation: conversation[0]})
+
+      if (conversation[1] === this.state.sub) {
+        this.setState({ senderText: "" });
+      }
+    })
   }
 
   componentDidMount() {
@@ -296,7 +304,8 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo)
     data.then(res => {
-      this.setState({groupConversation:[...res.data]})
+        const chat = [res.data, this.state.sub, this.state.chatmateSub]
+        socket.emit('getNormalGroupChat', chat)
     })
     // console.log(convo)
     // const data = api.fetch(`/api/sendStudentChat`, "post", convo);

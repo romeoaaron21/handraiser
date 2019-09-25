@@ -114,7 +114,7 @@ function getGroupChatInfo(req, res){
 function getGroupChat(req, res){
   const db = req.app.get("db");
 
-  db.query(`SELECT * from groupmessage ORDER BY id ASC`).then(chats => {
+  db.query(`SELECT groupmessage.*, users.avatar FROM groupmessage, users WHERE sender_sub = users.sub ORDER BY id`).then(chats => {
     res.status(201).json(chats);
   });
 
@@ -139,7 +139,7 @@ function sendGroupChat(req, res){
 
   db.query(`INSERT INTO groupmessage(sender_sub, groupchat_id, message, time, seen) VALUES('${sender_sub}', ${groupchat_id}, '${message}', '${time}', 0)`)
   .then(()=>{
-    db.groupmessage.find()
+    db.query(`SELECT groupmessage.*, users.avatar FROM groupmessage, users WHERE sender_sub = users.sub ORDER BY id`)
     .then(conversation => {
       res.status(201).json(conversation)
     })
@@ -159,5 +159,5 @@ module.exports = {
   getGroupChat,
 
   getAllUsers,
-  sendGroupChat
+  sendGroupChat,
 }

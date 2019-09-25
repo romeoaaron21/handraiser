@@ -31,6 +31,12 @@ import Splash from "../chat-box/plugins/giphy";
 //emoji
 import Emoji from "../chat-box/plugins/emoji";
 
+
+
+
+import api from "../../services/fetchApi";
+
+
 const imageMaxSize = 1000000000; // bytes
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
@@ -191,6 +197,9 @@ class ChatPageBox extends Component {
     const param = this.props.senderText + emoji.native;
     this.props.setChatText(param);
   };
+
+
+
   render() {
     const { classes } = this.props;
     return (
@@ -253,66 +262,126 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                {this.props.conversation.map((convo, i) =>
-                  (convo.sender_id === this.props.userInfo.sub &&
-                    this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                  (convo.chatmate_id === this.props.userInfo.sub &&
-                    this.props.chatmateInfo.sub === convo.sender_id) ? (
-                    <React.Fragment key={i}>
-                      {convo.cohort_id === "all" ? (
-                        <div
-                          className={
-                            convo.sender_id !== this.props.userInfo.sub
-                              ? classes.senderChatWrapper
-                              : classes.receiverChatWrapper
-                          }
-                        >
-                          {convo.sender_id !== this.props.userInfo.sub ? (
+                {this.props.chatmateInfo.sub !== undefined
+                  ? this.props.conversation.map((convo, i) =>
+                      (convo.sender_id === this.props.userInfo.sub &&
+                        this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                      (convo.chatmate_id === this.props.userInfo.sub &&
+                        this.props.chatmateInfo.sub === convo.sender_id) ? (
+                        <React.Fragment key={i}>
+                          {convo.cohort_id === "all" ? (
+                            <div
+                              className={
+                                convo.sender_id !== this.props.userInfo.sub
+                                  ? classes.senderChatWrapper
+                                  : classes.receiverChatWrapper
+                              }
+                            >
+                              {convo.sender_id !== this.props.userInfo.sub ? (
+                                <Avatar
+                                  style={{ marginRight: "10px" }}
+                                  src={this.props.chatmateInfo.avatar}
+                                />
+                              ) : null}
+
+                              <Box
+                                className={
+                                  convo.chat_type !== "text"
+                                    ? classes.chatImage
+                                    : convo.sender_id !==
+                                      this.props.userInfo.sub
+                                    ? classes.senderBox
+                                    : classes.receiverBox
+                                }
+                              >
+                                {convo.chat_type !== "text" ? (
+                                  <img
+                                    style={{ width: "100%" }}
+                                    src={convo.chat_type}
+                                    alt=""
+                                  />
+                                ) : (
+                                  <TextareaAutosize
+                                    readOnly
+                                    className={classes.textAreaChat}
+                                    style={
+                                      convo.sender_id !==
+                                      this.props.userInfo.sub
+                                        ? { color: "#263238" }
+                                        : { color: "#fff" }
+                                    }
+                                    value={convo.message.replace(/\n$/, "")}
+                                  />
+                                )}
+                                <Typography
+                                  variant="caption"
+                                  className={classes.time}
+                                >
+                                  {convo.time}
+                                </Typography>
+                              </Box>
+                            </div>
+                          ) : null}
+                        </React.Fragment>
+                      ) : null
+                    )
+                  : this.props.groupConversation.map((gcConvo, i) =>
+                      this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
+                        <React.Fragment key={i}>
+                          <div
+                            className={
+                              gcConvo.sender_sub !== this.props.userInfo.sub
+                                ? classes.senderChatWrapper
+                                : classes.receiverChatWrapper
+                            }
+                          >
+                            {gcConvo.sender_sub !== this.props.userInfo.sub ? (
                             <Avatar
                               style={{ marginRight: "10px" }}
-                              src={this.props.chatmateInfo.avatar}
+                              src={gcConvo.avatar}
                             />
                           ) : null}
 
-                          <Box
-                            className={
-                              convo.chat_type !== "text"
-                                ? classes.chatImage
-                                : convo.sender_id !== this.props.userInfo.sub
-                                ? classes.senderBox
-                                : classes.receiverBox
-                            }
-                          >
-                            {convo.chat_type !== "text" ? (
+                            <Box
+                              className={
+                                // gcConvo.chat_type !== "text"
+                                //   ? classes.chatImage
+                                //   :
+                                gcConvo.sender_sub !== this.props.userInfo.sub
+                                  ? classes.senderBox
+                                  : classes.receiverBox
+                              }
+                            >
+                              {/* {gcConvo.chat_type !== "text" ? (
                               <img
                                 style={{ width: "100%" }}
                                 src={convo.chat_type}
                                 alt=""
                               />
-                            ) : (
+                            ) : ( */}
                               <TextareaAutosize
                                 readOnly
                                 className={classes.textAreaChat}
                                 style={
-                                  convo.sender_id !== this.props.userInfo.sub
+                                  gcConvo.sender_sub !== this.props.userInfo.sub
                                     ? { color: "#263238" }
                                     : { color: "#fff" }
                                 }
-                                value={convo.message.replace(/\n$/, "")}
+                                value={gcConvo.message.replace(/\n$/, "")}
                               />
-                            )}
-                            <Typography
-                              variant="caption"
-                              className={classes.time}
-                            >
-                              {convo.time}
-                            </Typography>
-                          </Box>
-                        </div>
-                      ) : null}
-                    </React.Fragment>
-                  ) : null
-                )}
+                              {/* )} */}
+                              <Typography
+                                variant="caption"
+                                className={classes.time}
+                              >
+                                {gcConvo.time}
+                              </Typography>
+                            </Box>
+                          </div>
+                        </React.Fragment>
+                      ) : null
+                    )}
+
                 {this.props.chatmateText.length > 0 ? <TypingEffect /> : null}
 
                 {/* <div ref={this.messagesEndRef}>asdasd</div> */}
@@ -365,10 +434,20 @@ class ChatPageBox extends Component {
                     ""
                   ) {
                     if (e.key === "Enter" && !e.shiftKey) {
-                      this.state.image
-                        ? this.handleSendImage()
-                        : this.props.sendChat();
-                      this.openPicker();
+                      if (
+                        this.state.image &&
+                        this.props.chatmateInfo.sub !== undefined
+                      ) {
+                        this.handleSendImage("student");
+                      } else if (
+                        !this.state.image &&
+                        this.props.chatmateInfo.sub !== undefined
+                      ) {
+                        this.props.sendChat();
+                        this.openPicker();
+                      } else if (this.props.chatmateInfo.sub === undefined) {
+                        this.props.sendChatGroup();
+                      }
                     }
                   }
                 }}
@@ -385,14 +464,18 @@ class ChatPageBox extends Component {
               <IconButton
                 //  onClick={() => this.props.chatmateInfo.sub !== undefined? this.props.sendChat() : this.props.sendChatGroup()}
                 onClick={() => {
-                    if (this.state.image && this.props.chatmateInfo.sub !== undefined) {
-                      this.handleSendImage("student");
-                    } 
-                    else if(!this.state.image && this.props.chatmateInfo.sub !== undefined){
-                      this.props.sendChat();
-                      this.openPicker();
-                    }
-                    else if(this.props.chatmateInfo.sub === undefined) {
+                  if (
+                    this.state.image &&
+                    this.props.chatmateInfo.sub !== undefined
+                  ) {
+                    this.handleSendImage("student");
+                  } else if (
+                    !this.state.image &&
+                    this.props.chatmateInfo.sub !== undefined
+                  ) {
+                    this.props.sendChat();
+                    this.openPicker();
+                  } else if (this.props.chatmateInfo.sub === undefined) {
                     this.props.sendChatGroup();
                   }
                 }}

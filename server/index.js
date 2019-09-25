@@ -119,6 +119,12 @@ massive({
     });
     //END of Normal Student Chat
 
+    //START of Group Chat
+    socket.on("getNormalGroupChat", conversation => {
+      io.emit("getNormalGroupChat", conversation);
+    });
+    //END of Group Chat
+
     socket.on("currentlyHelping", currentlyHelping => {
       io.emit("currentlyHelping", currentlyHelping);
     })

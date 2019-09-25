@@ -102,7 +102,7 @@ class ChatPageList extends PureComponent {
   groupConvoMessage = (gc_id, need) => {
     let conversation = [];
     this.props.groupConversation.map(convo => {
-      console.log(convo)
+      // console.log(convo)
         // if (
         //   (parseInt(convo.id) === parseInt(gc_id))
         // ) {
