@@ -199,7 +199,7 @@ class Student extends PureComponent {
     }
   };
   //ANCHOR send chat
-  sendChat = image => {
+  sendChat = (url, type) => {
     const months = [
       "Jan",
       "Feb",
@@ -236,8 +236,8 @@ class Student extends PureComponent {
       chatmate_sub: this.state.chatmateSub,
       cohort_id: this.props.cohort_id,
       time: datetime,
-      type: image ? "image" : "text",
-      link: image ? image : null
+      type: type ? type : "text",
+      link: url ? url : null
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     this.setState({ value: this.state.sub });

@@ -17,7 +17,10 @@ import api from "../../services/fetchApi";
 
 import { InputAdornment } from "@material-ui/core";
 import InsertEmoticon from "@material-ui/icons/InsertEmoticon";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
+
 import {
+  Link,
   Paper,
   Grid,
   Typography,
@@ -96,6 +99,11 @@ const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
   return item.trim();
 });
 
+const acceptedDocuments = "text/css, text/html, application/json, text/javascript, text/plain, application/xhtml+xml, application/zip, application/pdf"
+const acceptedDocumentsArray = acceptedDocuments.split(",").map(item => {
+  return item.trim();
+});
+
 class ChatBox extends PureComponent {
   constructor(props) {
     super(props);
@@ -113,6 +121,7 @@ class ChatBox extends PureComponent {
       openGallery: false,
       selected: null,
       imgArray: [],
+      document: null
     };
   }
 
@@ -285,9 +294,9 @@ class ChatBox extends PureComponent {
           .getDownloadURL()
           .then(url => {
             if (priv === "student") {
-              this.props.sendChat(url);
+              this.props.sendChat(url, 'image');
             } else {
-              this.props.sendChatM(url);
+              this.props.sendChatM(url, 'image');
             }
             this.setState({
               progress: 0
@@ -317,9 +326,9 @@ class ChatBox extends PureComponent {
   uploadGif = gif => {
     this.closeSplash();
     if (this.props.privileged === "student") {
-      this.props.sendChat(gif.images.downsized.url);
+      this.props.sendChat(gif.images.downsized.url, 'gif');
     } else {
-      this.props.sendChatM(gif.images.downsized.url);
+      this.props.sendChatM(gif.images.downsized.url, 'gif');
     }
   };
   //ANCHOR emoji
@@ -353,10 +362,90 @@ class ChatBox extends PureComponent {
     }
   };
   // end image echo
+  //ANCHOR FILE UPLOAD START
+  handleDocumentUpload = event => {
+    if (event.target.files) {
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        const isVerified = this.verifyDocument(files);
+        if (isVerified) {
+          this.setState({
+            document: files[0]
+          })
+          if (this.props.privileged === "student") {
+            this.props.handleChat(
+              files[0].name,
+              this.props.chatmateInfo.sub,
+              this.props.senderInfo.sub
+            );
+          } else {
+            this.props.handleChatM(
+              files[0].name,
+              this.props.chatmateInfo.sub,
+              this.props.senderInfo.sub
+            );
+          }
+        }
+      }
+    }
+  }
+  cancelUploadDocument = () => {
+    this.setState({
+      document: null
+    })
+  }
+  handleSendDocument = priv => {
+    const { document } = this.state;
+    const uploadTask = storage.ref(`documents/${document.name}`).put(document)
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        this.setState({
+          progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
+        })
+      }, (error) => {
+        console.log(error);
+      }, () => {
+        storage.ref('documents').child(document.name).getDownloadURL()
+          .then(url => {
+            if (priv === "student") {
+              this.props.sendChat(url, 'file');
+            } else {
+              this.props.sendChatM(url, 'file');
+            }
+            this.setState({
+              progress: 0
+            })
+          })
+      })
+    this.setState({ document: null })
+    this.documentInput.value = "";
+  }
+  verifyDocument = files => {
+    if (files && files.length > 0) {
+      const regex = /^application\/vnd/
+      const currentFile = files[0];
+      const currentFileType = currentFile.type;
+      const currentFileSize = currentFile.size;
+
+      const result = regex.test(currentFileType);
+      if (currentFileSize > imageMaxSize) {
+        alert(
+          "This file is not allowed. " + currentFileSize + " bytes is too large"
+        );
+        return false;
+      }
+      if (!result && !acceptedDocumentsArray.includes(currentFileType)) {
+        alert("This file type is not allowed");
+        return false;
+      }
+      return true;
+    }
+  };
+  //FILE UPLOAD END
   //gallery
   openGallery = index => {
     const images = this.props.conversation.filter(convo => {
-      return (convo.chat_type === 'image' || convo.chat_type === 'gif') 
+      return convo.chat_type === 'image'
       && ((this.props.senderInfo.sub === convo.sender_id &&
         this.props.chatmateInfo.sub === convo.chatmate_id) ||
       (this.props.senderInfo.sub === convo.chatmate_id &&
@@ -514,12 +603,11 @@ class ChatBox extends PureComponent {
                           ) : null}
                           <Box
                             className={
-                              convo.chat_type !== "text"
+                              (convo.chat_type === "image" || convo.chat_type === 'gif')
                                 ? classes.chatImage
-                                : this.props.senderInfo.sub ===
-                                  convo.chatmate_id
-                                ? classes.chatDetails
-                                : classes.chatDetails2
+                                : (this.props.senderInfo.sub === convo.chatmate_id)
+                                  ? classes.chatDetails
+                                  : classes.chatDetails2
                             }
                           >
                             <div className={classes.chatText}>
@@ -540,13 +628,19 @@ class ChatBox extends PureComponent {
                                     }}
                                     value={convo.message.replace(/\n$/, "")}
                                   />
-                                ) : (
-                                  <img 
-                                    style={{ width: "100%", cursor: 'pointer' }} 
-                                    src={convo.link} alt="" 
-                                    onClick={() => this.openGallery(convo.id)} 
-                                  />
-                                )}
+                                ) :  (convo.chat_type === "file")
+                                      ? <Box
+                                        component="div"
+                                        my={2}
+                                        textOverflow="ellipsis"
+                                        overflow="hidden"
+                                        >
+                                        <Link style={{ fontWeight: 'bold' }}href={convo.link} color="inherit" variant="body2">{convo.message}</Link>
+                                        </Box>
+                                      : (convo.chat_type === "image")
+                                        ? <img style={{ width: "100%", cursor: 'pointer' }} src={convo.link} alt="" onClick={() => this.openGallery(convo.id)} />
+                                        : <img style={{ width: "100%"}} src={convo.link} alt=""/>
+                                }
                               </Typography>
                             </div>
                             <div className={classes.chatTime}>
@@ -579,10 +673,15 @@ class ChatBox extends PureComponent {
             <React.Fragment>
               <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
-                  <Avatar
-                    src={this.props.senderInfo.avatar}
-                    className={classes.userAvatar}
+                  <input
+                    type="file"
+                    onChange={this.handleDocumentUpload}
+                    style={{ display: "none" }}
+                    ref={documentInput => this.documentInput = documentInput}
                   />
+                  <IconButton style={{ margin: '0px -8px 0px 5px' }} onClick={() => this.documentInput.click()}>
+                    <AttachFileIcon/>
+                  </IconButton>
                   <input
                     type="file"
                     onChange={this.handleUpload}
@@ -629,9 +728,11 @@ class ChatBox extends PureComponent {
                         ) {
                           if (e.key === "Enter" && !e.shiftKey) {
                             this.state.image
-                              ? this.handleSendImage("student")
+                            ? this.handleSendImage("student")
+                            : (this.state.document)
+                              ? this.handleSendDocument("student") 
                               : this.props.sendChat();
-                            this.openPicker();
+                                this.openPicker();
                           }
                         }
                       }}
@@ -650,9 +751,11 @@ class ChatBox extends PureComponent {
                       className={classes.sendIcon}
                       onClick={() => {
                         this.state.image
-                          ? this.handleSendImage("student")
-                          : this.props.sendChat();
-                        this.openPicker();
+                            ? this.handleSendImage("student")
+                            : (this.state.document)
+                              ? this.handleSendDocument("student") 
+                              : this.props.sendChat();
+                                this.openPicker();
                       }}
                       disabled={
                         this.props.chat
@@ -672,10 +775,15 @@ class ChatBox extends PureComponent {
             <React.Fragment>
               <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
-                  <Avatar
-                    src={this.props.senderInfo.avatar}
-                    className={classes.userAvatar}
+                <input
+                    type="file"
+                    onChange={this.handleDocumentUpload}
+                    style={{ display: "none" }}
+                    ref={documentInput => this.documentInput = documentInput}
                   />
+                  <IconButton style={{ margin: '0px -8px 0px 5px' }} onClick={() => this.documentInput.click()}>
+                    <AttachFileIcon/>
+                  </IconButton>
                   <input
                     type="file"
                     onChange={this.handleUpload}
@@ -721,8 +829,10 @@ class ChatBox extends PureComponent {
                         if (e.key === "Enter" && !e.shiftKey) {
                           this.state.image
                             ? this.handleSendImage("mentor")
-                            : this.props.sendChatM();
-                          this.openPicker();
+                            : (this.state.document)
+                              ? this.handleSendDocument("mentor") 
+                              : this.props.sendChatM();
+                                this.openPicker();
                         }
                       }
                     }}
@@ -741,9 +851,11 @@ class ChatBox extends PureComponent {
                     className={classes.sendIcon}
                     onClick={() => {
                       this.state.image
-                        ? this.handleSendImage("mentor")
-                        : this.props.sendChatM();
-                      this.openPicker();
+                            ? this.handleSendImage("mentor")
+                            : (this.state.document)
+                              ? this.handleSendDocument("mentor") 
+                              : this.props.sendChatM();
+                                this.openPicker();
                     }}
                     disabled={
                       this.props.chatM

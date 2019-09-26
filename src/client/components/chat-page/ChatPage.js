@@ -233,7 +233,6 @@ class ChatPage extends PureComponent {
   };
 
   sendChat = (url, chatText, sub, type ) => {
-    console.log(url)
     const months = [
       "Jan",
       "Feb",
