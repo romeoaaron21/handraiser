@@ -58,6 +58,7 @@ class ChatPageList extends PureComponent {
     super(props);
     this.state = {
       searchChatName: "",
+      searchGroupName: "",
       value: 0,
       openDialog: false,
       openDialogGroup: false
@@ -170,6 +171,10 @@ class ChatPageList extends PureComponent {
     this.setState({ searchChatName });
   };
 
+  searchGroupName = searchGroupName => {
+    this.setState({ searchGroupName });
+  };
+
 
   handleChange = (event, newValue) => {
     this.setState({ value: newValue });
@@ -235,7 +240,7 @@ class ChatPageList extends PureComponent {
             </div>
             <div>
               <TextField
-                onChange={e => this.searchChatName(e.target.value)}
+                onChange={e => this.state.value === 0 ? this.searchChatName(e.target.value) : this.searchGroupName(e.target.value)}
                 id="outlined-search"
                 label={this.state.value === 0 ? "Search Name" : "Search Group"}
                 inputProps={{
@@ -360,8 +365,14 @@ class ChatPageList extends PureComponent {
             </TabPanel>
             <TabPanel value={this.state.value} index={1}>
               <List>
-                {this.props.groupListInfo.map(gc => (
-                  <React.Fragment>
+                {this.props.groupListInfo.map((gc, i) => {
+                  if (
+                    gc.name
+                      .toLowerCase()
+                      .includes(this.state.searchGroupName.toLowerCase())
+                  )
+                  return (
+                    <React.Fragment key={i}>
                     <ListItem
                       alignItems="flex-start"
                       button
@@ -430,7 +441,10 @@ class ChatPageList extends PureComponent {
                     </ListItem>
                     <Divider />
                   </React.Fragment>
-                ))}
+
+                  )
+                  
+  })}
               </List>
             </TabPanel>
           </div>
