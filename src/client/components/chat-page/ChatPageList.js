@@ -128,12 +128,10 @@ class ChatPageList extends PureComponent {
 
   unreadGroupChat = gc_id => {
     let count = 0;
-    console.log(gc_id)
 
     this.props.groupConversation.map(gcConvo => {
       let x = 0;
       if (gcConvo.groupchat_id === parseInt(gc_id)) {
-        console.log(gcConvo)
         gcConvo.seen.split(",").map(seen => {
           if (parseInt(seen) === parseInt(this.props.sub)) {
             x++;

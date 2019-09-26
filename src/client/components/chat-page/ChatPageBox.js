@@ -77,7 +77,8 @@ class ChatPageBox extends Component {
       imgArray: [],
       anchorEl: null,
       //group
-      openEditGroup: false
+      openEditGroup: false,
+      gc: false
     };
   }
 
@@ -333,6 +334,14 @@ class ChatPageBox extends Component {
 
   render() {
     const { classes } = this.props;
+
+    if (this.state.gc === false) {
+      this.props.groupListInfo.map(gc => {
+        if (gc.id === this.props.chatmateInfo.id) {
+          this.setState({ gc: true });
+        }
+      });
+    }
     return (
       <Grid item md={6} xs={8} style={{ minHeight: "800px" }}>
         <Paper
@@ -388,10 +397,18 @@ class ChatPageBox extends Component {
                 </span>
 
                 {this.props.chatmateInfo.first_name === undefined ? (
-                  <IconButton onClick={this.handleMenuClick}>
+                  <IconButton onClick={this.handleMenuClick}
+                  disabled={
+                    !this.state.gc && this.props.chatmateInfo.sub === undefined
+                      ? true
+                      : false
+                  }
+                  >
                     <MoreVertIcon />
                   </IconButton>
-                ) : ""}
+                ) : (
+                  ""
+                )}
 
                 <Menu
                   id="simple-menu"
@@ -426,150 +443,153 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                {this.props.chatmateInfo.sub !== undefined
-                  ? this.props.conversation.map((convo, i) =>
-                      (convo.sender_id === this.props.userInfo.sub &&
-                        this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                      (convo.chatmate_id === this.props.userInfo.sub &&
-                        this.props.chatmateInfo.sub === convo.sender_id) ? (
-                        <React.Fragment key={i}>
-                          {convo.cohort_id === "all" ? (
-                            <div
-                              className={
-                                convo.sender_id !== this.props.userInfo.sub
-                                  ? classes.senderChatWrapper
-                                  : classes.receiverChatWrapper
-                              }
-                            >
-                              {convo.sender_id !== this.props.userInfo.sub ? (
-                                <Avatar
-                                  style={{ marginRight: "10px" }}
-                                  src={this.props.chatmateInfo.avatar}
-                                />
-                              ) : null}
-                              <Box
-                                className={
-                                  convo.chat_type === "image" ||
-                                  convo.chat_type === "gif"
-                                    ? classes.chatImage
-                                    : convo.sender_id !==
-                                      this.props.userInfo.sub
-                                    ? classes.senderBox
-                                    : classes.receiverBox
-                                }
-                              >
-                                {convo.chat_type === "text" ? (
-                                  <TextareaAutosize
-                                    readOnly
-                                    className={classes.textAreaChat}
-                                    style={
-                                      convo.sender_id !==
-                                      this.props.userInfo.sub
-                                        ? { color: "#263238" }
-                                        : { color: "#fff" }
-                                    }
-                                    value={convo.message.replace(/\n$/, "")}
-                                  />
-                                ) : convo.chat_type === "file" ? (
-                                  <Box
-                                    component="div"
-                                    my={2}
-                                    textOverflow="ellipsis"
-                                    overflow="hidden"
-                                  >
-                                    <Link
-                                      style={{ fontWeight: "bold" }}
-                                      href={convo.link}
-                                      color="inherit"
-                                      variant="body2"
-                                    >
-                                      {convo.message}
-                                    </Link>
-                                  </Box>
-                                ) : convo.chat_type === "image" ? (
-                                  <img
-                                    style={{ width: "100%", cursor: "pointer" }}
-                                    src={convo.link}
-                                    alt=""
-                                    onClick={() => this.openGallery(convo.id)}
-                                  />
-                                ) : (
-                                  <img
-                                    style={{ width: "100%" }}
-                                    src={convo.link}
-                                    alt=""
-                                  />
-                                )}
-                                <Typography
-                                  variant="caption"
-                                  className={classes.time}
-                                >
-                                  {convo.time}
-                                </Typography>
-                              </Box>
-                            </div>
-                          ) : null}
-                        </React.Fragment>
-                      ) : null
-                    )
-                  : this.props.groupConversation.map((gcConvo, i) =>
-                      this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
-                        <React.Fragment key={i}>
+                {this.props.chatmateInfo.sub !== undefined ? (
+                  this.props.conversation.map((convo, i) =>
+                    (convo.sender_id === this.props.userInfo.sub &&
+                      this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                    (convo.chatmate_id === this.props.userInfo.sub &&
+                      this.props.chatmateInfo.sub === convo.sender_id) ? (
+                      <React.Fragment key={i}>
+                        {convo.cohort_id === "all" ? (
                           <div
                             className={
-                              gcConvo.sender_sub !== this.props.userInfo.sub
+                              convo.sender_id !== this.props.userInfo.sub
                                 ? classes.senderChatWrapper
                                 : classes.receiverChatWrapper
                             }
                           >
-                            {gcConvo.sender_sub !== this.props.userInfo.sub ? (
+                            {convo.sender_id !== this.props.userInfo.sub ? (
                               <Avatar
                                 style={{ marginRight: "10px" }}
-                                src={gcConvo.avatar}
+                                src={this.props.chatmateInfo.avatar}
                               />
                             ) : null}
-
                             <Box
                               className={
-                                // gcConvo.chat_type !== "text"
-                                //   ? classes.chatImage
-                                //   :
-                                gcConvo.sender_sub !== this.props.userInfo.sub
+                                convo.chat_type === "image" ||
+                                convo.chat_type === "gif"
+                                  ? classes.chatImage
+                                  : convo.sender_id !== this.props.userInfo.sub
                                   ? classes.senderBox
                                   : classes.receiverBox
                               }
                             >
-                              {/* {gcConvo.chat_type !== "text" ? (
+                              {convo.chat_type === "text" ? (
+                                <TextareaAutosize
+                                  readOnly
+                                  className={classes.textAreaChat}
+                                  style={
+                                    convo.sender_id !== this.props.userInfo.sub
+                                      ? { color: "#263238" }
+                                      : { color: "#fff" }
+                                  }
+                                  value={convo.message.replace(/\n$/, "")}
+                                />
+                              ) : convo.chat_type === "file" ? (
+                                <Box
+                                  component="div"
+                                  my={2}
+                                  textOverflow="ellipsis"
+                                  overflow="hidden"
+                                >
+                                  <Link
+                                    style={{ fontWeight: "bold" }}
+                                    href={convo.link}
+                                    color="inherit"
+                                    variant="body2"
+                                  >
+                                    {convo.message}
+                                  </Link>
+                                </Box>
+                              ) : convo.chat_type === "image" ? (
+                                <img
+                                  style={{ width: "100%", cursor: "pointer" }}
+                                  src={convo.link}
+                                  alt=""
+                                  onClick={() => this.openGallery(convo.id)}
+                                />
+                              ) : (
+                                <img
+                                  style={{ width: "100%" }}
+                                  src={convo.link}
+                                  alt=""
+                                />
+                              )}
+                              <Typography
+                                variant="caption"
+                                className={classes.time}
+                              >
+                                {convo.time}
+                              </Typography>
+                            </Box>
+                          </div>
+                        ) : null}
+                      </React.Fragment>
+                    ) : null
+                  )
+                ) : this.state.gc ? (
+                  this.props.groupConversation.map((gcConvo, i) =>
+                    this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
+                      <React.Fragment key={i}>
+                        <div
+                          className={
+                            gcConvo.sender_sub !== this.props.userInfo.sub
+                              ? classes.senderChatWrapper
+                              : classes.receiverChatWrapper
+                          }
+                        >
+                          {gcConvo.sender_sub !== this.props.userInfo.sub ? (
+                            <Avatar
+                              style={{ marginRight: "10px" }}
+                              src={gcConvo.avatar}
+                            />
+                          ) : null}
+
+                          <Box
+                            className={
+                              // gcConvo.chat_type !== "text"
+                              //   ? classes.chatImage
+                              //   :
+                              gcConvo.sender_sub !== this.props.userInfo.sub
+                                ? classes.senderBox
+                                : classes.receiverBox
+                            }
+                          >
+                            {/* {gcConvo.chat_type !== "text" ? (
                               <img
                                 style={{ width: "100%" }}
                                 src={convo.chat_type}
                                 alt=""
                               />
                             ) : ( */}
-                              <TextareaAutosize
-                                readOnly
-                                className={classes.textAreaChat}
-                                style={
-                                  gcConvo.sender_sub !== this.props.userInfo.sub
-                                    ? { color: "#263238" }
-                                    : { color: "#fff" }
-                                }
-                                value={gcConvo.message.replace(/\n$/, "")}
-                              />
-                              {/* )} */}
-                              <Typography
-                                variant="caption"
-                                className={classes.time}
-                              >
-                                {gcConvo.time}
-                              </Typography>
-                            </Box>
-                          </div>
-                        </React.Fragment>
-                      ) : null
-                    )}
+                            <TextareaAutosize
+                              readOnly
+                              className={classes.textAreaChat}
+                              style={
+                                gcConvo.sender_sub !== this.props.userInfo.sub
+                                  ? { color: "#263238" }
+                                  : { color: "#fff" }
+                              }
+                              value={gcConvo.message.replace(/\n$/, "")}
+                            />
+                            {/* )} */}
+                            <Typography
+                              variant="caption"
+                              className={classes.time}
+                            >
+                              {gcConvo.time}
+                            </Typography>
+                          </Box>
+                        </div>
+                      </React.Fragment>
+                    ) : null
+                  )
+                ) : (
+                  <React.Fragment>Not a member</React.Fragment>
+                )}
 
-                {this.props.chatmateText.length > 0 ? <TypingEffect /> : null}
+                {this.props.chatmateText.length > 0 && this.props.chatmateInfo.name === undefined ? <TypingEffect /> : null}
+                {this.props.chatmateText.length > 0 && this.props.chatmateInfo.sub === undefined && this.state.gc === true ? <TypingEffect /> : null}
 
                 <div ref={this.messagesEndRef} />
               </div>
@@ -589,6 +609,11 @@ class ChatPageBox extends Component {
               <IconButton
                 style={{ marginRight: 4 }}
                 onClick={() => this.documentInput.click()}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
               >
                 <AttachFileIcon />
               </IconButton>
@@ -601,6 +626,11 @@ class ChatPageBox extends Component {
               <IconButton
                 style={{ marginRight: 10 }}
                 onClick={this.handleImageMenu}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
               >
                 <Photo />
               </IconButton>
@@ -620,7 +650,11 @@ class ChatPageBox extends Component {
                 color="primary"
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
-                onChange={e => this.props.chatmateInfo.sub !== undefined? this.props.setChatText(e.target.value, 'pm') : this.props.setChatText(e.target.value, 'gc')}
+                onChange={e =>
+                  this.props.chatmateInfo.sub !== undefined
+                    ? this.props.setChatText(e.target.value, "pm")
+                    : this.props.setChatText(e.target.value, "gc")
+                }
                 onClick={() => {
                   if (this.props.chatmateInfo.sub !== undefined) {
                     this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
@@ -660,6 +694,11 @@ class ChatPageBox extends Component {
                     </InputAdornment>
                   )
                 }}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
               />
               <IconButton
                 //  onClick={() => this.props.chatmateInfo.sub !== undefined? this.props.sendChat() : this.props.sendChatGroup()}
@@ -688,6 +727,9 @@ class ChatPageBox extends Component {
                   this.props.senderText
                     .replace(/^\s+/, "")
                     .replace(/\s+$/, "") === ""
+                    ? true
+                    : !this.state.gc &&
+                      this.props.chatmateInfo.sub === undefined
                     ? true
                     : false
                 }

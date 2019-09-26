@@ -415,6 +415,7 @@ class ChatPage extends PureComponent {
               displayBadge={this.displayBadge}
               groupConversation={this.state.groupConversation}
               sendChatGroup={this.sendChatGroup}
+              groupListInfo={this.state.groupListInfo}
             />
             <ChatPageInfo
               userInfo={this.state.userInfo} 
