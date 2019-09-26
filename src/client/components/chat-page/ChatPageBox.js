@@ -672,7 +672,7 @@ class ChatPageBox extends Component {
                   if (this.props.chatmateInfo.sub !== undefined) {
                     this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                   } else {
-                    this.props.displayBadge(this.props.chatmateInfo.sub, "gc");
+                    this.props.displayBadge(this.props.chatmateInfo.id, "gc");
                   }
                 }}
                 onKeyUp={e => {
@@ -691,9 +691,11 @@ class ChatPageBox extends Component {
                         this.props.chatmateInfo.sub !== undefined
                       ) {
                         this.props.sendChat();
+                        this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                         this.openPicker();
                       } else if (this.props.chatmateInfo.sub === undefined) {
                         this.props.sendChatGroup();
+                        this.props.displayBadge(this.props.chatmateInfo.id, "gc")
                       }
                     }
                   }
