@@ -58,6 +58,7 @@ class ChatPageList extends PureComponent {
     super(props);
     this.state = {
       searchChatName: "",
+      searchGroupName: "",
       value: 0,
       openDialog: false,
       openDialogGroup: false
@@ -82,15 +83,12 @@ class ChatPageList extends PureComponent {
     if (conversation.length !== 0) {
       if (need === "message") {
         if (conversation[conversation.length - 1].chat_type === "image") {
-          return "Sent an image"
-        }
-        else if (conversation[conversation.length - 1].chat_type === "gif") {
-          return "Sent a GIF"
-        }
-        else if (conversation[conversation.length - 1].chat_type === "file") {
-          return "Sent a file"
-        }
-        else {
+          return "Sent an image";
+        } else if (conversation[conversation.length - 1].chat_type === "gif") {
+          return "Sent a GIF";
+        } else if (conversation[conversation.length - 1].chat_type === "file") {
+          return "Sent a file";
+        } else {
           return conversation[conversation.length - 1].message;
         }
       } else if (need === "time") {
@@ -163,11 +161,12 @@ class ChatPageList extends PureComponent {
     return count;
   };
 
-
   searchChatName = searchChatName => {
     this.setState({ searchChatName });
   };
-
+  searchGroupName = searchGroupName => {
+    this.setState({ searchGroupName });
+  };
 
   handleChange = (event, newValue) => {
     this.setState({ value: newValue });
@@ -234,7 +233,11 @@ class ChatPageList extends PureComponent {
             </div>
             <div>
               <TextField
-                onChange={e => this.searchChatName(e.target.value)}
+                onChange={e =>
+                  this.state.value === 0
+                    ? this.searchChatName(e.target.value)
+                    : this.searchGroupName(e.target.value)
+                }
                 id="outlined-search"
                 label={this.state.value === 0 ? "Search Name" : "Search Group"}
                 inputProps={{
@@ -359,45 +362,72 @@ class ChatPageList extends PureComponent {
             </TabPanel>
             <TabPanel value={this.state.value} index={1}>
               <List>
-                {this.props.groupListInfo.map(gc => (
-                  <React.Fragment>
-                    <ListItem
-                      alignItems="flex-start"
-                      button
-                      onClick={() => {
-                        this.props.changeChatmate(gc.id);
-                        this.props.selectChatmate(gc.id);
-                        this.props.displayBadge(gc.id, "gc");
-                      }}
-                      style={
-                        this.props.chatmateInfo.id === gc.id
-                          ? { backgroundColor: "#cfd8f987" }
-                          : null
-                      }
-                    >
-                      <Hidden only="xs">
-                        <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                          <Avatar>
-                            {" "}
-                            <GroupIcon />{" "}
-                          </Avatar>
-                        </ListItemAvatar>
-                        <div className={classes.chatDetails}>
-                          <div style={{ width: "80%" }}>
-                            <Typography variant="body1">{gc.name}</Typography>
-                            <Typography
-                              variant="subtitle2"
-                              className={classes.chatPrev}
-                            >
-                              {this.groupConvoMessage(gc.id, "message")}
-                            </Typography>
-                          </div>
+                {this.props.groupListInfo.map((gc, i) => {
+                  if (
+                    gc.name
+                      .toLowerCase()
+                      .includes(this.state.searchGroupName.toLowerCase())
+                  ) {
+                    return (
+                      <React.Fragment key={i}>
+                        <ListItem
+                          alignItems="flex-start"
+                          button
+                          onClick={() => {
+                            this.props.changeChatmate(gc.id);
+                            this.props.selectChatmate(gc.id);
+                            this.props.displayBadge(gc.id, "gc");
+                          }}
+                          style={
+                            this.props.chatmateInfo.id === gc.id
+                              ? { backgroundColor: "#cfd8f987" }
+                              : null
+                          }
+                        >
+                          <Hidden only="xs">
+                            <ListItemAvatar style={{ marginTop: "-0.2px" }}>
+                              <Avatar>
+                                {" "}
+                                <GroupIcon />{" "}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <div className={classes.chatDetails}>
+                              <div style={{ width: "80%" }}>
+                                <Typography variant="body1">
+                                  {gc.name}
+                                </Typography>
+                                <Typography
+                                  variant="subtitle2"
+                                  className={classes.chatPrev}
+                                >
+                                  {this.groupConvoMessage(gc.id, "message")}
+                                </Typography>
+                              </div>
 
-                          <div className={classes.timeBadgeWrap}>
-                            <Typography variant="caption">
-                              {this.groupConvoMessage(gc.id, "time")}
-                            </Typography>
-                            <div style={{ marginTop: 3 }}>
+                              <div className={classes.timeBadgeWrap}>
+                                <Typography variant="caption">
+                                  {this.groupConvoMessage(gc.id, "time")}
+                                </Typography>
+                                <div style={{ marginTop: 3 }}>
+                                  <Badge
+                                    color="secondary"
+                                    badgeContent={this.unreadGroupChat(gc.id)}
+                                    invisible={
+                                      this.unreadGroupChat(gc.id) === 0
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </Hidden>
+                          <Hidden smUp>
+                            <div className={classes.smBP}>
+                              <Avatar>
+                                {" "}
+                                <GroupIcon />{" "}
+                              </Avatar>
                               <Badge
                                 color="secondary"
                                 badgeContent={this.unreadGroupChat(gc.id)}
@@ -408,28 +438,13 @@ class ChatPageList extends PureComponent {
                                 }
                               />
                             </div>
-                          </div>
-                        </div>
-                      </Hidden>
-                      <Hidden smUp>
-                        <div className={classes.smBP}>
-                          <Avatar>
-                            {" "}
-                            <GroupIcon />{" "}
-                          </Avatar>
-                          <Badge
-                            color="secondary"
-                            badgeContent={this.unreadGroupChat(gc.id)}
-                            invisible={
-                              this.unreadGroupChat(gc.id) === 0 ? true : false
-                            }
-                          />
-                        </div>
-                      </Hidden>
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                ))}
+                          </Hidden>
+                        </ListItem>
+                        <Divider />
+                      </React.Fragment>
+                    );
+                  }
+                })}
               </List>
             </TabPanel>
           </div>
@@ -440,14 +455,6 @@ class ChatPageList extends PureComponent {
 }
 
 export default withStyles(styles)(ChatPageList);
-
-
-
-
-
-
-
-
 
 // import React, { PureComponent } from "react";
 // import { withStyles } from "@material-ui/core/styles";
@@ -578,7 +585,6 @@ export default withStyles(styles)(ChatPageList);
 //     return count;
 //   };
 
-
 //   searchChatName = searchChatName => {
 //     this.setState({ searchChatName });
 //   };
@@ -586,7 +592,6 @@ export default withStyles(styles)(ChatPageList);
 //   searchGroupName = searchGroupName => {
 //     this.setState({ searchGroupName });
 //   };
-
 
 //   handleChange = (event, newValue) => {
 //     this.setState({ value: newValue });
@@ -842,13 +847,12 @@ export default withStyles(styles)(ChatPageList);
 //                   </React.Fragment>
 
 //                   )
-                  
+
 //   })}
 //               </List>
 //             </TabPanel>
 //           </div>
 //         </Paper>
-
 
 //       </Grid>
 //     );
@@ -856,8 +860,3 @@ export default withStyles(styles)(ChatPageList);
 // }
 
 // export default withStyles(styles)(ChatPageList);
-
-
-
-
-
