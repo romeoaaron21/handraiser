@@ -72,6 +72,10 @@ class ChatPageBox extends Component {
       imgArray: []
     }
   }
+  
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
   //Start of Added Scroll Bottom
   messagesEndRef = React.createRef();
 
