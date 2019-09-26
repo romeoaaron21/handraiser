@@ -98,6 +98,9 @@ class ChatPage extends PureComponent {
       if (conversation[1] === this.state.sub) {
         this.setState({ senderText: "" });
       }
+      else if(conversation[2] === this.state.chatmateSub){
+        this.setState({ chatmateText:"" });
+      }
     });
 
     socket.on("seenNormalGroupChat", chat => {
