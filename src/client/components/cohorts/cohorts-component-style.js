@@ -4,18 +4,10 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
+    padding: "2%",
     marginLeft: 0
   },
   contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
     marginLeft: 0
   },
   drawerHeader: {
@@ -26,7 +18,7 @@ const styles = theme => ({
     justifyContent: "flex-end"
   },
   container: {
-    paddingTop: theme.spacing(2),
+    paddingTop: "1%",
     paddingLeft: 0,
     paddingRight: 0,
     display: "flex",

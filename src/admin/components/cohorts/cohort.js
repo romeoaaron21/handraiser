@@ -176,6 +176,7 @@ class Cohorts extends React.Component {
                           align="center"
                           onClick={this.sortCohortName}
                           style={{ cursor: "pointer" }}
+                          className={classes.stickyHeader}
                         >
                           Cohort name
                           {this.state.sortCohort ? (
@@ -202,6 +203,7 @@ class Cohorts extends React.Component {
                           align="center"
                           onClick={this.sortMentor}
                           style={{ cursor: "pointer" }}
+                          className={classes.stickyHeader}
                         >
                           Mentor
                           {this.state.sortMentor ? (
@@ -224,7 +226,12 @@ class Cohorts extends React.Component {
                             </Tooltip>
                           )}
                         </TableCell>
-                        <TableCell align="center">No. of students</TableCell>
+                        <TableCell
+                          align="center"
+                          className={classes.stickyHeader}
+                        >
+                          No. of students
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
