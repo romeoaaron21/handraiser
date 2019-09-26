@@ -18,7 +18,6 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import Tooltip from "@material-ui/core/Tooltip";
 
 import UploadIcon from "../../../images/upload.png";
 import SearchImageIcon from "../../../images/searchImage.png";
@@ -53,7 +52,9 @@ const styles = theme => ({
     }
   },
   indicator: {
-    width: "65px !important"
+    "@media (max-width: 425px)": {
+      width: "65px !important"
+    }
   },
   search: {
     position: "relative",
@@ -231,7 +232,8 @@ const styles = theme => ({
     width: "100%"
   },
   imageList: {
-    height: "361px",
+    height: "330px",
+    width: "922px",
     maxHeight: "361px",
     overflow: "auto",
     display: "grid",
@@ -251,7 +253,8 @@ const styles = theme => ({
       outline: "1px solid slategrey"
     },
     "@media (max-width: 425px)": {
-      gridTemplateColumns: "repeat(1, 1fr)"
+      gridTemplateColumns: "repeat(1, 1fr)",
+      width: "100%"
     }
   },
   cropInstruction: {
@@ -295,10 +298,20 @@ const styles = theme => ({
     }
   },
   cropInsCron: {
-    padding: "16px 0 0 16px",
+    padding: "10px 0 4px 16px",
     "@media (max-width: 425px)": {
       padding: "9px 0 0 10px",
       marginBottom: "5px"
+    }
+  },
+  credits: {
+    fontSize: "12px",
+    color: "#868686",
+    marginTop: "1%",
+    marginBottom: "1%",
+    "@media (max-width: 425px)": {
+      fontSize: "10px",
+      marginTop: "2%"
     }
   }
 });
@@ -971,6 +984,21 @@ class UploadPhoto extends React.Component {
               </React.Fragment>
             ) : (
               <React.Fragment>
+                <Grid container className={classes.cropInsCron}>
+                  <Grid item>
+                    <Typography
+                      gutterBottom
+                      style={{
+                        fontSize: "12px",
+                        overflow: "hidden",
+                        width: "920px",
+                        color: "#616161"
+                      }}
+                    >
+                      &#8250; <b>Select image to crop</b>
+                    </Typography>
+                  </Grid>
+                </Grid>
                 <Grid container>
                   <Grid item>
                     <div
@@ -998,27 +1026,25 @@ class UploadPhoto extends React.Component {
                   <Grid item>
                     <div className={classes.imageList}>
                       {this.state.images.map((tile, i) => (
-                        <Tooltip title="Select image to crop" placement="right">
-                          <div
-                            className={classes.imageItem}
-                            onClick={() =>
-                              this.getBase64Image(
-                                document.getElementById(i),
-                                tile.urls.regular,
-                                tile.height,
-                                tile.width
-                              )
-                            }
-                          >
-                            <img
-                              crossorigin="Anonymous"
-                              id={i}
-                              style={{ width: "100%" }}
-                              src={tile.urls.regular}
-                              alt={tile.alt_description}
-                            />
-                          </div>
-                        </Tooltip>
+                        <div
+                          className={classes.imageItem}
+                          onClick={() =>
+                            this.getBase64Image(
+                              document.getElementById(i),
+                              tile.urls.regular,
+                              tile.height,
+                              tile.width
+                            )
+                          }
+                        >
+                          <img
+                            crossorigin="Anonymous"
+                            id={i}
+                            style={{ width: "100%" }}
+                            src={tile.urls.regular}
+                            alt={tile.alt_description}
+                          />
+                        </div>
                       ))}
 
                       {this.state.images.length >= 10 &&
@@ -1053,15 +1079,7 @@ class UploadPhoto extends React.Component {
 
                 <Grid>
                   <div>
-                    <Typography
-                      align="center"
-                      style={{
-                        fontSize: "12px",
-                        color: "#868686",
-                        marginTop: "1%",
-                        marginBottom: "1%"
-                      }}
-                    >
+                    <Typography align="center" className={classes.credits}>
                       © Unplash Image
                     </Typography>
                   </div>
