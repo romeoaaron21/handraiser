@@ -65,6 +65,7 @@ class ChatPageList extends PureComponent {
   }
 
   convoMessage = (chatListSub, need) => {
+    // console.log(chatListSub, need)
     let conversation = [];
     this.props.conversation.map(convo => {
       if (convo.cohort_id === "all") {
@@ -104,49 +105,9 @@ class ChatPageList extends PureComponent {
     }
   };
 
-  //added group chat
-  groupConvoMessage = (gc_id, need) => {
-    let conversation = [];
-    this.props.groupConversation.map(gcConvo => {
-      if (gcConvo.groupchat_id === parseInt(gc_id)) {
-        conversation.push(gcConvo);
-      }
-    });
-    if (conversation.length !== 0) {
-      if (need === "message") {
-        return conversation[conversation.length - 1].message;
-      } else if (need === "time") {
-        let display = conversation[conversation.length - 1].time.split(" ");
-        return `${display[3]} ${display[4]}`;
-      }
-    } else {
-      if (need === "message") {
-        return "No conversation";
-      }
-    }
+  searchChatName = searchChatName => {
+    this.setState({ searchChatName });
   };
-
-  unreadGroupChat = gc_id => {
-    let count = 0;
-    console.log(gc_id)
-
-    this.props.groupConversation.map(gcConvo => {
-      let x = 0;
-      if (gcConvo.groupchat_id === parseInt(gc_id)) {
-        console.log(gcConvo)
-        gcConvo.seen.split(",").map(seen => {
-          if (parseInt(seen) === parseInt(this.props.sub)) {
-            x++;
-          }
-        });
-      }
-      if (x === 0 && gcConvo.groupchat_id === parseInt(gc_id)) {
-        count++;
-      }
-    });
-    return count;
-  };
-  //end of added group chat
 
   unreadChat = studentSub => {
     let count = 0;
@@ -165,12 +126,6 @@ class ChatPageList extends PureComponent {
     return count;
   };
 
-
-  searchChatName = searchChatName => {
-    this.setState({ searchChatName });
-  };
-
-
   handleChange = (event, newValue) => {
     this.setState({ value: newValue });
   };
@@ -184,6 +139,7 @@ class ChatPageList extends PureComponent {
   handleCloseGroup = () => this.setState({ openDialogGroup: false });
 
   render() {
+    // console.log(this.props.chatListInfo)
     const { classes } = this.props;
     return (
       <Grid item md={3} xs={4}>
@@ -202,15 +158,15 @@ class ChatPageList extends PureComponent {
               <Hidden xsDown>
                 {this.state.value === 0 ? (
                   <Tooltip title="Create Message" placement="left">
-                    <IconButton onClick={this.handleClickOpen}>
-                      <CreateIcon />
-                    </IconButton>
+                  <IconButton onClick={this.handleClickOpen}>
+                    <CreateIcon />
+                  </IconButton>
                   </Tooltip>
                 ) : (
                   <Tooltip title="Create Group" placement="left">
-                    <IconButton onClick={this.handleClickOpenGroup}>
-                      <GroupAddIcon />
-                    </IconButton>
+                  <IconButton onClick={this.handleClickOpenGroup}>
+                    <GroupAddIcon />
+                  </IconButton>
                   </Tooltip>
                 )}
               </Hidden>
@@ -237,7 +193,7 @@ class ChatPageList extends PureComponent {
               <TextField
                 onChange={e => this.searchChatName(e.target.value)}
                 id="outlined-search"
-                label={this.state.value === 0 ? "Search Name" : "Search Group"}
+                label={this.state.value===0?'Search Name': 'Search Group'}
                 inputProps={{
                   style: {
                     height: "4px"
@@ -271,117 +227,117 @@ class ChatPageList extends PureComponent {
               <List>
                 {this.props.chatListInfo.length !== 0
                   ? this.props.chatListInfo.map((chatmate, i) => {
-                      if (
-                        chatmate.first_name
-                          .toLowerCase()
-                          .includes(this.state.searchChatName.toLowerCase()) ||
-                        chatmate.last_name
-                          .toLowerCase()
-                          .includes(this.state.searchChatName.toLowerCase())
-                      ) {
-                        return (
-                          <React.Fragment key={i}>
-                            <ListItem
-                              alignItems="flex-start"
-                              button
-                              onClick={() => {
-                                this.props.changeChatmate(chatmate.sub);
-                                this.props.displayBadge(chatmate.sub, "pm");
-                                this.props.selectChatmate(chatmate.sub);
-                              }}
-                              style={
-                                this.props.chatmateInfo.sub === chatmate.sub
-                                  ? { backgroundColor: "#cfd8f987" }
-                                  : null
-                              }
-                            >
-                              <Hidden only="xs">
-                                <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                                  <Avatar src={chatmate.avatar} />
-                                </ListItemAvatar>
-                                <div className={classes.chatDetails}>
-                                  <div style={{ width: "80%" }}>
-                                    <Typography variant="body1">
-                                      {`${chatmate.first_name} ${chatmate.last_name}`}
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle2"
-                                      className={classes.chatPrev}
-                                    >
-                                      {this.convoMessage(
-                                        chatmate.sub,
-                                        "message"
-                                      )}
-                                    </Typography>
-                                  </div>
+                    if (
+                      chatmate.first_name
+                        .toLowerCase()
+                        .includes(this.state.searchChatName.toLowerCase()) ||
+                      chatmate.last_name
+                        .toLowerCase()
+                        .includes(this.state.searchChatName.toLowerCase())
+                    ) {
+                      return (
+                        <React.Fragment key={i}>
+                          <ListItem
+                            alignItems="flex-start"
+                            button
+                            onClick={() => {
+                              this.props.changeChatmate(chatmate.sub);
+                              this.props.displayBadge(chatmate.sub);
+                              this.props.selectChatmate(chatmate.sub);
+                            }}
+                            style={this.props.chatmateInfo.sub === chatmate.sub ?
+                              { backgroundColor: '#cfd8f987' }
+                              :
+                              null
+                            }
+                          >
+                            <Hidden only="xs">
+                              <ListItemAvatar style={{ marginTop: "-0.2px" }}>
+                                <Avatar
+                                  src={chatmate.avatar}
+                                />
+                              </ListItemAvatar>
+                              <div className={classes.chatDetails}>
+                                <div style={{ width: "80%" }}>
+                                  <Typography variant="body1">
+                                    {`${chatmate.first_name} ${chatmate.last_name}`}
+                                  </Typography>
+                                  <Typography
+                                    variant="subtitle2"
+                                    className={classes.chatPrev}
+                                  >
+                                    {this.convoMessage(
+                                      chatmate.sub,
+                                      "message"
+                                    )}
+                                  </Typography>
+                                </div>
 
-                                  <div className={classes.timeBadgeWrap}>
-                                    <Typography variant="caption">
-                                      {this.convoMessage(chatmate.sub, "time")}
-                                    </Typography>
-                                    <div style={{ marginTop: 3 }}>
-                                      <Badge
-                                        color="secondary"
-                                        badgeContent={this.unreadChat(
-                                          chatmate.sub
-                                        )}
-                                        invisible={
-                                          this.unreadChat(chatmate.sub) === 0
-                                            ? true
-                                            : false
-                                        }
-                                      />
-                                    </div>
+                                <div className={classes.timeBadgeWrap}>
+                                  <Typography variant="caption">
+                                    {this.convoMessage(chatmate.sub, "time")}
+                                  </Typography>
+                                  <div style={{ marginTop: 3 }}>
+                                    <Badge
+                                      color="secondary"
+                                      badgeContent={this.unreadChat(
+                                        chatmate.sub
+                                      )}
+                                      invisible={
+                                        this.unreadChat(chatmate.sub) === 0
+                                          ? true
+                                          : false
+                                      }
+                                    />
                                   </div>
                                 </div>
-                              </Hidden>
-                              <Hidden smUp>
-                                <div className={classes.smBP}>
-                                  <Avatar src={chatmate.avatar} />
-                                  <Badge
-                                    color="secondary"
-                                    badgeContent={this.unreadChat(chatmate.sub)}
-                                    invisible={
-                                      this.unreadChat(chatmate.sub) === 0
-                                        ? true
-                                        : false
-                                    }
-                                  />
-                                </div>
-                              </Hidden>
-                            </ListItem>
-                            <Divider />
-                          </React.Fragment>
-                        );
-                      }
-                    })
+                              </div>
+                            </Hidden>
+                            <Hidden smUp>
+                              <div className={classes.smBP}>
+                                <Avatar src={chatmate.avatar} />
+                                <Badge
+                                  badgeContent={10}
+                                  color="secondary"
+                                  badgeContent={this.unreadChat(chatmate.sub)}
+                                  invisible={
+                                    this.unreadChat(chatmate.sub) === 0
+                                      ? true
+                                      : false
+                                  }
+                                />
+                              </div>
+                            </Hidden>
+                          </ListItem>
+                          <Divider />
+                        </React.Fragment>
+                      );
+                    }
+                  })
                   : null}
               </List>
             </TabPanel>
             <TabPanel value={this.state.value} index={1}>
               <List>
+
                 {this.props.groupListInfo.map(gc => (
+
                   <React.Fragment>
-                    <ListItem
-                      alignItems="flex-start"
+                    <ListItem alignItems="flex-start"
                       button
                       onClick={() => {
                         this.props.changeChatmate(gc.id);
                         this.props.selectChatmate(gc.id);
-                        this.props.displayBadge(gc.id, "gc");
                       }}
-                      style={
-                        this.props.chatmateInfo.id === gc.id
-                          ? { backgroundColor: "#cfd8f987" }
-                          : null
+                      style={this.props.chatmateInfo.id === gc.id ?
+                        { backgroundColor: '#cfd8f987' }
+                        :
+                        null
                       }
                     >
                       <Hidden only="xs">
                         <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                          <Avatar>
-                            {" "}
-                            <GroupIcon />{" "}
-                          </Avatar>
+                          <Avatar> <GroupIcon /> </Avatar>
                         </ListItemAvatar>
                         <div className={classes.chatDetails}>
                           <div style={{ width: "80%" }}>
@@ -390,51 +346,43 @@ class ChatPageList extends PureComponent {
                               variant="subtitle2"
                               className={classes.chatPrev}
                             >
-                              {this.groupConvoMessage(gc.id, "message")}
-                            </Typography>
+                              Handraiser team update: We're still working on
+                              finishing the chat feature. We're also making
+                              changes to the design so as to not make the users
+                              confused on some features. Some other updates: 1.
+                              Used Firebase as storage for the uploaded images. 2.
+                              Unsplash feature is almost done.
+                        </Typography>
                           </div>
 
                           <div className={classes.timeBadgeWrap}>
-                            <Typography variant="caption">
-                              {this.groupConvoMessage(gc.id, "time")}
-                            </Typography>
+                            <Typography variant="caption">12:35 A.M</Typography>
                             <div style={{ marginTop: 3 }}>
-                              <Badge
-                                color="secondary"
-                                badgeContent={this.unreadGroupChat(gc.id)}
-                                invisible={
-                                  this.unreadGroupChat(gc.id) === 0
-                                    ? true
-                                    : false
-                                }
-                              />
+                              <Badge color="secondary" badgeContent={1} />
                             </div>
                           </div>
                         </div>
                       </Hidden>
                       <Hidden smUp>
                         <div className={classes.smBP}>
-                          <Avatar>
-                            {" "}
-                            <GroupIcon />{" "}
-                          </Avatar>
-                          <Badge
-                            color="secondary"
-                            badgeContent={this.unreadGroupChat(gc.id)}
-                            invisible={
-                              this.unreadGroupChat(gc.id) === 0 ? true : false
-                            }
-                          />
+                          <Avatar> <GroupIcon /> </Avatar>
+                          <Badge badgeContent={10} color="secondary" />
                         </div>
                       </Hidden>
                     </ListItem>
                     <Divider />
+
                   </React.Fragment>
+
                 ))}
+
+
               </List>
             </TabPanel>
           </div>
         </Paper>
+
+
       </Grid>
     );
   }

@@ -82,7 +82,7 @@ const styles = theme => ({
   // ChatPageBox
   chatBoxHeader: {
     display: "flex",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     padding: 15
   },
