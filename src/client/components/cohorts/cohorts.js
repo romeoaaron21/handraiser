@@ -269,11 +269,11 @@ class Cohorts extends React.Component {
   // DELETE CLASS
   delete = id => {
     api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
-      this.componentDidMount();
       toast.info("Cohort Deleted!", {
         hideProgressBar: true,
         draggable: false
       });
+      this.componentDidMount();
     });
   };
 
