@@ -397,12 +397,14 @@ class ChatPageBox extends Component {
                 </span>
 
                 {this.props.chatmateInfo.first_name === undefined ? (
-                  <IconButton onClick={this.handleMenuClick}
-                  disabled={
-                    !this.state.gc && this.props.chatmateInfo.sub === undefined
-                      ? true
-                      : false
-                  }
+                  <IconButton
+                    onClick={this.handleMenuClick}
+                    disabled={
+                      !this.state.gc &&
+                      this.props.chatmateInfo.sub === undefined
+                        ? true
+                        : false
+                    }
                   >
                     <MoreVertIcon />
                   </IconButton>
@@ -585,11 +587,22 @@ class ChatPageBox extends Component {
                     ) : null
                   )
                 ) : (
-                  <React.Fragment>Not a member</React.Fragment>
+                  <React.Fragment>
+                    <div style={{display:'flex', justifyContent:'center'}}>
+                    Not a member
+                    </div>
+                  </React.Fragment>
                 )}
 
-                {this.props.chatmateText.length > 0 && this.props.chatmateInfo.name === undefined ? <TypingEffect /> : null}
-                {this.props.chatmateText.length > 0 && this.props.chatmateInfo.sub === undefined && this.state.gc === true ? <TypingEffect /> : null}
+                {this.props.chatmateText.length > 0 &&
+                this.props.chatmateInfo.name === undefined ? (
+                  <TypingEffect />
+                ) : null}
+                {this.props.chatmateText.length > 0 &&
+                this.props.chatmateInfo.sub === undefined &&
+                this.state.gc === true ? (
+                  <TypingEffect />
+                ) : null}
 
                 <div ref={this.messagesEndRef} />
               </div>
@@ -688,7 +701,16 @@ class ChatPageBox extends Component {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton edge="end" onClick={this.openPicker}>
+                      <IconButton
+                        edge="end"
+                        onClick={this.openPicker}
+                        disabled={
+                          !this.state.gc &&
+                          this.props.chatmateInfo.sub === undefined
+                            ? true
+                            : false
+                        }
+                      >
                         <InsertEmoticon />
                       </IconButton>
                     </InputAdornment>
