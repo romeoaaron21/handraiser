@@ -187,7 +187,7 @@ function seenNormalGroupChat(req, res) {
             }
           });
           if (x === 0) {
-            db.query(`UPDATE groupmessage SET seen = '${user_id},' || seen WHERE id = ${group.id}`);
+            db.query(`UPDATE groupmessage SET seen = '${user_id},' || seen WHERE groupchat_id = ${groupchat_id}`);
           }
         }
       });
@@ -199,16 +199,6 @@ function seenNormalGroupChat(req, res) {
         res.status(201).json(chats);
       });
     });
-
-  // db.query(
-  //   `UPDATE groupmessage SET seen = '${user_id},' || seen WHERE groupchat_id = ${groupchat_id}`
-  // ).then(() => {
-  //   db.query(
-  //     `SELECT groupmessage.*, users.avatar FROM groupmessage, users WHERE sender_sub = users.sub ORDER BY id`
-  //   ).then(chats => {
-  //     res.status(201).json(chats);
-  //   });
-  // });
 }
 
 module.exports = {
