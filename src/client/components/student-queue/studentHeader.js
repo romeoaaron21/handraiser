@@ -79,6 +79,33 @@ const styles = theme => ({
       background: "white",
       color: "#565656"
     }
+  },
+  fullScreen: {
+    "@media (max-width: 767px)": {
+      width: "100%",
+      height: "100%",
+      margin: "0",
+      maxWidth: "100%",
+      maxHeight: "none",
+      borderRadius: "0"
+    }
+  },
+  linkUpload: {
+    color: "#f3f3f3",
+    fontSize: "13px",
+    cursor: "pointer",
+    "@media (max-width: 425px)": {
+      fontSize: "9px"
+    }
+  },
+  linkSetToDefault: {
+    color: "#f3f3f3",
+    fontSize: "13px",
+    textDecoration: "underline",
+    cursor: "pointer",
+    "@media (max-width: 425px)": {
+      fontSize: "9px"
+    }
   }
 });
 
@@ -261,14 +288,10 @@ class StudentHeader extends Component {
                 </Tooltip>
               </div>
             ) : (
-              <div style={{ marginTop: "auto" }}>
+              <div style={{ marginTop: "100px" }}>
                 <div>
                   <Link
-                    style={{
-                      color: "#f3f3f3",
-                      fontSize: "13px",
-                      cursor: "pointer"
-                    }}
+                    className={classes.linkUpload}
                     onClick={() => this.setState({ uploadPhotoDialog: true })}
                   >
                     {this.state.uploadPhotoLoader
@@ -279,12 +302,7 @@ class StudentHeader extends Component {
 
                 {this.props.classHeaderImage !== null ? (
                   <Link
-                    style={{
-                      color: "#f3f3f3",
-                      fontSize: "13px",
-                      textDecoration: "underline",
-                      cursor: "pointer"
-                    }}
+                    className={classes.linkSetToDefault}
                     onClick={() => this.props.setToDefaultHeaderFn()}
                   >
                     Set to default
@@ -301,6 +319,7 @@ class StudentHeader extends Component {
           open={this.state.uploadPhotoDialog}
           maxWidth="md"
           fullWidth={true}
+          classes={{ paper: classes.fullScreen }}
         >
           <UploadPhoto
             loadStateFn={this.props.loadStateFn}

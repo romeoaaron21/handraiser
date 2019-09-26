@@ -99,18 +99,34 @@ class ChatPage extends PureComponent {
       if (conversation[1] === this.state.sub) {
         this.setState({ senderText: "" });
       }
+      else if(conversation[2] === this.state.chatmateSub){
+        this.setState({ chatmateText:"" });
+      }
     });
 
     socket.on("seenNormalGroupChat", chat => {
-      // console.log(chat)
-      this.setState({
-        groupConversation: [...chat]
-      });
+      this.getGroupConversation()
     });
 
     socket.on("createGroupChat", groupChat => {
       this.displayGroupList()
     });
+
+    socket.on("setStudentGroupChatText", chatText => {
+      if (
+        chatText[2] === this.state.sub &&
+        chatText[1] === this.state.chatmateSub
+      ) {
+        this.setState({ senderText: chatText[0] });
+      } else if (
+        chatText[2] !== this.state.sub &&
+        chatText[1] === this.state.chatmateSub
+      ) {
+        this.setState({ chatmateText: chatText[0] });
+      }
+    });
+
+
   }
 
   componentDidMount() {
@@ -228,9 +244,14 @@ class ChatPage extends PureComponent {
     });
   };
 
-  setChatText = val => {
+  setChatText = (val, type) => {
     let textVal = [val, this.state.chatmateSub, this.state.sub];
-    socket.emit("setStudentChatText", textVal);
+    if(type === "pm"){
+      socket.emit("setStudentChatText", textVal);
+    }
+    else{
+      socket.emit("setStudentGroupChatText", textVal);
+    }
   };
 
   sendChat = (url, chatText, sub, type ) => {
@@ -380,6 +401,7 @@ class ChatPage extends PureComponent {
       });
     }
     else if(type === "gc"){
+      console.log(this.state.sub, chatmate)
       let sub = { chatmate: this.state.sub, groupchat_id: chatmate };
       const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
       data.then(res => {
@@ -440,8 +462,8 @@ class ChatPage extends PureComponent {
               displayBadge={this.displayBadge}
               groupConversation={this.state.groupConversation}
               sendChatGroup={this.sendChatGroup}
-              //snippet
               sendCode={this.sendCode}
+              groupListInfo={this.state.groupListInfo}
             />
             <ChatPageInfo
               userInfo={this.state.userInfo} 

@@ -108,7 +108,8 @@ class Compose extends Component {
           >
             <List>
               {/* map here */}
-              {this.state.students.map((stud, i) => {
+              {this.props.userInfo.privilege === 'student'?
+                this.state.students.map((stud, i) => {
                 if (stud.first_name
                   .toLowerCase()
                   .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'student' && this.props.sub !== stud.sub||
@@ -130,7 +131,32 @@ class Compose extends Component {
                     </React.Fragment>
                   )
                 }
-              })}
+              })
+              :
+              this.state.students.map((stud, i) => {
+                if (stud.first_name
+                  .toLowerCase()
+                  .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'mentor' && this.props.sub !== stud.sub||
+                  stud.last_name
+                    .toLowerCase()
+                    .includes(this.state.searchChatName.toLowerCase()) && stud.privilege === 'mentor' && this.props.sub !== stud.sub) {
+                  return (
+                    <React.Fragment key={i}>
+                      <ListItem alignItems="flex-start" button onClick={() => this.selectChatmate(stud)}>
+                        <ListItemAvatar style={{ marginTop: "3px" }}>
+                          <Avatar
+                            style={{ width: 25, height: 25 }}
+                            src={stud.avatar}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText>{stud.first_name} {stud.last_name}</ListItemText>
+                      </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  )
+                }
+              })
+              }
             </List>
           </Paper>
           <div className={classes.flex}>

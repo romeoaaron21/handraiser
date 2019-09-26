@@ -19,15 +19,19 @@ import { InputAdornment } from '@material-ui/core'
 import InsertEmoticon from '@material-ui/icons/InsertEmoticon';
 import GroupIcon from '@material-ui/icons/Group';
 import Snippet from './snippet/snippet';
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import EditGroup from "./dialogs/EditGroup";
+import SettingsIcon from "@material-ui/icons/Settings";
 
-
-import Link from '@material-ui/core/Link';
+import Link from "@material-ui/core/Link";
 //Firebase
-import { storage } from '../common-components/upload-photo/firebase/firebase';
+import { storage } from "../common-components/upload-photo/firebase/firebase";
 //img
-import ImageMenu from '../chat-box/imageMenu';
+import ImageMenu from "../chat-box/imageMenu";
 //splash
-import Splash from '../chat-box/plugins/giphy';
+import Splash from "../chat-box/plugins/giphy";
 //emoji
 import Emoji from '../chat-box/plugins/emoji';
 import Gallery from './gallery/galleryDialog';
@@ -36,14 +40,14 @@ import AceEditor from 'react-ace';
 import 'brace/mode/javascript'
 import 'brace/theme/monokai'
 
-
 const imageMaxSize = 30000000; // bytes
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
 const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
   return item.trim();
 });
-const acceptedDocuments = "text/css, text/html, application/json, text/javascript, text/plain, application/xhtml+xml, application/zip, application/pdf"
+const acceptedDocuments =
+  "text/css, text/html, application/json, text/javascript, text/plain, application/xhtml+xml, application/zip, application/pdf";
 const acceptedDocumentsArray = acceptedDocuments.split(",").map(item => {
   return item.trim();
 });
@@ -77,7 +81,11 @@ class ChatPageBox extends Component {
       selected: null,
       imgArray: [],
       //snippet
-      openSnippet: false
+      openSnippet: false,
+      anchorEl: null,
+      //group
+      openEditGroup: false,
+      gc: false
     }
   }
   openSnippet = () => {
@@ -93,10 +101,14 @@ class ChatPageBox extends Component {
     this.scrollToBottom();
   }
   scrollToBottom = () => {
-    this.messagesEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'nearest', inline: 'start' });
+    this.messagesEndRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "start"
+    });
   };
   //End of Added Scroll Bottom
-    
+
   //ANCHOR splash start
   handleImageMenu = event => {
     this.setState({ imageMenu: event.currentTarget });
@@ -140,12 +152,12 @@ class ChatPageBox extends Component {
         if (isVerified) {
           this.setState({
             image: files[0]
-          })
-            this.props.setChatText(files[0].name);
-          }
+          });
+          this.props.setChatText(files[0].name);
         }
       }
-  }
+    }
+  };
   handleSendImage = () => {
     const { image } = this.state;
     const imageName = this.makeid(image.name);
@@ -168,7 +180,7 @@ class ChatPageBox extends Component {
           .child(imageName)
           .getDownloadURL()
           .then(url => {
-            this.props.sendChat(url, undefined, undefined, 'image')
+            this.props.sendChat(url, undefined, undefined, "image");
             this.setState({
               progress: 0
             });
@@ -195,9 +207,9 @@ class ChatPageBox extends Component {
     });
   };
   uploadGif = gif => {
-    this.closeSplash()
-    this.props.sendChat(gif.images.downsized.url, undefined, undefined, 'gif')
-  }
+    this.closeSplash();
+    this.props.sendChat(gif.images.downsized.url, undefined, undefined, "gif");
+  };
   //ANCHOR emoji
   openPicker = event => {
     if (!event) {
@@ -209,14 +221,14 @@ class ChatPageBox extends Component {
         this.setState({ emoji: event.currentTarget });
       }
     }
-  }
+  };
   handleEmoji = emoji => {
-    const param = this.props.senderText + emoji.native
+    const param = this.props.senderText + emoji.native;
     this.props.setChatText(param);
-  }
+  };
   //ANCHOR FILE UPLOAD START
   handleDocumentUpload = event => {
-    console.log(event.target.files[0])
+    console.log(event.target.files[0]);
     if (event.target.files) {
       const files = event.target.files;
       if (files && files.length > 0) {
@@ -224,42 +236,51 @@ class ChatPageBox extends Component {
         if (isVerified) {
           this.setState({
             document: files[0]
-          })
+          });
           this.props.setChatText(files[0].name);
         }
       }
     }
-  }
+  };
   cancelUploadDocument = () => {
     this.setState({
       document: null
-    })
-  }
+    });
+  };
   handleSendDocument = () => {
     const { document } = this.state;
-    const uploadTask = storage.ref(`documents/${document.name}`).put(document)
-    uploadTask.on('state_changed',
-      (snapshot) => {
+    const uploadTask = storage.ref(`documents/${document.name}`).put(document);
+    uploadTask.on(
+      "state_changed",
+      snapshot => {
         this.setState({
-          progress: Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)
-        })
-      }, (error) => {
+          progress: Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          )
+        });
+      },
+      error => {
         console.log(error);
-      }, () => {
-        storage.ref('documents').child(document.name).getDownloadURL()
+      },
+      () => {
+        storage
+          .ref("documents")
+          .child(document.name)
+          .getDownloadURL()
           .then(url => {
-            this.props.sendChat(url, undefined, undefined, 'file')
+            this.props.sendChat(url, undefined, undefined, "file");
             this.setState({
               progress: 0
-            })
-          })
-      })
-    this.setState({ document: null })
+            });
+          });
+      }
+    );
+    this.setState({ document: null });
     this.documentInput.value = "";
-  }
+  };
   verifyDocument = files => {
     if (files && files.length > 0) {
-      const regex = /^application\/vnd/
+      const regex = /^application\/vnd/;
       const currentFile = files[0];
       const currentFileType = currentFile.type;
       const currentFileSize = currentFile.size;
@@ -282,25 +303,54 @@ class ChatPageBox extends Component {
   //gallery
   openGallery = index => {
     const images = this.props.conversation.filter(convo => {
-      return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
-    })
+      return (
+        convo.chat_type === "image" &&
+        ((convo.sender_id === this.props.userInfo.sub &&
+          this.props.chatmateInfo.sub === convo.chatmate_id) ||
+          (convo.chatmate_id === this.props.userInfo.sub &&
+            this.props.chatmateInfo.sub === convo.sender_id))
+      );
+    });
     const selected = images.findIndex(image => image.id === index);
     this.setState({
       openGallery: true,
       selected,
       imgArray: images
-    })
-  }
+    });
+  };
   closeGallery = () => {
     this.setState({
       openGallery: false,
       selected: null
-    })
-  }
+    });
+  };
   //gallery end
+
+  //Menu
+  handleMenuClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleMenuClose = () => {
+    this.setState({ anchorEl: null });
+  };
+  //
+
+  handleClickEditGroup = () => {
+    this.setState({ openEditGroup: true, anchorEl: null });
+  };
+  handleCloseEditGroup = () => this.setState({ openEditGroup: false });
+
   render() {
     const { classes } = this.props;
+
+    if (this.state.gc === false) {
+      this.props.groupListInfo.map(gc => {
+        if (gc.id === this.props.chatmateInfo.id) {
+          this.setState({ gc: true });
+        }
+      });
+    }
     return (
       <Grid item md={6} xs={8} style={{ minHeight: "800px" }}>
         <Paper
@@ -316,33 +366,76 @@ class ChatPageBox extends Component {
             {/* Chatbox Header */}
             <div style={{ height: "10%" }}>
               <div className={classes.chatBoxHeader}>
-                {this.props.chatmateInfo.avatar === undefined ? (
-                  <Avatar style={{ marginRight: 10 }}>
-                    {" "}
-                    <GroupIcon />{" "}
-                  </Avatar>
+                <span
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center"
+                  }}
+                >
+                  {this.props.chatmateInfo.avatar === undefined ? (
+                    <Avatar style={{ marginRight: 10 }}>
+                      {" "}
+                      <GroupIcon />{" "}
+                    </Avatar>
+                  ) : (
+                    <Avatar
+                      style={{ marginRight: 10 }}
+                      src={this.props.chatmateInfo.avatar}
+                    />
+                  )}
+
+                  <div>
+                    <Typography variant="body">
+                      {this.props.chatmateInfo.first_name === undefined
+                        ? this.props.chatmateInfo.name
+                        : `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`}
+                    </Typography>
+                    {this.props.chatmateInfo.status === "active" ? (
+                      <div className={classes.activeNowWrapper}>
+                        <div className={classes.activeNowCircle} />
+                        <Typography
+                          variant="subtitle2"
+                          style={{ marginTop: 2 }}
+                        >
+                          Active Now
+                        </Typography>
+                      </div>
+                    ) : null}
+                  </div>
+                </span>
+
+                {this.props.chatmateInfo.first_name === undefined ? (
+                  <IconButton
+                    onClick={this.handleMenuClick}
+                    disabled={
+                      !this.state.gc &&
+                      this.props.chatmateInfo.sub === undefined
+                        ? true
+                        : false
+                    }
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
                 ) : (
-                  <Avatar
-                    style={{ marginRight: 10 }}
-                    src={this.props.chatmateInfo.avatar}
-                  />
+                  ""
                 )}
 
-                <div>
-                  <Typography variant="body">
-                    {this.props.chatmateInfo.first_name === undefined
-                      ? this.props.chatmateInfo.name
-                      : `${this.props.chatmateInfo.first_name} ${this.props.chatmateInfo.last_name}`}
-                  </Typography>
-                  {this.props.chatmateInfo.status === "active" ? (
-                    <div className={classes.activeNowWrapper}>
-                      <div className={classes.activeNowCircle} />
-                      <Typography variant="subtitle2" style={{ marginTop: 2 }}>
-                        Active Now
-                      </Typography>
-                    </div>
-                  ) : null}
-                </div>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={this.state.anchorEl}
+                  keepMounted
+                  open={Boolean(this.state.anchorEl)}
+                  onClose={this.handleMenuClose}
+                  style={{ marginTop: 55 }}
+                >
+                  <MenuItem onClick={this.handleClickEditGroup}>
+                    Edit Group
+                  </MenuItem>
+                  <MenuItem onClick={this.handleMenuClose}>
+                    Leave Group
+                  </MenuItem>
+                </Menu>
               </div>
               <Divider />
             </div>
@@ -361,130 +454,146 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                {this.props.chatmateInfo.sub !== undefined
-                  ? this.props.conversation.map((convo, i) =>
-                      (convo.sender_id === this.props.userInfo.sub &&
-                        this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                      (convo.chatmate_id === this.props.userInfo.sub &&
-                        this.props.chatmateInfo.sub === convo.sender_id) ? (
-                          <React.Fragment key={i}>
-                          {convo.cohort_id === "all" ? (
-                            <div className={convo.sender_id !== this.props.userInfo.sub?classes.senderChatWrapper:classes.receiverChatWrapper}>
-    
-                              {convo.sender_id !== this.props.userInfo.sub?
-                              <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar}/>
-                              :null
-                              }
-                                  <Box 
-                                  className={
-                                      (convo.chat_type === "image" || 
-                                        convo.chat_type === 'gif')
-                                      ? classes.chatImage
-                                      : (convo.chat_type === 'code')
-                                        ? classes.snippet
-                                        : (convo.sender_id !== this.props.userInfo.sub)
-                                        ? classes.senderBox
-                                        : classes.receiverBox
-                                  }>
-                                  {convo.chat_type === "text"
-                                    ? <TextareaAutosize
-                                      readOnly
-                                      className={classes.textAreaChat}
-                                      style={convo.sender_id !== this.props.userInfo.sub?{ color: "#263238" }:{ color: "#fff" }}
-                                      value={convo.message.replace(/\n$/, "")}
-                                      />
-                                    : (convo.chat_type === "file")
-                                      ? <Box
-                                        component="div"
-                                        my={2}
-                                        textOverflow="ellipsis"
-                                        overflow="hidden"
-                                        >
-                                         <Link style={{ fontWeight: 'bold' }}href={convo.link} color="inherit" variant="body2">{convo.message}</Link>
-                                        </Box>
-                                      :  (convo.chat_type === "image")
-                                          ? <img style={{ width: "100%", cursor: 'pointer' }} src={convo.link} alt="" onClick={() => this.openGallery(convo.id)} />
-                                          : (convo.chat_type === "gif")
-                                            ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
-                                            : <AceEditor
-                                            wrapEnabled
-                                            maxLines={100}
-                                            fontSize="16px"
-                                            width="35vw"
-                                            mode="javascript"
-                                            value={convo.message}
-                                            theme="monokai"
-                                            readOnly
-                                            />
-                                  }
-                                    <Typography variant="caption" className={convo.chat_type === "code" ? classes.snippetTime : classes.time}>
-                                      {convo.time}
-                                    </Typography>
-                                  </Box>
-                                </div>
-                          ):
-                          null}
-                      </React.Fragment>
-                      ) : null
-                    )
-                  : this.props.groupConversation.map((gcConvo, i) =>
-                      this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
+                {this.props.chatmateInfo.sub !== undefined ? (
+                  this.props.conversation.map((convo, i) =>
+                    (convo.sender_id === this.props.userInfo.sub &&
+                      this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                    (convo.chatmate_id === this.props.userInfo.sub &&
+                      this.props.chatmateInfo.sub === convo.sender_id) ? (
                         <React.Fragment key={i}>
-                          <div
+                        {convo.cohort_id === "all" ? (
+                          <div className={convo.sender_id !== this.props.userInfo.sub?classes.senderChatWrapper:classes.receiverChatWrapper}>
+  
+                            {convo.sender_id !== this.props.userInfo.sub?
+                            <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar}/>
+                            :null
+                            }
+                                <Box 
+                                className={
+                                    (convo.chat_type === "image" || 
+                                      convo.chat_type === 'gif')
+                                    ? classes.chatImage
+                                    : (convo.chat_type === 'code')
+                                      ? classes.snippet
+                                      : (convo.sender_id !== this.props.userInfo.sub)
+                                      ? classes.senderBox
+                                      : classes.receiverBox
+                                }>
+                                {convo.chat_type === "text"
+                                  ? <TextareaAutosize
+                                    readOnly
+                                    className={classes.textAreaChat}
+                                    style={convo.sender_id !== this.props.userInfo.sub?{ color: "#263238" }:{ color: "#fff" }}
+                                    value={convo.message.replace(/\n$/, "")}
+                                    />
+                                  : (convo.chat_type === "file")
+                                    ? <Box
+                                      component="div"
+                                      my={2}
+                                      textOverflow="ellipsis"
+                                      overflow="hidden"
+                                      >
+                                       <Link style={{ fontWeight: 'bold' }}href={convo.link} color="inherit" variant="body2">{convo.message}</Link>
+                                      </Box>
+                                    :  (convo.chat_type === "image")
+                                        ? <img style={{ width: "100%", cursor: 'pointer' }} src={convo.link} alt="" onClick={() => this.openGallery(convo.id)} />
+                                        : (convo.chat_type === "gif")
+                                          ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
+                                          : <AceEditor
+                                          wrapEnabled
+                                          maxLines={100}
+                                          fontSize="16px"
+                                          width="35vw"
+                                          mode="javascript"
+                                          value={convo.message}
+                                          theme="monokai"
+                                          readOnly
+                                          />
+                                }
+                                  <Typography variant="caption" className={convo.chat_type === "code" ? classes.snippetTime : classes.time}>
+                                    {convo.time}
+                                  </Typography>
+                                </Box>
+                              </div>
+                        ):
+                        null}
+                    </React.Fragment>
+                    ) : null
+                  )
+                ) : this.state.gc ? (
+                  this.props.groupConversation.map((gcConvo, i) =>
+                    this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
+                      <React.Fragment key={i}>
+                        <div
+                          className={
+                            gcConvo.sender_sub !== this.props.userInfo.sub
+                              ? classes.senderChatWrapper
+                              : classes.receiverChatWrapper
+                          }
+                        >
+                          {gcConvo.sender_sub !== this.props.userInfo.sub ? (
+                            <Avatar
+                              style={{ marginRight: "10px" }}
+                              src={gcConvo.avatar}
+                            />
+                          ) : null}
+
+                          <Box
                             className={
+                              // gcConvo.chat_type !== "text"
+                              //   ? classes.chatImage
+                              //   :
                               gcConvo.sender_sub !== this.props.userInfo.sub
-                                ? classes.senderChatWrapper
-                                : classes.receiverChatWrapper
+                                ? classes.senderBox
+                                : classes.receiverBox
                             }
                           >
-                            {gcConvo.sender_sub !== this.props.userInfo.sub ? (
-                              <Avatar
-                                style={{ marginRight: "10px" }}
-                                src={gcConvo.avatar}
-                              />
-                            ) : null}
-
-                            <Box
-                              className={
-                                // gcConvo.chat_type !== "text"
-                                //   ? classes.chatImage
-                                //   :
-                                gcConvo.sender_sub !== this.props.userInfo.sub
-                                  ? classes.senderBox
-                                  : classes.receiverBox
-                              }
-                            >
-                              {/* {gcConvo.chat_type !== "text" ? (
+                            {/* {gcConvo.chat_type !== "text" ? (
                               <img
                                 style={{ width: "100%" }}
                                 src={convo.chat_type}
                                 alt=""
                               />
                             ) : ( */}
-                              <TextareaAutosize
-                                readOnly
-                                className={classes.textAreaChat}
-                                style={
-                                  gcConvo.sender_sub !== this.props.userInfo.sub
-                                    ? { color: "#263238" }
-                                    : { color: "#fff" }
-                                }
-                                value={gcConvo.message.replace(/\n$/, "")}
-                              />
-                              {/* )} */}
-                              <Typography
-                                variant="caption"
-                                className={classes.time}
-                              >
-                                {gcConvo.time}
-                              </Typography>
-                            </Box>
-                          </div>
-                        </React.Fragment>
-                      ) : null
-                    )}
+                            <TextareaAutosize
+                              readOnly
+                              className={classes.textAreaChat}
+                              style={
+                                gcConvo.sender_sub !== this.props.userInfo.sub
+                                  ? { color: "#263238" }
+                                  : { color: "#fff" }
+                              }
+                              value={gcConvo.message.replace(/\n$/, "")}
+                            />
+                            {/* )} */}
+                            <Typography
+                              variant="caption"
+                              className={classes.time}
+                            >
+                              {gcConvo.time}
+                            </Typography>
+                          </Box>
+                        </div>
+                      </React.Fragment>
+                    ) : null
+                  )
+                ) : (
+                  <React.Fragment>
+                    <div style={{display:'flex', justifyContent:'center'}}>
+                    Not a member
+                    </div>
+                  </React.Fragment>
+                )}
 
-                {this.props.chatmateText.length > 0 ? <TypingEffect /> : null}
+                {this.props.chatmateText.length > 0 &&
+                this.props.chatmateInfo.name === undefined ? (
+                  <TypingEffect />
+                ) : null}
+                {this.props.chatmateText.length > 0 &&
+                this.props.chatmateInfo.sub === undefined &&
+                this.state.gc === true ? (
+                  <TypingEffect />
+                ) : null}
 
                 <div ref={this.messagesEndRef} />
               </div>
@@ -499,10 +608,18 @@ class ChatPageBox extends Component {
                 type="file"
                 onChange={this.handleDocumentUpload}
                 style={{ display: "none" }}
-                ref={documentInput => this.documentInput = documentInput}
+                ref={documentInput => (this.documentInput = documentInput)}
               />
-              <IconButton style={{ marginRight: 4 }} onClick={() => this.documentInput.click()}>
-                <AttachFileIcon/>
+              <IconButton
+                style={{ marginRight: 4 }}
+                onClick={() => this.documentInput.click()}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
+              >
+                <AttachFileIcon />
               </IconButton>
               <input
                 type="file"
@@ -513,6 +630,11 @@ class ChatPageBox extends Component {
               <IconButton
                 style={{ marginRight: 10 }}
                 onClick={this.handleImageMenu}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
               >
                 <Photo />
               </IconButton>
@@ -532,12 +654,16 @@ class ChatPageBox extends Component {
                 color="primary"
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
-                onChange={e => this.props.setChatText(e.target.value)}
+                onChange={e =>
+                  this.props.chatmateInfo.sub !== undefined
+                    ? this.props.setChatText(e.target.value, "pm")
+                    : this.props.setChatText(e.target.value, "gc")
+                }
                 onClick={() => {
                   if (this.props.chatmateInfo.sub !== undefined) {
                     this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                   } else {
-                    this.props.displayBadge(this.props.chatmateInfo.sub, "gc");
+                    this.props.displayBadge(this.props.chatmateInfo.id, "gc");
                   }
                 }}
                 onKeyUp={e => {
@@ -559,9 +685,11 @@ class ChatPageBox extends Component {
                         this.props.chatmateInfo.sub !== undefined
                       ) {
                         this.props.sendChat();
+                        this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                         this.openPicker();
                       } else if (this.props.chatmateInfo.sub === undefined) {
                         this.props.sendChatGroup();
+                        this.props.displayBadge(this.props.chatmateInfo.id, "gc")
                       }
                     }
                   }
@@ -569,12 +697,26 @@ class ChatPageBox extends Component {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton edge="end" onClick={this.openPicker}>
+                      <IconButton
+                        edge="end"
+                        onClick={this.openPicker}
+                        disabled={
+                          !this.state.gc &&
+                          this.props.chatmateInfo.sub === undefined
+                            ? true
+                            : false
+                        }
+                      >
                         <InsertEmoticon />
                       </IconButton>
                     </InputAdornment>
                   )
                 }}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
               />
               <IconButton
                 //  onClick={() => this.props.chatmateInfo.sub !== undefined? this.props.sendChat() : this.props.sendChatGroup()}
@@ -584,10 +726,12 @@ class ChatPageBox extends Component {
                     this.props.chatmateInfo.sub !== undefined
                   ) {
                     this.handleSendImage("student");
-                  } else if (this.state.document && this.props.chatmateInfo.sub !== undefined) {
-                    this.handleSendDocument()
-                  } 
-                  else if (
+                  } else if (
+                    this.state.document &&
+                    this.props.chatmateInfo.sub !== undefined
+                  ) {
+                    this.handleSendDocument();
+                  } else if (
                     !this.state.image &&
                     this.props.chatmateInfo.sub !== undefined
                   ) {
@@ -595,12 +739,15 @@ class ChatPageBox extends Component {
                     this.openPicker();
                   } else if (this.props.chatmateInfo.sub === undefined) {
                     this.props.sendChatGroup();
-                  } 
+                  }
                 }}
                 disabled={
                   this.props.senderText
                     .replace(/^\s+/, "")
                     .replace(/\s+$/, "") === ""
+                    ? true
+                    : !this.state.gc &&
+                      this.props.chatmateInfo.sub === undefined
                     ? true
                     : false
                 }
@@ -617,10 +764,7 @@ class ChatPageBox extends Component {
             handleClose={this.closeSplash}
           />
 
-          <Emoji
-            anchorEl={this.state.emoji}
-            handleEmoji={this.handleEmoji}
-          />
+          <Emoji anchorEl={this.state.emoji} handleEmoji={this.handleEmoji} />
 
           {/*GALLERY */}
           <Gallery
@@ -635,6 +779,12 @@ class ChatPageBox extends Component {
           open={this.state.openSnippet}
           handleClose={this.openSnippet}
           sendChat={this.props.sendCode}
+          />
+          {/* Edit Dialog  */}
+          <EditGroup
+            openDialog={this.state.openEditGroup}
+            handleClose={this.handleCloseEditGroup}
+            avatarSample={this.props.userInfo.avatar}
           />
         </Paper>
       </Grid>
