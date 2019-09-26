@@ -46,7 +46,14 @@ const styles = theme => ({
   },
   tabs: {
     minWidth: "50px",
-    padding: "12px 12px 0 12px"
+    padding: "12px 12px 0 12px",
+    "@media (max-width: 425px)": {
+      fontSize: "12px",
+      padding: "12px 12px 0 5px"
+    }
+  },
+  indicator: {
+    width: "65px !important"
   },
   search: {
     position: "relative",
@@ -76,6 +83,11 @@ const styles = theme => ({
     width: "896px",
     [theme.breakpoints.up("md")]: {
       width: "896px"
+    },
+    "@media (max-width: 425px)": {
+      height: "16px",
+      fontSize: "13px",
+      padding: "10px 8px 8px 48px"
     }
   },
   closeButton: {
@@ -108,7 +120,13 @@ const styles = theme => ({
     paddingBottom: "14%",
     alignItems: "center",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    "@media (max-width: 425px)": {
+      paddingTop: "42%"
+    },
+    "@media (min-width: 426px) and (max-width: 766px)": {
+      paddingTop: "20%"
+    }
   },
   cropContainer: {
     textAlign: "center",
@@ -130,14 +148,26 @@ const styles = theme => ({
     height: "80px",
     width: "84px",
     marginLeft: "13%",
-    backgroundRepeat: "no-repeat"
+    backgroundRepeat: "no-repeat",
+    "@media (max-width: 425px)": {
+      backgroundSize: "contain",
+      marginLeft: "0",
+      width: "50px",
+      marginBottom: "-22px"
+    }
   },
   searchImageIcon: {
     backgroundImage: `url(${SearchImageIcon})`,
     height: "80px",
     width: "84px",
     marginLeft: "12%",
-    backgroundRepeat: "no-repeat"
+    backgroundRepeat: "no-repeat",
+    "@media (max-width: 425px)": {
+      backgroundSize: "contain",
+      marginLeft: "24px",
+      width: "50px",
+      marginBottom: "-22px"
+    }
   },
   selectBtn: {
     textTransform: "none",
@@ -145,7 +175,10 @@ const styles = theme => ({
     borderRadius: "2px",
     border: "1px solid #d8d8d8",
     padding: "2px 8px",
-    fontSize: "12px"
+    fontSize: "12px",
+    "@media (max-width: 425px)": {
+      fontSize: "9px"
+    }
   },
   largeImage: {
     width: "500px"
@@ -216,6 +249,56 @@ const styles = theme => ({
       backgroundColor: "rgba(0,0,0,.1)",
       borderRadius: "10px",
       outline: "1px solid slategrey"
+    },
+    "@media (max-width: 425px)": {
+      gridTemplateColumns: "repeat(1, 1fr)"
+    }
+  },
+  cropInstruction: {
+    fontSize: "12px",
+    "@media (max-width: 425px)": {
+      fontSize: "8.5px"
+    }
+  },
+  dragPhoto: {
+    fontSize: "25px",
+    color: "#a8a8a8",
+    "@media (max-width: 425px)": {
+      fontSize: "15px"
+    }
+  },
+  or: {
+    fontSize: "18px",
+    color: "#a8a8a8",
+    "@media (max-width: 425px)": {
+      fontSize: "12px"
+    }
+  },
+  searchAnImage: {
+    fontSize: "25px",
+    color: "#a8a8a8",
+    "@media (max-width: 425px)": {
+      fontSize: "15px"
+    }
+  },
+  btn: {
+    "@media (max-width: 425px)": {
+      fontSize: "10px"
+    }
+  },
+  searchContainer: {
+    height: "483px",
+    padding: "0",
+    overflow: "hidden",
+    "@media (max-width: 425px)": {
+      height: "435px"
+    }
+  },
+  cropInsCron: {
+    padding: "16px 0 0 16px",
+    "@media (max-width: 425px)": {
+      padding: "9px 0 0 10px",
+      marginBottom: "5px"
     }
   }
 });
@@ -305,7 +388,8 @@ class UploadPhoto extends React.Component {
       page: 1,
       countPrevImages: 0,
       noMoreImages: false,
-      loadingCrop: null
+      loadingCrop: null,
+      disabled: true
     };
   }
 
@@ -336,7 +420,7 @@ class UploadPhoto extends React.Component {
   handleImageLoaded = image => {};
 
   handleOnCropChange = crop => {
-    this.setState({ crop: crop });
+    this.setState({ crop: crop, disabled: false });
   };
 
   handleOnCropComplete = (crop, pixelCrop) => {
@@ -444,6 +528,7 @@ class UploadPhoto extends React.Component {
   };
 
   handleSelectClassHeader = event => {
+    this.setState({ disabled: true });
     event.preventDefault();
     this.props.handleClose();
     this.props.uploadPhotoFn();
@@ -629,6 +714,7 @@ class UploadPhoto extends React.Component {
             indicatorColor="primary"
             textColor="primary"
             style={{ width: "100%", marginTop: "1%" }}
+            classes={{ indicator: classes.indicator }}
           >
             <Tab
               label="Upload"
@@ -645,7 +731,7 @@ class UploadPhoto extends React.Component {
         <TabPanel value={this.state.tabValue} index={0}>
           <DialogContent
             dividers
-            style={{ height: "451px" }}
+            style={{ height: "451px", overflow: "hidden" }}
             className={classes.uploadContent}
           >
             <div
@@ -694,18 +780,12 @@ class UploadPhoto extends React.Component {
                         />
                       </Grid>
                       <Grid item>
-                        <Typography
-                          gutterBottom
-                          style={{ fontSize: "25px", color: "#a8a8a8" }}
-                        >
+                        <Typography gutterBottom className={classes.dragPhoto}>
                           Drag a photo here
                         </Typography>
                       </Grid>
                       <Grid item>
-                        <Typography
-                          gutterBottom
-                          style={{ fontSize: "18px", color: "#a8a8a8" }}
-                        >
+                        <Typography gutterBottom className={classes.or}>
                           - or -
                         </Typography>
                       </Grid>
@@ -747,7 +827,10 @@ class UploadPhoto extends React.Component {
                     >
                       Upload &#8250; <b>{this.state.file[0].name}</b>
                     </Typography>
-                    <Typography gutterBottom style={{ fontSize: "12px" }}>
+                    <Typography
+                      gutterBottom
+                      className={classes.cropInstruction}
+                    >
                       To crop this image, drag the region below and then click
                       "Select class header"
                     </Typography>
@@ -779,7 +862,7 @@ class UploadPhoto extends React.Component {
         </TabPanel>
 
         <TabPanel value={this.state.tabValue} index={1}>
-          <DialogContent dividers style={{ height: "483px", padding: "0" }}>
+          <DialogContent dividers className={classes.searchContainer}>
             <Grid container style={{ backgroundColor: "#efefef" }}>
               <Grid item>
                 <div className={classes.search}>
@@ -823,10 +906,7 @@ class UploadPhoto extends React.Component {
                   <div className={classes.searchImageIcon} />
                 </Grid>
                 <Grid item>
-                  <Typography
-                    gutterBottom
-                    style={{ fontSize: "25px", color: "#a8a8a8" }}
-                  >
+                  <Typography gutterBottom className={classes.searchAnImage}>
                     {this.state.imageFound === ""
                       ? "Search an image"
                       : "No image found"}
@@ -843,7 +923,7 @@ class UploadPhoto extends React.Component {
               />
             ) : this.state.imgSrc !== null ? (
               <React.Fragment>
-                <Grid container style={{ padding: "16px 0 0 16px" }}>
+                <Grid container className={classes.cropInsCron}>
                   <Grid item>
                     <Typography
                       gutterBottom
@@ -855,7 +935,10 @@ class UploadPhoto extends React.Component {
                     >
                       Upload &#8250; <b>{this.state.file[0].name}</b>
                     </Typography>
-                    <Typography gutterBottom style={{ fontSize: "12px" }}>
+                    <Typography
+                      gutterBottom
+                      className={classes.cropInstruction}
+                    >
                       To crop this image, drag the region below and then click
                       "Select class header"
                     </Typography>
@@ -989,8 +1072,9 @@ class UploadPhoto extends React.Component {
         </TabPanel>
 
         <DialogActions>
-          {this.state.imgSrc !== null && this.state.loadingCrop !== null ? (
+          {this.state.imgSrc !== null ? (
             <Button
+              className={classes.btn}
               onClick={this.back}
               color="primary"
               style={{ position: "absolute", left: "0" }}
@@ -999,22 +1083,22 @@ class UploadPhoto extends React.Component {
             </Button>
           ) : null}
           <Button
+            id="btnSelectClassHeader"
+            className={classes.btn}
             classes={{ textPrimary: classes.uploadBtn }}
             onClick={e => this.handleSelectClassHeader(e)}
             color="primary"
             disabled={
-              this.state.imgSrc === null ||
-              (this.state.crop.height === 16.10294117647059 &&
-                this.state.crop.width === 48.34437086092716 &&
-                this.state.crop.x === 25 &&
-                this.state.crop.y === 43)
-                ? true
-                : false
+              this.state.imgSrc === null || this.state.disabled ? true : false
             }
           >
             Select class header
           </Button>
-          <Button onClick={this.props.handleClose} color="primary">
+          <Button
+            className={classes.btn}
+            onClick={this.props.handleClose}
+            color="primary"
+          >
             Cancel
           </Button>
         </DialogActions>
