@@ -47,7 +47,8 @@ class ChatPage extends PureComponent {
       newChatmateSub: "",
 
       groupListInfo: [],
-      groupConversation: []
+      groupConversation: [],
+
     };
   }
 
@@ -280,6 +281,54 @@ class ChatPage extends PureComponent {
     });
   };
 
+  sendCode = code => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
+    let convo = {
+      message: code,
+      sender_sub: this.state.sub,
+      chatmate_sub: this.state.chatmateSub,
+      time: datetime,
+      type: "code",
+      link: null
+    };
+    const data = api.fetch(`/api/sendStudentChat`, "post", convo);
+    data.then(res => {
+      this.displayBadge(this.state.chatmateSub, "pm");
+      const chat = [
+        res.data,
+        this.state.sub,
+        this.state.chatmateSub
+      ];
+      socket.emit("getNormalChat", chat);
+    });
+  };
+
   sendChatGroup = () => {
     const months = [
       "Jan",
@@ -391,6 +440,8 @@ class ChatPage extends PureComponent {
               displayBadge={this.displayBadge}
               groupConversation={this.state.groupConversation}
               sendChatGroup={this.sendChatGroup}
+              //snippet
+              sendCode={this.sendCode}
             />
             <ChatPageInfo
               userInfo={this.state.userInfo} 
@@ -406,7 +457,7 @@ class ChatPage extends PureComponent {
               pathname: `/chat/${this.state.newChatmateSub}`
             }}
           />
-        ) : null}
+        ) : null}      
       </div>
     );
   }

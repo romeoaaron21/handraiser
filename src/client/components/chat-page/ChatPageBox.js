@@ -18,6 +18,8 @@ import Photo from '@material-ui/icons/Photo'
 import { InputAdornment } from '@material-ui/core'
 import InsertEmoticon from '@material-ui/icons/InsertEmoticon';
 import GroupIcon from '@material-ui/icons/Group';
+import Snippet from './snippet/snippet';
+
 
 import Link from '@material-ui/core/Link';
 //Firebase
@@ -29,6 +31,10 @@ import Splash from '../chat-box/plugins/giphy';
 //emoji
 import Emoji from '../chat-box/plugins/emoji';
 import Gallery from './gallery/galleryDialog';
+
+import AceEditor from 'react-ace';
+import 'brace/mode/javascript'
+import 'brace/theme/monokai'
 
 
 const imageMaxSize = 30000000; // bytes
@@ -69,10 +75,14 @@ class ChatPageBox extends Component {
       //gallery
       openGallery: false,
       selected: null,
-      imgArray: []
+      imgArray: [],
+      //snippet
+      openSnippet: false
     }
   }
-  
+  openSnippet = () => {
+    this.setState({ openSnippet: !this.state.openSnippet })
+  }
   componentDidUpdate() {
     this.scrollToBottom();
   }
@@ -370,7 +380,9 @@ class ChatPageBox extends Component {
                                       (convo.chat_type === "image" || 
                                         convo.chat_type === 'gif')
                                       ? classes.chatImage
-                                      : (convo.sender_id !== this.props.userInfo.sub)
+                                      : (convo.chat_type === 'code')
+                                        ? classes.snippet
+                                        : (convo.sender_id !== this.props.userInfo.sub)
                                         ? classes.senderBox
                                         : classes.receiverBox
                                   }>
@@ -392,9 +404,20 @@ class ChatPageBox extends Component {
                                         </Box>
                                       :  (convo.chat_type === "image")
                                           ? <img style={{ width: "100%", cursor: 'pointer' }} src={convo.link} alt="" onClick={() => this.openGallery(convo.id)} />
-                                          : <img style={{ width: "100%"}} src={convo.link} alt=""/>
+                                          : (convo.chat_type === "gif")
+                                            ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
+                                            : <AceEditor
+                                            wrapEnabled
+                                            maxLines={100}
+                                            fontSize="16px"
+                                            width="35vw"
+                                            mode="javascript"
+                                            value={convo.message}
+                                            theme="monokai"
+                                            readOnly
+                                            />
                                   }
-                                    <Typography variant="caption" className={classes.time}>
+                                    <Typography variant="caption" className={convo.chat_type === "code" ? classes.snippetTime : classes.time}>
                                       {convo.time}
                                     </Typography>
                                   </Box>
@@ -518,7 +541,10 @@ class ChatPageBox extends Component {
                   }
                 }}
                 onKeyUp={e => {
-                  if (
+                  if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
+                    this.openSnippet()
+                  }
+                  else if (
                     e.target.value.replace(/^\s+/, "").replace(/\s+$/, "") !==
                     ""
                   ) {
@@ -602,6 +628,13 @@ class ChatPageBox extends Component {
             open={this.state.openGallery}
             handleClose={this.closeGallery}
             selected={this.state.selected}
+          />
+
+          {/*snippet*/}
+          <Snippet 
+          open={this.state.openSnippet}
+          handleClose={this.openSnippet}
+          sendChat={this.props.sendCode}
           />
         </Paper>
       </Grid>
