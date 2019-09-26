@@ -32,8 +32,6 @@ import { runInThisContext } from "vm";
 import io from "socket.io-client";
 const socket = io("http://boom-handraiser.com:3001/");
 
-
-
 class CreateGroup extends Component {
   constructor(props) {
     super(props);
@@ -46,45 +44,43 @@ class CreateGroup extends Component {
       btnCreate: true,
       groupLists: [],
       groupNameExist: false,
-      helperText: '',
+      helperText: ""
     };
   }
 
   componentDidMount() {
-    api.fetch(`/api/getAllUsers`, "get")
-      .then(res => {
-        this.setState({ allUsers: res.data })
-      })
-    api.fetch(`/api/getAllGroupName`, "get")
-      .then(res => {
-        this.setState({ groupLists: [...res.data] })
-      })
+    api.fetch(`/api/getAllUsers`, "get").then(res => {
+      this.setState({ allUsers: res.data });
+    });
+    api.fetch(`/api/getAllGroupName`, "get").then(res => {
+      this.setState({ groupLists: [...res.data] });
+    });
   }
 
-  btnCreateToggle = (name,groupExist) => {
+  btnCreateToggle = (name, groupExist) => {
     if (name.length > 1 && this.state.checked.length > 1 && !groupExist) {
-      this.setState({ btnCreate: false })
+      this.setState({ btnCreate: false });
     } else {
-      this.setState({ btnCreate: true })
+      this.setState({ btnCreate: true });
     }
-  }
+  };
 
-  checkGroupName = (value) => {
+  checkGroupName = value => {
     let exist = false;
     this.state.groupLists.map(data => {
       if (data.name.toLowerCase() === value.toLowerCase()) {
         exist = true;
       }
-    })
-    this.setState({ groupNameExist: exist })
+    });
+    this.setState({ groupNameExist: exist });
     if (exist) {
-      this.setState({ helperText: "Group Name Already Exist" })
+      this.setState({ helperText: "Group Name Already Exist" });
     } else {
-      this.setState({ helperText: "" })
+      this.setState({ helperText: "" });
     }
 
     return exist;
-  }
+  };
 
   handleToggle = value => () => {
     const currentIndex = this.state.checked.indexOf(value);
@@ -96,60 +92,64 @@ class CreateGroup extends Component {
       newChecked.splice(currentIndex, 1);
     }
 
-    if (this.state.groupName.length > 1 && newChecked.length > 1 && !this.state.groupNameExist) {
-      this.setState({ btnCreate: false })
+    if (
+      this.state.groupName.length > 1 &&
+      newChecked.length > 1 &&
+      !this.state.groupNameExist
+    ) {
+      this.setState({ btnCreate: false });
     } else {
-      this.setState({ btnCreate: true })
+      this.setState({ btnCreate: true });
     }
 
     this.setState({ checked: newChecked });
   };
 
-  handleDelete = (id) => {
+  handleDelete = id => {
     const currentIndex = this.state.checked.indexOf(id);
     const newChecked = [...this.state.checked];
     newChecked.splice(currentIndex, 1);
 
-    this.setState({ checked: newChecked })
-  }
+    this.setState({ checked: newChecked });
+  };
 
   createGroup = () => {
     var postData = {
       groupName: this.state.groupName,
       creatorId: this.props.sub,
       userId: [this.props.sub, ...this.state.checked]
-    }
-    api.fetch(`/api/createGroupChat`, "post", postData)
-      .then(res => {
-        socket.emit("createGroupChat", res.data);
-      })
+    };
+    api.fetch(`/api/createGroupChat`, "post", postData).then(res => {
+      socket.emit("createGroupChat", res.data);
+    });
     this.setState({
       groupName: "",
       creatorId: "",
       checked: [],
       btnCreate: true
-    })
-  }
-
+    });
+  };
 
   render() {
     const { classes } = this.props;
     const userFilter = this.state.allUsers.filter(data => {
-      let fname =
-        data.first_name
-          .toLowerCase()
-          .indexOf(this.state.search.toLowerCase()) !== -1;
-      let lname =
-        data.last_name
-          .toLowerCase()
-          .indexOf(this.state.search.toLowerCase()) !== -1;
-      if (fname) {
-        return fname;
-      } else {
-        return lname;
+      if (data.sub !== this.props.sub) {
+        let fname =
+          data.first_name
+            .toLowerCase()
+            .indexOf(this.state.search.toLowerCase()) !== -1;
+        let lname =
+          data.last_name
+            .toLowerCase()
+            .indexOf(this.state.search.toLowerCase()) !== -1;
+        if (fname) {
+          return fname;
+        } else {
+          return lname;
+        }
       }
     });
-    console.log(this.state.groupNameExist)
+
     return (
       <Dialog
         open={this.props.openDialog}
@@ -176,14 +176,16 @@ class CreateGroup extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
-            onChange={(event) => {
-              this.setState({ groupName: event.target.value })
-              this.btnCreateToggle(event.target.value,this.checkGroupName(event.target.value))
+            onChange={event => {
+              this.setState({ groupName: event.target.value });
+              this.btnCreateToggle(
+                event.target.value,
+                this.checkGroupName(event.target.value)
+              );
             }}
-            onBlur={(event) => {
+            onBlur={event => {
               this.checkGroupName(event.target.value);
             }}
-
             helperText={this.state.helperText}
             error={this.state.groupNameExist}
           />
@@ -195,8 +197,8 @@ class CreateGroup extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
-            onChange={(event) => {
-              this.setState({ search: event.target.value })
+            onChange={event => {
+              this.setState({ search: event.target.value });
             }}
           />
           <Paper
@@ -228,10 +230,12 @@ class CreateGroup extends Component {
                       <Avatar
                         style={{ width: 25, height: 25 }}
                         src={value.avatar}
-                      >
-                      </Avatar>
+                      ></Avatar>
                     </ListItemAvatar>
-                    <ListItemText id={labelId} primary={`${value.first_name} ${value.last_name}`} />
+                    <ListItemText
+                      id={labelId}
+                      primary={`${value.first_name} ${value.last_name}`}
+                    />
                   </ListItem>
                 );
               })}
@@ -258,13 +262,15 @@ class CreateGroup extends Component {
                       <Chip
                         avatar={<Avatar alt="sender" src={data.avatar} />}
                         label={`${data.first_name} ${data.last_name}`}
-                        onDelete={() => { this.handleDelete(val) }}
+                        onDelete={() => {
+                          this.handleDelete(val);
+                        }}
                         className={classes.chip}
                         size="small"
                       />
-                    )
+                    );
                   }
-                })
+                });
               })}
             </div>
           </Paper>
@@ -276,12 +282,13 @@ class CreateGroup extends Component {
             onClick={() => {
               this.props.handleClose();
               this.createGroup();
-            }} color="primary"
+            }}
+            color="primary"
           >
             Create
           </Button>
         </DialogActions>
-      </Dialog >
+      </Dialog>
     );
   }
 }
