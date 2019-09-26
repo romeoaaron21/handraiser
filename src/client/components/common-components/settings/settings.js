@@ -333,17 +333,14 @@ class Settings extends PureComponent {
   delete = (id, classHeader) => {
     api.fetch(`/api/cohorts/${id}/delete`, "post").then(() => {
       // Create a reference to the file to delete
-      var desertRef = storage.refFromURL(classHeader);
+      if (classHeader !== null) {
+        var desertRef = storage.refFromURL(classHeader);
 
-      // Delete the file
-      desertRef
-        .delete()
-        .then(function() {
-          // File deleted successfully
-        })
-        .catch(function(error) {
-          // Uh-oh, an error occurred!
-        });
+        desertRef
+          .delete()
+          .then(function() {})
+          .catch(function(error) {});
+      }
       window.location.href = `/cohorts`;
     });
   };

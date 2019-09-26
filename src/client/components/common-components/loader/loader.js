@@ -22,15 +22,21 @@ const style = {
   loaderText: {
     color: "#5d5d5d",
     "@media (max-width: 425px)": {
-      fontSize: "20px"
+      fontSize: "15px"
     }
   },
   loader: {
     marginTop: "17%",
     marginBottom: "auto",
     "@media (max-width: 425px)": {
-      marginTop: "100%",
+      marginTop: "50%",
       marginBottom: "100%"
+    }
+  },
+  linear: {
+    marginTop: "2%",
+    "@media (max-width: 425px)": {
+      width: "300px !important"
     }
   }
 };
@@ -56,10 +62,8 @@ class Loader extends Component {
           </Typography>
           {this.props.linear ? (
             <LinearProgress
-              style={{
-                width: this.props.width,
-                marginTop: "2%"
-              }}
+              style={{ width: this.props.width }}
+              className={classes.linear}
               classes={{ barColorPrimary: classes.linearSpinner }}
             />
           ) : (

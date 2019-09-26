@@ -386,11 +386,6 @@ class AvailClass extends React.Component {
                             >
                               {cohort.name}
                             </Typography>
-                            {/* <Avatar
-                              alt={cohort.first_name + " " + cohort.last_name}
-                              src={cohort.avatar}
-                              className={classes.bigAvatar}
-                            /> */}
                           </div>
                           <Typography
                             variant="body2"
