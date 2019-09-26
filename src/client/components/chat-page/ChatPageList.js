@@ -223,6 +223,7 @@ class ChatPageList extends PureComponent {
                 sendChat={this.props.sendChat}
                 chatListInfo={this.props.chatListInfo}
                 sub={this.props.sub}
+                userInfo={this.props.userInfo}
               />
 
               <CreateGroup

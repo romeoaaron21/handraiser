@@ -298,7 +298,9 @@ class SideNav extends React.Component {
         >
           Active Now
         </Typography>
-        {this.state.online.map(stud => (
+        {
+          this.state.user.privilege === 'student'?
+          this.state.online.map(stud => (
           stud.sub !== this.state.user.sub && stud.privilege === 'student' ?
             <List key={stud.id}>
               <ListItem button onClick={() => this.selectChatmate(stud)}>
@@ -327,7 +329,38 @@ class SideNav extends React.Component {
             </List>
             :
             null
-        ))}
+        ))
+      :
+      this.state.online.map(stud => (
+        stud.sub !== this.state.user.sub && stud.privilege === 'mentor' ?
+          <List key={stud.id}>
+            <ListItem button onClick={() => this.selectChatmate(stud)}>
+              <ListItemAvatar>
+                <div>
+                  <Avatar
+                    alt={stud.first_name + " " + stud.last_name}
+                    src={stud.avatar}
+                  />
+                  <img
+                    style={{
+                      width: 35,
+                      height: 35,
+                      margin: 0,
+                      position: "absolute",
+                      top: 24,
+                      left: 32
+                    }}
+                    src={Online}
+                    alt=""
+                  />
+                </div>
+              </ListItemAvatar>
+              <ListItemText primary={stud.first_name + " " + stud.last_name} />
+            </ListItem>
+          </List>
+          :
+          null
+      ))}
 
         {this.state.chatmateSub ? (
           <Redirect
