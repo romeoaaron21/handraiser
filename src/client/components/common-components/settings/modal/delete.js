@@ -8,7 +8,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 class DeleteClass extends React.Component {
   submit = () => {
-    console.log(this.props.delete);
     this.props.delete(this.props.id, this.props.classHeader);
     this.props.close();
   };

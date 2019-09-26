@@ -92,7 +92,10 @@ class MentorKeys extends React.Component {
   filterStatus = e => {
     this.setState({ loader: true });
     api.fetch(`/keys/${e.target.value}`, "get").then(res => {
-      this.setState({ keys: res.data.keys, loader: false });
+      this.setState({ keys: res.data.keys });
+      setTimeout(() => {
+        this.setState({ loader: false });
+      }, 1000);
     });
     this.setState({ filter: e.target.value });
   };
