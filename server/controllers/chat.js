@@ -88,7 +88,7 @@ function getGroupList(req, res) {
   const { userSub } = req.params;
 
   db.query(
-    `select groupchat.id as id, name as name from groupchat, groupmembers WHERE groupchat.id = groupmembers.groupchat_id AND member_sub = '${userSub}'`
+    `SELECT groupchat.id as id, name as name, member_sub as sub FROM groupchat, groupmembers WHERE groupchat.id = groupmembers.groupchat_id AND member_sub = '${userSub}'`
   )
     .then(groupchat => {
       res.status(200).json(groupchat);
@@ -158,8 +158,8 @@ function createGroupChat(req, res) {
       db.query(
         `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${data.id}) `
       )
+      .then((data)=>res.status(201).json(data))
     })
-    res.status(201).json({groupName: `${req.body.groupName}`})
   })
 }
 

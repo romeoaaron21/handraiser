@@ -29,6 +29,10 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CommentIcon from "@material-ui/icons/Comment";
 import api from "../../../services/fetchApi";
 import { runInThisContext } from "vm";
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
+
+
 
 class CreateGroup extends Component {
   constructor(props) {
@@ -116,8 +120,8 @@ class CreateGroup extends Component {
       userId: [this.props.sub, ...this.state.checked]
     }
     api.fetch(`/api/createGroupChat`, "post", postData)
-      .then(data => {
-        console.log(data)
+      .then(res => {
+        socket.emit("createGroupChat", res.data);
       })
     this.setState({
       groupName: "",

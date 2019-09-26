@@ -126,6 +126,9 @@ massive({
     socket.on("seenNormalGroupChat", chat => {
       io.emit("seenNormalGroupChat", chat);
     });
+    socket.on("createGroupChat", () => {
+      io.emit("createGroupChat");
+    });
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {

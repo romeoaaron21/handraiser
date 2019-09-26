@@ -106,6 +106,10 @@ class ChatPage extends PureComponent {
         groupConversation: [...chat]
       });
     });
+
+    socket.on("createGroupChat", groupChat => {
+      this.displayGroupList()
+    });
   }
 
   componentDidMount() {
