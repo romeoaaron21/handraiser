@@ -452,17 +452,9 @@ class Cohorts extends React.Component {
                     member => member.student_id === this.state.id
                   ).length !== 0 ? (
                   <div className={classes.student}>
-                    <Grid
-                      container
-                      style={{
-                        textAlign: "center",
-                        alignItems: "center",
-                        display: "flex",
-                        flexDirection: "column"
-                      }}
-                    >
+                    <Grid container className={classes.cohortContainer}>
                       <TabPanel value={this.state.tabValue} index={0}>
-                        <Grid container>
+                        <Grid container className={classes.enrolledClassCon}>
                           <StudentClassCards
                             user_id={this.state.id}
                             search={this.state.search}
@@ -478,7 +470,10 @@ class Cohorts extends React.Component {
                         {this.state.privilege === "student" ? (
                           this.state.cohorts.length !== 0 ? (
                             <div className={classes.student}>
-                              <Grid container>
+                              <Grid
+                                container
+                                className={classes.availablesClassCon}
+                              >
                                 {this.state.member.length !== 0 &&
                                 this.state.search === "" ? (
                                   this.state.enrolledClasses.length ===
