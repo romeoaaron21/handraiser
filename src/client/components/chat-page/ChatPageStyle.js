@@ -239,6 +239,23 @@ const styles = theme => ({
     maxHeight: 70,
     padding: 5,
     overflowY: "auto"
+  },
+  //snippet 
+  snippet: {
+    color: "#000",
+    width: "67vh",
+    overflowWrap: "break-word",
+    borderRadius: "4px",
+    backgroundColor: "#ffffff",
+    "@media (max-width: 425px)": {
+      maxWidth: "191px",
+      padding: "6px 12px"
+    }
+  },
+  snippetTime: {
+    display: "flex",
+    justifyContent: "flex-start",
+    marginTop: "10px"
   }
   // End ChatInfo
 });
