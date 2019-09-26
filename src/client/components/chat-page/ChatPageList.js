@@ -399,7 +399,7 @@ class ChatPageList extends PureComponent {
                             </ListItemAvatar>
                             <div className={classes.chatDetails}>
                               <div style={{ width: "80%" }}>
-                                <Typography variant="body1">
+                                <Typography variant="body1" className={classes.chatPrev}>
                                   {gc.name}
                                 </Typography>
                                 <Typography
