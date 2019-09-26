@@ -269,11 +269,11 @@ class Cohorts extends React.Component {
   // DELETE CLASS
   delete = id => {
     api.fetch(`/api/cohorts/${id}/delete`, "get").then(() => {
+      this.componentDidMount();
       toast.info("Cohort Deleted!", {
         hideProgressBar: true,
         draggable: false
       });
-      this.componentDidMount();
     });
   };
 
@@ -569,32 +569,30 @@ class Cohorts extends React.Component {
                         </Button>
                       </Grid>
                     </TabPanel>
-                    <TabPanel value={this.state.tabValue} index={1}>
-                      <div className={classes.student}>
-                        <Grid
-                          container
-                          style={{
-                            textAlign: "center",
-                            alignItems: "center",
-                            display: "flex",
-                            flexDirection: "column"
-                          }}
-                        >
-                          <Grid container>
-                            <AvailClass
-                              search={this.state.search}
-                              user_id={this.state.id}
-                              enrolledClasses={this.state.enrolledClasses}
-                              cohorts={this.state.cohorts}
-                              members={this.state.member}
-                              openEnroll={this.openEnroll}
-                              openLeave={this.openLeave}
-                              openStudentList={this.openStudentList}
-                            />
-                          </Grid>
-                        </Grid>
-                      </div>
-                    </TabPanel>
+                    <Grid
+                      container
+                      style={{
+                        textAlign: "center",
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "column"
+                      }}
+                    >
+                      <TabPanel value={this.state.tabValue} index={1}>
+                        <div className={classes.student}>
+                          <AvailClass
+                            search={this.state.search}
+                            user_id={this.state.id}
+                            enrolledClasses={this.state.enrolledClasses}
+                            cohorts={this.state.cohorts}
+                            members={this.state.member}
+                            openEnroll={this.openEnroll}
+                            openLeave={this.openLeave}
+                            openStudentList={this.openStudentList}
+                          />
+                        </div>
+                      </TabPanel>
+                    </Grid>
                   </React.Fragment>
                 )}
 
