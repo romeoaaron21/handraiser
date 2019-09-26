@@ -88,7 +88,7 @@ function getGroupList(req, res) {
   const { userSub } = req.params;
 
   db.query(
-    `SELECT groupchat.id as id, name as name, member_sub as sub FROM groupchat, groupmembers WHERE groupchat.id = groupmembers.groupchat_id AND member_sub = '${userSub}'`
+    `SELECT groupchat.id as id, name as name, member_sub as sub FROM groupchat, groupmembers WHERE groupchat.id = groupmembers.groupchat_id AND member_sub = '${userSub}' order by groupchat.name ASC`
   )
     .then(groupchat => {
       res.status(200).json(groupchat);
