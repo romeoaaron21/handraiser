@@ -509,7 +509,7 @@ class ChatPageBox extends Component {
                 color="primary"
                 style={{ marginRight: 5 }}
                 value={this.props.senderText}
-                onChange={e => this.props.setChatText(e.target.value)}
+                onChange={e => this.props.chatmateInfo.sub !== undefined? this.props.setChatText(e.target.value, 'pm') : this.props.setChatText(e.target.value, 'gc')}
                 onClick={() => {
                   if (this.props.chatmateInfo.sub !== undefined) {
                     this.props.displayBadge(this.props.chatmateInfo.sub, "pm");

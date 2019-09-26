@@ -110,6 +110,22 @@ class ChatPage extends PureComponent {
     socket.on("createGroupChat", groupChat => {
       this.displayGroupList()
     });
+
+    socket.on("setStudentGroupChatText", chatText => {
+      if (
+        chatText[2] === this.state.sub &&
+        chatText[1] === this.state.chatmateSub
+      ) {
+        this.setState({ senderText: chatText[0] });
+      } else if (
+        chatText[2] !== this.state.sub &&
+        chatText[1] === this.state.chatmateSub
+      ) {
+        this.setState({ chatmateText: chatText[0] });
+      }
+    });
+
+
   }
 
   componentDidMount() {
@@ -227,9 +243,14 @@ class ChatPage extends PureComponent {
     });
   };
 
-  setChatText = val => {
+  setChatText = (val, type) => {
     let textVal = [val, this.state.chatmateSub, this.state.sub];
-    socket.emit("setStudentChatText", textVal);
+    if(type === "pm"){
+      socket.emit("setStudentChatText", textVal);
+    }
+    else{
+      socket.emit("setStudentGroupChatText", textVal);
+    }
   };
 
   sendChat = (url, chatText, sub, type ) => {
