@@ -76,8 +76,8 @@ const styles = theme => ({
     background: "none",
     border: "1px solid white",
     "&:hover, &:focus": {
-      background: theme.palette.grey[300],
-      color: theme.palette.grey[900]
+      background: "white",
+      color: "#565656"
     }
   }
 });

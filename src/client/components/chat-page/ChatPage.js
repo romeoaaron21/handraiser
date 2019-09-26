@@ -228,7 +228,8 @@ class ChatPage extends PureComponent {
     socket.emit("setStudentChatText", textVal);
   };
 
-  sendChat = (image, chatText, sub) => {
+  sendChat = (url, chatText, sub, type ) => {
+    console.log(url)
     const months = [
       "Jan",
       "Feb",
@@ -261,7 +262,8 @@ class ChatPage extends PureComponent {
       sender_sub: this.state.sub,
       chatmate_sub: sub === undefined ? this.state.chatmateSub : sub,
       time: datetime,
-      type: image ? image : "text"
+      type: type ? type : "text",
+      link: url ? url : null
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
@@ -388,8 +390,9 @@ class ChatPage extends PureComponent {
               sendChatGroup={this.sendChatGroup}
             />
             <ChatPageInfo
-              chatmateInfo={this.state.chatmateInfo}
-              conversation={this.state.conversation}
+              userInfo={this.state.userInfo} 
+              chatmateInfo={this.state.chatmateInfo} 
+              conversation={[...this.state.conversation].reverse()}
             />
           </Grid>
         </Container>

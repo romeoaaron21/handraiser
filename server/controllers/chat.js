@@ -11,7 +11,7 @@ function getChatUsersInfo(req, res) {
 
 function sendStudentChat(req, res) {
   const db = req.app.get("db");
-  const { message, sender_sub, chatmate_sub, time, type } = req.body;
+  const { message, sender_sub, chatmate_sub, time, type, link } = req.body
   db.chat
     .insert({
       message: message,
@@ -20,7 +20,8 @@ function sendStudentChat(req, res) {
       cohort_id: "all",
       time: time,
       seen: 0,
-      chat_type: type
+      chat_type: type,
+      link: link
     })
     .then(() => {
       db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
@@ -143,6 +144,33 @@ function sendGroupChat(req, res) {
   });
 }
 
+function createGroupChat(req, res) {
+  const db = req.app.get("db");
+  db.groupchat
+  .insert(
+    {
+      user_sub: req.body.creatorId,
+      name: req.body.groupName
+    }
+  ).then(data => {
+    // map user Id
+    req.body.userId.map(value => {
+      db.query(
+        `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${data.id}) `
+      )
+    })
+    res.status(201).json({groupName: `${req.body.groupName}`})
+  })
+}
+
+function getAllGroupName(req, res) {
+  const db = req.app.get("db");
+  db.query(`SELECT * FROM groupchat`)
+  .then(data => {
+    res.status(200).json(data)
+  })
+}
+
 function seenNormalGroupChat(req, res) {
   const db = req.app.get("db");
   const user_id = req.body.chatmate;
@@ -196,5 +224,7 @@ module.exports = {
 
   getAllUsers,
   sendGroupChat,
-  seenNormalGroupChat
+  seenNormalGroupChat,
+  createGroupChat,
+  getAllGroupName
 };

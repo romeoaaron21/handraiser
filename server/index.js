@@ -271,6 +271,8 @@ massive({
   app.patch("/api/seenNormalGroupChat/", chat.seenNormalGroupChat);
   
 
+  app.post("/api/createGroupChat", chat.createGroupChat)
+  app.get("/api/getAllGroupName", chat.getAllGroupName)
   //End of Group Chat
 
   server.listen(PORT, () => {

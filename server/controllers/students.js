@@ -124,6 +124,7 @@ function sendChat(req, res) {
   const cohort_id = req.body.cohort_id;
   const time = req.body.time;
   const type = req.body.type;
+  const link = req.body.link;
 
 
   db.chat
@@ -134,7 +135,8 @@ function sendChat(req, res) {
       cohort_id: `${cohort_id}`,
       time: time,
       seen: 0,
-      chat_type: type
+      chat_type: type,
+      link: link
     })
     .then(() => {
       db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {

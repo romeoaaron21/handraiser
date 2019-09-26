@@ -128,7 +128,7 @@ const styles = theme => ({
     maxHeight: "435px",
     "@media (max-height: 425px)":{
       maxHeight: '485px',
-      minHeight: '485px'
+      minHeight: '490px'
     }
   },
   chatContent: {

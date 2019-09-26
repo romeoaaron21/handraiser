@@ -3,6 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 const style = {
   spinner: {
@@ -53,7 +54,17 @@ class Loader extends Component {
           >
             {this.props.content}
           </Typography>
-          <CircularProgress className={classes.spinner} />
+          {this.props.linear ? (
+            <LinearProgress
+              style={{
+                width: this.props.width,
+                marginTop: "2%"
+              }}
+              classes={{ barColorPrimary: classes.linearSpinner }}
+            />
+          ) : (
+            <CircularProgress className={classes.spinner} />
+          )}
         </Grid>
       </Grid>
     );
