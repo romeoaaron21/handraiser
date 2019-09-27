@@ -250,7 +250,54 @@ class Student extends PureComponent {
     });
     socket.emit("displayBadge");
   };
-
+  sendCode = code => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
+    let convo = {
+      message: code,
+      sender_sub: this.state.sub,
+      chatmate_sub: this.state.chatmateSub,
+      cohort_id: this.props.cohort_id,
+      time: datetime,
+      type: "code",
+      link: null
+    };
+    const data = api.fetch(`/api/sendChat`, "post", convo);
+    this.setState({ value: this.state.sub });
+    data.then(res => {
+      socket.emit("sendChat", {
+        chat: res.data,
+        senderSub: this.state.sub,
+        chatmateSub: this.state.chatmateSub
+      });
+    });
+    socket.emit("displayBadge");
+  };
   //end added dh
 
   displayBadge() {
@@ -857,6 +904,8 @@ class Student extends PureComponent {
                             : false
                         }
                         sendChatSub={this.selectChatmate}
+                        //send code
+                        sendCode={this.sendCode}
                       />
                     </Grid>
                   </React.Fragment>
@@ -881,6 +930,8 @@ class Student extends PureComponent {
                         helpingStudent={this.state.helpingStudent}
                         sendChatSub={this.selectChatmate}
                         fetchAssist={this.fetchAssist}
+                        //send code
+                        sendCode={this.sendCode}
                       />
                     </Grid>
                   </React.Fragment>

@@ -23,10 +23,6 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
-import api from "../../services/fetchApi";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import WarningIcon from '@material-ui/icons/Warning';
-
 import Link from "@material-ui/core/Link";
 import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
@@ -36,7 +32,6 @@ import Gallery from './gallery/galleryDialog';
 import AceEditor from 'react-ace';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import WarningIcon from '@material-ui/icons/Warning';
-
 import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
@@ -93,17 +88,26 @@ class ChatPageBox extends Component {
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
-  componentDidUpdate() {
-    if (
-      this.props.chatmateInfo.sub === undefined &&
-      this.props.paramsCheck !== "allMessages"
-    ) {
-      window.location.href = "../404";
-    }
-    this.scrollToBottom();
-  }
   messagesEndRef = React.createRef();
-  componentDidMount() {
+  componentDidUpdate() {
+    /*let count = 0;
+    if (this.props.chatmateInfo.sub === undefined) {
+      this.props.groupListInfo.map(gc => {
+        if (gc.id !== this.props.chatmateInfo.id) {
+          count++;
+        }
+      });
+    }
+    else{
+      this.props.chatListInfo.map(chatmate => {
+        if(chatmate.sub !== this.props.chatmateInfo.sub){
+          count++
+        }
+      })
+    }
+    if(count === 2){
+      window.location.href = "../404";
+    }*/
     this.scrollToBottom();
   }
   scrollToBottom = () => {
@@ -527,6 +531,7 @@ class ChatPageBox extends Component {
                                         : (convo.chat_type === "gif")
                                           ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
                                           : <AceEditor
+                                          highlightActiveLine={false}
                                           wrapEnabled
                                           maxLines={100}
                                           fontSize="16px"
@@ -601,6 +606,7 @@ class ChatPageBox extends Component {
                                 : (gcConvo.chat_type === "gif")
                                   ? <img style={{ width: "100%"}} src={gcConvo.link} alt=""/>
                                   : <AceEditor
+                                      highlightActiveLine={false}
                                       wrapEnabled
                                       maxLines={100}
                                       fontSize="16px"
