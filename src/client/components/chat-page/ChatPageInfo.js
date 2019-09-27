@@ -21,6 +21,12 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import Link from "@material-ui/core/Link";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Photo from "@material-ui/icons/Photo";
+//List
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemText from "@material-ui/core/ListItemText";
+import Divider from "@material-ui/core/Divider";
 
 const ExpansionPanel = withStyles({
   root: {
@@ -55,16 +61,23 @@ class ChatPageInfo extends Component {
       expanded: "photos"
     };
   }
+
   openGallery = index => {
-    const images = this.props.conversation.filter(convo => {
-      return (
-        convo.chat_type === "image" &&
-        ((convo.sender_id === this.props.userInfo.sub &&
-          this.props.chatmateInfo.sub === convo.chatmate_id) ||
-          (convo.chatmate_id === this.props.userInfo.sub &&
-            this.props.chatmateInfo.sub === convo.sender_id))
-      );
-    });
+    let images
+    if (this.props.chatmateInfo.sub){
+      images = this.props.conversation.filter(convo => {
+        return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+        (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+      })
+    }
+    else {
+      images = this.props.groupConversation.filter(convo => {
+        return (
+          convo.chat_type === "image" && 
+          this.props.chatmateInfo.id === convo.groupchat_id
+        );
+      });
+    }
     const selected = images.findIndex(image => image.id === index);
     this.setState({
       open: true,
@@ -72,17 +85,20 @@ class ChatPageInfo extends Component {
       imgArray: images
     });
   };
+
   closeGallery = () => {
     this.setState({
       open: false,
       selected: null
     });
   };
+
   handleExpland = panel => (event, isExpanded) => {
     this.setState(prev => ({
       expanded: isExpanded ? panel : false
     }));
   };
+
   render() {
     const { classes } = this.props;
     return (
@@ -110,7 +126,8 @@ class ChatPageInfo extends Component {
                 {this.props.chatmateInfo.privilege}
               </Typography>
             </div>
-            {/*FIRST PANEL */}
+
+            {/*PHOTOS PANEL */}
             <ExpansionPanel
               expanded={this.state.expanded === "photos"}
               onChange={this.handleExpland("photos")}
@@ -122,35 +139,36 @@ class ChatPageInfo extends Component {
                 </span>
               </ExpansionPanelSummary>
               <ImageExpansionPanelDetails>
-                <div
-                  className={`${classes.photosGridContainer} ${classes.scrollBar}`}
-                >
-                  <div className={classes.photosGrid}>
-                    <GridList cellHeight={160} cols={3}>
-                      {this.props.conversation.map(convo =>
-                        convo.chat_type === "image" &&
-                        ((convo.sender_id === this.props.userInfo.sub &&
-                          this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                          (convo.chatmate_id === this.props.userInfo.sub &&
-                            this.props.chatmateInfo.sub ===
-                              convo.sender_id)) ? (
-                          <GridListTile
-                            style={{ cursor: "pointer" }}
-                            cols={1}
-                            onClick={() => this.openGallery(convo.id)}
-                          >
-                            <img src={convo.link} alt="convo link" />
-                          </GridListTile>
-                        ) : null
-                      )}
-                    </GridList>
+              <div
+              className={`${classes.photosGridContainer} ${classes.scrollBar}`}
+              >
+                <div className={classes.photosGrid}>
+                  <GridList cellHeight={160} cols={3}>
+                    {this.props.chatmateInfo.sub
+                    ? this.props.conversation.map(convo => (
+                      convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                          ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                              <img src={convo.link} />
+                            </GridListTile>
+                          : null
+                      ))
+                    : this.props.groupConversation.map(convo => (
+                      convo.chat_type === 'image' && this.props.chatmateInfo.id === convo.groupchat_id
+                          ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                              <img src={convo.link} />
+                            </GridListTile>
+                          : null
+                      ))
+                    }
+                  </GridList>
                   </div>
                 </div>
               </ImageExpansionPanelDetails>
             </ExpansionPanel>
-            {/* END FIRST PANEL */}
+            {/* END PHOTOS PANEL */}
 
-            {/*SECOND PANEL */}
+            {/*FILES PANEL */}
             <ExpansionPanel
               expanded={this.state.expanded === "files"}
               onChange={this.handleExpland("files")}
@@ -162,31 +180,123 @@ class ChatPageInfo extends Component {
                 </span>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <div
-                  className={`${classes.filesGridContainer} ${classes.scrollBar}`}
-                >
-                  <div className={classes.photosGrid}>
-                    <GridList cellHeight={25} cols={3}>
-                      {this.props.conversation.map(convo =>
-                        convo.chat_type === "file" &&
-                        ((convo.sender_id === this.props.userInfo.sub &&
-                          this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                          (convo.chatmate_id === this.props.userInfo.sub &&
-                            this.props.chatmateInfo.sub ===
-                              convo.sender_id)) ? (
-                          <GridListTile cols={3}>
-                            <Link href={convo.link} variant="body2">
-                              {convo.message}
-                            </Link>
-                          </GridListTile>
-                        ) : null
-                      )}
-                    </GridList>
-                  </div>
+              <div
+              className={`${classes.filesGridContainer} ${classes.scrollBar}`}
+              >
+                <div className={classes.photosGrid}>
+                  <GridList cellHeight={25} cols={3}>
+                    {this.props.chatmateInfo.sub
+                    ? this.props.conversation.map(convo => (
+                      convo.chat_type === 'file' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                          ? <GridListTile cols={3}>
+                              <Link href={convo.link} variant="body2">{convo.message}</Link>
+                            </GridListTile>
+                          : null
+                      ))
+                    : this.props.groupConversation.map(convo => (
+                      convo.chat_type === 'file' && this.props.chatmateInfo.id === convo.groupchat_id
+                          ? <GridListTile cols={3}>
+                              <Link href={convo.link} variant="body2">{convo.message}</Link>
+                            </GridListTile>
+                          : null
+                      ))
+                    }
+                  </GridList>
                 </div>
+              </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-            {/*END SECOND PANEL */}
+            {/*END FILES PANEL */}
+
+            {/*MEMBERS PANEL */}
+            {this.props.chatmateInfo.first_name === undefined ? (
+              <ExpansionPanel
+                expanded={this.state.expanded === "members"}
+                onChange={this.handleExpland("members")}
+              >
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <span className={classes.photosTitle}>
+                    <GroupIcon style={{ marginRight: 10 }} />
+                    <Typography variant="overline">Members</Typography>
+                  </span>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <List
+                    style={{ width: "100%", overflowY: "auto", height: 370 }}
+                    className={classes.scrollBar}
+                  >
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem fullWidth button>
+                      <ListItemAvatar>
+                        <Avatar>ME</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Something" />
+                    </ListItem>
+                    <Divider />
+                  </List>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            ) : (
+              ""
+            )}
+            {/*END MEMBERS PANEL */}
           </Paper>
         </Grid>
         {/*GALLERY */}

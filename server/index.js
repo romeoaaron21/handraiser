@@ -135,9 +135,19 @@ massive({
     socket.on("chatGroupList", chatText => {
       io.emit("chatGroupList", chatText);
     });
-    socket.on("refreshGroupName", groupId =>{
-      io.emit("refreshGroupName", groupId)
-    })
+    socket.on("inactiveChat", user => {
+      io.emit("inactiveChat", user);
+    });
+    socket.on("inactiveChat", user => {
+      io.emit("inactiveChat", user);
+    });
+    socket.on("activeChat", user => {
+      io.emit("activeChat", user);
+    });
+    socket.on("countUnreadMessages", user => {
+      io.emit("countUnreadMessages", user);
+    });
+
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {

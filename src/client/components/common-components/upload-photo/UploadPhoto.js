@@ -248,13 +248,21 @@ const styles = theme => ({
       "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
     },
     "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "rgba(0,0,0,.1)",
+      backgroundColor: "#b3b3b3",
       borderRadius: "10px",
       outline: "1px solid slategrey"
     },
     "@media (max-width: 425px)": {
-      gridTemplateColumns: "repeat(1, 1fr)",
-      width: "100%"
+      gridTemplateColumns: "repeat(2, 1fr)",
+      width: "96%"
+    },
+    "@media (min-width: 426px) and (max-width: 1023px)": {
+      gridTemplateColumns: "repeat(3, 1fr)",
+      width: "96%"
+    },
+    "@media (min-width: 1024px)": {
+      gridTemplateColumns: "repeat(4, 1fr)",
+      width: "96%"
     }
   },
   cropInstruction: {

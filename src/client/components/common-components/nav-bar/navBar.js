@@ -18,8 +18,10 @@ import MessageIcon from "@material-ui/icons/Message";
 import AuthService from "../../../auth/AuthService";
 import api from "../../../services/fetchApi";
 import io from "socket.io-client";
-import HeaderBg from "../../../images/header.jpg"
+import HeaderBg from "../../../images/header.jpg";
 import { Redirect } from "react-router-dom";
+
+import Badge from "@material-ui/core/Badge";
 
 const socket = io("http://boom-handraiser.com:3001/");
 
@@ -31,7 +33,7 @@ const styles = theme => ({
     backgroundImage: `url(${HeaderBg})`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
+    backgroundSize: "cover"
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
@@ -106,6 +108,7 @@ const HtmlTooltip = withStyles(theme => ({
 const logout = sub => {
   api.fetch(`/status/${sub}/inactive`, "patch").then(res => {
     socket.emit("inactive", res.data.user);
+    socket.emit("inactiveChat", res.data.user);
     localStorage.removeItem("id_token");
     window.location.href = "/sign-in";
   });
@@ -118,16 +121,50 @@ class NavBar extends React.Component {
     this.Auth = new AuthService();
     this.token = this.Auth.getToken();
     this.profile = decode(this.token);
+    this.fetch = this.Auth.getFetchedTokenAPI();
 
     this.state = {
       anchor: null,
       chat: false,
+      userInfo: [],
+      sub: "",
+      conversation: []
     };
   }
 
   handleDrawerOpen = () => this.props.handleDrawerOpenFn();
   openLogoutMenu = e => this.setState({ anchor: e.currentTarget });
   closeLogoutMenu = () => this.setState({ anchor: null });
+
+  UNSAFE_componentWillMount() {
+    socket.on("countUnreadMessages", groupChat => {
+      this.componentDidMount();
+    });
+  }
+
+  componentDidMount() {
+    this.fetch.then(fetch => {
+      this.setState({
+        sub: fetch.data.user[0].sub,
+        userInfo: fetch.data.user[0]
+      });
+    });
+    const data = api.fetch(`/api/getChat/`, "get");
+    data.then(res => {
+      this.setState({ conversation: [...res.data] });
+    });
+  }
+
+  unreadMessages = () => {
+    let count = 0;
+    this.state.conversation.map(convo => {
+      if (convo.chatmate_id === this.state.sub && convo.seen === 0) {
+        count++;
+      }
+      return null;
+    });
+    return count;
+  };
 
   render() {
     const { classes } = this.props;
@@ -163,10 +200,11 @@ class NavBar extends React.Component {
           <IconButton
             color="inherit"
             edge="start"
-            style={{ marginRight: 8 }}
+            style={{ marginRight: 15 }}
             onClick={() => this.setState({ chat: true })}
           >
             <MessageIcon />
+            <Badge color="secondary" badgeContent={this.unreadMessages()} />
           </IconButton>
           <HtmlTooltip
             title={
@@ -229,12 +267,12 @@ class NavBar extends React.Component {
           </Menu>
         </Toolbar>
         {this.state.chat ? (
-            <Redirect
-              to={{
-                pathname: `/chat/allMessages`
-              }}
-            />
-          ) : null}
+          <Redirect
+            to={{
+              pathname: `/chat/allMessages`
+            }}
+          />
+        ) : null}
       </AppBar>
     );
   }

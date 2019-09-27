@@ -113,7 +113,15 @@ class ChatPage extends PureComponent {
     });
 
     socket.on("chatGroupList", groupChat => {
-      this.displayGroupList()
+      this.displayGroupList();
+    });
+
+    socket.on("inactiveChat", groupChat => {
+      this.displayChatList();
+    });
+
+    socket.on("activeChat", groupChat => {
+      this.displayChatList();
     });
     //CREATE SOCKET ON SELECT CHATMATE
     socket.on("refreshGroupName", sub =>{
@@ -156,6 +164,9 @@ class ChatPage extends PureComponent {
           });
           this.selectChatmate(this.props.match.params.chatmateSub);
         }
+      })
+      .catch(err => {
+        window.location.href = "../404";
       });
       
       
@@ -175,14 +186,19 @@ class ChatPage extends PureComponent {
         UniqueSub = [...new Set(sub)];
       })
       .then(() => {
-        api
-          .fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
-          .then(res => {
-            this.setState({ chatListInfo: [...res.data] });
-          })
-          .catch(() => {
-            this.displayChatList();
-          });
+        if (UniqueSub.length !== 0) {
+          api
+            .fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
+            .then(res => {
+              this.setState({ chatListInfo: [...res.data] });
+            })
+            .catch(() => {
+              this.displayChatList();
+            });
+        } else {
+          this.displayGroupList();
+          this.getGroupConversation();
+        }
       })
       .then(() => {
         if (view === "allMessages" && UniqueSub.length > 0) {
@@ -234,10 +250,10 @@ class ChatPage extends PureComponent {
           this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data });
         });
       }
-      this.displayChatList();
       this.getConversation();
 
       this.displayGroupList();
+
       this.getGroupConversation();
     }else if(this.state.refreshChatmate){
       if (chatmateSub.length > 15) {
@@ -351,9 +367,9 @@ class ChatPage extends PureComponent {
         sub === undefined ? this.state.chatmateSub : sub
       ];
       socket.emit("getNormalChat", chat);
+      socket.emit("countUnreadMessages", chat);
     });
   };
-
   sendCode = code => {
     const months = [
       "Jan",
@@ -397,8 +413,51 @@ class ChatPage extends PureComponent {
       socket.emit("getNormalChat", chat);
     });
   };
-
-  sendChatGroup = () => {
+  sendCodeGroup = code => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
+    let convo = {
+      sender_sub: this.state.sub,
+      groupchat_id: parseInt(this.state.chatmateSub),
+      message: code,
+      time: datetime,
+      type: "code",
+      link: null
+    };
+    const data = api.fetch(`/api/sendGroupChat`, "post", convo);
+    data.then(res => {
+      this.displayBadge(parseInt(this.state.chatmateSub), "gc")
+      const chat = [res.data, this.state.sub, this.state.chatmateSub];
+      socket.emit("getNormalGroupChat", chat);
+    });
+  };
+  //ANCHOR  GROUP CHAT SEND
+  sendChatGroup = (url, type) => {
     const months = [
       "Jan",
       "Feb",
@@ -430,13 +489,16 @@ class ChatPage extends PureComponent {
       sender_sub: this.state.sub,
       groupchat_id: parseInt(this.state.chatmateSub),
       message: this.state.senderText,
-      time: datetime
+      time: datetime,
+      type: type ? type : "text",
+      link: url ? url : null
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
       this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
+      socket.emit("countUnreadMessages", chat);
     });
   };
 
@@ -446,12 +508,14 @@ class ChatPage extends PureComponent {
       const data = api.fetch(`/api/seenNormalChat`, "patch", sub);
       data.then(res => {
         socket.emit("seenNormalChat", res.data);
+        socket.emit("countUnreadMessages", res.data);
       });
     } else if (type === "gc") {
       let sub = { chatmate: this.state.sub, groupchat_id: chatmate };
       const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
       data.then(res => {
         socket.emit("seenNormalGroupChat", res.data);
+        socket.emit("countUnreadMessages", res.data);
       });
     }
   };
@@ -499,6 +563,7 @@ class ChatPage extends PureComponent {
             />
 
             <ChatPageBox
+              paramsCheck={this.props.match.params.chatmateSub}
               userInfo={this.state.userInfo}
               chatmateInfo={this.state.chatmateInfo}
               senderText={this.state.senderText}
@@ -510,6 +575,7 @@ class ChatPage extends PureComponent {
               groupConversation={this.state.groupConversation}
               sendChatGroup={this.sendChatGroup}
               sendCode={this.sendCode}
+              sendCodeGroup={this.sendCodeGroup}
               groupListInfo={this.state.groupListInfo}
               refreshComponent={this.selectChatmate}
               notInGroup={this.state.notInGroup}
@@ -518,6 +584,8 @@ class ChatPage extends PureComponent {
               userInfo={this.state.userInfo}
               chatmateInfo={this.state.chatmateInfo}
               conversation={[...this.state.conversation].reverse()}
+              groupConversation={[...this.state.groupConversation].reverse()}
+
             />
           </Grid>
         </Container>

@@ -131,10 +131,10 @@ function getAllUsers(req, res) {
 
 function sendGroupChat(req, res) {
   const db = req.app.get("db");
-  const { sender_sub, groupchat_id, message, time } = req.body;
+  const { sender_sub, groupchat_id, message, time, type, link } = req.body;
 
   db.query(
-    `INSERT INTO groupmessage(sender_sub, groupchat_id, message, time, seen) VALUES('${sender_sub}', ${groupchat_id}, '${message}', '${time}', ${sender_sub})`
+    `INSERT INTO groupmessage(sender_sub, groupchat_id, message, time, seen, chat_type, link) VALUES('${sender_sub}', ${groupchat_id}, '${message}', '${time}', ${sender_sub}, '${type}', '${link}')`
   ).then(() => {
     db.query(
       `SELECT groupmessage.*, users.avatar FROM groupmessage, users WHERE sender_sub = users.sub ORDER BY id`
