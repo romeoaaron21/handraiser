@@ -343,7 +343,7 @@ class ChatPageBox extends Component {
 
   render() {
     const { classes } = this.props;
-
+    console.log(this.props.chatmateInfo.sub !== undefined)
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
@@ -577,13 +577,28 @@ class ChatPageBox extends Component {
                       </React.Fragment>
                     ) : null
                   )
-                ) : (
-                  <React.Fragment>
+                ) : 
+                !this.state.gc && this.props.chatmateInfo.name !== undefined?
+
+                              //START OF EDIT HERE EARL
+                <React.Fragment>
                     <div style={{display:'flex', justifyContent:'center'}}>
                     Not a member
                     </div>
-                  </React.Fragment>
-                )}
+                </React.Fragment>
+
+
+                :
+
+
+                <React.Fragment>
+                    <div style={{display:'flex', justifyContent:'center'}}>
+                    Loading Messages
+                    </div>
+                </React.Fragment>
+                              //END OF EDIT HERE EARL
+
+                }
 
                 {this.props.chatmateText.length > 0 &&
                 this.props.chatmateInfo.name === undefined ? (

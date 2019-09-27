@@ -197,3 +197,4 @@ class Compose extends Component {
 }
 
 export default withStyles(styles)(Compose);
+
