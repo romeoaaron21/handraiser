@@ -147,6 +147,12 @@ massive({
     socket.on("countUnreadMessages", user => {
       io.emit("countUnreadMessages", user);
     });
+    socket.on("refreshGroupName", groupId =>{
+      io.emit("refreshGroupName", groupId)
+    })
+
+
+
 
     //END of Group Chat
 

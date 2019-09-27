@@ -110,6 +110,7 @@ class ChatPage extends PureComponent {
 
     socket.on("createGroupChat", groupChat => {
       this.displayGroupList();
+      console.log("asdasd")
     });
 
     socket.on("chatGroupList", groupChat => {
