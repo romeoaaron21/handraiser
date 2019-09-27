@@ -56,10 +56,21 @@ class ChatPageInfo extends Component {
     }
   }
   openGallery = index => {
-    const images = this.props.conversation.filter(convo => {
-      return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
-    })
+    let images
+    if (this.props.chatmateInfo.sub){
+      images = this.props.conversation.filter(convo => {
+        return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+        (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+      })
+    }
+    else {
+      images = this.props.groupConversation.filter(convo => {
+        return (
+          convo.chat_type === "image" && 
+          this.props.chatmateInfo.id === convo.groupchat_id
+        );
+      });
+    }
     const selected = images.findIndex(image => image.id === index);
     this.setState({
       open: true,
@@ -118,14 +129,23 @@ class ChatPageInfo extends Component {
               >
                 <div className={classes.photosGrid}>
                   <GridList cellHeight={160} cols={3}>
-                    {this.props.conversation.map(convo => (
-                    convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                    (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
-                        ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
-                            <img src={convo.link} />
-                          </GridListTile>
-                        : null
-                    ))}
+                    {this.props.chatmateInfo.sub
+                    ? this.props.conversation.map(convo => (
+                      convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                          ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                              <img src={convo.link} />
+                            </GridListTile>
+                          : null
+                      ))
+                    : this.props.groupConversation.map(convo => (
+                      convo.chat_type === 'image' && this.props.chatmateInfo.id === convo.groupchat_id
+                          ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                              <img src={convo.link} />
+                            </GridListTile>
+                          : null
+                      ))
+                    }
                   </GridList>
                 </div>
               </div>
@@ -149,14 +169,23 @@ class ChatPageInfo extends Component {
               >
                 <div className={classes.photosGrid}>
                   <GridList cellHeight={25} cols={3}>
-                    {this.props.conversation.map(convo => (
-                    convo.chat_type === 'file' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                    (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
-                        ? <GridListTile cols={3}>
-                            <Link href={convo.link} variant="body2">{convo.message}</Link>
-                          </GridListTile>
-                        : null
-                    ))}
+                    {this.props.chatmateInfo.sub
+                    ? this.props.conversation.map(convo => (
+                      convo.chat_type === 'file' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                          ? <GridListTile cols={3}>
+                              <Link href={convo.link} variant="body2">{convo.message}</Link>
+                            </GridListTile>
+                          : null
+                      ))
+                    : this.props.groupConversation.map(convo => (
+                      convo.chat_type === 'file' && this.props.chatmateInfo.id === convo.groupchat_id
+                          ? <GridListTile cols={3}>
+                              <Link href={convo.link} variant="body2">{convo.message}</Link>
+                            </GridListTile>
+                          : null
+                      ))
+                    }
                   </GridList>
                 </div>
               </div>

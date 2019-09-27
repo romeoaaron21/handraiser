@@ -24,23 +24,18 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
 import SettingsIcon from "@material-ui/icons/Settings";
-
 import Link from "@material-ui/core/Link";
-//Firebase
 import { storage } from "../common-components/upload-photo/firebase/firebase";
-//img
 import ImageMenu from "../chat-box/imageMenu";
-//splash
 import Splash from "../chat-box/plugins/giphy";
-//emoji
 import Emoji from '../chat-box/plugins/emoji';
 import Gallery from './gallery/galleryDialog';
-
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript'
-import 'brace/theme/monokai'
+import 'brace/theme/github'
+import 'brace/theme/dracula'
 
-const imageMaxSize = 30000000; // bytes
+const imageMaxSize = 30000000;
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
 const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
@@ -74,16 +69,12 @@ class ChatPageBox extends Component {
       imageMenu: null,
       splashDialog: false,
       emoji: false,
-      //document
       document: null,
-      //gallery
       openGallery: false,
       selected: null,
       imgArray: [],
-      //snippet
       openSnippet: false,
       anchorEl: null,
-      //group
       openEditGroup: false,
       gc: false
     }
@@ -94,9 +85,7 @@ class ChatPageBox extends Component {
   componentDidUpdate() {
     this.scrollToBottom();
   }
-  //Start of Added Scroll Bottom
   messagesEndRef = React.createRef();
-
   componentDidMount() {
     this.scrollToBottom();
   }
@@ -107,9 +96,6 @@ class ChatPageBox extends Component {
       inline: "start"
     });
   };
-  //End of Added Scroll Bottom
-
-  //ANCHOR splash start
   handleImageMenu = event => {
     this.setState({ imageMenu: event.currentTarget });
   };
@@ -122,8 +108,6 @@ class ChatPageBox extends Component {
   closeSplash = () => {
     this.setState({ splashDialog: false });
   };
-  //splash end
-  // image echo
   verifyFile = files => {
     if (files && files.length > 0) {
       const currentFile = files[0];
@@ -143,7 +127,6 @@ class ChatPageBox extends Component {
       return true;
     }
   };
-  // ANCHOR here upload
   handleUpload = event => {
     if (event.target.files) {
       const files = event.target.files;
@@ -158,7 +141,8 @@ class ChatPageBox extends Component {
       }
     }
   };
-  handleSendImage = () => {
+  //ANCHOR HANDLE IMAGE
+  handleSendImage = type => {
     const { image } = this.state;
     const imageName = this.makeid(image.name);
     const uploadTask = storage.ref(`chat-images/${imageName}`).put(image);
@@ -180,7 +164,12 @@ class ChatPageBox extends Component {
           .child(imageName)
           .getDownloadURL()
           .then(url => {
-            this.props.sendChat(url, undefined, undefined, "image");
+            if (type === 'group'){
+              this.props.sendChatGroup(url, "image");
+            }
+            else {
+              this.props.sendChat(url, undefined, undefined, "image");
+            }
             this.setState({
               progress: 0
             });
@@ -206,11 +195,16 @@ class ChatPageBox extends Component {
       image: null
     });
   };
+  //ANCHOR GIF UPLOAD
   uploadGif = gif => {
     this.closeSplash();
-    this.props.sendChat(gif.images.downsized.url, undefined, undefined, "gif");
+    if (this.props.chatmateInfo.sub === undefined){
+      this.props.sendChatGroup(gif.images.downsized.url, "gif");
+    }
+    else {
+      this.props.sendChat(gif.images.downsized.url, undefined, undefined, "gif");
+    }
   };
-  //ANCHOR emoji
   openPicker = event => {
     if (!event) {
       this.setState({ emoji: null });
@@ -226,9 +220,7 @@ class ChatPageBox extends Component {
     const param = this.props.senderText + emoji.native;
     this.props.setChatText(param);
   };
-  //ANCHOR FILE UPLOAD START
   handleDocumentUpload = event => {
-    console.log(event.target.files[0]);
     if (event.target.files) {
       const files = event.target.files;
       if (files && files.length > 0) {
@@ -247,7 +239,8 @@ class ChatPageBox extends Component {
       document: null
     });
   };
-  handleSendDocument = () => {
+  //ANCHOR HANDLE DOCUMENT
+  handleSendDocument = type => {
     const { document } = this.state;
     const uploadTask = storage.ref(`documents/${document.name}`).put(document);
     uploadTask.on(
@@ -268,7 +261,12 @@ class ChatPageBox extends Component {
           .child(document.name)
           .getDownloadURL()
           .then(url => {
-            this.props.sendChat(url, undefined, undefined, "file");
+            if (type === 'group'){
+              this.props.sendChatGroup(url, "file");
+            }
+            else {
+              this.props.sendChat(url, undefined, undefined, "file");
+            }
             this.setState({
               progress: 0
             });
@@ -302,15 +300,26 @@ class ChatPageBox extends Component {
   //FILE UPLOAD END
   //gallery
   openGallery = index => {
-    const images = this.props.conversation.filter(convo => {
-      return (
-        convo.chat_type === "image" &&
-        ((convo.sender_id === this.props.userInfo.sub &&
-          this.props.chatmateInfo.sub === convo.chatmate_id) ||
-          (convo.chatmate_id === this.props.userInfo.sub &&
-            this.props.chatmateInfo.sub === convo.sender_id))
-      );
-    });
+    let images;
+    if (this.props.chatmateInfo.sub === undefined){
+      images = this.props.groupConversation.filter(convo => {
+        return (
+          convo.chat_type === "image" && 
+          this.props.chatmateInfo.id === convo.groupchat_id
+        );
+      });
+    }
+    else {
+      images = this.props.conversation.filter(convo => {
+        return (
+          convo.chat_type === "image" &&
+          ((convo.sender_id === this.props.userInfo.sub &&
+            this.props.chatmateInfo.sub === convo.chatmate_id) ||
+            (convo.chatmate_id === this.props.userInfo.sub &&
+              this.props.chatmateInfo.sub === convo.sender_id))
+        );
+      });
+    }  
     const selected = images.findIndex(image => image.id === index);
     this.setState({
       openGallery: true,
@@ -460,6 +469,7 @@ class ChatPageBox extends Component {
                       this.props.chatmateInfo.sub === convo.chatmate_id) ||
                     (convo.chatmate_id === this.props.userInfo.sub &&
                       this.props.chatmateInfo.sub === convo.sender_id) ? (
+                        //ANCHOR PM CHAT BOX
                         <React.Fragment key={i}>
                         {convo.cohort_id === "all" ? (
                           <div className={convo.sender_id !== this.props.userInfo.sub?classes.senderChatWrapper:classes.receiverChatWrapper}>
@@ -506,7 +516,7 @@ class ChatPageBox extends Component {
                                           width="35vw"
                                           mode="javascript"
                                           value={convo.message}
-                                          theme="monokai"
+                                          theme={convo.sender_id === this.props.userInfo.sub ? "dracula" : "github"}
                                           readOnly
                                           />
                                 }
@@ -523,6 +533,7 @@ class ChatPageBox extends Component {
                 ) : this.state.gc ? (
                   this.props.groupConversation.map((gcConvo, i) =>
                     this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
+                      //ANCHOR GC CHATBOX
                       <React.Fragment key={i}>
                         <div
                           className={
@@ -537,39 +548,53 @@ class ChatPageBox extends Component {
                               src={gcConvo.avatar}
                             />
                           ) : null}
-
-                          <Box
-                            className={
-                              // gcConvo.chat_type !== "text"
-                              //   ? classes.chatImage
-                              //   :
-                              gcConvo.sender_sub !== this.props.userInfo.sub
-                                ? classes.senderBox
-                                : classes.receiverBox
-                            }
-                          >
-                            {/* {gcConvo.chat_type !== "text" ? (
-                              <img
-                                style={{ width: "100%" }}
-                                src={convo.chat_type}
-                                alt=""
+                            <Box 
+                                className={
+                                    (gcConvo.chat_type === "image" || 
+                                    gcConvo.chat_type === 'gif')
+                                    ? classes.chatImage
+                                    : (gcConvo.chat_type === 'code')
+                                      ? classes.snippet
+                                      : (gcConvo.sender_sub !== this.props.userInfo.sub)
+                                      ? classes.senderBox
+                                      : classes.receiverBox
+                            }>
+                            {gcConvo.chat_type === "text"
+                            ? <TextareaAutosize
+                                readOnly
+                                className={classes.textAreaChat}
+                                style={
+                                  gcConvo.sender_sub !== this.props.userInfo.sub
+                                    ? { color: "#263238" }
+                                    : { color: "#fff" }
+                                }
+                                value={gcConvo.message.replace(/\n$/, "")}
                               />
-                            ) : ( */}
-                            <TextareaAutosize
-                              readOnly
-                              className={classes.textAreaChat}
-                              style={
-                                gcConvo.sender_sub !== this.props.userInfo.sub
-                                  ? { color: "#263238" }
-                                  : { color: "#fff" }
-                              }
-                              value={gcConvo.message.replace(/\n$/, "")}
-                            />
-                            {/* )} */}
-                            <Typography
-                              variant="caption"
-                              className={classes.time}
-                            >
+                            : (gcConvo.chat_type === "file")
+                              ? <Box
+                                component="div"
+                                my={2}
+                                textOverflow="ellipsis"
+                                overflow="hidden"
+                                >
+                                  <Link style={{ fontWeight: 'bold' }} href={gcConvo.link} color="inherit" variant="body2">{gcConvo.message}</Link>
+                                </Box>
+                              :  (gcConvo.chat_type === "image")
+                                ? <img style={{ width: "100%", cursor: 'pointer' }} src={gcConvo.link} alt="" onClick={() => this.openGallery(gcConvo.id)} />
+                                : (gcConvo.chat_type === "gif")
+                                  ? <img style={{ width: "100%"}} src={gcConvo.link} alt=""/>
+                                  : <AceEditor
+                                      wrapEnabled
+                                      maxLines={100}
+                                      fontSize="16px"
+                                      width="35vw"
+                                      mode="javascript"
+                                      value={gcConvo.message}
+                                      theme={gcConvo.sender_sub === this.props.userInfo.sub ? "dracula" : "github"}
+                                      readOnly
+                                    />
+                            }
+                            <Typography variant="caption" className={gcConvo.chat_type === "code" ? classes.snippetTime : classes.time}>
                               {gcConvo.time}
                             </Typography>
                           </Box>
@@ -719,27 +744,31 @@ class ChatPageBox extends Component {
                 }
               />
               <IconButton
-                //  onClick={() => this.props.chatmateInfo.sub !== undefined? this.props.sendChat() : this.props.sendChatGroup()}
                 onClick={() => {
-                  if (
-                    this.state.image &&
-                    this.props.chatmateInfo.sub !== undefined
-                  ) {
-                    this.handleSendImage("student");
-                  } else if (
-                    this.state.document &&
-                    this.props.chatmateInfo.sub !== undefined
-                  ) {
-                    this.handleSendDocument();
-                  } else if (
-                    !this.state.image &&
-                    this.props.chatmateInfo.sub !== undefined
-                  ) {
-                    this.props.sendChat();
-                    this.openPicker();
-                  } else if (this.props.chatmateInfo.sub === undefined) {
-                    this.props.sendChatGroup();
+                  if (this.props.chatmateInfo.sub === undefined) {
+                  // ANCHOR GROUP CHAT FUNCTIONS
+                    if (this.state.image) {
+                      this.handleSendImage('group');
+                    } else if (this.state.document) {
+                      this.handleSendDocument('group');
+                    } else {
+                      this.props.sendChatGroup();
+                      this.props.displayBadge(this.props.chatmateInfo.id, "gc")
+                      this.openPicker();
+                    } 
                   }
+                  else {
+                  // ANCHOR PM CHAT FUNCTIONS  
+                    if (this.state.image) {
+                      this.handleSendImage();
+                    } else if (this.state.document) {
+                      this.handleSendDocument();
+                    } else {
+                      this.props.sendChat();
+                      this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
+                      this.openPicker();
+                    } 
+                  } 
                 }}
                 disabled={
                   this.props.senderText
@@ -756,31 +785,28 @@ class ChatPageBox extends Component {
               </IconButton>
             </div>
           </div>
-          {/* End Message Box  */}
-          {/*ANCHOR splash*/}
           <Splash
             uploadGif={this.uploadGif}
             open={this.state.splashDialog}
             handleClose={this.closeSplash}
           />
-
-          <Emoji anchorEl={this.state.emoji} handleEmoji={this.handleEmoji} />
-
-          {/*GALLERY */}
+          <Emoji 
+            anchorEl={this.state.emoji} 
+            handleEmoji={this.handleEmoji} 
+          />
           <Gallery
             conversation={this.state.imgArray}
             open={this.state.openGallery}
             handleClose={this.closeGallery}
             selected={this.state.selected}
           />
-
-          {/*snippet*/}
           <Snippet 
-          open={this.state.openSnippet}
-          handleClose={this.openSnippet}
-          sendChat={this.props.sendCode}
+            open={this.state.openSnippet}
+            handleClose={this.openSnippet}
+            sendChat={this.props.sendCode}
+            sendGroup={this.props.sendCodeGroup}
+            type={this.props.chatmateInfo.sub ? "pm" : "gc"}
           />
-          {/* Edit Dialog  */}
           <EditGroup
             openDialog={this.state.openEditGroup}
             handleClose={this.handleCloseEditGroup}

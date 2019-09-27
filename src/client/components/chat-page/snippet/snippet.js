@@ -22,7 +22,9 @@ export default class Snippet extends React.Component {
         const {
             open,
             sendChat,
-            handleClose
+            sendGroup,
+            handleClose,
+            type
         } = this.props;
         return (
             <Dialog
@@ -51,7 +53,12 @@ export default class Snippet extends React.Component {
                 <Button 
                 style={{ color: 'white' }} 
                 onClick={() => {
-                    sendChat(this.state.code)
+                    if (type === 'pm'){
+                        sendChat(this.state.code)
+                    }
+                    else {
+                        sendGroup(this.state.code)
+                    }
                     handleClose()
                 }}
                 >

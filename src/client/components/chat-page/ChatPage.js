@@ -301,7 +301,6 @@ class ChatPage extends PureComponent {
       socket.emit("getNormalChat", chat);
     });
   };
-
   sendCode = code => {
     const months = [
       "Jan",
@@ -349,8 +348,51 @@ class ChatPage extends PureComponent {
       socket.emit("getNormalChat", chat);
     });
   };
-
-  sendChatGroup = () => {
+  sendCodeGroup = code => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    let current_datetime = new Date();
+    let formatted_date =
+      months[current_datetime.getMonth()] +
+      " " +
+      current_datetime.getDate() +
+      ", " +
+      current_datetime.getFullYear();
+    var time = current_datetime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    var datetime = formatted_date + " " + time;
+    let convo = {
+      sender_sub: this.state.sub,
+      groupchat_id: parseInt(this.state.chatmateSub),
+      message: code,
+      time: datetime,
+      type: "code",
+      link: null
+    };
+    const data = api.fetch(`/api/sendGroupChat`, "post", convo);
+    data.then(res => {
+      this.displayBadge(parseInt(this.state.chatmateSub), "gc")
+      const chat = [res.data, this.state.sub, this.state.chatmateSub];
+      socket.emit("getNormalGroupChat", chat);
+    });
+  };
+  //ANCHOR  GROUP CHAT SEND
+  sendChatGroup = (url, type) => {
     const months = [
       "Jan",
       "Feb",
@@ -382,7 +424,9 @@ class ChatPage extends PureComponent {
       sender_sub: this.state.sub,
       groupchat_id: parseInt(this.state.chatmateSub),
       message: this.state.senderText,
-      time: datetime
+      time: datetime,
+      type: type ? type : "text",
+      link: url ? url : null
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
@@ -463,12 +507,15 @@ class ChatPage extends PureComponent {
               groupConversation={this.state.groupConversation}
               sendChatGroup={this.sendChatGroup}
               sendCode={this.sendCode}
+              sendCodeGroup={this.sendCodeGroup}
               groupListInfo={this.state.groupListInfo}
             />
             <ChatPageInfo
               userInfo={this.state.userInfo} 
               chatmateInfo={this.state.chatmateInfo} 
               conversation={[...this.state.conversation].reverse()}
+              groupConversation={[...this.state.groupConversation].reverse()}
+
             />
           </Grid>
         </Container>

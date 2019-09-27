@@ -125,7 +125,7 @@ class Splash extends React.Component {
             classes,
             open, 
             handleClose,
-            uploadGif
+            uploadGif,
         } = this.props;
         return (
             <Dialog
