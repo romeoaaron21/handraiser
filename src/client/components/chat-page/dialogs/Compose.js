@@ -181,9 +181,10 @@ class Compose extends Component {
             <IconButton style={{ marginLeft: 3, marginTop: 3 }} onClick={() => this.sendNewChat()}
               disabled={
                 this.state.chatText.replace(/^\s+/, "")
-                  .replace(/\s+$/, "") === ""
-                  ? true
-                  : false
+                  .replace(/\s+$/, "") !== ""
+                  && this.state.chatmate.sub !== undefined
+                  ? false
+                  : true
               }
             >
               <SendIcon />
