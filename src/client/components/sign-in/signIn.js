@@ -134,6 +134,7 @@ class SignInSide extends Component {
       } else {
         api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
           socket.emit("active", res.data.user);
+          socket.emit("activeChat", res.data.user);
           localStorage.setItem("id_token", google.tokenId);
           window.location.href = "/cohorts";
         });

@@ -40,6 +40,9 @@ import AceEditor from "react-ace";
 import "brace/mode/javascript";
 import "brace/theme/monokai";
 
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
+
 const imageMaxSize = 30000000; // bytes
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
@@ -352,10 +355,11 @@ class ChatPageBox extends Component {
   //leave group  / delete member
   leaveGroup = (groupId, sub) => {
     // console.log(groupId,sub)
-    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete").then(data => {
-      // console.log(data)
-    });
-  };
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
+    .then(data=>{
+      socket.emit("chatGroupList", data.data);
+    })
+  }
 
   render() {
     const { classes } = this.props;
@@ -466,7 +470,6 @@ class ChatPageBox extends Component {
                           this.props.chatmateInfo.id,
                           this.props.userInfo.sub
                         );
-                        // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
                       }}
                     >
                       Leave Group
