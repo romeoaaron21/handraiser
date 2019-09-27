@@ -360,7 +360,7 @@ class ChatPageBox extends Component {
     this.setState({ gc: true })
     api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
       .then(data => {
-        // document.location.reload(true)
+        document.location.reload(true)
         socket.emit("chatGroupList", data.data);
         socket.emit("refreshGroupName", [this.props.userInfo.sub, this.state.groupId]);
       })
@@ -368,8 +368,6 @@ class ChatPageBox extends Component {
 
   render() {
     const { classes } = this.props;
-    // console.log(this.props.chatmateInfo.sub !== undefined);
-    console.log(this.props.notInGroup)
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
