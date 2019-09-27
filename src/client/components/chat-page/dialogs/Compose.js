@@ -207,10 +207,10 @@ class Compose extends Component {
               style={{ marginLeft: 3, marginTop: 3 }}
               onClick={() => this.sendNewChat()}
               disabled={
-                this.state.chatText.replace(/^\s+/, "").replace(/\s+$/, "") ===
-                ""
-                  ? true
-                  : false
+                this.state.chatText.replace(/^\s+/, "").replace(/\s+$/, "") !==
+                  "" && this.state.chatmate.sub !== undefined
+                  ? false
+                  : true
               }
             >
               <SendIcon />
