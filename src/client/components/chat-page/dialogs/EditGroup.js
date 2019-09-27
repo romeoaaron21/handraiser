@@ -16,7 +16,6 @@ import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import SendIcon from "@material-ui/icons/Send";
 import Close from "@material-ui/icons/Close";
 import Chip from "@material-ui/core/Chip";
 import Button from "@material-ui/core/Button";
@@ -24,19 +23,19 @@ import Button from "@material-ui/core/Button";
 import { ListItemText, DialogActions } from "@material-ui/core";
 
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Checkbox from "@material-ui/core/Checkbox";
-import CommentIcon from "@material-ui/icons/Comment";
 
 class EditGroup extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      checked: ["Earl Raquion",
-      "Romeo Lumibao",
-      "Trizha Longaza",
-      "Paolo Barbin",]
+      checked: [
+        "Earl Raquion",
+        "Romeo Lumibao",
+        "Trizha Longaza",
+        "Paolo Barbin"
+      ]
     };
   }
   handleToggle = value => () => {
@@ -149,9 +148,9 @@ class EditGroup extends Component {
             }}
           >
             {/* <div className={classes.flex}> */}
-              <Typography variant="caption" style={{ padding: 8 }}>
-                Selected Members - {this.state.checked.length}
-              </Typography>
+            <Typography variant="caption" style={{ padding: 8 }}>
+              Selected Members - {this.state.checked.length}
+            </Typography>
             {/* </div> */}
             <Divider />
             <div className={clsx(classes.memberList, classes.scrollBar)}>

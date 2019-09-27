@@ -47,8 +47,7 @@ class ChatPage extends PureComponent {
       newChatmateSub: "",
 
       groupListInfo: [],
-      groupConversation: [],
-
+      groupConversation: []
     };
   }
 
@@ -98,18 +97,17 @@ class ChatPage extends PureComponent {
 
       if (conversation[1] === this.state.sub) {
         this.setState({ senderText: "" });
-      }
-      else if(conversation[2] === this.state.chatmateSub){
-        this.setState({ chatmateText:"" });
+      } else if (conversation[2] === this.state.chatmateSub) {
+        this.setState({ chatmateText: "" });
       }
     });
 
     socket.on("seenNormalGroupChat", chat => {
-      this.getGroupConversation()
+      this.getGroupConversation();
     });
 
     socket.on("createGroupChat", groupChat => {
-      this.displayGroupList()
+      this.displayGroupList();
     });
 
     socket.on("setStudentGroupChatText", chatText => {
@@ -125,8 +123,6 @@ class ChatPage extends PureComponent {
         this.setState({ chatmateText: chatText[0] });
       }
     });
-
-
   }
 
   componentDidMount() {
@@ -181,7 +177,7 @@ class ChatPage extends PureComponent {
   };
 
   componentDidUpdate(sub) {
-    if (this.props.match.params.chatmateSub == "allMessages") {
+    if (this.props.match.params.chatmateSub === "allMessages") {
       if (sub.length > 0) {
         this.setState({ chatmateSub: sub, newChatmateSub: sub });
         this.selectChatmate(sub);
@@ -214,6 +210,7 @@ class ChatPage extends PureComponent {
             } else {
               this.setState({ chatmateInfo: chatUser });
             }
+            return null;
           });
         });
       } else {
@@ -246,15 +243,14 @@ class ChatPage extends PureComponent {
 
   setChatText = (val, type) => {
     let textVal = [val, this.state.chatmateSub, this.state.sub];
-    if(type === "pm"){
+    if (type === "pm") {
       socket.emit("setStudentChatText", textVal);
-    }
-    else{
+    } else {
       socket.emit("setStudentGroupChatText", textVal);
     }
   };
 
-  sendChat = (url, chatText, sub, type ) => {
+  sendChat = (url, chatText, sub, type) => {
     const months = [
       "Jan",
       "Feb",
@@ -341,11 +337,7 @@ class ChatPage extends PureComponent {
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
       this.displayBadge(this.state.chatmateSub, "pm");
-      const chat = [
-        res.data,
-        this.state.sub,
-        this.state.chatmateSub
-      ];
+      const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalChat", chat);
     });
   };
@@ -386,7 +378,7 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(parseInt(this.state.chatmateSub), "gc")
+      this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
     });
@@ -399,14 +391,13 @@ class ChatPage extends PureComponent {
       data.then(res => {
         socket.emit("seenNormalChat", res.data);
       });
-    }
-    else if(type === "gc"){
-      console.log(this.state.sub, chatmate)
+    } else if (type === "gc") {
+      console.log(this.state.sub, chatmate);
       let sub = { chatmate: this.state.sub, groupchat_id: chatmate };
       const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
       data.then(res => {
         socket.emit("seenNormalGroupChat", res.data);
-      })
+      });
     }
   };
 
@@ -466,8 +457,8 @@ class ChatPage extends PureComponent {
               groupListInfo={this.state.groupListInfo}
             />
             <ChatPageInfo
-              userInfo={this.state.userInfo} 
-              chatmateInfo={this.state.chatmateInfo} 
+              userInfo={this.state.userInfo}
+              chatmateInfo={this.state.chatmateInfo}
               conversation={[...this.state.conversation].reverse()}
             />
           </Grid>
@@ -479,7 +470,7 @@ class ChatPage extends PureComponent {
               pathname: `/chat/${this.state.newChatmateSub}`
             }}
           />
-        ) : null}      
+        ) : null}
       </div>
     );
   }
