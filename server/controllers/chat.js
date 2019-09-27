@@ -256,6 +256,15 @@ function updateGroupName(req,res){
   
 }
 
+function checkInGroup(req,res){
+  const db = req.app.get("db");
+  db.query(
+    `SELECT * from groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id =${req.params.groupId} `
+  ).then(data=>{
+    res.status(200).json(data)
+  })
+}
+
 module.exports = {
   getChatUsersInfo,
   sendStudentChat,
@@ -276,5 +285,6 @@ module.exports = {
   addMemberGroupChat,
   deleteMember,
   getAllUserNotInGroup,
-  updateGroupName
+  updateGroupName,
+  checkInGroup
 };

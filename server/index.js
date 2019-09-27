@@ -135,7 +135,9 @@ massive({
     socket.on("chatGroupList", chatText => {
       io.emit("chatGroupList", chatText);
     });
-    
+    socket.on("refreshGroupName", groupId =>{
+      io.emit("refreshGroupName", groupId)
+    })
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
@@ -287,6 +289,7 @@ massive({
   app.get("/api/getAllUserNotInGroup/:groupId", chat.getAllUserNotInGroup)
   app.patch("/api/updateGroupName/:groupId", chat.updateGroupName)
   app.post("/api/addMemberGroupChat/:groupId", chat.addMemberGroupChat)
+  app.get("/api/checkInGroup/:sub/:groupId", chat.checkInGroup)
   //End of Group Chat
 
   server.listen(PORT, () => {
