@@ -22,6 +22,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import Online from "../../images/active.png";
 
 //DIALOGS
 import Compose from "./dialogs/Compose";
@@ -304,7 +305,26 @@ class ChatPageList extends PureComponent {
                             >
                               <Hidden only="xs">
                                 <ListItemAvatar style={{ marginTop: "-0.2px" }}>
-                                  <Avatar src={chatmate.avatar} />
+                                  <div>
+                                    <Avatar src={chatmate.avatar} />
+                                    {chatmate.status === 'active' ?
+                                    <img
+                                    style={{
+                                      width: 35,
+                                      height: 35,
+                                      margin: 0,
+                                      position: "absolute",
+                                      top: 24,
+                                      left: 32, 
+                                    }}
+                                    src={Online}
+                                    alt=""
+                                  />
+                                  :
+                                  null
+                                    }
+                                    
+                                  </div>
                                 </ListItemAvatar>
                                 <div className={classes.chatDetails}>
                                   <div style={{ width: "80%" }}>

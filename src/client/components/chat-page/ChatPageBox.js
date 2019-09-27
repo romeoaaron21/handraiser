@@ -88,7 +88,8 @@ class ChatPageBox extends Component {
       openEditGroup: false,
       groupId: null,
       userNotInGroup: [],
-      groupName: ''
+      groupName: '',
+      gc: false,
     };
   }
   openSnippet = () => {
