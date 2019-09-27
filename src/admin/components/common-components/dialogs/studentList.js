@@ -17,6 +17,19 @@ const styles = theme => ({
   list: {
     width: "100%",
     backgroundColor: theme.palette.background.paper
+  },
+  scroll: {
+    "&::-webkit-scrollbar": {
+      width: "0.3em"
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#ececec",
+      borderRadius: "10px",
+      outline: "1px solid slategrey"
+    }
   }
 });
 
@@ -42,7 +55,7 @@ class StudentList extends React.Component {
     return (
       <React.Fragment>
         <DialogTitle id="scroll-dialog-title">Students</DialogTitle>
-        <DialogContent dividers={true}>
+        <DialogContent dividers={true} classes={{ root: classes.scroll }}>
           {this.state.students.map((student, i) => (
             <List
               dense={true}
