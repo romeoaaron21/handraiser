@@ -92,7 +92,10 @@ class MentorKeys extends React.Component {
   filterStatus = e => {
     this.setState({ loader: true });
     api.fetch(`/keys/${e.target.value}`, "get").then(res => {
-      this.setState({ keys: res.data.keys, loader: false });
+      this.setState({ keys: res.data.keys });
+      setTimeout(() => {
+        this.setState({ loader: false });
+      }, 1000);
     });
     this.setState({ filter: e.target.value });
   };
@@ -105,7 +108,7 @@ class MentorKeys extends React.Component {
       api.fetch("/keys", "get").then(res => {
         this.setState({ keys: res.data.keys });
       });
-      toast.success("Successfully added!", {
+      toast.info("Successfully added!", {
         hideProgressBar: true,
         draggable: false
       });
@@ -144,7 +147,7 @@ class MentorKeys extends React.Component {
         >
           <ToastContainer
             enableMultiContainer
-            position={toast.POSITION.TOP_RIGHT}
+            position={toast.POSITION.BOTTOM_RIGHT}
           />
           <div className={classes.drawerHeader} />
           <Grid container>
@@ -204,9 +207,24 @@ class MentorKeys extends React.Component {
                   <Table className={classes.table}>
                     <TableHead>
                       <TableRow>
-                        <TableCell align="center">Sign-in key</TableCell>
-                        <TableCell align="center">Use by</TableCell>
-                        <TableCell align="center">Status</TableCell>
+                        <TableCell
+                          align="center"
+                          className={classes.stickyHeader}
+                        >
+                          Sign-in key1
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className={classes.stickyHeader}
+                        >
+                          Use by
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className={classes.stickyHeader}
+                        >
+                          Status
+                        </TableCell>
                       </TableRow>
                     </TableHead>
 

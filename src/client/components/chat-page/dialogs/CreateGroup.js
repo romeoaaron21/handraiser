@@ -16,7 +16,6 @@ import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import SendIcon from "@material-ui/icons/Send";
 import Close from "@material-ui/icons/Close";
 import Chip from "@material-ui/core/Chip";
 import Button from "@material-ui/core/Button";
@@ -24,11 +23,8 @@ import Button from "@material-ui/core/Button";
 import { ListItemText, DialogActions } from "@material-ui/core";
 
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Checkbox from "@material-ui/core/Checkbox";
-import CommentIcon from "@material-ui/icons/Comment";
 import api from "../../../services/fetchApi";
-import { runInThisContext } from "vm";
 import io from "socket.io-client";
 const socket = io("http://boom-handraiser.com:3001/");
 
@@ -71,6 +67,7 @@ class CreateGroup extends Component {
       if (data.name.toLowerCase() === value.toLowerCase()) {
         exist = true;
       }
+      return null;
     });
     this.setState({ groupNameExist: exist });
     if (exist) {
@@ -148,6 +145,7 @@ class CreateGroup extends Component {
           return lname;
         }
       }
+      return null;
     });
 
     return (
@@ -270,6 +268,7 @@ class CreateGroup extends Component {
                       />
                     );
                   }
+                  return null;
                 });
               })}
             </div>

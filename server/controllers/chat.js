@@ -187,7 +187,7 @@ function seenNormalGroupChat(req, res) {
             }
           });
           if (x === 0) {
-            db.query(`UPDATE groupmessage SET seen = '${user_id},' || seen WHERE id = ${group.id}`);
+            db.query(`UPDATE groupmessage SET seen = '${user_id},' || seen WHERE groupchat_id = ${groupchat_id}`);
           }
         }
       });
