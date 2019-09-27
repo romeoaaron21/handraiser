@@ -11,7 +11,7 @@ import PersonIcon from "@material-ui/icons/Person";
 const styles = theme => ({
   title: {
     paddingTop: 35,
-    minHeight: 100,
+    minHeight: 50,
     backgroundColor: '#780aaf',
     color: 'white',
     textAlign: 'center'

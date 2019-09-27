@@ -27,18 +27,22 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Checkbox from "@material-ui/core/Checkbox";
 import CommentIcon from "@material-ui/icons/Comment";
+import api from "../../../services/fetchApi";
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
 
 class EditGroup extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      checked: ["Earl Raquion",
-      "Romeo Lumibao",
-      "Trizha Longaza",
-      "Paolo Barbin",]
+      checked: [],
+      search: "",
+      groupName: '',
+      btnSave: true
     };
   }
+
   handleToggle = value => () => {
     const currentIndex = this.state.checked.indexOf(value);
     const newChecked = [...this.state.checked];
@@ -52,8 +56,65 @@ class EditGroup extends Component {
     this.setState({ checked: newChecked });
   };
 
+  handleDelete = id => {
+    const currentIndex = this.state.checked.indexOf(id);
+    const newChecked = [...this.state.checked];
+    newChecked.splice(currentIndex, 1);
+
+    this.setState({ checked: newChecked });
+  };
+
+  updateGroup = () => {
+    var postData = {
+      userId: [...this.state.checked]
+    };
+    console.log(postData)
+    
+    if(this.state.groupName !== this.props.groupName){
+      console.log("Updated Group Name")
+      api.fetch(`/api/updateGroupName/${this.props.groupId}?groupName=${this.state.groupName}`,"patch")
+      .then(data=>{
+        // console.log(data)
+        socket.emit("createGroupChat", data.data);
+      })
+
+    }else{
+      // console.log("No Changes")
+    }
+
+    if(this.state.checked.length > 0){
+      // /api/addMemberGroupChat/:groupId
+      api.fetch(`/api/addMemberGroupChat/${this.props.groupId}`,"post",postData)
+      .then(data=>{
+        socket.emit("createGroupChat", data.data);
+        console.log(data)
+      })
+    }
+    
+    this.setState({checked:[]})
+  }
+
   render() {
     const { classes } = this.props;
+    // console.log(this.state.search)
+
+    const userFilter = this.props.users.filter(data => {
+      let fname =
+        data.first_name
+          .toLowerCase()
+          .indexOf(this.state.search.toLowerCase()) !== -1;
+      let lname =
+        data.last_name
+          .toLowerCase()
+          .indexOf(this.state.search.toLowerCase()) !== -1;
+      if (fname) {
+        return fname;
+      } else {
+        return lname;
+      }
+    });
+
+
     return (
       <Dialog
         open={this.props.openDialog}
@@ -74,54 +135,53 @@ class EditGroup extends Component {
         <Divider />
         <DialogContent>
           <TextField
+            autoFocus
+            defaultValue={`${this.props.groupName}`}
             label="Group Name"
             className={clsx(classes.textField, classes.dense)}
             margin="dense"
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
+            onChange={(e) => {
+              this.setState({ groupName: e.target.value })
+            }}
+            onBlur={(e) => {
+              this.setState({ groupName: e.target.value })
+            }}
           />
 
           <TextField
-            label="Add Members"
+            label="Add Member (search)"
             className={clsx(classes.textField, classes.dense)}
             margin="dense"
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
+            onChange={(event) => {
+              this.setState({ search: event.target.value })
+            }}
           />
           <Paper
             style={{ width: 480, height: 180, overflowY: "auto" }}
             className={classes.scrollBar}
           >
             <List>
-              {[
-                "Earl Raquion",
-                "Romeo Lumibao",
-                "Trizha Longaza",
-                "Paolo Barbin",
-                "ASdasdasd",
-                "ASDASDASDSAD",
-                "Zxczxczxczxc",
-                "qweqweqweqwe",
-                "ASdasda",
-                "Asdasdasda",
-                "ASdasdasdasd"
-              ].map(value => {
-                const labelId = `checkbox-list-label-${value}`;
+              {userFilter.map(value => {
+                const labelId = `checkbox-list-label-${value.id}`;
 
                 return (
                   <ListItem
-                    key={value}
+                    key={value.id}
                     role={undefined}
                     dense
                     button
-                    onClick={this.handleToggle(value)}
+                    onClick={this.handleToggle(value.sub)}
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
-                        checked={this.state.checked.indexOf(value) !== -1}
+                        checked={this.state.checked.indexOf(value.sub) !== -1}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
@@ -130,12 +190,13 @@ class EditGroup extends Component {
                     <ListItemAvatar style={{ marginTop: "3px" }}>
                       <Avatar
                         style={{ width: 25, height: 25 }}
-                        src={this.props.avatarSample}
-                      >
-                        ME
-                      </Avatar>
+                        src={value.avatar}
+                      ></Avatar>
                     </ListItemAvatar>
-                    <ListItemText id={labelId} primary={value} />
+                    <ListItemText
+                      id={labelId}
+                      primary={`${value.first_name} ${value.last_name}`}
+                    />
                   </ListItem>
                 );
               })}
@@ -149,27 +210,38 @@ class EditGroup extends Component {
             }}
           >
             {/* <div className={classes.flex}> */}
-              <Typography variant="caption" style={{ padding: 8 }}>
-                Selected Members - {this.state.checked.length}
-              </Typography>
+            <Typography variant="caption" style={{ padding: 8 }}>
+              Selected Members - {this.state.checked.length}
+            </Typography>
             {/* </div> */}
             <Divider />
             <div className={clsx(classes.memberList, classes.scrollBar)}>
-              {this.state.checked.map(val => (
-                <Chip
-                  avatar={<Avatar alt="sender" src={this.props.avatarSample} />}
-                  label={val}
-                  onDelete={this.props.handleClose}
-                  className={classes.chip}
-                  size="small"
-                />
-              ))}
+              {this.state.checked.map(val => {
+                return this.props.users.map(data => {
+                  if (data.sub === val) {
+                    return (
+                      <Chip
+                        avatar={<Avatar alt="sender" src={data.avatar} />}
+                        label={`${data.first_name} ${data.last_name}`}
+                        onDelete={() => {
+                          this.handleDelete(val);
+                        }}
+                        className={classes.chip}
+                        size="small"
+                      />
+                    );
+                  }
+                });
+              })}
             </div>
           </Paper>
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={this.props.handleClose} color="primary">
+          <Button onClick={() => {
+            this.props.handleClose()
+            this.updateGroup()
+          }} color="primary">
             Save
           </Button>
         </DialogActions>

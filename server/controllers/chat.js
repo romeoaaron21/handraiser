@@ -147,28 +147,28 @@ function sendGroupChat(req, res) {
 function createGroupChat(req, res) {
   const db = req.app.get("db");
   db.groupchat
-  .insert(
-    {
-      user_sub: req.body.creatorId,
-      name: req.body.groupName
-    }
-  ).then(data => {
-    // map user Id
-    req.body.userId.map(value => {
-      db.query(
-        `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${data.id}) `
-      )
-      .then((data)=>res.status(201).json(data))
+    .insert(
+      {
+        user_sub: req.body.creatorId,
+        name: req.body.groupName
+      }
+    ).then(data => {
+      // map user Id
+      req.body.userId.map(value => {
+        db.query(
+          `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${data.id}) `
+        )
+          .then((data) => res.status(201).json(data))
+      })
     })
-  })
 }
 
 function getAllGroupName(req, res) {
   const db = req.app.get("db");
   db.query(`SELECT * FROM groupchat`)
-  .then(data => {
-    res.status(200).json(data)
-  })
+    .then(data => {
+      res.status(200).json(data)
+    })
 }
 
 function seenNormalGroupChat(req, res) {
@@ -182,7 +182,7 @@ function seenNormalGroupChat(req, res) {
         if (group.groupchat_id === groupchat_id) {
           let x = 0;
           group.seen.split(",").map(seen => {
-            if (seen === user_id) { 
+            if (seen === user_id) {
               x++;
             }
           });
@@ -209,6 +209,51 @@ function seenNormalGroupChat(req, res) {
   //     res.status(201).json(chats);
   //   });
   // });
+
+}
+
+function addMemberGroupChat(req, res) {
+  const db = req.app.get("db");
+
+  req.body.userId.map(value => {
+    db.query(
+      `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${req.params.groupId}) `
+    )
+    .then((data) => {
+      res.status(201).json(data)
+    })
+  })
+
+}
+
+function deleteMember(req, res) {
+  const db = req.app.get("db");
+  console.log(req.params.sub,"-",req.params.groupId)
+  db.query(
+    `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
+  ).then(data =>{
+    res.status(200).json({message:"deleted"})
+  })
+
+}
+
+function getAllUserNotInGroup(req,res){
+  const db = req.app.get("db");
+  db.query(
+    `select * from users where sub not in (select member_sub from groupmembers where groupchat_id=${req.params.groupId})`
+  ).then(data => {
+    res.status(200).json(data)
+  })
+
+}
+function updateGroupName(req,res){
+  const db = req.app.get("db");
+  db.query(
+    `UPDATE groupchat SET name='${req.query.groupName}' WHERE id = ${req.params.groupId}`
+  ).then(data=>{
+    res.status(200).json(data)
+  })
+  
 }
 
 module.exports = {
@@ -226,5 +271,10 @@ module.exports = {
   sendGroupChat,
   seenNormalGroupChat,
   createGroupChat,
-  getAllGroupName
+  getAllGroupName,
+
+  addMemberGroupChat,
+  deleteMember,
+  getAllUserNotInGroup,
+  updateGroupName
 };

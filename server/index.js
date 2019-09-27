@@ -276,6 +276,10 @@ massive({
 
   app.post("/api/createGroupChat", chat.createGroupChat)
   app.get("/api/getAllGroupName", chat.getAllGroupName)
+  app.delete("/api/leaveGroup/:sub/:groupId", chat.deleteMember)
+  app.get("/api/getAllUserNotInGroup/:groupId", chat.getAllUserNotInGroup)
+  app.patch("/api/updateGroupName/:groupId", chat.updateGroupName)
+  app.post("/api/addMemberGroupChat/:groupId", chat.addMemberGroupChat)
   //End of Group Chat
 
   server.listen(PORT, () => {
