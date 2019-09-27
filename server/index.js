@@ -299,6 +299,7 @@ massive({
   app.get("/api/getAllUserNotInGroup/:groupId", chat.getAllUserNotInGroup)
   app.patch("/api/updateGroupName/:groupId", chat.updateGroupName)
   app.post("/api/addMemberGroupChat/:groupId", chat.addMemberGroupChat)
+  app.get("/api/checkInGroup/:sub/:groupId", chat.checkInGroup)
   //End of Group Chat
 
   server.listen(PORT, () => {

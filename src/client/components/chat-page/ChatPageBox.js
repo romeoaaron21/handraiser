@@ -84,8 +84,9 @@ class ChatPageBox extends Component {
       groupId: null,
       userNotInGroup: [],
       groupName: "",
-      
-    }
+      gc: false,
+      checkInGroup: false
+    };
   }
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet })
@@ -102,6 +103,7 @@ class ChatPageBox extends Component {
   messagesEndRef = React.createRef();
   componentDidMount() {
     this.scrollToBottom();
+
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({
@@ -364,9 +366,20 @@ class ChatPageBox extends Component {
   };
   handleCloseEditGroup = () => this.setState({ openEditGroup: false });
 
+  //leave group  / delete member
+  leaveGroup = (groupId, sub) => {
+    // console.log(groupId,sub)
+    this.setState({ gc: true })
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
+      .then(data => {
+        document.location.reload(true)
+        socket.emit("chatGroupList", data.data);
+        socket.emit("refreshGroupName", [this.props.userInfo.sub, this.state.groupId]);
+      })
+  }
+
   render() {
     const { classes } = this.props;
-
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
@@ -402,11 +415,11 @@ class ChatPageBox extends Component {
                       <GroupIcon />{" "}
                     </Avatar>
                   ) : (
-                    <Avatar
-                      style={{ marginRight: 10 }}
-                      src={this.props.chatmateInfo.avatar}
-                    />
-                  )}
+                      <Avatar
+                        style={{ marginRight: 10 }}
+                        src={this.props.chatmateInfo.avatar}
+                      />
+                    )}
 
                   <div>
                     <Typography variant="body">
@@ -433,7 +446,7 @@ class ChatPageBox extends Component {
                     onClick={this.handleMenuClick}
                     disabled={
                       !this.state.gc &&
-                      this.props.chatmateInfo.sub === undefined
+                        this.props.chatmateInfo.sub === undefined
                         ? true
                         : false
                     }
@@ -441,8 +454,8 @@ class ChatPageBox extends Component {
                     <MoreVertIcon />
                   </IconButton>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
 
                 <Menu
                   id="simple-menu"
@@ -455,9 +468,21 @@ class ChatPageBox extends Component {
                   <MenuItem onClick={this.handleClickEditGroup}>
                     Edit Group
                   </MenuItem>
-                  <MenuItem onClick={this.handleMenuClose}>
-                    Leave Group
-                  </MenuItem>
+                  {this.props.chatmateInfo.user_sub !==
+                    this.props.userInfo.sub ? (
+                      <MenuItem
+                        onClick={() => {
+                          this.handleMenuClose();
+                          this.leaveGroup(
+                            this.props.chatmateInfo.id,
+                            this.props.userInfo.sub
+                          );
+                          // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
+                        }}
+                      >
+                        Leave Group
+                    </MenuItem>
+                    ) : null}
                 </Menu>
               </div>
               <Divider />
@@ -653,14 +678,14 @@ class ChatPageBox extends Component {
                 )}
 
                 {this.props.chatmateText.length > 0 &&
-                this.props.chatmateInfo.name === undefined ? (
-                  <TypingEffect />
-                ) : null}
+                  this.props.chatmateInfo.name === undefined ? (
+                    <TypingEffect />
+                  ) : null}
                 {this.props.chatmateText.length > 0 &&
-                this.props.chatmateInfo.sub === undefined &&
-                this.state.gc === true ? (
-                  <TypingEffect />
-                ) : null}
+                  this.props.chatmateInfo.sub === undefined &&
+                  this.state.gc === true ? (
+                    <TypingEffect />
+                  ) : null}
 
                 <div ref={this.messagesEndRef} />
               </div>
@@ -769,7 +794,7 @@ class ChatPageBox extends Component {
                         onClick={this.openPicker}
                         disabled={
                           !this.state.gc &&
-                          this.props.chatmateInfo.sub === undefined
+                            this.props.chatmateInfo.sub === undefined
                             ? true
                             : false
                         }
@@ -819,8 +844,8 @@ class ChatPageBox extends Component {
                     ? true
                     : !this.state.gc &&
                       this.props.chatmateInfo.sub === undefined
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
               >
                 <SendIcon />
@@ -856,6 +881,8 @@ class ChatPageBox extends Component {
             groupId={this.state.groupId}
             users={this.state.userNotInGroup}
             groupName={this.state.groupName}
+            refreshComponent={this.props.refreshComponent}
+            sub={this.props.userInfo.sub}
           />
         </Paper>
       </Grid>
