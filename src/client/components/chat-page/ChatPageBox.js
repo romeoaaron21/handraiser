@@ -38,6 +38,9 @@ import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
 
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
+
 const imageMaxSize = 30000000;
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
@@ -92,12 +95,6 @@ class ChatPageBox extends Component {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
   componentDidUpdate() {
-    if (
-      this.props.chatmateInfo.sub === undefined &&
-      this.props.paramsCheck !== "allMessages"
-    ) {
-      window.location.href = "../404";
-    }
     this.scrollToBottom();
   }
   messagesEndRef = React.createRef();
