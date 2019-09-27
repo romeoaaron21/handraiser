@@ -95,7 +95,6 @@ class ChatPageBox extends Component {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
   componentDidUpdate() {
-
     this.scrollToBottom();
   }
   messagesEndRef = React.createRef();
@@ -359,7 +358,12 @@ class ChatPageBox extends Component {
   };
   //
 
-  handleClickEditGroup = () => {
+  handleClickEditGroup = groupId => {
+    api
+      .fetch(`http://localhost:3001/api/getAllUserNotInGroup/${groupId}`, "get")
+      .then(data => {
+        this.setState({ userNotInGroup: [...data.data] });
+      });
     this.setState({ openEditGroup: true, anchorEl: null });
   };
   handleCloseEditGroup = () => this.setState({ openEditGroup: false });
@@ -377,6 +381,7 @@ class ChatPageBox extends Component {
   }
 
   render() {
+    console.log(this.props.chatmateInfo)
     const { classes } = this.props;
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
@@ -463,7 +468,16 @@ class ChatPageBox extends Component {
                   onClose={this.handleMenuClose}
                   style={{ marginTop: 55 }}
                 >
-                  <MenuItem onClick={this.handleClickEditGroup}>
+                  <MenuItem
+                    onClick={() => {
+                      this.handleClickEditGroup(this.props.chatmateInfo.id);
+                      this.setState({
+                        groupId: this.props.chatmateInfo.id,
+                        groupName: this.props.chatmateInfo.name
+                      });
+                    }}
+                  >
+
                     Edit Group
                   </MenuItem>
                   {this.props.chatmateInfo.user_sub !==
@@ -872,6 +886,7 @@ class ChatPageBox extends Component {
             sendGroup={this.props.sendCodeGroup}
             type={this.props.chatmateInfo.sub ? "pm" : "gc"}
           />
+          
           <EditGroup
             openDialog={this.state.openEditGroup}
             handleClose={this.handleCloseEditGroup}
@@ -882,6 +897,7 @@ class ChatPageBox extends Component {
             refreshComponent={this.props.refreshComponent}
             sub={this.props.userInfo.sub}
           />
+
         </Paper>
       </Grid>
     );

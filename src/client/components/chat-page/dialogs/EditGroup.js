@@ -74,7 +74,7 @@ class EditGroup extends Component {
           "patch"
         )
         .then(data => {
-          // console.log(data)
+          console.log(data)
           socket.emit("createGroupChat", data.data);
         });
     } else {
@@ -247,7 +247,7 @@ class EditGroup extends Component {
               this.props.handleClose();
               this.updateGroup();
               this.props.refreshComponent(this.props.groupId)
-              socket.emit("refreshGroupName", [this.props.sub,this.props.groupId]);
+              socket.emit("refreshGroupName", [this.props.sub, this.props.groupId]);
             }}
             color="primary"
           >

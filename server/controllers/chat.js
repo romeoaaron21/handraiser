@@ -248,9 +248,11 @@ function getAllUserNotInGroup(req,res){
 }
 function updateGroupName(req,res){
   const db = req.app.get("db");
+  console.log(req.query.groupName,"-",req.params.groupId)
   db.query(
     `UPDATE groupchat SET name='${req.query.groupName}' WHERE id = ${req.params.groupId}`
   ).then(data=>{
+    console.log(data)
     res.status(200).json(data)
   })
   
