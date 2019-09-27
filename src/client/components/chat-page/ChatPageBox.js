@@ -24,9 +24,6 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
 import api from "../../services/fetchApi";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import WarningIcon from '@material-ui/icons/Warning';
-
 import Link from "@material-ui/core/Link";
 import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
