@@ -111,15 +111,15 @@ class ChatPage extends PureComponent {
     });
 
     socket.on("chatGroupList", groupChat => {
-      this.displayGroupList()
+      this.displayGroupList();
     });
 
     socket.on("inactiveChat", groupChat => {
-      this.displayChatList()
+      this.displayChatList();
     });
 
     socket.on("activeChat", groupChat => {
-      this.displayChatList()
+      this.displayChatList();
     });
 
     socket.on("setStudentGroupChatText", chatText => {
@@ -155,6 +155,9 @@ class ChatPage extends PureComponent {
           });
           this.selectChatmate(this.props.match.params.chatmateSub);
         }
+      })
+      .catch(err => {
+        window.location.href = "../404";
       });
   }
 

@@ -531,46 +531,67 @@ class Student extends PureComponent {
 
   componentDidMount() {
     this.setState({ loader: true });
-    this.fetch.then(fetch => {
-      const user = fetch.data.user[0];
-      this.setState({ sub: user.sub, assist_id: user.id });
+    this.fetch
+      .then(fetch => {
+        const user = fetch.data.user[0];
+        this.setState({ sub: user.sub, assist_id: user.id });
 
-      const data = api.fetch(
-        `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
-        "get"
-      );
-      data.then(res => {
-        if (res.data[0][0].privilege === "mentor") {
-          api.fetch(`/api/fetchAssist/${user.id}`, "get").then(data => {
-            if (data.data.length) {
-              this.setState({ helping: true });
-              this.selectChatmate(data.data[0].sub);
-            } else {
-              this.setState({ helping: false });
+        const data = api.fetch(
+          `/api/displayUserInfo/${user.sub}/${this.props.cohort_id}`,
+          "get"
+        );
+        data
+          .then(res => {
+            if (res.data[0][0].privilege === "mentor") {
+              api
+                .fetch(`/api/fetchAssist/${user.id}`, "get")
+                .then(data => {
+                  if (data.data.length) {
+                    this.setState({ helping: true });
+                    this.selectChatmate(data.data[0].sub);
+                  } else {
+                    this.setState({ helping: false });
+                  }
+                  data.data.map(val => {
+                    this.setState({ assist: val });
+                    return null;
+                  });
+                })
+                .catch(err => {
+                  window.location.href = "../404";
+                });
             }
-            data.data.map(val => {
-              this.setState({ assist: val });
-              return null;
+            this.setState({
+              user: res.data[0],
+              previledge: res.data[0][0].privilege
             });
+            data.then(() => {
+              this.fetchStudents();
+
+              setTimeout(() => {
+                this.setState({ loader: false });
+              }, 1000);
+            });
+          })
+          .catch(err => {
+            window.location.href = "../404";
           });
-        }
-        this.setState({
-          user: res.data[0],
-          previledge: res.data[0][0].privilege
-        });
-        data.then(() => {
-          this.fetchStudents();
-
-          setTimeout(() => {
-            this.setState({ loader: false });
-          }, 1000);
-        });
+      })
+      .catch(err => {
+        window.location.href = "../404";
       });
-    });
 
-    api.fetch(`/specific/${this.props.cohort_id}`, "get").then(res => {
-      this.setState({ classHeaderImage: res.data[0].class_header });
-    });
+    api
+      .fetch(`/specific/${this.props.cohort_id}`, "get")
+      .then(res => {
+        if (res.data.length === 0) {
+          window.location.href = "../404";
+        }
+        this.setState({ classHeaderImage: res.data[0].class_header });
+      })
+      .catch(err => {
+        window.location.href = "../404";
+      });
 
     this.fetchBeingHelped();
   }
