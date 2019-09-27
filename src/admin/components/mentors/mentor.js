@@ -143,6 +143,7 @@ class Mentor extends React.Component {
                             cursor: "pointer"
                           }}
                           onClick={this.sortFirstName}
+                          className={classes.stickyHeader}
                         >
                           Name
                           {this.state.sort ? (
@@ -171,8 +172,14 @@ class Mentor extends React.Component {
                           style={{
                             cursor: "pointer"
                           }}
+                          className={classes.stickyHeader}
                         />
-                        <TableCell align="center">No. of classes</TableCell>
+                        <TableCell
+                          align="center"
+                          className={classes.stickyHeader}
+                        >
+                          No. of classes
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

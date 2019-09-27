@@ -524,6 +524,7 @@ class Student extends PureComponent {
 
       data.data.map(val => {
         this.setState({ assist: val });
+        return null;
       });
     });
   };
@@ -549,6 +550,7 @@ class Student extends PureComponent {
             }
             data.data.map(val => {
               this.setState({ assist: val });
+              return null;
             });
           });
         }

@@ -310,8 +310,7 @@ const styles = theme => ({
     marginTop: "1%",
     marginBottom: "1%",
     "@media (max-width: 425px)": {
-      fontSize: "10px",
-      marginTop: "2%"
+      fontSize: "10px"
     }
   }
 });
@@ -365,8 +364,7 @@ const DialogActions = withStyles(theme => ({
 
 // UPLOAD IMAGE ATTRIBUTES
 const imageMaxSize = 1000000000; // bytes
-const acceptedFileTypes =
-  "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
+const acceptedFileTypes = "image/x-png, image/png, image/jpg, image/jpeg";
 const acceptedFileTypesArray = acceptedFileTypes.split(",").map(item => {
   return item.trim();
 });
@@ -1027,6 +1025,7 @@ class UploadPhoto extends React.Component {
                     <div className={classes.imageList}>
                       {this.state.images.map((tile, i) => (
                         <div
+                          key={i}
                           className={classes.imageItem}
                           onClick={() =>
                             this.getBase64Image(
@@ -1038,7 +1037,7 @@ class UploadPhoto extends React.Component {
                           }
                         >
                           <img
-                            crossorigin="Anonymous"
+                            crossOrigin="Anonymous"
                             id={i}
                             style={{ width: "100%" }}
                             src={tile.urls.regular}
@@ -1055,6 +1054,7 @@ class UploadPhoto extends React.Component {
                           onClick={this.more}
                         >
                           <img
+                            alt="no more images"
                             style={{
                               width: "12%",
                               margin: "auto auto 0 auto"
@@ -1107,7 +1107,11 @@ class UploadPhoto extends React.Component {
             onClick={e => this.handleSelectClassHeader(e)}
             color="primary"
             disabled={
-              this.state.imgSrc === null || this.state.disabled ? true : false
+              this.state.imgSrc === null ||
+              this.state.disabled ||
+              (this.state.crop.width === 0 && this.state.crop.height === 0)
+                ? true
+                : false
             }
           >
             Select class header

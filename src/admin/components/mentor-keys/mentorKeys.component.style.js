@@ -37,6 +37,12 @@ const styles = theme => ({
   table: {
     minWidth: 650
   },
+  stickyHeader: {
+    position: "sticky",
+    top: "0",
+    backgroundColor: "#ececec",
+    zIndex: "1"
+  },
   cardContact: {
     height: "785px"
   },

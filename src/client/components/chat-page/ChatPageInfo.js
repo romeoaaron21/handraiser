@@ -146,7 +146,7 @@ class ChatPageInfo extends Component {
                             cols={1}
                             onClick={() => this.openGallery(convo.id)}
                           >
-                            <img src={convo.link} />
+                            <img src={convo.link} alt="convo link" />
                           </GridListTile>
                         ) : null
                       )}
