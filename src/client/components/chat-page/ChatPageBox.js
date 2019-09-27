@@ -23,7 +23,9 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
+import api from "../../services/fetchApi";
 import Link from "@material-ui/core/Link";
+
 import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
 import Splash from "../chat-box/plugins/giphy";
@@ -32,9 +34,12 @@ import Gallery from './gallery/galleryDialog';
 import AceEditor from 'react-ace';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import WarningIcon from '@material-ui/icons/Warning';
+
 import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
 
 const imageMaxSize = 30000000;
 const acceptedFileTypes =
@@ -82,33 +87,20 @@ class ChatPageBox extends Component {
       groupId: null,
       userNotInGroup: [],
       groupName: "",
-      
-    }
+      gc: false,
+      checkInGroup: false
+    };
   }
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
-  messagesEndRef = React.createRef();
   componentDidUpdate() {
-    /*let count = 0;
-    if (this.props.chatmateInfo.sub === undefined) {
-      this.props.groupListInfo.map(gc => {
-        if (gc.id !== this.props.chatmateInfo.id) {
-          count++;
-        }
-      });
-    }
-    else{
-      this.props.chatListInfo.map(chatmate => {
-        if(chatmate.sub !== this.props.chatmateInfo.sub){
-          count++
-        }
-      })
-    }
-    if(count === 2){
-      window.location.href = "../404";
-    }*/
     this.scrollToBottom();
+  }
+  messagesEndRef = React.createRef();
+  componentDidMount() {
+    this.scrollToBottom();
+
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({
@@ -371,9 +363,20 @@ class ChatPageBox extends Component {
   };
   handleCloseEditGroup = () => this.setState({ openEditGroup: false });
 
+  //leave group  / delete member
+  leaveGroup = (groupId, sub) => {
+    // console.log(groupId,sub)
+    this.setState({ gc: true })
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
+      .then(data => {
+        document.location.reload(true)
+        socket.emit("chatGroupList", data.data);
+        socket.emit("refreshGroupName", [this.props.userInfo.sub, this.state.groupId]);
+      })
+  }
+
   render() {
     const { classes } = this.props;
-
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
@@ -409,11 +412,11 @@ class ChatPageBox extends Component {
                       <GroupIcon />{" "}
                     </Avatar>
                   ) : (
-                    <Avatar
-                      style={{ marginRight: 10 }}
-                      src={this.props.chatmateInfo.avatar}
-                    />
-                  )}
+                      <Avatar
+                        style={{ marginRight: 10 }}
+                        src={this.props.chatmateInfo.avatar}
+                      />
+                    )}
 
                   <div>
                     <Typography variant="body">
@@ -440,7 +443,7 @@ class ChatPageBox extends Component {
                     onClick={this.handleMenuClick}
                     disabled={
                       !this.state.gc &&
-                      this.props.chatmateInfo.sub === undefined
+                        this.props.chatmateInfo.sub === undefined
                         ? true
                         : false
                     }
@@ -448,8 +451,8 @@ class ChatPageBox extends Component {
                     <MoreVertIcon />
                   </IconButton>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
 
                 <Menu
                   id="simple-menu"
@@ -462,9 +465,21 @@ class ChatPageBox extends Component {
                   <MenuItem onClick={this.handleClickEditGroup}>
                     Edit Group
                   </MenuItem>
-                  <MenuItem onClick={this.handleMenuClose}>
-                    Leave Group
-                  </MenuItem>
+                  {this.props.chatmateInfo.user_sub !==
+                    this.props.userInfo.sub ? (
+                      <MenuItem
+                        onClick={() => {
+                          this.handleMenuClose();
+                          this.leaveGroup(
+                            this.props.chatmateInfo.id,
+                            this.props.userInfo.sub
+                          );
+                          // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
+                        }}
+                      >
+                        Leave Group
+                    </MenuItem>
+                    ) : null}
                 </Menu>
               </div>
               <Divider />
@@ -531,7 +546,6 @@ class ChatPageBox extends Component {
                                         : (convo.chat_type === "gif")
                                           ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
                                           : <AceEditor
-                                          highlightActiveLine={false}
                                           wrapEnabled
                                           maxLines={100}
                                           fontSize="16px"
@@ -606,7 +620,6 @@ class ChatPageBox extends Component {
                                 : (gcConvo.chat_type === "gif")
                                   ? <img style={{ width: "100%"}} src={gcConvo.link} alt=""/>
                                   : <AceEditor
-                                      highlightActiveLine={false}
                                       wrapEnabled
                                       maxLines={100}
                                       fontSize="16px"
@@ -662,14 +675,14 @@ class ChatPageBox extends Component {
                 )}
 
                 {this.props.chatmateText.length > 0 &&
-                this.props.chatmateInfo.name === undefined ? (
-                  <TypingEffect />
-                ) : null}
+                  this.props.chatmateInfo.name === undefined ? (
+                    <TypingEffect />
+                  ) : null}
                 {this.props.chatmateText.length > 0 &&
-                this.props.chatmateInfo.sub === undefined &&
-                this.state.gc === true ? (
-                  <TypingEffect />
-                ) : null}
+                  this.props.chatmateInfo.sub === undefined &&
+                  this.state.gc === true ? (
+                    <TypingEffect />
+                  ) : null}
 
                 <div ref={this.messagesEndRef} />
               </div>
@@ -778,7 +791,7 @@ class ChatPageBox extends Component {
                         onClick={this.openPicker}
                         disabled={
                           !this.state.gc &&
-                          this.props.chatmateInfo.sub === undefined
+                            this.props.chatmateInfo.sub === undefined
                             ? true
                             : false
                         }
@@ -828,8 +841,8 @@ class ChatPageBox extends Component {
                     ? true
                     : !this.state.gc &&
                       this.props.chatmateInfo.sub === undefined
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
               >
                 <SendIcon />
@@ -865,6 +878,8 @@ class ChatPageBox extends Component {
             groupId={this.state.groupId}
             users={this.state.userNotInGroup}
             groupName={this.state.groupName}
+            refreshComponent={this.props.refreshComponent}
+            sub={this.props.userInfo.sub}
           />
         </Paper>
       </Grid>
