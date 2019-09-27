@@ -99,7 +99,10 @@ class ChatPageBox extends Component {
   };
 
   componentDidUpdate() {
-    if (this.props.chatmateInfo.sub === undefined) {
+    if (
+      this.props.chatmateInfo.sub === undefined &&
+      this.props.paramsCheck !== "allMessages"
+    ) {
       window.location.href = "../404";
     }
     this.scrollToBottom();

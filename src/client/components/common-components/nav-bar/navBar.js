@@ -127,8 +127,8 @@ class NavBar extends React.Component {
       anchor: null,
       chat: false,
       userInfo: [],
-      sub: '',
-      conversation: [],
+      sub: "",
+      conversation: []
     };
   }
 
@@ -137,43 +137,34 @@ class NavBar extends React.Component {
   closeLogoutMenu = () => this.setState({ anchor: null });
 
   UNSAFE_componentWillMount() {
-    
     socket.on("countUnreadMessages", groupChat => {
-      this.componentDidMount()
+      this.componentDidMount();
     });
-
   }
 
   componentDidMount() {
-    this.fetch
-      .then(fetch => {
-        this.setState({
-          sub: fetch.data.user[0].sub,
-          userInfo: fetch.data.user[0]
-        });
-      })
-    const data = api.fetch(
-      `/api/getChat/`,
-      "get"
-    );
+    this.fetch.then(fetch => {
+      this.setState({
+        sub: fetch.data.user[0].sub,
+        userInfo: fetch.data.user[0]
+      });
+    });
+    const data = api.fetch(`/api/getChat/`, "get");
     data.then(res => {
-        this.setState({conversation: [...res.data]})
-    })
+      this.setState({ conversation: [...res.data] });
+    });
   }
-
-  // componentDidUpdate(){
-  //   this.componentDidMount()
-  // }
 
   unreadMessages = () => {
     let count = 0;
-    this.state.conversation.map(convo =>{
-      if(convo.chatmate_id === this.state.sub && convo.seen === 0){
-        count++
+    this.state.conversation.map(convo => {
+      if (convo.chatmate_id === this.state.sub && convo.seen === 0) {
+        count++;
       }
-    })
-    return count
-  }
+      return null;
+    });
+    return count;
+  };
 
   render() {
     const { classes } = this.props;
@@ -213,10 +204,7 @@ class NavBar extends React.Component {
             onClick={() => this.setState({ chat: true })}
           >
             <MessageIcon />
-            <Badge
-              color="secondary"
-              badgeContent={this.unreadMessages()}
-            />
+            <Badge color="secondary" badgeContent={this.unreadMessages()} />
           </IconButton>
           <HtmlTooltip
             title={
