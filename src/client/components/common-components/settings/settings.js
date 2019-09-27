@@ -259,44 +259,65 @@ class Settings extends PureComponent {
 
   componentDidMount() {
     document.title = "Settings";
-    api.fetch(`/api/cohort/${this.state.id}/details`, "get").then(res => {
-      if (res.data.cohort[0].status !== "active") {
+    api
+      .fetch(`/api/cohort/${this.state.id}/details`, "get")
+      .then(res => {
+        if (res.data.cohort[0].status !== "active") {
+          this.setState({
+            status: true,
+            oldStatus: true
+          });
+        }
         this.setState({
-          status: true,
-          oldStatus: true
+          oldname: res.data.cohort[0].name,
+          name: res.data.cohort[0].name,
+          password: res.data.cohort[0].password
         });
-      }
-      this.setState({
-        oldname: res.data.cohort[0].name,
-        name: res.data.cohort[0].name,
-        password: res.data.cohort[0].password
+        setTimeout(() => {
+          this.setState({ loader: false });
+        }, 1000);
+      })
+      .catch(err => {
+        window.location.href = "../404";
       });
-      setTimeout(() => {
-        this.setState({ loader: false });
-      }, 1000);
-    });
 
-    api.fetch(`/api/fetchCoMentor/${this.state.id}`, "get").then(data => {
-      this.setState({ coMentor: data.data });
-    });
+    api
+      .fetch(`/api/fetchCoMentor/${this.state.id}`, "get")
+      .then(data => {
+        this.setState({ coMentor: data.data });
+      })
+      .catch(err => {
+        window.location.href = "../404";
+      });
 
-    api.fetch(`/api/${this.state.id}/fetchCohorts`, "get").then(data => {
-      this.setState({ cohortDetails: data.data });
+    api
+      .fetch(`/api/${this.state.id}/fetchCohorts`, "get")
+      .then(data => {
+        this.setState({ cohortDetails: data.data });
 
-      api
-        .fetch(`/api/fetchMentors/${data.data[0].mentor_id}`, "get")
-        .then(data => {
-          this.setState({ mentors: data.data });
-        });
-      api
-        .fetch(
-          `/api/availableMentor/${this.state.id}/${data.data[0].mentor_id}`,
-          "get"
-        )
-        .then(data => {
-          this.setState({ availableMentor: data.data });
-        });
-    });
+        api
+          .fetch(`/api/fetchMentors/${data.data[0].mentor_id}`, "get")
+          .then(data => {
+            this.setState({ mentors: data.data });
+          })
+          .catch(err => {
+            window.location.href = "../404";
+          });
+        api
+          .fetch(
+            `/api/availableMentor/${this.state.id}/${data.data[0].mentor_id}`,
+            "get"
+          )
+          .then(data => {
+            this.setState({ availableMentor: data.data });
+          })
+          .catch(err => {
+            window.location.href = "../404";
+          });
+      })
+      .catch(err => {
+        window.location.href = "../404";
+      });
   }
 
   remount = () => {

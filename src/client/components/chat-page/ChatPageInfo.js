@@ -26,7 +26,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider"
+import Divider from "@material-ui/core/Divider";
 
 const ExpansionPanel = withStyles({
   root: {
@@ -61,6 +61,7 @@ class ChatPageInfo extends Component {
       expanded: "photos"
     };
   }
+
   openGallery = index => {
     const images = this.props.conversation.filter(convo => {
       return (
@@ -78,17 +79,20 @@ class ChatPageInfo extends Component {
       imgArray: images
     });
   };
+
   closeGallery = () => {
     this.setState({
       open: false,
       selected: null
     });
   };
+
   handleExpland = panel => (event, isExpanded) => {
     this.setState(prev => ({
       expanded: isExpanded ? panel : false
     }));
   };
+
   render() {
     const { classes } = this.props;
     return (
@@ -208,72 +212,74 @@ class ChatPageInfo extends Component {
                   </span>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                  <List style={{ width: "100%", overflowY:"auto", height:370 }} className={classes.scrollBar}>
-                    <Divider/>
+                  <List
+                    style={{ width: "100%", overflowY: "auto", height: 370 }}
+                    className={classes.scrollBar}
+                  >
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
+                    <Divider />
                     <ListItem fullWidth button>
                       <ListItemAvatar>
                         <Avatar>ME</Avatar>
                       </ListItemAvatar>
                       <ListItemText primary="Something" />
                     </ListItem>
-                    <Divider/>
-
+                    <Divider />
                   </List>
                 </ExpansionPanelDetails>
               </ExpansionPanel>

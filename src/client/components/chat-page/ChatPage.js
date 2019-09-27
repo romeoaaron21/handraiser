@@ -155,6 +155,9 @@ class ChatPage extends PureComponent {
           });
           this.selectChatmate(this.props.match.params.chatmateSub);
         }
+      })
+      .catch(err => {
+        window.location.href = "../404";
       });
   }
 

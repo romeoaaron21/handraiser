@@ -99,7 +99,11 @@ class ChatPageBox extends Component {
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet });
   };
+
   componentDidUpdate() {
+    if (this.props.chatmateInfo.sub === undefined) {
+      window.location.href = "../404";
+    }
     this.scrollToBottom();
   }
   //Start of Added Scroll Bottom
@@ -121,12 +125,15 @@ class ChatPageBox extends Component {
   handleImageMenu = event => {
     this.setState({ imageMenu: event.currentTarget });
   };
+
   handleImageMenuClose = () => {
     this.setState({ imageMenu: null });
   };
+
   handleSplash = () => {
     this.setState({ splashDialog: true });
   };
+
   closeSplash = () => {
     this.setState({ splashDialog: false });
   };
@@ -356,7 +363,6 @@ class ChatPageBox extends Component {
 
   //leave group  / delete member
   leaveGroup = (groupId, sub) => {
-    // console.log(groupId,sub)
     api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete").then(data => {
       socket.emit("chatGroupList", data.data);
     });
@@ -364,7 +370,6 @@ class ChatPageBox extends Component {
 
   render() {
     const { classes } = this.props;
-    console.log(this.props.chatmateInfo.sub !== undefined);
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
