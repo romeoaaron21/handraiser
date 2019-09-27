@@ -24,7 +24,6 @@ import { ListItemText, DialogActions } from "@material-ui/core";
 
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
-import CommentIcon from "@material-ui/icons/Comment";
 import api from "../../../services/fetchApi";
 import io from "socket.io-client";
 const socket = io("http://boom-handraiser.com:3001/");
@@ -36,7 +35,7 @@ class EditGroup extends Component {
     this.state = {
       checked: [],
       search: "",
-      groupName: '',
+      groupName: "",
       btnSave: true
     };
   }
@@ -66,31 +65,39 @@ class EditGroup extends Component {
     var postData = {
       userId: [...this.state.checked]
     };
-    console.log(postData)
-    
-    if(this.state.groupName !== this.props.groupName){
-      console.log("Updated Group Name")
-      api.fetch(`/api/updateGroupName/${this.props.groupId}?groupName=${this.state.groupName}`,"patch")
-      .then(data=>{
-        // console.log(data)
-        socket.emit("createGroupChat", data.data);
-      })
+    console.log(postData);
 
-    }else{
+    if (this.state.groupName !== this.props.groupName) {
+      console.log("Updated Group Name");
+      api
+        .fetch(
+          `/api/updateGroupName/${this.props.groupId}?groupName=${this.state.groupName}`,
+          "patch"
+        )
+        .then(data => {
+          // console.log(data)
+          socket.emit("createGroupChat", data.data);
+        });
+    } else {
       // console.log("No Changes")
     }
 
-    if(this.state.checked.length > 0){
+    if (this.state.checked.length > 0) {
       // /api/addMemberGroupChat/:groupId
-      api.fetch(`/api/addMemberGroupChat/${this.props.groupId}`,"post",postData)
-      .then(data=>{
-        socket.emit("createGroupChat", data.data);
-        console.log(data)
-      })
+      api
+        .fetch(
+          `/api/addMemberGroupChat/${this.props.groupId}`,
+          "post",
+          postData
+        )
+        .then(data => {
+          socket.emit("createGroupChat", data.data);
+          console.log(data);
+        });
     }
-    
-    this.setState({checked:[]})
-  }
+
+    this.setState({ checked: [] });
+  };
 
   render() {
     const { classes } = this.props;
@@ -111,7 +118,6 @@ class EditGroup extends Component {
         return lname;
       }
     });
-
 
     return (
       <Dialog
@@ -141,11 +147,11 @@ class EditGroup extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
-            onChange={(e) => {
-              this.setState({ groupName: e.target.value })
+            onChange={e => {
+              this.setState({ groupName: e.target.value });
             }}
-            onBlur={(e) => {
-              this.setState({ groupName: e.target.value })
+            onBlur={e => {
+              this.setState({ groupName: e.target.value });
             }}
           />
 
@@ -156,8 +162,8 @@ class EditGroup extends Component {
             variant="outlined"
             fullWidth
             style={{ marginTop: "2px" }}
-            onChange={(event) => {
-              this.setState({ search: event.target.value })
+            onChange={event => {
+              this.setState({ search: event.target.value });
             }}
           />
           <Paper
@@ -229,6 +235,7 @@ class EditGroup extends Component {
                       />
                     );
                   }
+                  return null;
                 });
               })}
             </div>
@@ -236,10 +243,13 @@ class EditGroup extends Component {
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={() => {
-            this.props.handleClose()
-            this.updateGroup()
-          }} color="primary">
+          <Button
+            onClick={() => {
+              this.props.handleClose();
+              this.updateGroup();
+            }}
+            color="primary"
+          >
             Save
           </Button>
         </DialogActions>

@@ -436,16 +436,18 @@ class Cohorts extends React.Component {
                 ) : null}
                 {this.state.privilege !== "student" ? (
                   <div className={classes.mentor} id="mentorCard">
-                    <MentorClassCards
-                      search={this.state.search}
-                      cohorts={this.state.cohorts}
-                      openAdd={this.openAdd}
-                      openDelete={this.openDelete}
-                      redirect={this.redirect}
-                      openStudentList={this.openStudentList}
-                      user={this.state.user}
-                      subCohorts={this.state.subCohorts}
-                    />
+                    <Grid container className={classes.mentorClassCard}>
+                      <MentorClassCards
+                        search={this.state.search}
+                        cohorts={this.state.cohorts}
+                        openAdd={this.openAdd}
+                        openDelete={this.openDelete}
+                        redirect={this.redirect}
+                        openStudentList={this.openStudentList}
+                        user={this.state.user}
+                        subCohorts={this.state.subCohorts}
+                      />
+                    </Grid>
                   </div>
                 ) : this.state.member.length !== 0 &&
                   this.state.member.filter(

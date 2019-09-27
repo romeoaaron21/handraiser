@@ -310,8 +310,7 @@ const styles = theme => ({
     marginTop: "1%",
     marginBottom: "1%",
     "@media (max-width: 425px)": {
-      fontSize: "10px",
-      marginTop: "2%"
+      fontSize: "10px"
     }
   }
 });
