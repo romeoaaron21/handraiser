@@ -41,9 +41,6 @@ import 'brace/theme/dracula'
 import io from "socket.io-client";
 const socket = io("http://boom-handraiser.com:3001/");
 
-import io from "socket.io-client";
-const socket = io("http://boom-handraiser.com:3001/");
-
 const imageMaxSize = 30000000;
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
@@ -98,7 +95,6 @@ class ChatPageBox extends Component {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
   componentDidUpdate() {
-
     this.scrollToBottom();
   }
   messagesEndRef = React.createRef();
