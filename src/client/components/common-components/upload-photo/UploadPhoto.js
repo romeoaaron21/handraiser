@@ -1054,6 +1054,7 @@ class UploadPhoto extends React.Component {
                           onClick={this.more}
                         >
                           <img
+                            alt="no more images"
                             style={{
                               width: "12%",
                               margin: "auto auto 0 auto"
