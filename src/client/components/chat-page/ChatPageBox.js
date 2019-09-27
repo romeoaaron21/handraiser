@@ -24,6 +24,8 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
 import api from "../../services/fetchApi";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import WarningIcon from '@material-ui/icons/Warning';
 
 import Link from "@material-ui/core/Link";
 //Firebase
@@ -355,11 +357,10 @@ class ChatPageBox extends Component {
   //leave group  / delete member
   leaveGroup = (groupId, sub) => {
     // console.log(groupId,sub)
-    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
-    .then(data=>{
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete").then(data => {
       socket.emit("chatGroupList", data.data);
-    })
-  }
+    });
+  };
 
   render() {
     const { classes } = this.props;
@@ -656,15 +657,33 @@ class ChatPageBox extends Component {
                   this.props.chatmateInfo.name !== undefined ? (
                   //START OF EDIT HERE EARL
                   <React.Fragment>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                      Not a member
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        width: "100%",
+                        background: "#fea000",
+                        color: "white",
+                        padding: 3,
+                        borderRadius: 10
+                      }}
+                    >
+                      <WarningIcon
+                        style={{ marginRight: 10, marginTop: 1.5 }}
+                      />
+                      <Typography variant="overline">
+                        You're not a member of this group
+                      </Typography>
                     </div>
                   </React.Fragment>
                 ) : (
                   //GAWING LOADER
                   <React.Fragment>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                      Loading Messages
+                    <div className={classes.messageLoader}>
+                      <CircularProgress />
+                      <Typography variant="overline" style={{ marginTop: 10 }}>
+                        Loading Messages
+                      </Typography>
                     </div>
                   </React.Fragment>
                 )
