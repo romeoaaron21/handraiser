@@ -23,6 +23,8 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
+import SettingsIcon from "@material-ui/icons/Settings";
+import api from "../../services/fetchApi";
 
 import Link from "@material-ui/core/Link";
 //Firebase
@@ -84,7 +86,10 @@ class ChatPageBox extends Component {
       anchorEl: null,
       //group
       openEditGroup: false,
-      gc: false
+      groupId: null,
+      userNotInGroup: [],
+      groupName: '',
+      gc: false,
     };
   }
   openSnippet = () => {
@@ -335,10 +340,24 @@ class ChatPageBox extends Component {
   };
   //
 
-  handleClickEditGroup = () => {
+  handleClickEditGroup = (groupId) => {
+
+    api.fetch(`http://localhost:3001/api/getAllUserNotInGroup/${groupId}`, "get")
+    .then(data=>{
+      this.setState({userNotInGroup: [...data.data]})
+    })
     this.setState({ openEditGroup: true, anchorEl: null });
   };
   handleCloseEditGroup = () => this.setState({ openEditGroup: false });
+
+  //leave group  / delete member
+  leaveGroup = (groupId, sub) =>{
+    // console.log(groupId,sub)
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
+    .then(data=>{
+      // console.log(data)
+    })
+  }
 
   render() {
     const { classes } = this.props;
@@ -429,12 +448,23 @@ class ChatPageBox extends Component {
                   onClose={this.handleMenuClose}
                   style={{ marginTop: 55 }}
                 >
-                  <MenuItem onClick={this.handleClickEditGroup}>
+                  <MenuItem onClick={()=>{
+                    this.handleClickEditGroup(this.props.chatmateInfo.id);
+                    this.setState({groupId:this.props.chatmateInfo.id, groupName: this.props.chatmateInfo.name})
+                  }}>
                     Edit Group
                   </MenuItem>
-                  <MenuItem onClick={this.handleMenuClose}>
+                  {this.props.chatmateInfo.user_sub !== this.props.userInfo.sub ?
+                  <MenuItem onClick={()=>{
+                    this.handleMenuClose();
+                    this.leaveGroup(this.props.chatmateInfo.id,this.props.userInfo.sub)
+                    // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
+                  }}>
                     Leave Group
                   </MenuItem>
+                  : null
+                  }
+
                 </Menu>
               </div>
               <Divider />
@@ -840,6 +870,9 @@ class ChatPageBox extends Component {
             openDialog={this.state.openEditGroup}
             handleClose={this.handleCloseEditGroup}
             avatarSample={this.props.userInfo.avatar}
+            groupId={this.state.groupId}
+            users={this.state.userNotInGroup}
+            groupName={this.state.groupName}
           />
         </Paper>
       </Grid>
