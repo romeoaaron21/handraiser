@@ -111,15 +111,15 @@ class ChatPage extends PureComponent {
     });
 
     socket.on("chatGroupList", groupChat => {
-      this.displayGroupList()
+      this.displayGroupList();
     });
 
     socket.on("inactiveChat", groupChat => {
-      this.displayChatList()
+      this.displayChatList();
     });
 
     socket.on("activeChat", groupChat => {
-      this.displayChatList()
+      this.displayChatList();
     });
 
     socket.on("setStudentGroupChatText", chatText => {
@@ -172,14 +172,20 @@ class ChatPage extends PureComponent {
         UniqueSub = [...new Set(sub)];
       })
       .then(() => {
-        api
-          .fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
-          .then(res => {
-            this.setState({ chatListInfo: [...res.data] });
-          })
-          .catch(() => {
-            this.displayChatList();
-          });
+        if (UniqueSub.length !== 0) {
+          api
+            .fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
+            .then(res => {
+              this.setState({ chatListInfo: [...res.data] });
+            })
+            .catch(() => {
+              this.displayChatList();
+            });
+        }
+        else{
+          this.displayGroupList();
+          this.getGroupConversation();
+        }
       })
       .then(() => {
         if (view === "allMessages" && UniqueSub.length > 0) {
@@ -231,11 +237,12 @@ class ChatPage extends PureComponent {
           this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data });
         });
       }
-      this.displayChatList();
       this.getConversation();
 
       this.displayGroupList();
+
       this.getGroupConversation();
+      this.displayChatList();
     }
   };
 
