@@ -208,6 +208,7 @@ class ChatPage extends PureComponent {
       });
   };
 
+
   componentDidUpdate(sub) {
     if (this.props.match.params.chatmateSub === "allMessages") {
       if (sub.length > 0) {
@@ -222,6 +223,7 @@ class ChatPage extends PureComponent {
       this.selectChatmate(this.props.match.params.chatmateSub);
     }
   }
+
 
   changeChatmate = chatmate => {
     this.setState({ newChatmateSub: chatmate });
@@ -256,7 +258,10 @@ class ChatPage extends PureComponent {
       this.displayGroupList();
 
       this.getGroupConversation();
-    }else if(this.state.refreshChatmate){
+      this.displayChatList();
+    }
+
+    else if(this.state.refreshChatmate){
       if (chatmateSub.length > 15) {
         const data = api.fetch(
           `/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`,
