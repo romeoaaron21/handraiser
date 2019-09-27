@@ -114,6 +114,14 @@ class ChatPage extends PureComponent {
       this.displayGroupList()
     });
 
+    socket.on("inactiveChat", groupChat => {
+      this.displayChatList()
+    });
+
+    socket.on("activeChat", groupChat => {
+      this.displayChatList()
+    });
+
     socket.on("setStudentGroupChatText", chatText => {
       if (
         chatText[2] === this.state.sub &&

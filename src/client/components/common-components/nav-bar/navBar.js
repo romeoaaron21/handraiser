@@ -106,6 +106,7 @@ const HtmlTooltip = withStyles(theme => ({
 const logout = sub => {
   api.fetch(`/status/${sub}/inactive`, "patch").then(res => {
     socket.emit("inactive", res.data.user);
+    socket.emit("inactiveChat", res.data.user);
     localStorage.removeItem("id_token");
     window.location.href = "/sign-in";
   });

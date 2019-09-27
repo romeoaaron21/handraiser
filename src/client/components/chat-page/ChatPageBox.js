@@ -470,7 +470,6 @@ class ChatPageBox extends Component {
                           this.props.chatmateInfo.id,
                           this.props.userInfo.sub
                         );
-                        // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
                       }}
                     >
                       Leave Group

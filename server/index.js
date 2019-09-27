@@ -135,7 +135,16 @@ massive({
     socket.on("chatGroupList", chatText => {
       io.emit("chatGroupList", chatText);
     });
-    
+    socket.on("inactiveChat", user => {
+      io.emit("inactiveChat", user);
+    });
+    socket.on("inactiveChat", user => {
+      io.emit("inactiveChat", user);
+    });
+    socket.on("activeChat", user => {
+      io.emit("activeChat", user);
+    });
+
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
