@@ -23,7 +23,6 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
-import SettingsIcon from "@material-ui/icons/Settings";
 import api from "../../services/fetchApi";
 
 import Link from "@material-ui/core/Link";
@@ -88,8 +87,8 @@ class ChatPageBox extends Component {
       openEditGroup: false,
       groupId: null,
       userNotInGroup: [],
-      groupName: '',
-      gc: false,
+      groupName: "",
+      gc: false
     };
   }
   openSnippet = () => {
@@ -340,28 +339,27 @@ class ChatPageBox extends Component {
   };
   //
 
-  handleClickEditGroup = (groupId) => {
-
-    api.fetch(`http://localhost:3001/api/getAllUserNotInGroup/${groupId}`, "get")
-    .then(data=>{
-      this.setState({userNotInGroup: [...data.data]})
-    })
+  handleClickEditGroup = groupId => {
+    api
+      .fetch(`http://localhost:3001/api/getAllUserNotInGroup/${groupId}`, "get")
+      .then(data => {
+        this.setState({ userNotInGroup: [...data.data] });
+      });
     this.setState({ openEditGroup: true, anchorEl: null });
   };
   handleCloseEditGroup = () => this.setState({ openEditGroup: false });
 
   //leave group  / delete member
-  leaveGroup = (groupId, sub) =>{
+  leaveGroup = (groupId, sub) => {
     // console.log(groupId,sub)
-    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete")
-    .then(data=>{
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`, "delete").then(data => {
       // console.log(data)
-    })
-  }
+    });
+  };
 
   render() {
     const { classes } = this.props;
-    console.log(this.props.chatmateInfo.sub !== undefined)
+    console.log(this.props.chatmateInfo.sub !== undefined);
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
@@ -448,23 +446,32 @@ class ChatPageBox extends Component {
                   onClose={this.handleMenuClose}
                   style={{ marginTop: 55 }}
                 >
-                  <MenuItem onClick={()=>{
-                    this.handleClickEditGroup(this.props.chatmateInfo.id);
-                    this.setState({groupId:this.props.chatmateInfo.id, groupName: this.props.chatmateInfo.name})
-                  }}>
+                  <MenuItem
+                    onClick={() => {
+                      this.handleClickEditGroup(this.props.chatmateInfo.id);
+                      this.setState({
+                        groupId: this.props.chatmateInfo.id,
+                        groupName: this.props.chatmateInfo.name
+                      });
+                    }}
+                  >
                     Edit Group
                   </MenuItem>
-                  {this.props.chatmateInfo.user_sub !== this.props.userInfo.sub ?
-                  <MenuItem onClick={()=>{
-                    this.handleMenuClose();
-                    this.leaveGroup(this.props.chatmateInfo.id,this.props.userInfo.sub)
-                    // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
-                  }}>
-                    Leave Group
-                  </MenuItem>
-                  : null
-                  }
-
+                  {this.props.chatmateInfo.user_sub !==
+                  this.props.userInfo.sub ? (
+                    <MenuItem
+                      onClick={() => {
+                        this.handleMenuClose();
+                        this.leaveGroup(
+                          this.props.chatmateInfo.id,
+                          this.props.userInfo.sub
+                        );
+                        // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
+                      }}
+                    >
+                      Leave Group
+                    </MenuItem>
+                  ) : null}
                 </Menu>
               </div>
               <Divider />
@@ -642,27 +649,23 @@ class ChatPageBox extends Component {
                       </React.Fragment>
                     ) : null
                   )
-                ) : 
-                !this.state.gc && this.props.chatmateInfo.name !== undefined?
-
-                              //START OF EDIT HERE EARL
-                <React.Fragment>
-                    <div style={{display:'flex', justifyContent:'center'}}>
-                    Not a member
+                ) : !this.state.gc &&
+                  this.props.chatmateInfo.name !== undefined ? (
+                  //START OF EDIT HERE EARL
+                  <React.Fragment>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      Not a member
                     </div>
-                </React.Fragment>
-
-
-                :
-
-                              //GAWING LOADER
-                <React.Fragment>
-                    <div style={{display:'flex', justifyContent:'center'}}>
-                    Loading Messages
+                  </React.Fragment>
+                ) : (
+                  //GAWING LOADER
+                  <React.Fragment>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      Loading Messages
                     </div>
-                </React.Fragment>
-                              //END OF EDIT HERE EARL
-
+                  </React.Fragment>
+                )
+                //END OF EDIT HERE EARL
                 }
 
                 {this.props.chatmateText.length > 0 &&
