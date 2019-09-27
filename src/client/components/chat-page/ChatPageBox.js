@@ -31,6 +31,9 @@ import Splash from "../chat-box/plugins/giphy";
 import Emoji from '../chat-box/plugins/emoji';
 import Gallery from './gallery/galleryDialog';
 import AceEditor from 'react-ace';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import WarningIcon from '@material-ui/icons/Warning';
+
 import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
@@ -76,7 +79,12 @@ class ChatPageBox extends Component {
       openSnippet: false,
       anchorEl: null,
       openEditGroup: false,
-      gc: false
+      gc: false,
+      //group
+      groupId: null,
+      userNotInGroup: [],
+      groupName: "",
+      
     }
   }
   openSnippet = () => {
@@ -602,12 +610,40 @@ class ChatPageBox extends Component {
                       </React.Fragment>
                     ) : null
                   )
+                ) : !this.state.gc &&
+                this.props.chatmateInfo.name !== undefined ? (
+                //START OF EDIT HERE EARL
+                <React.Fragment>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                      background: "#fea000",
+                      color: "white",
+                      padding: 3,
+                      borderRadius: 10
+                    }}
+                  >
+                    <WarningIcon
+                      style={{ marginRight: 10, marginTop: 1.5 }}
+                    />
+                    <Typography variant="overline">
+                      You're not a member of this group
+                    </Typography>
+                  </div>
+                </React.Fragment>
                 ) : (
-                  <React.Fragment>
-                    <div style={{display:'flex', justifyContent:'center'}}>
-                    Not a member
-                    </div>
-                  </React.Fragment>
+                //GAWING LOADER
+                <React.Fragment>
+                  <div className={classes.messageLoader}>
+                    <CircularProgress />
+                    <Typography variant="overline" style={{ marginTop: 10 }}>
+                      Loading Messages
+                    </Typography>
+                  </div>
+                </React.Fragment>
+
                 )}
 
                 {this.props.chatmateText.length > 0 &&
@@ -811,6 +847,9 @@ class ChatPageBox extends Component {
             openDialog={this.state.openEditGroup}
             handleClose={this.handleCloseEditGroup}
             avatarSample={this.props.userInfo.avatar}
+            groupId={this.state.groupId}
+            users={this.state.userNotInGroup}
+            groupName={this.state.groupName}
           />
         </Paper>
       </Grid>

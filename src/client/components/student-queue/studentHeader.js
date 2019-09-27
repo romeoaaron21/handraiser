@@ -113,6 +113,8 @@ class StudentHeader extends Component {
   constructor() {
     super();
 
+    this._isMounted = false;
+
     this.state = {
       uploadPhotoDialog: false,
       uploadPhotoLoader: false,
@@ -178,6 +180,14 @@ class StudentHeader extends Component {
   uploadPhoto = () => {
     this.setState({ uploadPhotoLoader: !this.state.uploadPhotoLoader });
   };
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   render() {
     const { classes } = this.props;

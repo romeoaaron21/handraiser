@@ -1,12 +1,14 @@
-import React from 'react';
+import React from "react";
 import {
-  Button, Dialog, DialogActions, DialogContent,
-} from '@material-ui/core';
-import Close from '@material-ui/icons/Close'
-import Transition from '../gallery/transition'
-import AceEditor from 'react-ace';
-import 'brace/mode/javascript'
-import 'brace/theme/monokai'
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent
+} from "@material-ui/core";
+import Transition from "../gallery/transition";
+import AceEditor from "react-ace";
+import "brace/mode/javascript";
+import "brace/theme/monokai";
 
 export default class Snippet extends React.Component {
     constructor(){

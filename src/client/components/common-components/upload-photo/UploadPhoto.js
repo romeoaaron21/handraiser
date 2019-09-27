@@ -248,13 +248,21 @@ const styles = theme => ({
       "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
     },
     "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "rgba(0,0,0,.1)",
+      backgroundColor: "#b3b3b3",
       borderRadius: "10px",
       outline: "1px solid slategrey"
     },
     "@media (max-width: 425px)": {
-      gridTemplateColumns: "repeat(1, 1fr)",
-      width: "100%"
+      gridTemplateColumns: "repeat(2, 1fr)",
+      width: "96%"
+    },
+    "@media (min-width: 426px) and (max-width: 1023px)": {
+      gridTemplateColumns: "repeat(3, 1fr)",
+      width: "96%"
+    },
+    "@media (min-width: 1024px)": {
+      gridTemplateColumns: "repeat(4, 1fr)",
+      width: "96%"
     }
   },
   cropInstruction: {
@@ -310,8 +318,7 @@ const styles = theme => ({
     marginTop: "1%",
     marginBottom: "1%",
     "@media (max-width: 425px)": {
-      fontSize: "10px",
-      marginTop: "2%"
+      fontSize: "10px"
     }
   }
 });
@@ -1026,6 +1033,7 @@ class UploadPhoto extends React.Component {
                     <div className={classes.imageList}>
                       {this.state.images.map((tile, i) => (
                         <div
+                          key={i}
                           className={classes.imageItem}
                           onClick={() =>
                             this.getBase64Image(
@@ -1037,7 +1045,7 @@ class UploadPhoto extends React.Component {
                           }
                         >
                           <img
-                            crossorigin="Anonymous"
+                            crossOrigin="Anonymous"
                             id={i}
                             style={{ width: "100%" }}
                             src={tile.urls.regular}
@@ -1054,6 +1062,7 @@ class UploadPhoto extends React.Component {
                           onClick={this.more}
                         >
                           <img
+                            alt="no more images"
                             style={{
                               width: "12%",
                               margin: "auto auto 0 auto"
@@ -1106,7 +1115,11 @@ class UploadPhoto extends React.Component {
             onClick={e => this.handleSelectClassHeader(e)}
             color="primary"
             disabled={
-              this.state.imgSrc === null || this.state.disabled ? true : false
+              this.state.imgSrc === null ||
+              this.state.disabled ||
+              (this.state.crop.width === 0 && this.state.crop.height === 0)
+                ? true
+                : false
             }
           >
             Select class header

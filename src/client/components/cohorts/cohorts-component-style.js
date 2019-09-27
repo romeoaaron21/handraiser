@@ -97,6 +97,14 @@ const styles = theme => ({
       marginLeft: "12px"
     }
   },
+  mentorClassCard: {
+    "@media (max-width: 900px)": {
+      flexDirection: "column"
+    },
+    "@media (min-width: 901px) and (max-width: 1044px)": {
+      paddingLeft: "12%"
+    }
+  },
   enrolledClassCon: {
     "@media (max-width: 900px)": {
       flexDirection: "column"

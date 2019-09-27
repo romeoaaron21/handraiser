@@ -132,6 +132,22 @@ massive({
     socket.on("setStudentGroupChatText", chatText => {
       io.emit("setStudentGroupChatText", chatText);
     });
+    socket.on("chatGroupList", chatText => {
+      io.emit("chatGroupList", chatText);
+    });
+    socket.on("inactiveChat", user => {
+      io.emit("inactiveChat", user);
+    });
+    socket.on("inactiveChat", user => {
+      io.emit("inactiveChat", user);
+    });
+    socket.on("activeChat", user => {
+      io.emit("activeChat", user);
+    });
+    socket.on("countUnreadMessages", user => {
+      io.emit("countUnreadMessages", user);
+    });
+
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
@@ -279,6 +295,10 @@ massive({
 
   app.post("/api/createGroupChat", chat.createGroupChat)
   app.get("/api/getAllGroupName", chat.getAllGroupName)
+  app.delete("/api/leaveGroup/:sub/:groupId", chat.deleteMember)
+  app.get("/api/getAllUserNotInGroup/:groupId", chat.getAllUserNotInGroup)
+  app.patch("/api/updateGroupName/:groupId", chat.updateGroupName)
+  app.post("/api/addMemberGroupChat/:groupId", chat.addMemberGroupChat)
   //End of Group Chat
 
   server.listen(PORT, () => {
