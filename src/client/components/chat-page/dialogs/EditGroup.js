@@ -65,7 +65,6 @@ class EditGroup extends Component {
     var postData = {
       userId: [...this.state.checked]
     };
-    console.log(postData);
 
     if (this.state.groupName !== this.props.groupName) {
       console.log("Updated Group Name");
@@ -247,6 +246,8 @@ class EditGroup extends Component {
             onClick={() => {
               this.props.handleClose();
               this.updateGroup();
+              this.props.refreshComponent(this.props.groupId)
+              socket.emit("refreshGroupName", [this.props.sub,this.props.groupId]);
             }}
             color="primary"
           >

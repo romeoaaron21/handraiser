@@ -95,6 +95,7 @@ class ChatPageBox extends Component {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
   componentDidUpdate() {
+
     this.scrollToBottom();
   }
   messagesEndRef = React.createRef();
