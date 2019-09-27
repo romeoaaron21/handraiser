@@ -179,6 +179,9 @@ class ChatList extends PureComponent {
         else if (conversation[conversation.length - 1].chat_type === "file") {
           return "Sent a file"
         }
+        else if (conversation[conversation.length - 1].chat_type === "code") {
+          return "Sent a code snippet"
+        }
         else {
           return conversation[conversation.length - 1].message;
         }

@@ -52,6 +52,13 @@ import Emoji from "./plugins/emoji";
 //gallery
 import Gallery from "../chat-page/gallery/galleryDialog";
 
+import Snippet from '../chat-page/snippet/snippet';
+import AceEditor from 'react-ace';
+import 'brace/mode/javascript'
+import 'brace/theme/github'
+import 'brace/theme/dracula'
+
+
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5"
@@ -125,11 +132,13 @@ class ChatBox extends PureComponent {
       openGallery: false,
       selected: null,
       imgArray: [],
-      document: null
+      document: null,
+      openSnippet: false
     };
   }
-
-  //ANCHOR splash start
+  openSnippet = () => {
+    this.setState({ openSnippet: !this.state.openSnippet })
+  }
   handleImageMenu = event => {
     this.setState({ imageMenu: event.currentTarget });
   };
@@ -142,11 +151,7 @@ class ChatBox extends PureComponent {
   closeSplash = () => {
     this.setState({ splashDialog: false });
   };
-  //splash end
-
-  //Start of Added Scroll Bottom
   messagesEndRef = React.createRef();
-
   componentDidMount() {
     this.scrollToBottom();
     if (this.props.privileged === "mentor") {
@@ -166,17 +171,14 @@ class ChatBox extends PureComponent {
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'nearest', inline: 'start' });
   };
-  //End of Added Scroll Bottom
   handleClick = e => {
     this.setState({ openMenu: e.currentTarget });
   };
   handleClose = () => {
     this.setState({ openMenu: null });
   };
-  //added dh
   openConfirmationDialog = () => this.setState({ confirmationDialog: true });
   closeConfirmationDialog = () => this.setState({ confirmationDialog: false });
-  //move back student to the queue
   removeFromQueue = student => {
     const data = api.fetch(
       `/api/removebeinghelped/${student.user_id}/${this.props.cohort_id}`,
@@ -187,7 +189,6 @@ class ChatBox extends PureComponent {
       this.props.fetchAssist(this.props.senderInfo.id);
     });
   };
-  //done helping student
   doneHelp = student => {
     const months = [
       "Jan",
@@ -227,8 +228,6 @@ class ChatBox extends PureComponent {
       this.setState({ confirmationDialog: false });
     });
   };
-  //end of added dh
-  // image echo
   verifyFile = files => {
     if (files && files.length > 0) {
       const currentFile = files[0];
@@ -248,7 +247,6 @@ class ChatBox extends PureComponent {
       return true;
     }
   };
-  // ANCHOR here upload
   handleUpload = event => {
     if (event.target.files) {
       const files = event.target.files;
@@ -335,7 +333,6 @@ class ChatBox extends PureComponent {
       this.props.sendChatM(gif.images.downsized.url, "gif");
     }
   };
-  //ANCHOR emoji
   openPicker = event => {
     if (!event) {
       this.setState({ emoji: null });
@@ -365,8 +362,6 @@ class ChatBox extends PureComponent {
       );
     }
   };
-  // end image echo
-  //ANCHOR FILE UPLOAD START
   handleDocumentUpload = event => {
     if (event.target.files) {
       const files = event.target.files;
@@ -463,8 +458,6 @@ class ChatBox extends PureComponent {
       return true;
     }
   };
-  //FILE UPLOAD END
-  //gallery
   openGallery = index => {
     const images = this.props.conversation.filter(convo => {
       return (
@@ -488,7 +481,6 @@ class ChatBox extends PureComponent {
       selected: null
     });
   };
-  //end gallery
   render() {
     const { classes } = this.props;
     return (
@@ -581,7 +573,6 @@ class ChatBox extends PureComponent {
                 : { minHeight: "561px", maxHeight: "561px" }
             }
           >
-            {/* CURRENTLY HELPING TEXT */}
             {this.props.privileged === "mentor" &&
             this.state.assist.sub === this.props.chatmateInfo.sub ? (
               <Paper className={classes.helpStatus}>
@@ -634,10 +625,12 @@ class ChatBox extends PureComponent {
                               convo.chat_type === "image" ||
                               convo.chat_type === "gif"
                                 ? classes.chatImage
-                                : this.props.senderInfo.sub ===
-                                  convo.chatmate_id
-                                ? classes.chatDetails
-                                : classes.chatDetails2
+                                : (convo.chat_type === 'code')
+                                  ? classes.snippet
+                                  : (this.props.senderInfo.sub ===
+                                    convo.chatmate_id)
+                                    ? classes.chatDetails
+                                    : classes.chatDetails2
                             }
                           >
                             <div className={classes.chatText}>
@@ -681,19 +674,26 @@ class ChatBox extends PureComponent {
                                     alt=""
                                     onClick={() => this.openGallery(convo.id)}
                                   />
-                                ) : (
-                                  <img
-                                    style={{ width: "100%" }}
-                                    src={convo.link}
-                                    alt=""
-                                  />
-                                )}
+                                ) : (convo.chat_type === "gif")
+                                    ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
+                                    : <AceEditor
+                                      highlightActiveLine={false}
+                                      wrapEnabled
+                                      maxLines={25}
+                                      fontSize="16px"
+                                      width="35vw"
+                                      mode="javascript"
+                                      value={convo.message}
+                                      theme={this.props.senderInfo.sub !== convo.chatmate_id ? "dracula" : "github"}
+                                      readOnly
+                                      />
+                                }
                               </Typography>
                             </div>
                             <div className={classes.chatTime}>
-                              <Typography variant="caption">
-                                {convo.time}
-                              </Typography>
+                            <Typography variant="caption" className={convo.chat_type === "code" ? classes.snippetTime : classes.time}>
+                              {convo.time}
+                            </Typography>
                             </div>
                           </Box>
                         </Box>
@@ -769,9 +769,11 @@ class ChatBox extends PureComponent {
                           this.props.senderInfo.sub
                         );
                       }}
-                      // onClick={() => this.props.displayBadge()}
                       onKeyUp={e => {
-                        if (
+                        if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
+                          this.openSnippet()
+                        }
+                        else if (
                           e.target.value
                             .replace(/^\s+/, "")
                             .replace(/\s+$/, "") !== ""
@@ -846,7 +848,6 @@ class ChatBox extends PureComponent {
                   <IconButton onClick={this.handleImageMenu}>
                     <Photo />
                   </IconButton>
-                  {/*ANCHOR IMAGE MENU*/}
                   <ImageMenu
                     openSplash={this.handleSplash}
                     fileRef={this.fileInput}
@@ -874,7 +875,10 @@ class ChatBox extends PureComponent {
                       this.props.sendChatSub(this.props.chatmateInfo.sub)
                     }
                     onKeyUp={e => {
-                      if (
+                      if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
+                        this.openSnippet()
+                      }
+                      else if (
                         e.target.value
                           .replace(/^\s+/, "")
                           .replace(/\s+$/, "") !== ""
@@ -936,7 +940,6 @@ class ChatBox extends PureComponent {
             />
           </Dialog>
 
-          {/*ANCHOR splash*/}
           <Splash
             uploadGif={this.uploadGif}
             open={this.state.splashDialog}
@@ -945,12 +948,17 @@ class ChatBox extends PureComponent {
 
           <Emoji anchorEl={this.state.emoji} handleEmoji={this.handleEmoji} />
 
-          {/*GALLERY */}
           <Gallery
             conversation={this.state.imgArray}
             open={this.state.openGallery}
             handleClose={this.closeGallery}
             selected={this.state.selected}
+          />
+          <Snippet 
+            open={this.state.openSnippet}
+            handleClose={this.openSnippet}
+            sendChat={this.props.sendCode}
+            type="pm"
           />
         </Paper>
       </React.Fragment>

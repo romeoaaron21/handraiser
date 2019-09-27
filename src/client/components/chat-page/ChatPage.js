@@ -564,6 +564,7 @@ class ChatPage extends PureComponent {
             />
 
             <ChatPageBox
+              chatListInfo={this.state.chatListInfo}
               paramsCheck={this.props.match.params.chatmateSub}
               userInfo={this.state.userInfo}
               chatmateInfo={this.state.chatmateInfo}

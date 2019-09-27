@@ -25,6 +25,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
 import api from "../../services/fetchApi";
 import Link from "@material-ui/core/Link";
+
 import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
 import Splash from "../chat-box/plugins/giphy";
@@ -37,6 +38,8 @@ import WarningIcon from '@material-ui/icons/Warning';
 import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
 
 import io from "socket.io-client";
 const socket = io("http://boom-handraiser.com:3001/");
@@ -95,6 +98,7 @@ class ChatPageBox extends Component {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
   componentDidUpdate() {
+
     this.scrollToBottom();
   }
   messagesEndRef = React.createRef();
