@@ -132,6 +132,10 @@ massive({
     socket.on("setStudentGroupChatText", chatText => {
       io.emit("setStudentGroupChatText", chatText);
     });
+    socket.on("chatGroupList", chatText => {
+      io.emit("chatGroupList", chatText);
+    });
+    
     //END of Group Chat
 
     socket.on("currentlyHelping", currentlyHelping => {
