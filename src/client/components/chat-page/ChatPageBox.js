@@ -23,7 +23,10 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
-import SettingsIcon from "@material-ui/icons/Settings";
+import api from "../../services/fetchApi";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import WarningIcon from '@material-ui/icons/Warning';
+
 import Link from "@material-ui/core/Link";
 import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
@@ -91,6 +94,12 @@ class ChatPageBox extends Component {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
   componentDidUpdate() {
+    if (
+      this.props.chatmateInfo.sub === undefined &&
+      this.props.paramsCheck !== "allMessages"
+    ) {
+      window.location.href = "../404";
+    }
     this.scrollToBottom();
   }
   messagesEndRef = React.createRef();

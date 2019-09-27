@@ -184,8 +184,7 @@ class ChatPage extends PureComponent {
             .catch(() => {
               this.displayChatList();
             });
-        }
-        else{
+        } else {
           this.displayGroupList();
           this.getGroupConversation();
         }
@@ -513,6 +512,7 @@ class ChatPage extends PureComponent {
             />
 
             <ChatPageBox
+              paramsCheck={this.props.match.params.chatmateSub}
               userInfo={this.state.userInfo}
               chatmateInfo={this.state.chatmateInfo}
               senderText={this.state.senderText}

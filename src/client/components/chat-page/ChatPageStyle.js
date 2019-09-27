@@ -147,6 +147,24 @@ const styles = theme => ({
     alignItems: "center",
     height: "auto"
   },
+
+  warningMessage: {
+    display: "flex",
+    justifyContent: "center",
+    width: "100%",
+    background: "#fea000",
+    color: "white",
+    padding: 3,
+    borderRadius: 10
+  },
+
+  messageLoader: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column", 
+    alignItems: "center",
+    marginTop: 50
+  },
   // End ChatPageBox
 
   // ChatInfo
