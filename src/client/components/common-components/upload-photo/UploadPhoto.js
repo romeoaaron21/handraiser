@@ -1026,6 +1026,7 @@ class UploadPhoto extends React.Component {
                     <div className={classes.imageList}>
                       {this.state.images.map((tile, i) => (
                         <div
+                          key={i}
                           className={classes.imageItem}
                           onClick={() =>
                             this.getBase64Image(
@@ -1037,7 +1038,7 @@ class UploadPhoto extends React.Component {
                           }
                         >
                           <img
-                            crossorigin="Anonymous"
+                            crossOrigin="Anonymous"
                             id={i}
                             style={{ width: "100%" }}
                             src={tile.urls.regular}
@@ -1107,7 +1108,11 @@ class UploadPhoto extends React.Component {
             onClick={e => this.handleSelectClassHeader(e)}
             color="primary"
             disabled={
-              this.state.imgSrc === null || this.state.disabled ? true : false
+              this.state.imgSrc === null ||
+              this.state.disabled ||
+              (this.state.crop.width === 0 && this.state.crop.height === 0)
+                ? true
+                : false
             }
           >
             Select class header
