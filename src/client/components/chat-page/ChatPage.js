@@ -307,6 +307,7 @@ class ChatPage extends PureComponent {
         sub === undefined ? this.state.chatmateSub : sub
       ];
       socket.emit("getNormalChat", chat);
+      socket.emit("countUnreadMessages", chat);
     });
   };
 
@@ -393,6 +394,7 @@ class ChatPage extends PureComponent {
       this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
+      socket.emit("countUnreadMessages", chat);
     });
   };
 
@@ -402,6 +404,7 @@ class ChatPage extends PureComponent {
       const data = api.fetch(`/api/seenNormalChat`, "patch", sub);
       data.then(res => {
         socket.emit("seenNormalChat", res.data);
+        socket.emit("countUnreadMessages", res.data);
       });
     } else if (type === "gc") {
       console.log(this.state.sub, chatmate);
@@ -409,6 +412,7 @@ class ChatPage extends PureComponent {
       const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
       data.then(res => {
         socket.emit("seenNormalGroupChat", res.data);
+        socket.emit("countUnreadMessages", res.data);
       });
     }
   };
