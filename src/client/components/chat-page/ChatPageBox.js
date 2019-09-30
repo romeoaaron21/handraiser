@@ -25,7 +25,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
 import api from "../../services/fetchApi";
 import Link from "@material-ui/core/Link";
-
+import Button from '@material-ui/core/Button'
 import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
 import Splash from "../chat-box/plugins/giphy";
@@ -95,13 +95,9 @@ class ChatPageBox extends Component {
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
   messagesEndRef = React.createRef();
   componentDidMount() {
     this.scrollToBottom();
-
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({
@@ -492,7 +488,6 @@ class ChatPageBox extends Component {
                             this.props.chatmateInfo.id,
                             this.props.userInfo.sub
                           );
-                          // console.log(this.props.chatmateInfo.id,'--',this.props.userInfo.sub)
                         }}
                       >
                         Leave Group
@@ -517,6 +512,9 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
+                <Button onClick={this.props.showMoreGroup}>
+                    Show more {this.props.groupShow} , {this.props.groupConversation.length}
+                </Button>
                 {this.props.chatmateInfo.sub !== undefined ? (
                   this.props.conversation.map((convo, i) =>
                     (convo.sender_id === this.props.userInfo.sub &&
@@ -585,7 +583,7 @@ class ChatPageBox extends Component {
                     ) : null
                   )
                 ) : this.state.gc ? (
-                  this.props.groupConversation.map((gcConvo, i) =>
+                  [...this.props.groupConversation].slice((this.props.groupConversation.length - 1) - this.props.groupShow, this.props.groupConversation.length).map((gcConvo, i) =>
                     this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
                       //ANCHOR GC CHATBOX
                       <React.Fragment key={i}>
