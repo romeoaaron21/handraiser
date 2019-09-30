@@ -340,5 +340,6 @@ module.exports = {
   updateGroupName,
   checkInGroup,
   getNormalChat,
-  checkParams
+  checkParams,
+  getAllUsersInGroup
 };
