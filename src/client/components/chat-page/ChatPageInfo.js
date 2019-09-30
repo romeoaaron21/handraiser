@@ -27,6 +27,14 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton"
+import DeleteIcon from "@material-ui/icons/Delete"
+import ConfirmDelete from "./dialogs/confirmDelete"
+
+import api from "../../services/fetchApi";
+import io from "socket.io-client";
+const socket = io("http://boom-handraiser.com:3001/");
+
 
 const ExpansionPanel = withStyles({
   root: {
@@ -58,22 +66,27 @@ class ChatPageInfo extends Component {
       open: false,
       selected: null,
       imgArray: [],
-      expanded: "photos"
+      expanded: "photos",
+      dialogConfirmDel: false,
+      delUser: []
     };
+  }
+  componentDidMount(){
+
   }
 
   openGallery = index => {
     let images
-    if (this.props.chatmateInfo.sub){
+    if (this.props.chatmateInfo.sub) {
       images = this.props.conversation.filter(convo => {
         return convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-        (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+          (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
       })
     }
     else {
       images = this.props.groupConversation.filter(convo => {
         return (
-          convo.chat_type === "image" && 
+          convo.chat_type === "image" &&
           this.props.chatmateInfo.id === convo.groupchat_id
         );
       });
@@ -99,6 +112,27 @@ class ChatPageInfo extends Component {
     }));
   };
 
+  deleteMember = (sub,groupId) =>{
+    api.fetch(`/api/leaveGroup/${sub}/${groupId}`,"delete")
+    .then(data=>{
+      socket.emit("groupMembers", 'DELETED');
+      console.log(data)
+    })
+  }
+
+  openConfirmation = (user) =>{
+    this.setState({
+      dialogConfirmDel: true,
+      delUser: user
+    })
+  }
+
+  closeConfirmation = () =>{
+    this.setState({
+      dialogConfirmDel: false
+    })
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -112,11 +146,11 @@ class ChatPageInfo extends Component {
                   <GroupIcon style={{ fontSize: "48px" }} />{" "}
                 </Avatar>
               ) : (
-                <Avatar
-                  className={classes.avatarLarge}
-                  src={this.props.chatmateInfo.avatar}
-                ></Avatar>
-              )}
+                  <Avatar
+                    className={classes.avatarLarge}
+                    src={this.props.chatmateInfo.avatar}
+                  ></Avatar>
+                )}
               <Typography variant="h6">
                 {this.props.chatmateInfo.first_name === undefined
                   ? this.props.chatmateInfo.name
@@ -139,29 +173,29 @@ class ChatPageInfo extends Component {
                 </span>
               </ExpansionPanelSummary>
               <ImageExpansionPanelDetails>
-              <div
-              className={`${classes.photosGridContainer} ${classes.scrollBar}`}
-              >
-                <div className={classes.photosGrid}>
-                  <GridList cellHeight={160} cols={3}>
-                    {this.props.chatmateInfo.sub
-                    ? this.props.conversation.map(convo => (
-                      convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
-                          ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                <div
+                  className={`${classes.photosGridContainer} ${classes.scrollBar}`}
+                >
+                  <div className={classes.photosGrid}>
+                    <GridList cellHeight={160} cols={3}>
+                      {this.props.chatmateInfo.sub
+                        ? this.props.conversation.map(convo => (
+                          convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                            (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                            ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
                               <img src={convo.link} />
                             </GridListTile>
-                          : null
-                      ))
-                    : this.props.groupConversation.map(convo => (
-                      convo.chat_type === 'image' && this.props.chatmateInfo.id === convo.groupchat_id
-                          ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
+                            : null
+                        ))
+                        : this.props.groupConversation.map(convo => (
+                          convo.chat_type === 'image' && this.props.chatmateInfo.id === convo.groupchat_id
+                            ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
                               <img src={convo.link} />
                             </GridListTile>
-                          : null
-                      ))
-                    }
-                  </GridList>
+                            : null
+                        ))
+                      }
+                    </GridList>
                   </div>
                 </div>
               </ImageExpansionPanelDetails>
@@ -180,31 +214,31 @@ class ChatPageInfo extends Component {
                 </span>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-              <div
-              className={`${classes.filesGridContainer} ${classes.scrollBar}`}
-              >
-                <div className={classes.photosGrid}>
-                  <GridList cellHeight={25} cols={3}>
-                    {this.props.chatmateInfo.sub
-                    ? this.props.conversation.map(convo => (
-                      convo.chat_type === 'file' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
-                      (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
-                          ? <GridListTile cols={3}>
+                <div
+                  className={`${classes.filesGridContainer} ${classes.scrollBar}`}
+                >
+                  <div className={classes.photosGrid}>
+                    <GridList cellHeight={25} cols={3}>
+                      {this.props.chatmateInfo.sub
+                        ? this.props.conversation.map(convo => (
+                          convo.chat_type === 'file' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
+                            (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
+                            ? <GridListTile cols={3}>
                               <Link href={convo.link} variant="body2">{convo.message}</Link>
                             </GridListTile>
-                          : null
-                      ))
-                    : this.props.groupConversation.map(convo => (
-                      convo.chat_type === 'file' && this.props.chatmateInfo.id === convo.groupchat_id
-                          ? <GridListTile cols={3}>
+                            : null
+                        ))
+                        : this.props.groupConversation.map(convo => (
+                          convo.chat_type === 'file' && this.props.chatmateInfo.id === convo.groupchat_id
+                            ? <GridListTile cols={3}>
                               <Link href={convo.link} variant="body2">{convo.message}</Link>
                             </GridListTile>
-                          : null
-                      ))
-                    }
-                  </GridList>
+                            : null
+                        ))
+                      }
+                    </GridList>
+                  </div>
                 </div>
-              </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
             {/*END FILES PANEL */}
@@ -226,91 +260,58 @@ class ChatPageInfo extends Component {
                     style={{ width: "100%", overflowY: "auto", height: 370 }}
                     className={classes.scrollBar}
                   >
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem fullWidth button>
-                      <ListItemAvatar>
-                        <Avatar>ME</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Something" />
-                    </ListItem>
-                    <Divider />
+                    {this.props.groupMembers.map(value => {
+                      return (
+                        <React.Fragment>
+                          <Divider />
+                          <ListItem fullWidth key={value.id}>
+                            <ListItemAvatar>
+                              <Avatar src={value.avatar} />
+                            </ListItemAvatar>
+                            <ListItemText primary={`${value.first_name} ${value.last_name}`} />
+                            <IconButton
+                              onClick={()=>{
+                                this.openConfirmation(value)
+                                // this.deleteMember(value.sub, this.props.groupChatId)
+                              }}
+                            >
+                              <DeleteIcon/>
+                          </IconButton>
+                        </ListItem>
+                            <Divider />
+                        </React.Fragment>
+                          )
+                        })}
+    
+    
                   </List>
                 </ExpansionPanelDetails>
               </ExpansionPanel>
-            ) : (
-              ""
-            )}
+                ) : (
+                    null
+                  )}
             {/*END MEMBERS PANEL */}
           </Paper>
         </Grid>
-        {/*GALLERY */}
-        {this.state.imgArray.length > 0 && (
-          <Gallery
-            conversation={this.state.imgArray}
-            open={this.state.open}
-            handleClose={this.closeGallery}
-            selected={this.state.selected}
+          {/*GALLERY */}
+          {this.state.imgArray.length > 0 && (
+            <Gallery
+              conversation={this.state.imgArray}
+              open={this.state.open}
+              handleClose={this.closeGallery}
+              selected={this.state.selected}
+            />
+          )}
+          <ConfirmDelete
+            open={this.state.dialogConfirmDel}
+            close={this.closeConfirmation}
+            groupId = {this.props.groupChatId}
+            deleteMember = {this.deleteMember}
+            user = {this.state.delUser}
           />
-        )}
       </React.Fragment>
-    );
-  }
-}
-
-export default withStyles(styles)(ChatPageInfo);
+        );
+      }
+    }
+    
+    export default withStyles(styles)(ChatPageInfo);

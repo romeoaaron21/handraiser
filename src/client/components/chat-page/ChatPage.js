@@ -49,7 +49,8 @@ class ChatPage extends PureComponent {
       groupListInfo: [],
       groupConversation: [],
       refreshChatmate: false,
-      notInGroup: false
+      notInGroup: false,
+      groupMembers: []
     };
   }
 
@@ -113,7 +114,6 @@ class ChatPage extends PureComponent {
 
     socket.on("createGroupChat", groupChat => {
       this.displayGroupList();
-      console.log("asdasd");
     });
 
     socket.on("chatGroupList", groupChat => {
@@ -127,6 +127,10 @@ class ChatPage extends PureComponent {
     socket.on("activeChat", groupChat => {
       this.displayChatList();
     });
+    socket.on("groupMembers", group=>{
+      this.displayGroupMembers()
+    })
+    
     //CREATE SOCKET ON SELECT CHATMATE
     socket.on("refreshGroupName", sub => {
       if (
@@ -275,7 +279,10 @@ class ChatPage extends PureComponent {
 
       this.getGroupConversation();
       this.displayChatList();
-    } else if (this.state.refreshChatmate) {
+      this.displayGroupMembers();
+    }
+
+    else if(this.state.refreshChatmate){
       if (chatmateSub.length > 15) {
         const data = api.fetch(
           `/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`,
@@ -553,6 +560,14 @@ class ChatPage extends PureComponent {
     });
   };
 
+  displayGroupMembers = () => {
+    const data = api.fetch(`/api/getAllUsersInGroup/${this.props.match.params.chatmateSub}`);
+    data.then(res => {
+      this.setState({groupMembers: res.data});
+    })
+
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -611,6 +626,9 @@ class ChatPage extends PureComponent {
               chatmateInfo={this.state.chatmateInfo}
               conversation={[...this.state.conversation].reverse()}
               groupConversation={[...this.state.groupConversation].reverse()}
+              groupMembers= {this.state.groupMembers}
+              groupChatId= {this.props.match.params.chatmateSub}
+              refreshMember = {this.displayGroupMembers}
             />
           </Grid>
         </Container>
