@@ -682,7 +682,7 @@ class ChatBox extends PureComponent {
                                       maxLines={25}
                                       fontSize="16px"
                                       width="35vw"
-                                      mode="javascript"
+                                      mode={convo.link}
                                       value={convo.message}
                                       theme={this.props.senderInfo.sub !== convo.chatmate_id ? "dracula" : "github"}
                                       readOnly

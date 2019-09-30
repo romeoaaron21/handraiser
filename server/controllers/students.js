@@ -126,7 +126,6 @@ function sendChat(req, res) {
   const type = req.body.type;
   const link = req.body.link;
 
-
   db.chat
     .insert({
       message: message,

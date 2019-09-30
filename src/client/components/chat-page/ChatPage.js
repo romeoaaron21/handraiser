@@ -402,7 +402,7 @@ class ChatPage extends PureComponent {
       socket.emit("countUnreadMessages", chat);
     });
   };
-  sendCode = code => {
+  sendCode = (code, mode) => {
     const months = [
       "Jan",
       "Feb",
@@ -436,7 +436,7 @@ class ChatPage extends PureComponent {
       chatmate_sub: this.state.chatmateSub,
       time: datetime,
       type: "code",
-      link: null
+      link: mode
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
@@ -445,7 +445,7 @@ class ChatPage extends PureComponent {
       socket.emit("getNormalChat", chat);
     });
   };
-  sendCodeGroup = code => {
+  sendCodeGroup = (code, mode) => {
     const months = [
       "Jan",
       "Feb",
@@ -479,7 +479,7 @@ class ChatPage extends PureComponent {
       message: code,
       time: datetime,
       type: "code",
-      link: null
+      link: mode
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
