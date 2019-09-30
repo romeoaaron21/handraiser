@@ -250,7 +250,7 @@ class Student extends PureComponent {
     });
     socket.emit("displayBadge");
   };
-  sendCode = code => {
+  sendCode = (code, type) => {
     const months = [
       "Jan",
       "Feb",
@@ -285,7 +285,7 @@ class Student extends PureComponent {
       cohort_id: this.props.cohort_id,
       time: datetime,
       type: "code",
-      link: null
+      link: type
     };
     const data = api.fetch(`/api/sendChat`, "post", convo);
     this.setState({ value: this.state.sub });

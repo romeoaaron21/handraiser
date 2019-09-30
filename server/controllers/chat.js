@@ -94,7 +94,7 @@ function getGroupList(req, res) {
       res.status(200).json(groupchat);
     })
     .catch(() => {
-      res.statis(500).end();
+      res.status(500).end();
     });
 }
 
@@ -133,14 +133,27 @@ function sendGroupChat(req, res) {
   const db = req.app.get("db");
   const { sender_sub, groupchat_id, message, time, type, link } = req.body;
 
-  db.query(
-    `INSERT INTO groupmessage(sender_sub, groupchat_id, message, time, seen, chat_type, link) VALUES('${sender_sub}', ${groupchat_id}, '${message}', '${time}', ${sender_sub}, '${type}', '${link}')`
-  ).then(() => {
+  db.groupmessage
+  .insert({
+    sender_sub,
+    groupchat_id,
+    message,
+    time,
+    seen: sender_sub,
+    chat_type: type,
+    link: link
+  }).then(() => {
     db.query(
       `SELECT groupmessage.*, users.avatar FROM groupmessage, users WHERE sender_sub = users.sub ORDER BY id`
     ).then(conversation => {
       res.status(201).json(conversation);
+    })
+    .catch(() => {
+      res.status(500).end();
     });
+  })
+  .catch(() => {
+    res.status(500).end();
   });
 }
 
