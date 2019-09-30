@@ -392,7 +392,7 @@ class ChatPageBox extends Component {
     }
     setTimeout(() => {
         this.setState({chatmate:true})
-    }, 5000)
+    }, 3000)
     return (
       <Grid item md={6} xs={8} style={{ minHeight: "800px" }}>
         <Paper
@@ -681,7 +681,7 @@ class ChatPageBox extends Component {
                 </React.Fragment>
                 ) : 
                 //GAWING LOADER
-                this.props.chatmateInfo.sub === undefined && !this.state.chatmate?
+                !this.state.chatmate?
 
                 <React.Fragment>
                   <div className={classes.messageLoader}>
@@ -692,7 +692,6 @@ class ChatPageBox extends Component {
                   </div>
                 </React.Fragment>
                 :
-
 
                 <React.Fragment>
                   <div
