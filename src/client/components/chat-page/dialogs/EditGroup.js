@@ -50,6 +50,16 @@ class EditGroup extends Component {
       newChecked.splice(currentIndex, 1);
     }
 
+    if(newChecked.length > 0){
+      this.setState({
+        btnSave: false
+      })
+    }else{
+      this.setState({
+        btnSave: true
+      })
+    }
+
     this.setState({ checked: newChecked });
   };
 
@@ -97,6 +107,19 @@ class EditGroup extends Component {
 
     this.setState({ checked: [] });
   };
+
+  toggleSave = (event) => {
+    if(event.length > 2){
+      this.setState({
+        btnSave: false
+      })
+    }else{
+      this.setState({
+        btnSave: true
+      })
+    }
+  }
+  
 
   render() {
     const { classes } = this.props;
@@ -148,6 +171,7 @@ class EditGroup extends Component {
             style={{ marginTop: "2px" }}
             onChange={e => {
               this.setState({ groupName: e.target.value });
+              this.toggleSave(e.target.value);
             }}
             onBlur={e => {
               this.setState({ groupName: e.target.value });
@@ -243,6 +267,7 @@ class EditGroup extends Component {
         <Divider />
         <DialogActions>
           <Button
+            disabled={this.state.btnSave}
             onClick={() => {
               this.props.handleClose();
               this.updateGroup();

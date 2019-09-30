@@ -381,7 +381,6 @@ class ChatPageBox extends Component {
   }
 
   render() {
-    console.log(this.props.chatmateInfo)
     const { classes } = this.props;
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {

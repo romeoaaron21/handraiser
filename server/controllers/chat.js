@@ -237,16 +237,6 @@ function addMemberGroupChat(req, res) {
 
 }
 
-function deleteMember(req, res) {
-  const db = req.app.get("db");
-  console.log(req.params.sub,"-",req.params.groupId)
-  db.query(
-    `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
-  ).then(data =>{
-    res.status(200).json({message:"deleted"})
-  })
-
-}
 
 function getAllUserNotInGroup(req,res){
   const db = req.app.get("db");
@@ -278,6 +268,26 @@ function checkInGroup(req,res){
   })
 }
 
+function getAllUsersInGroup(req,res){
+  const db = req.app.get("db");
+  db.query(
+    `select * from groupmembers, users where users.sub = groupmembers.member_sub AND groupchat_id = ${req.params.groupId} AND groupmembers.member_sub Not in (select user_sub from groupchat where id = ${req.params.groupId}) ORDER BY users.first_name ASC`
+  ).then(data => {
+    res.status(200).json(data)
+  })
+}
+
+function deleteMember(req, res) {
+  const db = req.app.get("db");
+  console.log(req.params.sub,"-",req.params.groupId)
+  db.query(
+    `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
+  ).then(data =>{
+    res.status(200).json({message:"deleted"})
+  })
+
+}
+
 module.exports = {
   getChatUsersInfo,
   sendStudentChat,
@@ -301,4 +311,5 @@ module.exports = {
   updateGroupName,
   checkInGroup,
   getNormalChat,
+  getAllUsersInGroup
 };
