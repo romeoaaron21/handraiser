@@ -285,6 +285,7 @@ massive({
   app.get("/api/getChatList/:userSub", chat.getChatList);
   app.get("/api/getChatListInformation/:chatListSub", chat.getChatListInformation);
   app.patch("/api/seenNormalChat/", chat.seenNormalChat);
+  app.get("/api/getNormalChat/:userSub", chat.getNormalChat);
 
   //END of Normal Chatting
 

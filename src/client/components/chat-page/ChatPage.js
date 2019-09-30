@@ -59,20 +59,24 @@ class ChatPage extends PureComponent {
   UNSAFE_componentWillMount() {
     const socket = io(socketUrl);
 
+    //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
-      this.setState({ conversation: conversation[0] });
 
       if (conversation[1] === this.state.sub) {
         this.displayChatList();
         this.setState({ senderText: "" });
+        this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
         this.displayChatList();
         this.setState({ chatmateText: "" });
+        this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
         this.displayChatList();
+        this.getConversation();
       }
     });
+    //END OF UPDATED FOR FASTER CHATTING
 
     socket.on("setStudentChatText", chatText => {
       if (
@@ -305,12 +309,14 @@ class ChatPage extends PureComponent {
 
   };
 
+  //START OF UPDATED FOR FASTER CHATTING
   getConversation = () => {
-    const data = api.fetch(`/api/getChat`, "get");
+    const data = api.fetch(`/api/getNormalChat/${this.state.sub}`, "get");
     data.then(res => {
       this.setState({ conversation: [...res.data] });
     });
   };
+  //END OF UPDATED FOR FASTER CHATTING
 
   getGroupConversation = () => {
     const data = api.fetch(`/api/getGroupChat`, "get");

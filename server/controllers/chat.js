@@ -1,7 +1,18 @@
+//START OF UPDATED FOR FASTER CHATTING
+function getNormalChat(req, res) {
+  const db = req.app.get("db");
+  const { userSub } = req.params;
+
+  db.query(`SELECT * FROM chat WHERE sender_id='${userSub}' OR chatmate_id='${userSub}' ORDER BY id ASC`).then(chats => {
+    res.status(201).json(chats);
+  });
+
+}
+//END OF UPDATED FOR FASTER CHATTING
+
 function getChatUsersInfo(req, res) {
   const db = req.app.get("db");
   const { userSub, chatmateSub } = req.params;
-
   db.query(
     `select * from users where sub = '${userSub}' or sub = '${chatmateSub}'`
   ).then(chatUser => {
@@ -288,5 +299,6 @@ module.exports = {
   deleteMember,
   getAllUserNotInGroup,
   updateGroupName,
-  checkInGroup
+  checkInGroup,
+  getNormalChat,
 };
