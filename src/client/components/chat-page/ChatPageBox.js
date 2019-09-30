@@ -773,6 +773,7 @@ class ChatPageBox extends Component {
                 handleClose={this.handleImageMenuClose}
               />
               <TextField
+                inputRef={textInput => (this.textInput = textInput)}
                 autoFocus
                 variant="outlined"
                 multiline
@@ -781,7 +782,6 @@ class ChatPageBox extends Component {
                 placeholder="Send Message"
                 color="primary"
                 style={{ marginRight: 5 }}
-                value={this.props.senderText}
                 onChange={e =>
                   this.props.chatmateInfo.sub !== undefined
                     ? this.props.setChatText(e.target.value, "pm")
@@ -803,6 +803,7 @@ class ChatPageBox extends Component {
                     ""
                   ) {
                     if (e.key === "Enter" && !e.shiftKey) {
+                      this.textInput.value = ""
                       if (
                         this.state.image &&
                         this.props.chatmateInfo.sub !== undefined
@@ -849,7 +850,7 @@ class ChatPageBox extends Component {
               <IconButton
                 onClick={() => {
                   if (this.props.chatmateInfo.sub === undefined) {
-                  // ANCHOR GROUP CHAT FUNCTIONS
+                    this.textInput.value = ""
                     if (this.state.image) {
                       this.handleSendImage('group');
                     } else if (this.state.document) {
@@ -861,7 +862,7 @@ class ChatPageBox extends Component {
                     } 
                   }
                   else {
-                  // ANCHOR PM CHAT FUNCTIONS  
+                    this.textInput.value = ""
                     if (this.state.image) {
                       this.handleSendImage();
                     } else if (this.state.document) {
