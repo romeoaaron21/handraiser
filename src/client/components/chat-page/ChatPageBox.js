@@ -88,7 +88,8 @@ class ChatPageBox extends Component {
       userNotInGroup: [],
       groupName: "",
       gc: false,
-      checkInGroup: false
+      checkInGroup: false,
+      chatmate: false,
     };
   }
   openSnippet = () => {
@@ -381,7 +382,6 @@ class ChatPageBox extends Component {
   }
 
   render() {
-    console.log(this.props.chatmateInfo)
     const { classes } = this.props;
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
@@ -390,6 +390,9 @@ class ChatPageBox extends Component {
         }
       });
     }
+    setTimeout(() => {
+        this.setState({chatmate:true})
+    }, 5000)
     return (
       <Grid item md={6} xs={8} style={{ minHeight: "800px" }}>
         <Paper
@@ -662,7 +665,7 @@ class ChatPageBox extends Component {
                       display: "flex",
                       justifyContent: "center",
                       width: "100%",
-                      background: "#fea000",
+                      background: "red",
                       color: "white",
                       padding: 3,
                       borderRadius: 10
@@ -676,8 +679,10 @@ class ChatPageBox extends Component {
                     </Typography>
                   </div>
                 </React.Fragment>
-                ) : (
+                ) : 
                 //GAWING LOADER
+                this.props.chatmateInfo.sub === undefined && !this.state.chatmate?
+
                 <React.Fragment>
                   <div className={classes.messageLoader}>
                     <CircularProgress />
@@ -686,8 +691,28 @@ class ChatPageBox extends Component {
                     </Typography>
                   </div>
                 </React.Fragment>
+                :
 
-                )}
+
+                <React.Fragment>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                      background: "#fea000",
+                      color: "white",
+                      padding: 3,
+                      borderRadius: 10
+                    }}
+                  >
+                    <Typography variant="overline">
+                      No private messages found!
+                    </Typography>
+                  </div>
+                </React.Fragment>
+
+                }
 
                 {this.props.chatmateText.length > 0 &&
                   this.props.chatmateInfo.name === undefined ? (
