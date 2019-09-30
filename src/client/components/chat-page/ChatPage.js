@@ -165,7 +165,6 @@ class ChatPage extends PureComponent {
           "get"
         )
         .then(res => {
-          console.log("asdfsdfasdf");
           if (res.data === "error") {
             window.location.href = "../404";
           }
@@ -312,7 +311,6 @@ class ChatPage extends PureComponent {
       this.getGroupConversation();
       this.setState({ refreshChatmate: false });
     }
-    // console.log(this.state.userInfo.sub)
     if (this.props.match.params.chatmateSub.length <= 15) {
       api
         .fetch(

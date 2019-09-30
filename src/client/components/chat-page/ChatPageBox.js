@@ -36,8 +36,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import WarningIcon from '@material-ui/icons/Warning';
 
 import 'brace/mode/javascript'
-import "brace/mode/html";
-import "brace/mode/css";
 import 'brace/theme/github'
 import 'brace/theme/dracula'
 import io from "socket.io-client";
@@ -570,7 +568,7 @@ class ChatPageBox extends Component {
                                           maxLines={100}
                                           fontSize="16px"
                                           width="35vw"
-                                          mode={convo.link}
+                                          mode="javascript"
                                           value={convo.message}
                                           theme={convo.sender_id === this.props.userInfo.sub ? "dracula" : "github"}
                                           readOnly
@@ -644,7 +642,7 @@ class ChatPageBox extends Component {
                                       maxLines={100}
                                       fontSize="16px"
                                       width="35vw"
-                                      mode={gcConvo.link}
+                                      mode="javascript"
                                       value={gcConvo.message}
                                       theme={gcConvo.sender_sub === this.props.userInfo.sub ? "dracula" : "github"}
                                       readOnly
@@ -753,7 +751,6 @@ class ChatPageBox extends Component {
               </IconButton>
               <input
                 type="file"
-                accept={acceptedFileTypes}
                 onChange={this.handleUpload}
                 style={{ display: "none" }}
                 ref={fileInput => (this.fileInput = fileInput)}

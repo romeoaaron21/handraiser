@@ -14,7 +14,6 @@ class ConfirmDelete extends Component {
 
 
     render() {
-        console.log(this.props.user.sub, this.props.groupId)
         return (
             <div>
                 <Dialog

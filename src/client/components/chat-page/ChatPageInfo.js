@@ -116,7 +116,6 @@ class ChatPageInfo extends Component {
     api.fetch(`/api/leaveGroup/${sub}/${groupId}`,"delete")
     .then(data=>{
       socket.emit("groupMembers", 'DELETED');
-      console.log(data)
     })
   }
 
