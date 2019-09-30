@@ -750,6 +750,7 @@ class ChatBox extends PureComponent {
 
                   <React.Fragment>
                     <TextField
+                      inputRef={studentInput => (this.studentInput = studentInput)}
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
                       className={classes.textField}
@@ -758,7 +759,6 @@ class ChatBox extends PureComponent {
                       margin="normal"
                       fullWidth
                       variant="outlined"
-                      value={this.props.chat}
                       onClick={() =>
                         this.props.sendChatSub(this.props.chatmateInfo.sub)
                       }
@@ -779,6 +779,7 @@ class ChatBox extends PureComponent {
                             .replace(/\s+$/, "") !== ""
                         ) {
                           if (e.key === "Enter" && !e.shiftKey) {
+                            this.studentInput.value = ""
                             this.state.image
                               ? this.handleSendImage("student")
                               : this.state.document
@@ -802,6 +803,7 @@ class ChatBox extends PureComponent {
                     <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
+                        this.studentInput.value = ""
                         this.state.image
                           ? this.handleSendImage("student")
                           : this.state.document
@@ -827,103 +829,105 @@ class ChatBox extends PureComponent {
             <React.Fragment>
               <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
-                  <input
-                    type="file"
-                    onChange={this.handleDocumentUpload}
-                    style={{ display: "none" }}
-                    ref={documentInput => (this.documentInput = documentInput)}
-                  />
-                  <IconButton
-                    style={{ margin: "0px -8px 0px 5px" }}
-                    onClick={() => this.documentInput.click()}
-                  >
-                    <AttachFileIcon />
-                  </IconButton>
-                  <input
-                    type="file"
-                    onChange={this.handleUpload}
-                    style={{ display: "none" }}
-                    ref={fileInput => (this.fileInput = fileInput)}
-                  />
-                  <IconButton onClick={this.handleImageMenu}>
-                    <Photo />
-                  </IconButton>
-                  <ImageMenu
-                    openSplash={this.handleSplash}
-                    fileRef={this.fileInput}
-                    open={this.state.imageMenu}
-                    handleClose={this.handleImageMenuClose}
-                  />
-                  <TextField
-                    classes={{ root: "MenuItem" }}
-                    placeholder="Send message"
-                    className={classes.textField}
-                    multiline={true}
-                    rowsMax="4"
-                    margin="normal"
-                    fullWidth
-                    variant="outlined"
-                    value={this.props.chatM}
-                    onChange={e => {
-                      this.props.handleChatM(
-                        e.target.value,
-                        this.props.chatmateInfo.sub,
-                        this.props.senderInfo.sub
-                      );
-                    }}
-                    onClick={() =>
-                      this.props.sendChatSub(this.props.chatmateInfo.sub)
-                    }
-                    onKeyUp={e => {
-                      if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
-                        this.openSnippet()
+                    <input
+                      type="file"
+                      onChange={this.handleDocumentUpload}
+                      style={{ display: "none" }}
+                      ref={documentInput => (this.documentInput = documentInput)}
+                    />
+                    <IconButton
+                      style={{ margin: "0px -8px 0px 5px" }}
+                      onClick={() => this.documentInput.click()}
+                    >
+                      <AttachFileIcon />
+                    </IconButton>
+                    <input
+                      type="file"
+                      onChange={this.handleUpload}
+                      style={{ display: "none" }}
+                      ref={fileInput => (this.fileInput = fileInput)}
+                    />
+                    <IconButton onClick={this.handleImageMenu}>
+                      <Photo />
+                    </IconButton>
+                    <ImageMenu
+                      openSplash={this.handleSplash}
+                      fileRef={this.fileInput}
+                      open={this.state.imageMenu}
+                      handleClose={this.handleImageMenuClose}
+                    />
+                    <TextField
+                      inputRef={mentorInput => (this.mentorInput = mentorInput)}
+                      classes={{ root: "MenuItem" }}
+                      placeholder="Send message"
+                      className={classes.textField}
+                      multiline={true}
+                      rowsMax="4"
+                      margin="normal"
+                      fullWidth
+                      variant="outlined"
+                      onChange={e => {
+                        this.props.handleChatM(
+                          e.target.value,
+                          this.props.chatmateInfo.sub,
+                          this.props.senderInfo.sub
+                        );
+                      }}
+                      onClick={() =>
+                        this.props.sendChatSub(this.props.chatmateInfo.sub)
                       }
-                      else if (
-                        e.target.value
-                          .replace(/^\s+/, "")
-                          .replace(/\s+$/, "") !== ""
-                      ) {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          this.state.image
-                            ? this.handleSendImage("mentor")
-                            : this.state.document
-                            ? this.handleSendDocument("mentor")
-                            : this.props.sendChatM();
-                          this.openPicker();
+                      onKeyUp={e => {
+                        if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
+                          this.openSnippet()
                         }
+                        else if (
+                          e.target.value
+                            .replace(/^\s+/, "")
+                            .replace(/\s+$/, "") !== ""
+                        ) {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            this.mentorInput.value = ""
+                            this.state.image
+                              ? this.handleSendImage("mentor")
+                              : this.state.document
+                              ? this.handleSendDocument("mentor")
+                              : this.props.sendChatM();
+                            this.openPicker();
+                          }
+                        }
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton edge="end" onClick={this.openPicker}>
+                              <InsertEmoticon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                        classes: { root: classes.custom }
+                      }}
+                    />
+                    <IconButton
+                      className={classes.sendIcon}
+                      onClick={() => {
+                        this.mentorInput.value = ""
+                        this.state.image
+                          ? this.handleSendImage("mentor")
+                          : this.state.document
+                          ? this.handleSendDocument("mentor")
+                          : this.props.sendChatM();
+                            this.openPicker();
+                      }}
+                      disabled={
+                        this.props.chatM
+                          .replace(/^\s+/, "")
+                          .replace(/\s+$/, "") === "" && !this.state.image
+                          ? true
+                          : false
                       }
-                    }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton edge="end" onClick={this.openPicker}>
-                            <InsertEmoticon />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                      classes: { root: classes.custom }
-                    }}
-                  />
-                  <IconButton
-                    className={classes.sendIcon}
-                    onClick={() => {
-                      this.state.image
-                        ? this.handleSendImage("mentor")
-                        : this.state.document
-                        ? this.handleSendDocument("mentor")
-                        : this.props.sendChatM();
-                      this.openPicker();
-                    }}
-                    disabled={
-                      this.props.chatM
-                        .replace(/^\s+/, "")
-                        .replace(/\s+$/, "") === "" && !this.state.image
-                        ? true
-                        : false
-                    }
-                  >
-                    <SendIcon />
-                  </IconButton>
+                    >
+                      <SendIcon />
+                    </IconButton>
                 </div>
               </Box>
             </React.Fragment>
