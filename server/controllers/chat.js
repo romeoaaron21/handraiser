@@ -3,10 +3,11 @@ function getNormalChat(req, res) {
   const db = req.app.get("db");
   const { userSub } = req.params;
 
-  db.query(`SELECT * FROM chat WHERE sender_id='${userSub}' OR chatmate_id='${userSub}' ORDER BY id ASC`).then(chats => {
+  db.query(
+    `SELECT * FROM chat WHERE sender_id='${userSub}' OR chatmate_id='${userSub}' ORDER BY id ASC`
+  ).then(chats => {
     res.status(201).json(chats);
   });
-
 }
 //END OF UPDATED FOR FASTER CHATTING
 
@@ -22,7 +23,7 @@ function getChatUsersInfo(req, res) {
 
 function sendStudentChat(req, res) {
   const db = req.app.get("db");
-  const { message, sender_sub, chatmate_sub, time, type, link } = req.body
+  const { message, sender_sub, chatmate_sub, time, type, link } = req.body;
   db.chat
     .insert({
       message: message,
@@ -158,28 +159,25 @@ function sendGroupChat(req, res) {
 function createGroupChat(req, res) {
   const db = req.app.get("db");
   db.groupchat
-    .insert(
-      {
-        user_sub: req.body.creatorId,
-        name: req.body.groupName
-      }
-    ).then(data => {
+    .insert({
+      user_sub: req.body.creatorId,
+      name: req.body.groupName
+    })
+    .then(data => {
       // map user Id
       req.body.userId.map(value => {
         db.query(
           `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${data.id}) `
-        )
-          .then((data) => res.status(201).json(data))
-      })
-    })
+        ).then(data => res.status(201).json(data));
+      });
+    });
 }
 
 function getAllGroupName(req, res) {
   const db = req.app.get("db");
-  db.query(`SELECT * FROM groupchat`)
-    .then(data => {
-      res.status(200).json(data)
-    })
+  db.query(`SELECT * FROM groupchat`).then(data => {
+    res.status(200).json(data);
+  });
 }
 
 function seenNormalGroupChat(req, res) {
@@ -198,7 +196,9 @@ function seenNormalGroupChat(req, res) {
             }
           });
           if (x === 0) {
-            db.query(`UPDATE groupmessage SET seen = '${user_id},' || seen WHERE groupchat_id = ${groupchat_id}`);
+            db.query(
+              `UPDATE groupmessage SET seen = '${user_id},' || seen WHERE groupchat_id = ${groupchat_id}`
+            );
           }
         }
       });
@@ -220,7 +220,6 @@ function seenNormalGroupChat(req, res) {
   //     res.status(201).json(chats);
   //   });
   // });
-
 }
 
 function addMemberGroupChat(req, res) {
@@ -229,43 +228,73 @@ function addMemberGroupChat(req, res) {
   req.body.userId.map(value => {
     db.query(
       `INSERT INTO groupmembers(member_sub,groupchat_id) Values('${value}',${req.params.groupId}) `
-    )
-    .then((data) => {
-      res.status(201).json(data)
-    })
-  })
-
+    ).then(data => {
+      res.status(201).json(data);
+    });
+  });
 }
 
+function deleteMember(req, res) {
+  const db = req.app.get("db");
+  console.log(req.params.sub, "-", req.params.groupId);
+  db.query(
+    `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
+  ).then(data => {
+    res.status(200).json({ message: "deleted" });
+  });
+}
 
-function getAllUserNotInGroup(req,res){
+function getAllUserNotInGroup(req, res) {
   const db = req.app.get("db");
   db.query(
     `select * from users where sub not in (select member_sub from groupmembers where groupchat_id=${req.params.groupId})`
   ).then(data => {
-    res.status(200).json(data)
-  })
-
+    res.status(200).json(data);
+  });
 }
-function updateGroupName(req,res){
+function updateGroupName(req, res) {
   const db = req.app.get("db");
-  console.log(req.query.groupName,"-",req.params.groupId)
+  console.log(req.query.groupName, "-", req.params.groupId);
   db.query(
     `UPDATE groupchat SET name='${req.query.groupName}' WHERE id = ${req.params.groupId}`
-  ).then(data=>{
-    console.log(data)
-    res.status(200).json(data)
-  })
-  
+  ).then(data => {
+    console.log(data);
+    res.status(200).json(data);
+  });
 }
 
-function checkInGroup(req,res){
+function checkInGroup(req, res) {
   const db = req.app.get("db");
   db.query(
     `SELECT * from groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id =${req.params.groupId} `
-  ).then(data=>{
-    res.status(200).json(data)
-  })
+  ).then(data => {
+    res.status(200).json(data);
+  });
+}
+
+function checkParams(req, res) {
+  const db = req.app.get("db");
+  const { id } = req.params;
+  db.query(`SELECT chatmate_id FROM chat WHERE chatmate_id = '${id}'`)
+    .then(data => {
+      if (data.length === 0) {
+        db.query(`SELECT id FROM groupchat WHERE id = '${id}'`)
+          .then(data => {
+            console.log(data);
+            if (data.length === 0) {
+              res.status(200).send("error");
+            } else {
+              res.status(200).send(data);
+            }
+          })
+          .catch(err => {
+            res.status(200).send("error");
+          });
+      }
+    })
+    .catch(err => {
+      res.status(200).send("error");
+    });
 }
 
 function getAllUsersInGroup(req,res){
@@ -311,5 +340,5 @@ module.exports = {
   updateGroupName,
   checkInGroup,
   getNormalChat,
-  getAllUsersInGroup
+  checkParams
 };

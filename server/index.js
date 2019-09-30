@@ -66,10 +66,10 @@ massive({
     socket.on("displayCohortsSideNav", cohorts => {
       io.emit("displayCohortsSideNav", cohorts);
     });
-    
+
     socket.on("displaySubCohortsSideNav", subCohorts => {
       io.emit("displaySubCohortsSideNav", subCohorts);
-    })
+    });
 
     socket.on("displayMember", member => {
       io.emit("displayMember", member);
@@ -161,8 +161,7 @@ massive({
 
     socket.on("currentlyHelping", currentlyHelping => {
       io.emit("currentlyHelping", currentlyHelping);
-    })
-
+    });
   });
   //WEBSOCKETS END
 
@@ -249,7 +248,7 @@ massive({
   app.get("/api/displayMentor/:cohort_id", students.displayMentor);
   app.get("/api/cohort/:id/members/list", list.getAllStudents);
   app.patch("/api/seenChat/:priv", students.seenChat);
-
+  app.get("/api/chat/checkParams/:id", chat.checkParams);
   //CHAT END
 
   //UPLOAD IMAGE START
@@ -277,29 +276,33 @@ massive({
   app.get("/api/fetchMentors/:mentor_id", comentor.fetchMentors);
   app.get("/api/fetchAssist/:mentor_id", comentor.fetchAssist);
   app.get("/api/studentBeingHelped/:cohort_id", comentor.studentBeingHelped);
-  app.get("/api/fetchCohortsSubCohorts/:id/:privilege", comentor.fetch_Cohort_SubCohort);
+  app.get(
+    "/api/fetchCohortsSubCohorts/:id/:privilege",
+    comentor.fetch_Cohort_SubCohort
+  );
   //comentors END
-
 
   //START of Normal Chatting
 
   app.get("/api/getChatUsersInfo/:userSub/:chatmateSub", chat.getChatUsersInfo);
   app.post("/api/sendStudentChat", chat.sendStudentChat);
   app.get("/api/getChatList/:userSub", chat.getChatList);
-  app.get("/api/getChatListInformation/:chatListSub", chat.getChatListInformation);
+  app.get(
+    "/api/getChatListInformation/:chatListSub",
+    chat.getChatListInformation
+  );
   app.patch("/api/seenNormalChat/", chat.seenNormalChat);
   app.get("/api/getNormalChat/:userSub", chat.getNormalChat);
 
   //END of Normal Chatting
 
-
   //START of Group Chat
 
-  app.get("/api/getGroupList/:userSub", chat.getGroupList)
-  app.get("/api/getGroupChatInfo/:gc_id", chat.getGroupChatInfo)
-  app.get("/api/getGroupChat", chat.getGroupChat)
-  app.get("/api/getAllUsers", chat.getAllUsers)
-  app.post("/api/sendGroupChat", chat.sendGroupChat)
+  app.get("/api/getGroupList/:userSub", chat.getGroupList);
+  app.get("/api/getGroupChatInfo/:gc_id", chat.getGroupChatInfo);
+  app.get("/api/getGroupChat", chat.getGroupChat);
+  app.get("/api/getAllUsers", chat.getAllUsers);
+  app.post("/api/sendGroupChat", chat.sendGroupChat);
   app.patch("/api/seenNormalGroupChat/", chat.seenNormalGroupChat);
   
 
