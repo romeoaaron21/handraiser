@@ -50,7 +50,10 @@ class ChatPage extends PureComponent {
       groupConversation: [],
       refreshChatmate: false,
       notInGroup: false,
-      groupMembers: []
+      groupMembers: [],
+      //gc convo slice
+      groupShow: 7
+      //gc convo slice end
     };
   }
 
@@ -566,6 +569,20 @@ class ChatPage extends PureComponent {
 
   }
 
+  //ANCHOR SHOW MORE GROUP
+  showMoreGroup = () => {
+    if (this.state.groupConversation.length - this.state.groupShow <= 4){
+      this.setState({
+        groupShow: this.state.groupConversation.length - 1
+      })
+    }
+    else {
+      this.setState({
+        groupShow: this.state.groupShow + 4
+      })
+    }
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -618,6 +635,10 @@ class ChatPage extends PureComponent {
               groupListInfo={this.state.groupListInfo}
               refreshComponent={this.selectChatmate}
               notInGroup={this.state.notInGroup}
+              //gc convo slice
+              groupShow={this.state.groupShow}
+              showMoreGroup={this.showMoreGroup}
+              //gc convo slice end
             />
             <ChatPageInfo
               userInfo={this.state.userInfo}
