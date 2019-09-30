@@ -61,7 +61,6 @@ class ChatPage extends PureComponent {
 
     //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
-
       if (conversation[1] === this.state.sub) {
         this.displayChatList();
         this.setState({ senderText: "" });
@@ -114,7 +113,7 @@ class ChatPage extends PureComponent {
 
     socket.on("createGroupChat", groupChat => {
       this.displayGroupList();
-      console.log("asdasd")
+      console.log("asdasd");
     });
 
     socket.on("chatGroupList", groupChat => {
@@ -129,12 +128,15 @@ class ChatPage extends PureComponent {
       this.displayChatList();
     });
     //CREATE SOCKET ON SELECT CHATMATE
-    socket.on("refreshGroupName", sub =>{
-      if(sub[0] === this.state.sub || sub[1] === parseInt(this.props.match.params.chatmateSub)){
-        this.setState({refreshChatmate: true})
+    socket.on("refreshGroupName", sub => {
+      if (
+        sub[0] === this.state.sub ||
+        sub[1] === parseInt(this.props.match.params.chatmateSub)
+      ) {
+        this.setState({ refreshChatmate: true });
         this.selectChatmate(this.props.match.params.chatmateSub);
       }
-    })
+    });
 
     socket.on("setStudentGroupChatText", chatText => {
       if (
@@ -152,6 +154,20 @@ class ChatPage extends PureComponent {
   }
 
   componentDidMount() {
+    if (this.props.match.params.chatmateSub !== "allMessages") {
+      api
+        .fetch(
+          `/api/chat/checkParams/${this.props.match.params.chatmateSub}`,
+          "get"
+        )
+        .then(res => {
+          console.log("asdfsdfasdf");
+          if (res.data === "error") {
+            window.location.href = "../404";
+          }
+        });
+    }
+
     this.fetch
       .then(fetch => {
         this.setState({
@@ -173,8 +189,6 @@ class ChatPage extends PureComponent {
       .catch(err => {
         window.location.href = "../404";
       });
-      
-      
   }
 
   displayChatList = view => {
@@ -212,7 +226,6 @@ class ChatPage extends PureComponent {
       });
   };
 
-
   componentDidUpdate(sub) {
     if (this.props.match.params.chatmateSub === "allMessages") {
       if (sub.length > 0) {
@@ -227,7 +240,6 @@ class ChatPage extends PureComponent {
       this.selectChatmate(this.props.match.params.chatmateSub);
     }
   }
-
 
   changeChatmate = chatmate => {
     this.setState({ newChatmateSub: chatmate });
@@ -263,9 +275,7 @@ class ChatPage extends PureComponent {
 
       this.getGroupConversation();
       this.displayChatList();
-    }
-
-    else if(this.state.refreshChatmate){
+    } else if (this.state.refreshChatmate) {
       if (chatmateSub.length > 15) {
         const data = api.fetch(
           `/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`,
@@ -293,20 +303,23 @@ class ChatPage extends PureComponent {
 
       this.displayGroupList();
       this.getGroupConversation();
-      this.setState({refreshChatmate: false})
+      this.setState({ refreshChatmate: false });
     }
     // console.log(this.state.userInfo.sub)
-      if (this.props.match.params.chatmateSub.length <= 15) {
-        api.fetch(`/api/checkInGroup/${this.state.userInfo.sub}/${this.state.chatmateInfo.id}`, "get")
-          .then(res => {
-            if(res.data.length > 0){
-              this.setState({notInGroup: false})
-            }else{
-              this.setState({notInGroup: true})              
-            }
-          })
-      }
-
+    if (this.props.match.params.chatmateSub.length <= 15) {
+      api
+        .fetch(
+          `/api/checkInGroup/${this.state.userInfo.sub}/${this.state.chatmateInfo.id}`,
+          "get"
+        )
+        .then(res => {
+          if (res.data.length > 0) {
+            this.setState({ notInGroup: false });
+          } else {
+            this.setState({ notInGroup: true });
+          }
+        });
+    }
   };
 
   //START OF UPDATED FOR FASTER CHATTING
@@ -463,7 +476,7 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(parseInt(this.state.chatmateSub), "gc")
+      this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
     });
@@ -598,7 +611,6 @@ class ChatPage extends PureComponent {
               chatmateInfo={this.state.chatmateInfo}
               conversation={[...this.state.conversation].reverse()}
               groupConversation={[...this.state.groupConversation].reverse()}
-
             />
           </Grid>
         </Container>
