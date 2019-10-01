@@ -22,6 +22,8 @@ import AuthService from "../../auth/AuthService";
 import ClassroomBg from "../../images/classroomBg.jpg";
 import ChatList from "../chat-box/chatList";
 import ChatBox from "../chat-box/chatBox";
+import $ from 'jquery';
+
 //end of added chatBox
 const styles = theme => ({
   root: {
@@ -187,6 +189,7 @@ class Student extends PureComponent {
       })
       .then(() => {
         this.displayBadge();
+        $("#focus").focus()
       });
   };
 
@@ -242,6 +245,7 @@ class Student extends PureComponent {
     const data = api.fetch(`/api/sendChat`, "post", convo);
     this.setState({ value: this.state.sub });
     data.then(res => {
+      $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
       socket.emit("sendChat", {
         chat: res.data,
         senderSub: this.state.sub,
@@ -249,6 +253,7 @@ class Student extends PureComponent {
       });
     });
     socket.emit("displayBadge");
+    
   };
   sendCode = (code, type) => {
     const months = [

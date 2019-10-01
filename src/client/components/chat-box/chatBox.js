@@ -14,7 +14,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 //api
 import api from "../../services/fetchApi";
 
@@ -153,7 +152,6 @@ class ChatBox extends PureComponent {
   };
   messagesEndRef = React.createRef();
   componentDidMount() {
-    this.scrollToBottom();
     if (this.props.privileged === "mentor") {
       api
         .fetch(`/api/fetchAssist/${this.props.senderInfo.id}`, "get")
@@ -164,9 +162,6 @@ class ChatBox extends PureComponent {
           });
         });
     }
-  }
-  componentDidUpdate() {
-    this.scrollToBottom();
   }
   scrollToBottom = () => {
     this.messagesEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'nearest', inline: 'start' });
@@ -262,12 +257,14 @@ class ChatBox extends PureComponent {
               this.props.chatmateInfo.sub,
               this.props.senderInfo.sub
             );
+            this.studentInput.value = files[0].name
           } else {
             this.props.handleChatM(
               files[0].name,
               this.props.chatmateInfo.sub,
               this.props.senderInfo.sub
             );
+            this.mentorInput.value = files[0].name
           }
         }
       }
@@ -347,19 +344,9 @@ class ChatBox extends PureComponent {
   handleEmoji = emoji => {
     let param;
     if (this.props.privileged === "student") {
-      param = this.props.chat + emoji.native;
-      this.props.handleChat(
-        param,
-        this.props.chatmateInfo.sub,
-        this.props.senderInfo.sub
-      );
+      this.studentInput.value = this.studentInput.value + emoji.native;
     } else {
       param = this.props.chatM + emoji.native;
-      this.props.handleChatM(
-        param,
-        this.props.chatmateInfo.sub,
-        this.props.senderInfo.sub
-      );
     }
   };
   handleDocumentUpload = event => {
@@ -377,12 +364,14 @@ class ChatBox extends PureComponent {
               this.props.chatmateInfo.sub,
               this.props.senderInfo.sub
             );
+            this.studentInput.value = files[0].name
           } else {
             this.props.handleChatM(
               files[0].name,
               this.props.chatmateInfo.sub,
               this.props.senderInfo.sub
             );
+            this.mentorInput.value = files[0].name
           }
         }
       }
@@ -591,6 +580,7 @@ class ChatBox extends PureComponent {
               }
             >
               <Grid
+                id="scrollDiv"
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
                 style={
@@ -608,6 +598,7 @@ class ChatBox extends PureComponent {
                       {parseInt(this.props.cohort_id) ===
                       parseInt(convo.cohort_id) ? (
                         <Box
+                          id={convo.id}
                           className={
                             this.props.senderInfo.sub === convo.chatmate_id
                               ? classes.chatContent
@@ -711,7 +702,14 @@ class ChatBox extends PureComponent {
                   <TypingEffect />
                 ) : null}
 
-                <div ref={this.messagesEndRef} />
+                <input type="text"
+                readOnly style={{
+                 height: 1,
+                 border: 'none',
+                 outline: 'none' }} 
+                id="focus" 
+                ref={this.messagesEndRef} 
+                />
               </Grid>
             </div>
           </Grid>
@@ -750,6 +748,7 @@ class ChatBox extends PureComponent {
 
                   <React.Fragment>
                     <TextField
+                      autoFocus
                       inputRef={studentInput => (this.studentInput = studentInput)}
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
@@ -759,9 +758,6 @@ class ChatBox extends PureComponent {
                       margin="normal"
                       fullWidth
                       variant="outlined"
-                      onClick={() =>
-                        this.props.sendChatSub(this.props.chatmateInfo.sub)
-                      }
                       onChange={e => {
                         this.props.handleChat(
                           e.target.value,
@@ -857,6 +853,7 @@ class ChatBox extends PureComponent {
                       handleClose={this.handleImageMenuClose}
                     />
                     <TextField
+                      autoFocus
                       inputRef={mentorInput => (this.mentorInput = mentorInput)}
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
@@ -873,9 +870,6 @@ class ChatBox extends PureComponent {
                           this.props.senderInfo.sub
                         );
                       }}
-                      onClick={() =>
-                        this.props.sendChatSub(this.props.chatmateInfo.sub)
-                      }
                       onKeyUp={e => {
                         if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
                           this.openSnippet()
