@@ -122,7 +122,7 @@ const styles = theme => ({
     maxHeight:'auto',
   },
   chatContentWrapper: {
-    padding: 15,
+    padding: '15px 15px 0 15px',
     overflowY: "auto",
     height:'auto',
     maxHeight: "435px",

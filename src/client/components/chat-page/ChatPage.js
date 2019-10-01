@@ -52,7 +52,8 @@ class ChatPage extends PureComponent {
       notInGroup: false,
       groupMembers: [],
       //gc convo slice
-      groupShow: 7
+      groupShow: 7,
+      pmShow: 7
       //gc convo slice end
     };
   }
@@ -570,17 +571,32 @@ class ChatPage extends PureComponent {
   }
 
   //ANCHOR SHOW MORE GROUP
-  showMoreGroup = () => {
-    if (this.state.groupConversation.length - this.state.groupShow <= 4){
-      this.setState({
-        groupShow: this.state.groupConversation.length - 1
-      })
+  showMoreGroup = type => {
+    if (type === 'group'){
+      if (this.state.groupConversation.length - this.state.groupShow <= 4){
+        this.setState({
+          groupShow: this.state.groupConversation.length - 1
+        })
+      }
+      else {
+        this.setState({
+          groupShow: this.state.groupShow + 4
+        })
+      }
     }
     else {
-      this.setState({
-        groupShow: this.state.groupShow + 4
-      })
+      if (this.state.conversation.length - this.state.pmShow <= 4){
+        this.setState({
+          pmShow: this.state.conversation.length - 1
+        })
+      }
+      else {
+        this.setState({
+          pmShow: this.state.pmShow + 4
+        })
+      }
     }
+
   }
 
   render() {
@@ -616,7 +632,7 @@ class ChatPage extends PureComponent {
               sendChat={this.sendChat}
               groupConversation={this.state.groupConversation}
             />
-
+            {this.state.conversation.length > 0 &&
             <ChatPageBox
               chatListInfo={this.state.chatListInfo}
               paramsCheck={this.props.match.params.chatmateSub}
@@ -637,9 +653,11 @@ class ChatPage extends PureComponent {
               notInGroup={this.state.notInGroup}
               //gc convo slice
               groupShow={this.state.groupShow}
+              pmShow={this.state.pmShow}
               showMoreGroup={this.showMoreGroup}
               //gc convo slice end
             />
+            }
             <ChatPageInfo
               userInfo={this.state.userInfo}
               chatmateInfo={this.state.chatmateInfo}

@@ -90,11 +90,11 @@ class ChatPageBox extends Component {
       gc: false,
       checkInGroup: false,
       chatmate: false,
+      chatMateSub: this.props.chatmateInfo.sub,
+      pmConvo: ''
     };
   }
-  openSnippet = () => {
-    this.setState({ openSnippet: !this.state.openSnippet })
-  }
+
   messagesEndRef = React.createRef();
   componentDidMount() {
     this.scrollToBottom();
@@ -106,6 +106,26 @@ class ChatPageBox extends Component {
       inline: "start"
     });
   };
+  static getDerivedStateFromProps(props, state) {
+    // Any time the current user changes,
+    // Reset any parts of state that are tied to that user.
+    // In this simple example, that's just the email.
+    if (props.chatmateInfo.sub !== state.chatmateSub) {
+      var filter = props.conversation.filter(convo => {
+        return (convo.sender_id === props.userInfo.sub && props.chatmateInfo.sub === convo.chatmate_id) || 
+        (convo.chatmate_id === props.userInfo.sub && props.chatmateInfo.sub === convo.sender_id)
+      })
+      return {
+        chatMateSub: props.chatmateInfo.sub,
+        pmConvo: filter
+      };
+    }
+    return null;
+  }
+
+  openSnippet = () => {
+    this.setState({ openSnippet: !this.state.openSnippet })
+  }
   handleImageMenu = event => {
     this.setState({ imageMenu: event.currentTarget });
   };
@@ -378,6 +398,7 @@ class ChatPageBox extends Component {
   }
 
   render() {
+    console.log(this.state.pmConvo)
     const { classes } = this.props;
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
@@ -512,12 +533,12 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                <Button onClick={this.props.showMoreGroup}>
-                    Show more {this.props.groupShow} , {this.props.groupConversation.length}
+                <Button onClick={() => this.props.chatmateInfo.sub === undefined ? this.props.showMoreGroup('group') : this.props.showMoreGroup('pm')}>
+                    Show more
                 </Button>
                 {this.props.chatmateInfo.sub !== undefined ? (
-                  this.props.conversation.map((convo, i) =>
-                    (convo.sender_id === this.props.userInfo.sub &&
+                  [...this.props.conversation].slice((this.props.conversation.length - 1) - this.props.pmShow, this.props.conversation.length).map((convo, i) =>
+                  (convo.sender_id === this.props.userInfo.sub &&
                       this.props.chatmateInfo.sub === convo.chatmate_id) ||
                     (convo.chatmate_id === this.props.userInfo.sub &&
                       this.props.chatmateInfo.sub === convo.sender_id) ? (
