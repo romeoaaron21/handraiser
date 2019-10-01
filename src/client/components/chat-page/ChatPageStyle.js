@@ -103,7 +103,7 @@ const styles = theme => ({
 
   chatBoxContainer: {
     height: "auto",
-    padding: 20
+    padding: '20px 20px 0 20px'
   },
 
   senderChatWrapper: {

@@ -20,6 +20,7 @@ import api from "../../services/fetchApi";
 import { InputAdornment } from "@material-ui/core";
 import InsertEmoticon from "@material-ui/icons/InsertEmoticon";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
+import { debounce } from "debounce";
 
 import {
   Link,
@@ -132,8 +133,10 @@ class ChatBox extends PureComponent {
       selected: null,
       imgArray: [],
       document: null,
-      openSnippet: false
+      openSnippet: false,
+      studentChat: ""
     };
+    this.handleStudentChat = debounce(this.handleStudentChat, 500);
   }
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet })
@@ -150,7 +153,6 @@ class ChatBox extends PureComponent {
   closeSplash = () => {
     this.setState({ splashDialog: false });
   };
-  messagesEndRef = React.createRef();
   componentDidMount() {
     if (this.props.privileged === "mentor") {
       api
@@ -163,9 +165,6 @@ class ChatBox extends PureComponent {
         });
     }
   }
-  scrollToBottom = () => {
-    this.messagesEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'nearest', inline: 'start' });
-  };
   handleClick = e => {
     this.setState({ openMenu: e.currentTarget });
   };
@@ -252,18 +251,8 @@ class ChatBox extends PureComponent {
             image: files[0]
           });
           if (this.props.privileged === "student") {
-            this.props.handleChat(
-              files[0].name,
-              this.props.chatmateInfo.sub,
-              this.props.senderInfo.sub
-            );
             this.studentInput.value = files[0].name
           } else {
-            this.props.handleChatM(
-              files[0].name,
-              this.props.chatmateInfo.sub,
-              this.props.senderInfo.sub
-            );
             this.mentorInput.value = files[0].name
           }
         }
@@ -293,9 +282,11 @@ class ChatBox extends PureComponent {
           .getDownloadURL()
           .then(url => {
             if (priv === "student") {
-              this.props.sendChat(url, "image");
+              this.props.sendChat(url, "image", image.name);
+              this.studentInput.value = ""
             } else {
-              this.props.sendChatM(url, "image");
+              this.props.sendChatM(url, "image", image.name);
+              this.mentorInput.value = ""
             }
             this.setState({
               progress: 0
@@ -325,9 +316,9 @@ class ChatBox extends PureComponent {
   uploadGif = gif => {
     this.closeSplash();
     if (this.props.privileged === "student") {
-      this.props.sendChat(gif.images.downsized.url, "gif");
+      this.props.sendChat(gif.images.downsized.url, "gif", " ");
     } else {
-      this.props.sendChatM(gif.images.downsized.url, "gif");
+      this.props.sendChatM(gif.images.downsized.url, "gif", " ");
     }
   };
   openPicker = event => {
@@ -342,11 +333,10 @@ class ChatBox extends PureComponent {
     }
   };
   handleEmoji = emoji => {
-    let param;
     if (this.props.privileged === "student") {
       this.studentInput.value = this.studentInput.value + emoji.native;
     } else {
-      param = this.props.chatM + emoji.native;
+      this.mentorInput.value = this.mentorInput.value + emoji.native;
     }
   };
   handleDocumentUpload = event => {
@@ -359,18 +349,8 @@ class ChatBox extends PureComponent {
             document: files[0]
           });
           if (this.props.privileged === "student") {
-            this.props.handleChat(
-              files[0].name,
-              this.props.chatmateInfo.sub,
-              this.props.senderInfo.sub
-            );
             this.studentInput.value = files[0].name
           } else {
-            this.props.handleChatM(
-              files[0].name,
-              this.props.chatmateInfo.sub,
-              this.props.senderInfo.sub
-            );
             this.mentorInput.value = files[0].name
           }
         }
@@ -404,9 +384,11 @@ class ChatBox extends PureComponent {
           .getDownloadURL()
           .then(url => {
             if (priv === "student") {
-              this.props.sendChat(url, "file");
+              this.props.sendChat(url, "file", document.name);
+              this.studentInput.value = ""
             } else {
-              this.props.sendChatM(url, "file");
+              this.props.sendChatM(url, "file", document.name);
+              this.mentorInput.value = ""
             }
             this.setState({
               progress: 0
@@ -470,6 +452,7 @@ class ChatBox extends PureComponent {
       selected: null
     });
   };
+  //ANCHOR render
   render() {
     const { classes } = this.props;
     return (
@@ -745,7 +728,7 @@ class ChatBox extends PureComponent {
                     open={this.state.imageMenu}
                     handleClose={this.handleImageMenuClose}
                   />
-
+                  {/* ANCHOR STUDENT TEXTFIELD */}
                   <React.Fragment>
                     <TextField
                       autoFocus
@@ -758,13 +741,6 @@ class ChatBox extends PureComponent {
                       margin="normal"
                       fullWidth
                       variant="outlined"
-                      onChange={e => {
-                        this.props.handleChat(
-                          e.target.value,
-                          this.props.chatmateInfo.sub,
-                          this.props.senderInfo.sub
-                        );
-                      }}
                       onKeyUp={e => {
                         if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
                           this.openSnippet()
@@ -775,13 +751,14 @@ class ChatBox extends PureComponent {
                             .replace(/\s+$/, "") !== ""
                         ) {
                           if (e.key === "Enter" && !e.shiftKey) {
-                            this.studentInput.value = ""
                             this.state.image
                               ? this.handleSendImage("student")
                               : this.state.document
                               ? this.handleSendDocument("student")
-                              : this.props.sendChat();
+                              : this.props.sendChat(null,null,this.studentInput.value)
+                                
                             this.openPicker();
+                            this.studentInput.value = ""
                           }
                         }
                       }}
@@ -796,27 +773,20 @@ class ChatBox extends PureComponent {
                         classes: { root: classes.custom }
                       }}
                     />
-                    <IconButton
+                    {this.state.image || this.state.document
+                    ? <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
-                        this.studentInput.value = ""
                         this.state.image
                           ? this.handleSendImage("student")
-                          : this.state.document
-                          ? this.handleSendDocument("student")
-                          : this.props.sendChat();
+                          : this.handleSendDocument("student")
                         this.openPicker();
                       }}
-                      disabled={
-                        this.props.chat
-                          .replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === "" && !this.state.image
-                          ? true
-                          : false
-                      }
-                    >
+                      >
                       <SendIcon />
                     </IconButton>
+                    : null
+                    }
                   </React.Fragment>
                 </div>
               </Box>
@@ -863,13 +833,6 @@ class ChatBox extends PureComponent {
                       margin="normal"
                       fullWidth
                       variant="outlined"
-                      onChange={e => {
-                        this.props.handleChatM(
-                          e.target.value,
-                          this.props.chatmateInfo.sub,
-                          this.props.senderInfo.sub
-                        );
-                      }}
                       onKeyUp={e => {
                         if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
                           this.openSnippet()
@@ -880,13 +843,13 @@ class ChatBox extends PureComponent {
                             .replace(/\s+$/, "") !== ""
                         ) {
                           if (e.key === "Enter" && !e.shiftKey) {
-                            this.mentorInput.value = ""
                             this.state.image
                               ? this.handleSendImage("mentor")
                               : this.state.document
                               ? this.handleSendDocument("mentor")
-                              : this.props.sendChatM();
+                              : this.props.sendChatM(null,null,this.mentorInput.value);
                             this.openPicker();
+                            this.mentorInput.value = ""
                           }
                         }
                       }}
@@ -901,27 +864,20 @@ class ChatBox extends PureComponent {
                         classes: { root: classes.custom }
                       }}
                     />
-                    <IconButton
+                    {this.state.image || this.state.document
+                    ? <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
-                        this.mentorInput.value = ""
                         this.state.image
                           ? this.handleSendImage("mentor")
-                          : this.state.document
-                          ? this.handleSendDocument("mentor")
-                          : this.props.sendChatM();
-                            this.openPicker();
+                          : this.handleSendDocument("mentor")
+                        this.openPicker();
                       }}
-                      disabled={
-                        this.props.chatM
-                          .replace(/^\s+/, "")
-                          .replace(/\s+$/, "") === "" && !this.state.image
-                          ? true
-                          : false
-                      }
                     >
                       <SendIcon />
                     </IconButton>
+                  : null  
+                  }
                 </div>
               </Box>
             </React.Fragment>

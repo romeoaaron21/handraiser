@@ -94,35 +94,6 @@ class ChatPageBox extends Component {
       pmConvo: ''
     };
   }
-
-  messagesEndRef = React.createRef();
-  componentDidMount() {
-    this.scrollToBottom();
-  }
-  scrollToBottom = () => {
-    this.messagesEndRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "start"
-    });
-  };
-  static getDerivedStateFromProps(props, state) {
-    // Any time the current user changes,
-    // Reset any parts of state that are tied to that user.
-    // In this simple example, that's just the email.
-    if (props.chatmateInfo.sub !== state.chatmateSub) {
-      var filter = props.conversation.filter(convo => {
-        return (convo.sender_id === props.userInfo.sub && props.chatmateInfo.sub === convo.chatmate_id) || 
-        (convo.chatmate_id === props.userInfo.sub && props.chatmateInfo.sub === convo.sender_id)
-      })
-      return {
-        chatMateSub: props.chatmateInfo.sub,
-        pmConvo: filter
-      };
-    }
-    return null;
-  }
-
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet })
   }
@@ -166,7 +137,7 @@ class ChatPageBox extends Component {
           this.setState({
             image: files[0]
           });
-          this.props.setChatText(files[0].name);
+          this.textInput.value = files[0].name
         }
       }
     }
@@ -195,10 +166,10 @@ class ChatPageBox extends Component {
           .getDownloadURL()
           .then(url => {
             if (type === 'group'){
-              this.props.sendChatGroup(url, "image");
+              this.props.sendChatGroup(url, "image", image.name);
             }
             else {
-              this.props.sendChat(url, undefined, undefined, "image");
+              this.props.sendChat(url, image.name, "image");
             }
             this.setState({
               progress: 0
@@ -229,10 +200,10 @@ class ChatPageBox extends Component {
   uploadGif = gif => {
     this.closeSplash();
     if (this.props.chatmateInfo.sub === undefined){
-      this.props.sendChatGroup(gif.images.downsized.url, "gif");
+      this.props.sendChatGroup(gif.images.downsized.url, "gif", " ");
     }
     else {
-      this.props.sendChat(gif.images.downsized.url, undefined, undefined, "gif");
+      this.props.sendChat(gif.images.downsized.url, " ", "gif");
     }
   };
   openPicker = event => {
@@ -247,8 +218,7 @@ class ChatPageBox extends Component {
     }
   };
   handleEmoji = emoji => {
-    const param = this.props.senderText + emoji.native;
-    this.props.setChatText(param);
+    this.textInput.value = this.textInput.value + emoji.native;
   };
   handleDocumentUpload = event => {
     if (event.target.files) {
@@ -259,7 +229,7 @@ class ChatPageBox extends Component {
           this.setState({
             document: files[0]
           });
-          this.props.setChatText(files[0].name);
+          this.textInput.value = files[0].name
         }
       }
     }
@@ -292,10 +262,10 @@ class ChatPageBox extends Component {
           .getDownloadURL()
           .then(url => {
             if (type === 'group'){
-              this.props.sendChatGroup(url, "file");
+              this.props.sendChatGroup(url, "file", document.name);
             }
             else {
-              this.props.sendChat(url, undefined, undefined, "file");
+              this.props.sendChat(url, document.name, "file");
             }
             this.setState({
               progress: 0
@@ -398,7 +368,6 @@ class ChatPageBox extends Component {
   }
 
   render() {
-    console.log(this.state.pmConvo)
     const { classes } = this.props;
     if (this.state.gc === false) {
       this.props.groupListInfo.map(gc => {
@@ -423,7 +392,7 @@ class ChatPageBox extends Component {
         >
           <div style={{ height: "92%" }}>
             {/* Chatbox Header */}
-            <div style={{ height: "10%" }}>
+            <div style={{ height: "11%" }}>
               <div className={classes.chatBoxHeader}>
                 <span
                   style={{
@@ -529,15 +498,19 @@ class ChatPageBox extends Component {
 
             {/* Main Chatbox */}
             <div
-              style={{ height: "90%", overflowY: "auto" }}
+              id="scrollDiv"
+              style={{ height: "88%", overflowY: "auto" }}
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                <Button onClick={() => this.props.chatmateInfo.sub === undefined ? this.props.showMoreGroup('group') : this.props.showMoreGroup('pm')}>
-                    Show more
-                </Button>
+                {(this.props.chatmateInfo.sub === undefined && this.props.groupConversation.length > 0) && (this.props.groupConversation.length - 1 !== this.props.groupShow )
+               ? <div id="seeMore" style={{display:'flex', justifyContent:'center', cursor:'pointer'}} onClick={this.props.showMoreGroup}>
+                  Show more
+                </div>
+                : null
+                }
                 {this.props.chatmateInfo.sub !== undefined ? (
-                  [...this.props.conversation].slice((this.props.conversation.length - 1) - this.props.pmShow, this.props.conversation.length).map((convo, i) =>
+                  this.props.conversation.map((convo, i) =>
                   (convo.sender_id === this.props.userInfo.sub &&
                       this.props.chatmateInfo.sub === convo.chatmate_id) ||
                     (convo.chatmate_id === this.props.userInfo.sub &&
@@ -742,7 +715,14 @@ class ChatPageBox extends Component {
                     <TypingEffect />
                   ) : null}
 
-                <div ref={this.messagesEndRef} />
+                <input type="text"
+                  readOnly style={{
+                  height: 1,
+                  border: 'none',
+                  outline: 'none' }} 
+                  id="focus" 
+                  ref={this.messagesEndRef} 
+                />
               </div>
             </div>
             {/* End Chatbox */}
@@ -801,18 +781,6 @@ class ChatPageBox extends Component {
                 placeholder="Send Message"
                 color="primary"
                 style={{ marginRight: 5 }}
-                onChange={e =>
-                  this.props.chatmateInfo.sub !== undefined
-                    ? this.props.setChatText(e.target.value, "pm")
-                    : this.props.setChatText(e.target.value, "gc")
-                }
-                onClick={() => {
-                  if (this.props.chatmateInfo.sub !== undefined) {
-                    this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
-                  } else {
-                    this.props.displayBadge(this.props.chatmateInfo.id, "gc");
-                  }
-                }}
                 onKeyUp={e => {
                   if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
                     this.openSnippet()
@@ -822,7 +790,6 @@ class ChatPageBox extends Component {
                     ""
                   ) {
                     if (e.key === "Enter" && !e.shiftKey) {
-                      this.textInput.value = ""
                       if (
                         this.state.image &&
                         this.props.chatmateInfo.sub !== undefined
@@ -832,13 +799,15 @@ class ChatPageBox extends Component {
                         !this.state.image &&
                         this.props.chatmateInfo.sub !== undefined
                       ) {
-                        this.props.sendChat();
+                        this.props.sendChat(null, this.textInput.value, null);
                         this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                         this.openPicker();
                       } else if (this.props.chatmateInfo.sub === undefined) {
-                        this.props.sendChatGroup();
+                        this.props.sendChatGroup(null, null, this.textInput.value);
                         this.props.displayBadge(this.props.chatmateInfo.id, "gc")
+                        this.openPicker();
                       }
+                      this.textInput.value = ""
                     }
                   }
                 }}
@@ -866,7 +835,8 @@ class ChatPageBox extends Component {
                     : false
                 }
               />
-              <IconButton
+              {this.state.image || this.state.document
+              ? <IconButton
                 onClick={() => {
                   if (this.props.chatmateInfo.sub === undefined) {
                     this.textInput.value = ""
@@ -881,31 +851,23 @@ class ChatPageBox extends Component {
                     } 
                   }
                   else {
-                    this.textInput.value = ""
                     if (this.state.image) {
                       this.handleSendImage();
                     } else if (this.state.document) {
                       this.handleSendDocument();
                     } else {
-                      this.props.sendChat();
+                      this.props.sendChat(null, this.textInput.value, null);
                       this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                       this.openPicker();
                     } 
+                    this.textInput.value = ""
                   } 
                 }}
-                disabled={
-                  this.props.senderText
-                    .replace(/^\s+/, "")
-                    .replace(/\s+$/, "") === ""
-                    ? true
-                    : !this.state.gc &&
-                      this.props.chatmateInfo.sub === undefined
-                      ? true
-                      : false
-                }
               >
                 <SendIcon />
               </IconButton>
+            : null
+            }
             </div>
           </div>
           <Splash
