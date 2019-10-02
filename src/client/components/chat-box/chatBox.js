@@ -155,8 +155,8 @@ class ChatBox extends PureComponent {
     this.handleStudentChat = debounce(this.handleStudentChat, 500);
   }
   openSnippet = () => {
-    this.setState({ openSnippet: !this.state.openSnippet })
-  }
+    this.setState({ openSnippet: !this.state.openSnippet });
+  };
   handleImageMenu = event => {
     this.setState({ imageMenu: event.currentTarget });
   };
@@ -267,9 +267,9 @@ class ChatBox extends PureComponent {
             image: files[0]
           });
           if (this.props.privileged === "student") {
-            this.studentInput.value = files[0].name
+            this.studentInput.value = files[0].name;
           } else {
-            this.mentorInput.value = files[0].name
+            this.mentorInput.value = files[0].name;
           }
         }
       }
@@ -351,9 +351,9 @@ class ChatBox extends PureComponent {
             document: files[0]
           });
           if (this.props.privileged === "student") {
-            this.studentInput.value = files[0].name
+            this.studentInput.value = files[0].name;
           } else {
-            this.mentorInput.value = files[0].name
+            this.mentorInput.value = files[0].name;
           }
         }
       }
@@ -552,7 +552,7 @@ class ChatBox extends PureComponent {
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
                 style={
                   this.props.privileged === "mentor"
-                    ? { minHeight: "435px" }
+                    ? { minHeight: "490px" }
                     : { minHeight: "482px", maxHeight: "443px" }
                 }
               >
@@ -583,12 +583,12 @@ class ChatBox extends PureComponent {
                               convo.chat_type === "image" ||
                               convo.chat_type === "gif"
                                 ? classes.chatImage
-                                : (convo.chat_type === 'code')
-                                  ? classes.snippet
-                                  : (this.props.senderInfo.sub ===
-                                    convo.chatmate_id)
-                                    ? classes.chatDetails
-                                    : classes.chatDetails2
+                                : convo.chat_type === "code"
+                                ? classes.snippet
+                                : this.props.senderInfo.sub ===
+                                  convo.chatmate_id
+                                ? classes.chatDetails
+                                : classes.chatDetails2
                             }
                           >
                             <div className={classes.chatText}>
@@ -632,26 +632,43 @@ class ChatBox extends PureComponent {
                                     alt=""
                                     onClick={() => this.openGallery(convo.id)}
                                   />
-                                ) : (convo.chat_type === "gif")
-                                    ? <img style={{ width: "100%"}} src={convo.link} alt=""/>
-                                    : <AceEditor
-                                      highlightActiveLine={false}
-                                      wrapEnabled
-                                      maxLines={25}
-                                      fontSize="16px"
-                                      width="35vw"
-                                      mode={convo.link}
-                                      value={convo.message}
-                                      theme={this.props.senderInfo.sub !== convo.chatmate_id ? "dracula" : "github"}
-                                      readOnly
-                                      />
-                                }
+                                ) : convo.chat_type === "gif" ? (
+                                  <img
+                                    style={{ width: "100%" }}
+                                    src={convo.link}
+                                    alt=""
+                                  />
+                                ) : (
+                                  <AceEditor
+                                    highlightActiveLine={false}
+                                    wrapEnabled
+                                    maxLines={25}
+                                    fontSize="16px"
+                                    width="35vw"
+                                    mode={convo.link}
+                                    value={convo.message}
+                                    theme={
+                                      this.props.senderInfo.sub !==
+                                      convo.chatmate_id
+                                        ? "dracula"
+                                        : "github"
+                                    }
+                                    readOnly
+                                  />
+                                )}
                               </Typography>
                             </div>
                             <div className={classes.chatTime}>
-                            <Typography variant="caption" className={convo.chat_type === "code" ? classes.snippetTime : classes.time}>
-                              {convo.time}
-                            </Typography>
+                              <Typography
+                                variant="caption"
+                                className={
+                                  convo.chat_type === "code"
+                                    ? classes.snippetTime
+                                    : classes.time
+                                }
+                              >
+                                {convo.time}
+                              </Typography>
                             </div>
                           </Box>
                         </Box>
@@ -669,13 +686,16 @@ class ChatBox extends PureComponent {
                   <TypingEffect />
                 ) : null}
 
-                <input type="text"
-                readOnly style={{
-                 height: 1,
-                 border: 'none',
-                 outline: 'none' }} 
-                id="focus" 
-                ref={this.messagesEndRef} 
+                <input
+                  type="text"
+                  readOnly
+                  style={{
+                    height: 1,
+                    border: "none",
+                    outline: "none"
+                  }}
+                  id="focus"
+                  ref={this.messagesEndRef}
                 />
               </Grid>
             </div>
@@ -716,7 +736,9 @@ class ChatBox extends PureComponent {
                   <React.Fragment>
                     <TextField
                       autoFocus
-                      inputRef={studentInput => (this.studentInput = studentInput)}
+                      inputRef={studentInput =>
+                        (this.studentInput = studentInput)
+                      }
                       classes={{ root: "MenuItem" }}
                       placeholder="Send message"
                       className={classes.textField}
@@ -726,10 +748,9 @@ class ChatBox extends PureComponent {
                       fullWidth
                       variant="outlined"
                       onKeyUp={e => {
-                        if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
-                          this.openSnippet()
-                        }
-                        else if (
+                        if (e.ctrlKey && e.shiftKey && e.key === "Enter") {
+                          this.openSnippet();
+                        } else if (
                           e.target.value
                             .replace(/^\s+/, "")
                             .replace(/\s+$/, "") !== ""
@@ -739,10 +760,14 @@ class ChatBox extends PureComponent {
                               ? this.handleSendImage("student")
                               : this.state.document
                               ? this.handleSendDocument("student")
-                              : this.props.sendChat(null,null,this.studentInput.value)
-                                
+                              : this.props.sendChat(
+                                  null,
+                                  null,
+                                  this.studentInput.value
+                                );
+
                             this.openPicker();
-                            this.studentInput.value = ""
+                            this.studentInput.value = "";
                           }
                         }
                       }}
@@ -757,20 +782,19 @@ class ChatBox extends PureComponent {
                         classes: { root: classes.custom }
                       }}
                     />
-                    {this.state.image || this.state.document
-                    ? <IconButton
-                      className={classes.sendIcon}
-                      onClick={() => {
-                        this.state.image
-                          ? this.handleSendImage("student")
-                          : this.handleSendDocument("student")
-                        this.openPicker();
-                      }}
+                    {this.state.image || this.state.document ? (
+                      <IconButton
+                        className={classes.sendIcon}
+                        onClick={() => {
+                          this.state.image
+                            ? this.handleSendImage("student")
+                            : this.handleSendDocument("student");
+                          this.openPicker();
+                        }}
                       >
-                      <SendIcon />
-                    </IconButton>
-                    : null
-                    }
+                        <SendIcon />
+                      </IconButton>
+                    ) : null}
                   </React.Fragment>
                 </div>
               </Box>
@@ -779,89 +803,91 @@ class ChatBox extends PureComponent {
             <React.Fragment>
               <Box xs={12} sm={8}>
                 <div className={classes.footerInput}>
-                    <input
-                      type="file"
-                      onChange={this.handleDocumentUpload}
-                      style={{ display: "none" }}
-                      ref={documentInput => (this.documentInput = documentInput)}
-                    />
+                  <input
+                    type="file"
+                    onChange={this.handleDocumentUpload}
+                    style={{ display: "none" }}
+                    ref={documentInput => (this.documentInput = documentInput)}
+                  />
+                  <IconButton
+                    style={{ margin: "0px -8px 0px 5px" }}
+                    onClick={() => this.documentInput.click()}
+                  >
+                    <AttachFileIcon />
+                  </IconButton>
+                  <input
+                    type="file"
+                    onChange={this.handleUpload}
+                    style={{ display: "none" }}
+                    ref={fileInput => (this.fileInput = fileInput)}
+                  />
+                  <IconButton onClick={this.handleImageMenu}>
+                    <Photo />
+                  </IconButton>
+                  <ImageMenu
+                    openSplash={this.handleSplash}
+                    fileRef={this.fileInput}
+                    open={this.state.imageMenu}
+                    handleClose={this.handleImageMenuClose}
+                  />
+                  <TextField
+                    autoFocus
+                    inputRef={mentorInput => (this.mentorInput = mentorInput)}
+                    classes={{ root: "MenuItem" }}
+                    placeholder="Send message"
+                    className={classes.textField}
+                    multiline={true}
+                    rowsMax="4"
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                    onKeyUp={e => {
+                      if (e.ctrlKey && e.shiftKey && e.key === "Enter") {
+                        this.openSnippet();
+                      } else if (
+                        e.target.value
+                          .replace(/^\s+/, "")
+                          .replace(/\s+$/, "") !== ""
+                      ) {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          this.state.image
+                            ? this.handleSendImage("mentor")
+                            : this.state.document
+                            ? this.handleSendDocument("mentor")
+                            : this.props.sendChatM(
+                                null,
+                                null,
+                                this.mentorInput.value
+                              );
+                          this.openPicker();
+                          this.mentorInput.value = "";
+                        }
+                      }
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton edge="end" onClick={this.openPicker}>
+                            <InsertEmoticon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                      classes: { root: classes.custom }
+                    }}
+                  />
+                  {this.state.image || this.state.document ? (
                     <IconButton
-                      style={{ margin: "0px -8px 0px 5px" }}
-                      onClick={() => this.documentInput.click()}
-                    >
-                      <AttachFileIcon />
-                    </IconButton>
-                    <input
-                      type="file"
-                      onChange={this.handleUpload}
-                      style={{ display: "none" }}
-                      ref={fileInput => (this.fileInput = fileInput)}
-                    />
-                    <IconButton onClick={this.handleImageMenu}>
-                      <Photo />
-                    </IconButton>
-                    <ImageMenu
-                      openSplash={this.handleSplash}
-                      fileRef={this.fileInput}
-                      open={this.state.imageMenu}
-                      handleClose={this.handleImageMenuClose}
-                    />
-                    <TextField
-                      autoFocus
-                      inputRef={mentorInput => (this.mentorInput = mentorInput)}
-                      classes={{ root: "MenuItem" }}
-                      placeholder="Send message"
-                      className={classes.textField}
-                      multiline={true}
-                      rowsMax="4"
-                      margin="normal"
-                      fullWidth
-                      variant="outlined"
-                      onKeyUp={e => {
-                        if (e.ctrlKey && e.shiftKey && e.key === "Enter"){
-                          this.openSnippet()
-                        }
-                        else if (
-                          e.target.value
-                            .replace(/^\s+/, "")
-                            .replace(/\s+$/, "") !== ""
-                        ) {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            this.state.image
-                              ? this.handleSendImage("mentor")
-                              : this.state.document
-                              ? this.handleSendDocument("mentor")
-                              : this.props.sendChatM(null,null,this.mentorInput.value);
-                            this.openPicker();
-                            this.mentorInput.value = ""
-                          }
-                        }
-                      }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton edge="end" onClick={this.openPicker}>
-                              <InsertEmoticon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                        classes: { root: classes.custom }
-                      }}
-                    />
-                    {this.state.image || this.state.document
-                    ? <IconButton
                       className={classes.sendIcon}
                       onClick={() => {
                         this.state.image
                           ? this.handleSendImage("mentor")
-                          : this.handleSendDocument("mentor")
+                          : this.handleSendDocument("mentor");
                         this.openPicker();
                       }}
                     >
                       <SendIcon />
                     </IconButton>
-                  : null  
-                  }
+                  ) : null}
                 </div>
               </Box>
             </React.Fragment>
@@ -883,10 +909,11 @@ class ChatBox extends PureComponent {
             open={this.state.splashDialog}
             handleClose={this.closeSplash}
           />
-          <Emoji 
-          openPicker={this.openPicker}
-          anchorEl={this.state.emoji} 
-          handleEmoji={this.handleEmoji} />
+          <Emoji
+            openPicker={this.openPicker}
+            anchorEl={this.state.emoji}
+            handleEmoji={this.handleEmoji}
+          />
 
           <Gallery
             conversation={this.state.imgArray}
@@ -894,7 +921,7 @@ class ChatBox extends PureComponent {
             handleClose={this.closeGallery}
             selected={this.state.selected}
           />
-          <Snippet 
+          <Snippet
             open={this.state.openSnippet}
             handleClose={this.openSnippet}
             sendChat={this.props.sendCode}

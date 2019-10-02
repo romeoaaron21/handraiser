@@ -621,8 +621,7 @@ class UploadPhoto extends React.Component {
       .get(`https://api.unsplash.com/search/photos?page=1`, {
         params: { query: this.state.search },
         headers: {
-          Authorization:
-            "Client-ID dfa4c436eb3c108f49a31f09cdc4940abd45a370aad6c90260aec587a58421c7"
+          Authorization: `Client-ID ${process.env.REACT_APP_.API_UNPLASH_IMAGE_KEY}`
         }
       })
 
@@ -649,8 +648,7 @@ class UploadPhoto extends React.Component {
         {
           params: { query: this.state.search },
           headers: {
-            Authorization:
-              "Client-ID dfa4c436eb3c108f49a31f09cdc4940abd45a370aad6c90260aec587a58421c7"
+            Authorization: `Client-ID ${process.env.REACT_APP_.API_UNPLASH_IMAGE_KEY}`
           }
         }
       )

@@ -41,7 +41,7 @@ export default class googleSignIn extends Component {
   //       privilege: "mentor",
   //       avatar: user.picture
   //     };
-  
+
   //     api.fetch("/sign-in", "post", data).then(res => {
   //       if (res.data.user.privilege === "student") {
   //         toast.error("Sorry, your a student!", {
@@ -143,7 +143,7 @@ export default class googleSignIn extends Component {
           </DialogContentText>
 
           <GoogleLogin
-            clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
+            clientId={process.env.REACT_APP_.GOOGLE_CLIENT_ID}
             onSuccess={this.responseGoogleMentor}
             onFailure={this.responseGoogleMentor}
             cookiePolicy={"single_host_origin"}
