@@ -39,6 +39,8 @@ import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
 import io from "socket.io-client";
+import $ from "jquery";
+
 const socket = io("http://boom-handraiser.com:3001/");
 
 const imageMaxSize = 30000000;

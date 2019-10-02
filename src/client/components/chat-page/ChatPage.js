@@ -62,22 +62,23 @@ class ChatPage extends PureComponent {
   handleDrawerOpen = () => this.setState({ open: true });
   handleDrawerClose = () => this.setState({ open: false });
 
-  UNSAFE_componentWillMount() {
-    const socket = io(socketUrl);
-
+  componentDidMount() {
+    setTimeout(() => {
+      $('#scrollDiv').scrollTop($('#scrollDiv')[0].scrollHeight);
+    }, 1000);
     //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
       if (conversation[1] === this.state.sub) {
-        this.displayChatList();
+        //this.displayChatList();
         this.setState({ senderText: "" });
         this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
-        this.displayChatList();
+        //this.displayChatList();
         this.setState({ chatmateText: "" });
         this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
-        this.displayChatList();
+        //this.displayChatList();
         this.getConversation();
       }
     });
@@ -160,9 +161,7 @@ class ChatPage extends PureComponent {
         this.setState({ chatmateText: chatText[0] });
       }
     });
-  }
 
-  componentDidMount() {
     if (this.props.match.params.chatmateSub !== "allMessages") {
       api
         .fetch(
@@ -184,6 +183,13 @@ class ChatPage extends PureComponent {
         });
       })
       .then(() => {
+        this.getConversation();
+        this.getGroupConversation();
+        this.displayGroupList();
+        this.displayChatList("allMessages");
+        this.displayGroupMembers();
+      })
+      .then(() => {
         if (this.props.match.params.chatmateSub === "allMessages") {
           this.displayChatList("allMessages");
         } else {
@@ -191,12 +197,7 @@ class ChatPage extends PureComponent {
             chatmateSub: this.props.match.params.chatmateSub,
             newChatmateSub: this.props.match.params.chatmateSub
           });
-          this.selectChatmate(this.props.match.params.chatmateSub);
-          this.getConversation();
-          this.getGroupConversation();
-          this.displayGroupList();
-          this.displayChatList();
-          this.displayGroupMembers();
+
         }
       })
       .catch(err => {
@@ -222,19 +223,28 @@ class ChatPage extends PureComponent {
           api
             .fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
             .then(res => {
-              this.setState({ chatListInfo: [...res.data] });
+              this.selectChatmate(res.data[0].sub)
+              this.setState({ 
+                chatListInfo: [...res.data],
+                chatmateInfo: res.data[0]
+              });
             })
             .catch(() => {
               this.displayChatList();
             });
-        } else {
+        } /*else {
           this.displayGroupList();
           this.getGroupConversation();
-        }
+        }*/
       })
       .then(() => {
         if (view === "allMessages" && UniqueSub.length > 0) {
-          this.componentDidUpdate(UniqueSub[0]);
+          this.setState({
+            chatmateSub: UniqueSub[0],
+            newChatmateSub: UniqueSub[0],
+          })
+          this.displayGroupList();
+          this.getGroupConversation();
         }
       });
   };
@@ -243,10 +253,10 @@ class ChatPage extends PureComponent {
     if (this.props.match.params.chatmateSub === "allMessages") {
       if (sub.length > 0) {
         this.setState({ chatmateSub: sub, newChatmateSub: sub });
-        this.getConversation();
-        this.selectChatmate(sub);
-        this.displayGroupList();
-        this.getGroupConversation();
+        //this.getConversation();
+        //this.selectChatmate(sub);
+        //this.displayGroupList();
+        //this.getGroupConversation();
       }
     } else {
       this.setState({
@@ -411,9 +421,6 @@ class ChatPage extends PureComponent {
         socket.emit("getNormalChat", chat);
         //socket.emit("countUnreadMessages", chat);
       })
-      .then(() => {
-        $("#text").focus();
-      });
     $("#scrollDiv").animate(
       { scrollTop: $("#scrollDiv").prop("scrollHeight") },
       1000
