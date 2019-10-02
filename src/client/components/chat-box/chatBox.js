@@ -16,8 +16,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //api
 import api from "../../services/fetchApi";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-
 
 import { InputAdornment } from "@material-ui/core";
 import InsertEmoticon from "@material-ui/icons/InsertEmoticon";
@@ -59,6 +57,22 @@ import AceEditor from 'react-ace';
 import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
+import S3FileUpload from 'react-s3'
+
+const imageConfig = {
+  bucketName: 'boomcamp',
+  dirName: 'handraiser/image-uploads/chat-images',
+  region: 'us-west-2',
+  accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
+  secretAccessKey: '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',
+}
+const documentConfig = {
+  bucketName: 'boomcamp',
+  dirName: 'handraiser/file-uploads',
+  region: 'us-west-2',
+  accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
+  secretAccessKey: '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',
+}
 
 
 const StyledMenu = withStyles({
@@ -125,7 +139,7 @@ class ChatBox extends PureComponent {
       confirmationDialog: false,
       openMenu: null,
       image: null,
-      progress: 0,
+      progress: false,
       assist: [],
       imageMenu: null,
       splashDialog: false,
@@ -264,39 +278,25 @@ class ChatBox extends PureComponent {
   handleSendImage = priv => {
     const { image } = this.state;
     const imageName = this.makeid(image.name);
-    const uploadTask = storage.ref(`chat-images/${imageName}`).put(image);
-    uploadTask.on(
-      "state_changed",
-      snapshot => {
-        this.setState({
-          progress: Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          )
-        });
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        storage
-          .ref("chat-images")
-          .child(imageName)
-          .getDownloadURL()
-          .then(url => {
-            if (priv === "student") {
-              this.props.sendChat(url, "image", image.name);
-              this.studentInput.value = ""
-            } else {
-              this.props.sendChatM(url, "image", image.name);
-              this.mentorInput.value = ""
-            }
-            this.setState({
-              progress: 0
-            });
-          });
+    this.setState({ progress: true })
+    S3FileUpload
+    .uploadFile(image, imageConfig)
+    .then(data => {
+      if (priv === "student") {
+        this.props.sendChat(data.location, "image", imageName);
+        this.studentInput.value = ""
+      } else {
+        this.props.sendChatM(data.location, "image", imageName);
+        this.mentorInput.value = ""
       }
-    );
-    this.setState({ image: null });
+    })
+    .then(()=>{
+      this.setState({ progress: false });
+      this.setState({ image: null});
+    })
+    .catch((err) =>{
+      console.log(err)
+    })
     this.fileInput.value = "";
   };
   makeid = (name, length = 15) => {
@@ -366,39 +366,22 @@ class ChatBox extends PureComponent {
   };
   handleSendDocument = priv => {
     const { document } = this.state;
-    const uploadTask = storage.ref(`documents/${document.name}`).put(document);
-    uploadTask.on(
-      "state_changed",
-      snapshot => {
-        this.setState({
-          progress: Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          )
-        });
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        storage
-          .ref("documents")
-          .child(document.name)
-          .getDownloadURL()
-          .then(url => {
-            if (priv === "student") {
-              this.props.sendChat(url, "file", document.name);
-              this.studentInput.value = ""
-            } else {
-              this.props.sendChatM(url, "file", document.name);
-              this.mentorInput.value = ""
-            }
-            this.setState({
-              progress: 0
-            });
-          });
+    this.setState({ progress: true })
+    S3FileUpload
+    .uploadFile(document, documentConfig)
+    .then(data => {
+      if (priv === "student") {
+        this.props.sendChat(data.location, "file", document.name);
+        this.studentInput.value = ""
+      } else {
+        this.props.sendChatM(data.location, "file", document.name);
+        this.mentorInput.value = ""
       }
-    );
-    this.setState({ document: null });
+    })
+    .then(()=>{
+      this.setState({ progress: false });
+      this.setState({ document: null});
+    })
     this.documentInput.value = "";
   };
   verifyDocument = files => {
@@ -520,13 +503,12 @@ class ChatBox extends PureComponent {
             </StyledMenu>
           </Box>
         </Paper>
-        {this.state.progress > 0 && (
-          <Progress
-            variant="determinate"
+        {this.state.progress
+          ? <Progress
             style={{ height: 7 }}
-            value={this.state.progress}
-          />
-        )}
+            />
+          : null
+        }
 
         <Paper
           elevation={0}
