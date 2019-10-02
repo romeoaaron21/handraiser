@@ -70,7 +70,7 @@ class Splash extends React.Component {
   componentDidMount = () => {
     axios
       .get(
-        `http://api.giphy.com/v1/gifs/trending?api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS&limit=9`
+        `http://api.giphy.com/v1/gifs/trending?api_key=${process.env.REACT_APP_.API_GIPHY_KEY}&limit=9`
       )
       .then(res => {
         this.setState({
@@ -86,7 +86,7 @@ class Splash extends React.Component {
     this.setState({ trendPage: this.state.trendPage + 9 });
     axios
       .get(
-        `http://api.giphy.com/v1/gifs/trending?api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS&limit=10&offset=${this.state.trendPage}`
+        `http://api.giphy.com/v1/gifs/trending?api_key=${process.env.REACT_APP_.API_GIPHY_KEY}&limit=10&offset=${this.state.trendPage}`
       )
       .then(res => {
         this.setState({
@@ -103,7 +103,7 @@ class Splash extends React.Component {
   handleSubmit = () => {
     axios
       .get(
-        `http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS&limit=9`
+        `http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=${process.env.REACT_APP_.API_GIPHY_KEY}&limit=9`
       )
       .then(res => {
         this.setState({
@@ -120,7 +120,7 @@ class Splash extends React.Component {
     this.setState({ resultPage: this.state.resultPage + 9 });
     axios
       .get(
-        `http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=NUK2jPG9u330Lg9QqIPjGMuX13oG0loS&limit=10&offset=${this.state.resultPage}`
+        `http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=${process.env.REACT_APP.API_GIPHY_KEY}&limit=10&offset=${this.state.resultPage}`
       )
       .then(res => {
         this.setState({

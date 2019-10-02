@@ -1,3 +1,4 @@
+require("dotenv").config();
 const http = require("http");
 const socketIO = require("socket.io");
 
@@ -23,7 +24,7 @@ massive({
   user: "postgres",
   password: "handraiser"
 }).then(db => {
-  const PORT = 3001;
+  const PORT = process.env.PORT || 3001;
   const app = express();
 
   app.set("db", db);
@@ -147,15 +148,12 @@ massive({
     socket.on("countUnreadMessages", user => {
       io.emit("countUnreadMessages", user);
     });
-    socket.on("refreshGroupName", groupId =>{
-      io.emit("refreshGroupName", groupId)
-    })
-    socket.on("groupMembers", group =>{
-      io.emit("groupMembers", group)
-    })
-    
-
-
+    socket.on("refreshGroupName", groupId => {
+      io.emit("refreshGroupName", groupId);
+    });
+    socket.on("groupMembers", group => {
+      io.emit("groupMembers", group);
+    });
 
     //END of Group Chat
 
@@ -304,16 +302,15 @@ massive({
   app.get("/api/getAllUsers", chat.getAllUsers);
   app.post("/api/sendGroupChat", chat.sendGroupChat);
   app.patch("/api/seenNormalGroupChat/", chat.seenNormalGroupChat);
-  
 
-  app.post("/api/createGroupChat", chat.createGroupChat)
-  app.get("/api/getAllGroupName", chat.getAllGroupName)
-  app.delete("/api/leaveGroup/:sub/:groupId", chat.deleteMember)
-  app.get("/api/getAllUserNotInGroup/:groupId", chat.getAllUserNotInGroup)
-  app.patch("/api/updateGroupName/:groupId", chat.updateGroupName)
-  app.post("/api/addMemberGroupChat/:groupId", chat.addMemberGroupChat)
-  app.get("/api/checkInGroup/:sub/:groupId", chat.checkInGroup)
-  app.get("/api/getAllUsersInGroup/:groupId", chat.getAllUsersInGroup)
+  app.post("/api/createGroupChat", chat.createGroupChat);
+  app.get("/api/getAllGroupName", chat.getAllGroupName);
+  app.delete("/api/leaveGroup/:sub/:groupId", chat.deleteMember);
+  app.get("/api/getAllUserNotInGroup/:groupId", chat.getAllUserNotInGroup);
+  app.patch("/api/updateGroupName/:groupId", chat.updateGroupName);
+  app.post("/api/addMemberGroupChat/:groupId", chat.addMemberGroupChat);
+  app.get("/api/checkInGroup/:sub/:groupId", chat.checkInGroup);
+  app.get("/api/getAllUsersInGroup/:groupId", chat.getAllUsersInGroup);
   //End of Group Chat
 
   server.listen(PORT, () => {

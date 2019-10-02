@@ -206,8 +206,7 @@ class SignInSide extends Component {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <GoogleLogin
-                        clientId="915213711135-usc11cnn8rudrqqikfe21l246r26uqh8.apps.googleusercontent.com"
-                        // hostedDomain="boom.camp"
+                        clientId={process.env.REACT_APP_.GOOGLE_CLIENT_ID}
                         onSuccess={this.responseGoogleStudent}
                         onFailure={this.responseGoogleStudent}
                         cookiePolicy={"single_host_origin"}
