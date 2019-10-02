@@ -832,7 +832,7 @@ class ChatPageBox extends Component {
                 //     if(!this.state.gc && this.props.chatmateInfo.sub === undefined){
                 //       return true
                 //     }
-                //   },300)
+                //   },500)
                 // }
               />
               {this.state.image || this.state.document
