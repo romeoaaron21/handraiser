@@ -253,7 +253,9 @@ class ChatPage extends PureComponent {
         chatmateSub: this.props.match.params.chatmateSub,
         newChatmateSub: this.props.match.params.chatmateSub
       });
-      this.selectChatmate(this.props.match.params.chatmateSub);
+      if(this.state.chatmateSub !== this.props.match.params.chatmateSub){
+        this.selectChatmate(this.props.match.params.chatmateSub);
+      }
     }
   }
 
