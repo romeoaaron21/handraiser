@@ -16,8 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //api
 import api from "../../services/fetchApi";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
 import { InputAdornment } from "@material-ui/core";
 import InsertEmoticon from "@material-ui/icons/InsertEmoticon";
@@ -569,7 +568,7 @@ class ChatBox extends PureComponent {
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
                 style={
                   this.props.privileged === "mentor"
-                    ? { minHeight: "435px" }
+                    ? { minHeight: "490px" }
                     : { minHeight: "482px", maxHeight: "443px" }
                 }
               >
@@ -926,10 +925,11 @@ class ChatBox extends PureComponent {
             open={this.state.splashDialog}
             handleClose={this.closeSplash}
           />
-          <Emoji 
-          openPicker={this.openPicker}
-          anchorEl={this.state.emoji} 
-          handleEmoji={this.handleEmoji} />
+          <Emoji
+            openPicker={this.openPicker}
+            anchorEl={this.state.emoji}
+            handleEmoji={this.handleEmoji}
+          />
 
           <Gallery
             conversation={this.state.imgArray}
