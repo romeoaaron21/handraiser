@@ -1,3 +1,10 @@
+.gitignore
 node_modules
 secret.js
 yarn.lock
+.git_commit_template.txt
+.env
+package-lock.json
+npm-debug.log
+yarn.lock
+yarn-error.log
