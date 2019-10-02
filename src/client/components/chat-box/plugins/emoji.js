@@ -4,29 +4,33 @@ import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 import 'emoji-mart/css/emoji-mart.css'
 import { Picker } from 'emoji-mart'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 export default function Emoji(props) {
   const {
     anchorEl,
-    handleEmoji
+    handleEmoji,
+    openPicker
   } = props
   const open = Boolean(anchorEl);
   return (
-    <div>
-      <Popper open={open} anchorEl={anchorEl} transition>
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <Paper>
-            <Picker 
-            onSelect={handleEmoji}
-            emojiTooltip={true}
-            emoji=''
-            title=""    
-            />
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
-    </div>
+      <div>
+          <Popper open={open} anchorEl={anchorEl} transition>
+            {({ TransitionProps }) => (
+              <Fade {...TransitionProps} timeout={350}>
+                <ClickAwayListener onClickAway={() => openPicker()}>
+                  <Paper> 
+                  <Picker 
+                  onSelect={handleEmoji}
+                  emojiTooltip={true}
+                  emoji=''
+                  title=""    
+                  />
+                  </Paper>
+                </ClickAwayListener>
+              </Fade>
+            )}
+          </Popper>
+      </div>
   );
 }

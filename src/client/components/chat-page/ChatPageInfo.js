@@ -173,6 +173,7 @@ class ChatPageInfo extends Component {
               </ExpansionPanelSummary>
               <ImageExpansionPanelDetails>
                 <div
+                  style={this.props.chatmateInfo.first_name === undefined ? { height: 395 } : {}}
                   className={`${classes.photosGridContainer} ${classes.scrollBar}`}
                 >
                   <div className={classes.photosGrid}>
@@ -214,6 +215,7 @@ class ChatPageInfo extends Component {
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div
+                  style={this.props.chatmateInfo.first_name === undefined ? { height: 371 } : {}}
                   className={`${classes.filesGridContainer} ${classes.scrollBar}`}
                 >
                   <div className={classes.photosGrid}>
@@ -256,7 +258,7 @@ class ChatPageInfo extends Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <List
-                    style={{ width: "100%", overflowY: "auto", height: 370 }}
+                    style={{ width: "100%", overflowY: "auto", height: 365 }}
                     className={classes.scrollBar}
                   >
                     {this.props.groupMembers.map(value => {
