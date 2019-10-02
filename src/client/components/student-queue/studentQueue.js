@@ -195,14 +195,23 @@ class Student extends PureComponent {
 
   setChatText = (val, receiversub, sendersub, type) => {
     let textVal = [val, receiversub, sendersub, type];
-    if (this.state.previledge === "student") {
-      socket.emit("handleChat", textVal);
-    } else {
-      socket.emit("handleChatM", textVal);
+    let checkVal = "";
+    setTimeout(() => {
+      if (checkVal !== val) {
+        checkVal = val;
+      }
+    }, 300);
+    if (checkVal === textVal[0]) {
+      if (this.state.previledge === "student") {
+        socket.emit("handleChat", textVal);
+      } else {
+        socket.emit("handleChatM", textVal);
+      }
     }
   };
+  
   //ANCHOR send chat
-  sendChat = (url, type) => {
+  sendChat = (url, type, message) => {
     const months = [
       "Jan",
       "Feb",
@@ -231,10 +240,7 @@ class Student extends PureComponent {
     });
     var datetime = formatted_date + " " + time;
     let convo = {
-      message:
-        this.state.previledge === "student"
-          ? this.state.studentChatText
-          : this.state.mentorChatText,
+      message,
       sender_sub: this.state.sub,
       chatmate_sub: this.state.chatmateSub,
       cohort_id: this.props.cohort_id,

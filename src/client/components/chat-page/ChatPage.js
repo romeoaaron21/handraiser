@@ -18,6 +18,7 @@ import ChatPageInfo from "./ChatPageInfo";
 import api from "../../services/fetchApi";
 import io from "socket.io-client";
 import { Redirect } from "react-router-dom";
+import $ from 'jquery';
 
 import AuthService from "../../auth/AuthService";
 
@@ -222,8 +223,8 @@ class ChatPage extends PureComponent {
               this.displayChatList();
             });
         } else {
-          this.displayGroupList();
-          this.getGroupConversation();
+          // this.displayGroupList();
+          // this.getGroupConversation();
         }
       })
       .then(() => {
@@ -329,6 +330,9 @@ class ChatPage extends PureComponent {
           }
         });
     }
+    if (this.state.groupShow === 7){
+      $("#focus").focus()
+    }
   };
 
   //START OF UPDATED FOR FASTER CHATTING
@@ -356,7 +360,7 @@ class ChatPage extends PureComponent {
     }
   };
 
-  sendChat = (url, chatText, sub, type) => {
+  sendChat = (url, message, type, sub) => {
     const months = [
       "Jan",
       "Feb",
@@ -385,24 +389,28 @@ class ChatPage extends PureComponent {
     });
     var datetime = formatted_date + " " + time;
     let convo = {
-      message: chatText === undefined ? this.state.senderText : chatText,
+      message,
       sender_sub: this.state.sub,
-      chatmate_sub: sub === undefined ? this.state.chatmateSub : sub,
+      chatmate_sub: sub ? sub : this.state.chatmateSub,
       time: datetime,
       type: type ? type : "text",
       link: url ? url : null
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(sub === undefined ? this.state.chatmateSub : sub, "pm");
       const chat = [
         res.data,
         this.state.sub,
-        sub === undefined ? this.state.chatmateSub : sub
+        this.state.chatmateSub
       ];
       socket.emit("getNormalChat", chat);
-      socket.emit("countUnreadMessages", chat);
-    });
+      //socket.emit("countUnreadMessages", chat);
+      
+    })
+    .then(() => {
+      $("#text").focus();
+    })
+    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
   };
   sendCode = (code, mode) => {
     const months = [
@@ -442,10 +450,10 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(this.state.chatmateSub, "pm");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalChat", chat);
     });
+    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
   };
   sendCodeGroup = (code, mode) => {
     const months = [
@@ -485,13 +493,13 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
     });
+    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
   };
   //ANCHOR  GROUP CHAT SEND
-  sendChatGroup = (url, type) => {
+  sendChatGroup = (url, type, message) => {
     const months = [
       "Jan",
       "Feb",
@@ -522,18 +530,18 @@ class ChatPage extends PureComponent {
     let convo = {
       sender_sub: this.state.sub,
       groupchat_id: parseInt(this.state.chatmateSub),
-      message: this.state.senderText,
+      message,
       time: datetime,
       type: type ? type : "text",
       link: url ? url : null
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
-      socket.emit("countUnreadMessages", chat);
+      //socket.emit("countUnreadMessages", chat);
     });
+    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
   };
 
   displayBadge = (chatmate, type) => {
@@ -571,8 +579,7 @@ class ChatPage extends PureComponent {
   }
 
   //ANCHOR SHOW MORE GROUP
-  showMoreGroup = type => {
-    if (type === 'group'){
+  showMoreGroup = () => {
       if (this.state.groupConversation.length - this.state.groupShow <= 4){
         this.setState({
           groupShow: this.state.groupConversation.length - 1
@@ -584,20 +591,6 @@ class ChatPage extends PureComponent {
         })
       }
     }
-    else {
-      if (this.state.conversation.length - this.state.pmShow <= 4){
-        this.setState({
-          pmShow: this.state.conversation.length - 1
-        })
-      }
-      else {
-        this.setState({
-          pmShow: this.state.pmShow + 4
-        })
-      }
-    }
-
-  }
 
   render() {
     const { classes } = this.props;
@@ -632,7 +625,6 @@ class ChatPage extends PureComponent {
               sendChat={this.sendChat}
               groupConversation={this.state.groupConversation}
             />
-            {this.state.conversation.length > 0 &&
             <ChatPageBox
               chatListInfo={this.state.chatListInfo}
               paramsCheck={this.props.match.params.chatmateSub}
@@ -657,7 +649,6 @@ class ChatPage extends PureComponent {
               showMoreGroup={this.showMoreGroup}
               //gc convo slice end
             />
-            }
             <ChatPageInfo
               userInfo={this.state.userInfo}
               chatmateInfo={this.state.chatmateInfo}
