@@ -25,8 +25,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import EditGroup from "./dialogs/EditGroup";
 import api from "../../services/fetchApi";
 import Link from "@material-ui/core/Link";
-import Button from '@material-ui/core/Button'
-import { storage } from "../common-components/upload-photo/firebase/firebase";
 import ImageMenu from "../chat-box/imageMenu";
 import Splash from "../chat-box/plugins/giphy";
 import Emoji from '../chat-box/plugins/emoji';
@@ -39,10 +37,18 @@ import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
 import io from "socket.io-client";
-import $ from "jquery";
+//File Upload
+import S3FileUpload from 'react-s3'
+//config aws s3
+const config = {
+  bucketName: 'boomcamp',
+  dirName: 'handraiser/image-uploads/chat-images', /* optional */
+  region: 'us-west-2',
+  accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
+  secretAccessKey: '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',
+}
 
 const socket = io("http://boom-handraiser.com:3001/");
-
 const imageMaxSize = 30000000;
 const acceptedFileTypes =
   "image/x-png, image/png, image/jpg, image/jpeg, image/gif";
@@ -148,37 +154,21 @@ class ChatPageBox extends Component {
   handleSendImage = type => {
     const { image } = this.state;
     const imageName = this.makeid(image.name);
-    const uploadTask = storage.ref(`chat-images/${imageName}`).put(image);
-    uploadTask.on(
-      "state_changed",
-      snapshot => {
-        this.setState({
-          progress: Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          )
-        });
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        storage
-          .ref("chat-images")
-          .child(imageName)
-          .getDownloadURL()
-          .then(url => {
-            if (type === 'group'){
-              this.props.sendChatGroup(url, "image", image.name);
-            }
-            else {
-              this.props.sendChat(url, image.name, "image");
-            }
-            this.setState({
-              progress: 0
-            });
-          });
+    //start file upload
+    S3FileUpload
+    .uploadFile(image, config)
+    .then(data => {
+      if (type === 'group'){
+        this.props.sendChatGroup(data.location, "image", imageName);
       }
-    );
+      else {
+        this.props.sendChat(data.location, imageName, "image");
+      }
+    })
+    .catch((err) =>{
+      console.log(err)
+    })
+    //end file upload
     this.setState({ image: null });
     this.fileInput.value = "";
   };
@@ -244,6 +234,7 @@ class ChatPageBox extends Component {
   //ANCHOR HANDLE DOCUMENT
   handleSendDocument = type => {
     const { document } = this.state;
+
     const uploadTask = storage.ref(`documents/${document.name}`).put(document);
     uploadTask.on(
       "state_changed",
