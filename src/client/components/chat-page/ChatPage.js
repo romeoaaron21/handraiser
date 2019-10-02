@@ -22,7 +22,6 @@ import $ from "jquery";
 
 import AuthService from "../../auth/AuthService";
 
-const socketUrl = "http://boom-handraiser.com:3001/";
 const socket = io("http://boom-handraiser.com:3001/");
 
 class ChatPage extends PureComponent {

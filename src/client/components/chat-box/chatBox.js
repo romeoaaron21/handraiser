@@ -20,7 +20,6 @@ import api from "../../services/fetchApi";
 import { InputAdornment } from "@material-ui/core";
 import InsertEmoticon from "@material-ui/icons/InsertEmoticon";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
-import { debounce } from "debounce";
 
 import {
   Link,
@@ -36,9 +35,6 @@ import {
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
-
-//Firebase
-import { storage } from "../common-components/upload-photo/firebase/firebase";
 
 //menu
 import ImageMenu from "./imageMenu";
@@ -152,7 +148,6 @@ class ChatBox extends PureComponent {
       openSnippet: false,
       studentChat: ""
     };
-    this.handleStudentChat = debounce(this.handleStudentChat, 500);
   }
   openSnippet = () => {
     this.setState({ openSnippet: !this.state.openSnippet });

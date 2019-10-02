@@ -120,7 +120,7 @@ class Splash extends React.Component {
     this.setState({ resultPage: this.state.resultPage + 9 });
     axios
       .get(
-        `http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=${process.env.REACT_APP.API_GIPHY_KEY}&limit=10&offset=${this.state.resultPage}`
+        `http://api.giphy.com/v1/gifs/search?q=${this.state.query}&api_key=${process.env.REACT_APP_.API_GIPHY_KEY}&limit=10&offset=${this.state.resultPage}`
       )
       .then(res => {
         this.setState({
@@ -170,6 +170,17 @@ class Splash extends React.Component {
                   </IconButton>
                 </InputAdornment>
               )
+            }}
+            onKeyUp={e => {
+              if (
+                e.target.value
+                  .replace(/^\s+/, "")
+                  .replace(/\s+$/, "") !== ""
+              ) {
+                if (e.key === "Enter") {
+                  this.handleSubmit();
+                }
+              }
             }}
           />
           {this.state.showTrend ? (
@@ -227,11 +238,12 @@ class Splash extends React.Component {
                   />
                 </div>
               ))}
-              <div
+              {this.state.results.length >= 10
+              ? <div
                 className={classes.gifItem}
                 style={{ cursor: "pointer", height: "309px" }}
                 onClick={this.more}
-              >
+                >
                 <img
                   alt="no more images"
                   style={{
@@ -251,6 +263,8 @@ class Splash extends React.Component {
                   show more
                 </p>
               </div>
+            :null
+            }
             </div>
           )}
         </DialogContent>
