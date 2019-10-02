@@ -18,7 +18,7 @@ import ChatPageInfo from "./ChatPageInfo";
 import api from "../../services/fetchApi";
 import io from "socket.io-client";
 import { Redirect } from "react-router-dom";
-import $ from 'jquery';
+import $ from "jquery";
 
 import AuthService from "../../auth/AuthService";
 
@@ -62,22 +62,23 @@ class ChatPage extends PureComponent {
   handleDrawerOpen = () => this.setState({ open: true });
   handleDrawerClose = () => this.setState({ open: false });
 
-  UNSAFE_componentWillMount() {
-    const socket = io(socketUrl);
-
+  componentDidMount() {
+    setTimeout(() => {
+      $('#scrollDiv').scrollTop($('#scrollDiv')[0].scrollHeight);
+    }, 1000);
     //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
       if (conversation[1] === this.state.sub) {
-        this.displayChatList();
+        //this.displayChatList();
         this.setState({ senderText: "" });
         this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
-        this.displayChatList();
+        //this.displayChatList();
         this.setState({ chatmateText: "" });
         this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
-        this.displayChatList();
+        //this.displayChatList();
         this.getConversation();
       }
     });
@@ -132,10 +133,10 @@ class ChatPage extends PureComponent {
     socket.on("activeChat", groupChat => {
       this.displayChatList();
     });
-    socket.on("groupMembers", group=>{
-      this.displayGroupMembers()
-    })
-    
+    socket.on("groupMembers", group => {
+      this.displayGroupMembers();
+    });
+
     //CREATE SOCKET ON SELECT CHATMATE
     socket.on("refreshGroupName", sub => {
       if (
@@ -160,9 +161,7 @@ class ChatPage extends PureComponent {
         this.setState({ chatmateText: chatText[0] });
       }
     });
-  }
 
-  componentDidMount() {
     if (this.props.match.params.chatmateSub !== "allMessages") {
       api
         .fetch(
@@ -184,6 +183,13 @@ class ChatPage extends PureComponent {
         });
       })
       .then(() => {
+        this.getConversation();
+        this.getGroupConversation();
+        this.displayGroupList();
+        this.displayChatList("allMessages");
+        this.displayGroupMembers();
+      })
+      .then(() => {
         if (this.props.match.params.chatmateSub === "allMessages") {
           this.displayChatList("allMessages");
         } else {
@@ -191,7 +197,7 @@ class ChatPage extends PureComponent {
             chatmateSub: this.props.match.params.chatmateSub,
             newChatmateSub: this.props.match.params.chatmateSub
           });
-          this.selectChatmate(this.props.match.params.chatmateSub);
+
         }
       })
       .catch(err => {
@@ -217,19 +223,28 @@ class ChatPage extends PureComponent {
           api
             .fetch(`/api/getChatListInformation/${UniqueSub}`, "get")
             .then(res => {
-              this.setState({ chatListInfo: [...res.data] });
+              this.selectChatmate(res.data[0].sub)
+              this.setState({ 
+                chatListInfo: [...res.data],
+                chatmateInfo: res.data[0]
+              });
             })
             .catch(() => {
               this.displayChatList();
             });
-        } else {
-          // this.displayGroupList();
-          // this.getGroupConversation();
-        }
+        } /*else {
+          this.displayGroupList();
+          this.getGroupConversation();
+        }*/
       })
       .then(() => {
         if (view === "allMessages" && UniqueSub.length > 0) {
-          this.componentDidUpdate(UniqueSub[0]);
+          this.setState({
+            chatmateSub: UniqueSub[0],
+            newChatmateSub: UniqueSub[0],
+          })
+          this.displayGroupList();
+          this.getGroupConversation();
         }
       });
   };
@@ -238,14 +253,19 @@ class ChatPage extends PureComponent {
     if (this.props.match.params.chatmateSub === "allMessages") {
       if (sub.length > 0) {
         this.setState({ chatmateSub: sub, newChatmateSub: sub });
-        this.selectChatmate(sub);
+        //this.getConversation();
+        //this.selectChatmate(sub);
+        //this.displayGroupList();
+        //this.getGroupConversation();
       }
     } else {
       this.setState({
         chatmateSub: this.props.match.params.chatmateSub,
         newChatmateSub: this.props.match.params.chatmateSub
       });
-      this.selectChatmate(this.props.match.params.chatmateSub);
+      if(this.state.chatmateSub !== this.props.match.params.chatmateSub){
+        this.selectChatmate(this.props.match.params.chatmateSub);
+      }
     }
   }
 
@@ -277,16 +297,14 @@ class ChatPage extends PureComponent {
           this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data });
         });
       }
-      this.getConversation();
+      // this.getConversation();
 
-      this.displayGroupList();
+      // this.displayGroupList();
 
-      this.getGroupConversation();
-      this.displayChatList();
-      this.displayGroupMembers();
-    }
-
-    else if(this.state.refreshChatmate){
+      // this.getGroupConversation();
+      // this.displayChatList();
+      // this.displayGroupMembers();
+    } else if (this.state.refreshChatmate) {
       if (chatmateSub.length > 15) {
         const data = api.fetch(
           `/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`,
@@ -309,29 +327,29 @@ class ChatPage extends PureComponent {
           this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data });
         });
       }
-      this.displayChatList();
-      this.getConversation();
+      // this.displayChatList();
+      // this.getConversation();
 
-      this.displayGroupList();
-      this.getGroupConversation();
+      // this.displayGroupList();
+      // this.getGroupConversation();
       this.setState({ refreshChatmate: false });
     }
-    if (this.props.match.params.chatmateSub.length <= 15) {
-      api
-        .fetch(
-          `/api/checkInGroup/${this.state.userInfo.sub}/${this.state.chatmateInfo.id}`,
-          "get"
-        )
-        .then(res => {
-          if (res.data.length > 0) {
-            this.setState({ notInGroup: false });
-          } else {
-            this.setState({ notInGroup: true });
-          }
-        });
-    }
-    if (this.state.groupShow === 7){
-      $("#focus").focus()
+    // if (this.props.match.params.chatmateSub.length <= 15) {
+    //   api
+    //     .fetch(
+    //       `/api/checkInGroup/${this.state.userInfo.sub}/${this.state.chatmateInfo.id}`,
+    //       "get"
+    //     )
+    //     .then(res => {
+    //       if (res.data.length > 0) {
+    //         this.setState({ notInGroup: false });
+    //       } else {
+    //         this.setState({ notInGroup: true });
+    //       }
+    //     });
+    // }
+    if (this.state.groupShow === 7) {
+      $("#focus").focus();
     }
   };
 
@@ -397,20 +415,16 @@ class ChatPage extends PureComponent {
       link: url ? url : null
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
-    data.then(res => {
-      const chat = [
-        res.data,
-        this.state.sub,
-        this.state.chatmateSub
-      ];
-      socket.emit("getNormalChat", chat);
-      //socket.emit("countUnreadMessages", chat);
-      
-    })
-    .then(() => {
-      $("#text").focus();
-    })
-    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
+    data
+      .then(res => {
+        const chat = [res.data, this.state.sub, this.state.chatmateSub];
+        socket.emit("getNormalChat", chat);
+        //socket.emit("countUnreadMessages", chat);
+      })
+    $("#scrollDiv").animate(
+      { scrollTop: $("#scrollDiv").prop("scrollHeight") },
+      1000
+    );
   };
   sendCode = (code, mode) => {
     const months = [
@@ -453,7 +467,10 @@ class ChatPage extends PureComponent {
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalChat", chat);
     });
-    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
+    $("#scrollDiv").animate(
+      { scrollTop: $("#scrollDiv").prop("scrollHeight") },
+      1000
+    );
   };
   sendCodeGroup = (code, mode) => {
     const months = [
@@ -496,7 +513,10 @@ class ChatPage extends PureComponent {
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
     });
-    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
+    $("#scrollDiv").animate(
+      { scrollTop: $("#scrollDiv").prop("scrollHeight") },
+      1000
+    );
   };
   //ANCHOR  GROUP CHAT SEND
   sendChatGroup = (url, type, message) => {
@@ -541,7 +561,10 @@ class ChatPage extends PureComponent {
       socket.emit("getNormalGroupChat", chat);
       //socket.emit("countUnreadMessages", chat);
     });
-    $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
+    $("#scrollDiv").animate(
+      { scrollTop: $("#scrollDiv").prop("scrollHeight") },
+      1000
+    );
   };
 
   displayBadge = (chatmate, type) => {
@@ -549,14 +572,16 @@ class ChatPage extends PureComponent {
       let sub = { chatmate: this.state.sub, sender: chatmate };
       const data = api.fetch(`/api/seenNormalChat`, "patch", sub);
       data.then(res => {
-        socket.emit("seenNormalChat", res.data);
+        this.setState({conversation: [...res.data]})
+        // socket.emit("seenNormalChat", res.data);
         socket.emit("countUnreadMessages", res.data);
       });
     } else if (type === "gc") {
       let sub = { chatmate: this.state.sub, groupchat_id: chatmate };
       const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
       data.then(res => {
-        socket.emit("seenNormalGroupChat", res.data);
+        this.setState({groupConversation: [...res.data]})
+        // socket.emit("seenNormalGroupChat", res.data);
         socket.emit("countUnreadMessages", res.data);
       });
     }
@@ -571,26 +596,26 @@ class ChatPage extends PureComponent {
   };
 
   displayGroupMembers = () => {
-    const data = api.fetch(`/api/getAllUsersInGroup/${this.props.match.params.chatmateSub}`);
+    const data = api.fetch(
+      `/api/getAllUsersInGroup/${this.props.match.params.chatmateSub}`
+    );
     data.then(res => {
-      this.setState({groupMembers: res.data});
-    })
-
-  }
+      this.setState({ groupMembers: res.data });
+    });
+  };
 
   //ANCHOR SHOW MORE GROUP
   showMoreGroup = () => {
-      if (this.state.groupConversation.length - this.state.groupShow <= 4){
-        this.setState({
-          groupShow: this.state.groupConversation.length - 1
-        })
-      }
-      else {
-        this.setState({
-          groupShow: this.state.groupShow + 4
-        })
-      }
+    if (this.state.groupConversation.length - this.state.groupShow <= 4) {
+      this.setState({
+        groupShow: this.state.groupConversation.length - 1
+      });
+    } else {
+      this.setState({
+        groupShow: this.state.groupShow + 4
+      });
     }
+  };
 
   render() {
     const { classes } = this.props;
@@ -654,9 +679,9 @@ class ChatPage extends PureComponent {
               chatmateInfo={this.state.chatmateInfo}
               conversation={[...this.state.conversation].reverse()}
               groupConversation={[...this.state.groupConversation].reverse()}
-              groupMembers= {this.state.groupMembers}
-              groupChatId= {this.props.match.params.chatmateSub}
-              refreshMember = {this.displayGroupMembers}
+              groupMembers={this.state.groupMembers}
+              groupChatId={this.props.match.params.chatmateSub}
+              refreshMember={this.displayGroupMembers}
             />
           </Grid>
         </Container>
