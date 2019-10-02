@@ -243,7 +243,10 @@ class ChatPage extends PureComponent {
     if (this.props.match.params.chatmateSub === "allMessages") {
       if (sub.length > 0) {
         this.setState({ chatmateSub: sub, newChatmateSub: sub });
+        this.getConversation();
         this.selectChatmate(sub);
+        this.displayGroupList();
+        this.getGroupConversation();
       }
     } else {
       this.setState({
@@ -560,14 +563,16 @@ class ChatPage extends PureComponent {
       let sub = { chatmate: this.state.sub, sender: chatmate };
       const data = api.fetch(`/api/seenNormalChat`, "patch", sub);
       data.then(res => {
-        socket.emit("seenNormalChat", res.data);
+        this.setState({conversation: [...res.data]})
+        // socket.emit("seenNormalChat", res.data);
         socket.emit("countUnreadMessages", res.data);
       });
     } else if (type === "gc") {
       let sub = { chatmate: this.state.sub, groupchat_id: chatmate };
       const data = api.fetch(`/api/seenNormalGroupChat`, "patch", sub);
       data.then(res => {
-        socket.emit("seenNormalGroupChat", res.data);
+        this.setState({groupConversation: [...res.data]})
+        // socket.emit("seenNormalGroupChat", res.data);
         socket.emit("countUnreadMessages", res.data);
       });
     }

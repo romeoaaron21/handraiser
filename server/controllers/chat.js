@@ -249,7 +249,6 @@ function addMemberGroupChat(req, res) {
 
 function deleteMember(req, res) {
   const db = req.app.get("db");
-  console.log(req.params.sub, "-", req.params.groupId);
   db.query(
     `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
   ).then(data => {
@@ -267,11 +266,9 @@ function getAllUserNotInGroup(req, res) {
 }
 function updateGroupName(req, res) {
   const db = req.app.get("db");
-  console.log(req.query.groupName, "-", req.params.groupId);
   db.query(
     `UPDATE groupchat SET name='${req.query.groupName}' WHERE id = ${req.params.groupId}`
   ).then(data => {
-    console.log(data);
     res.status(200).json(data);
   });
 }
@@ -293,7 +290,6 @@ function checkParams(req, res) {
       if (data.length === 0) {
         db.query(`SELECT id FROM groupchat WHERE id = '${id}'`)
           .then(data => {
-            console.log(data);
             if (data.length === 0) {
               res.status(200).send("error");
             } else {
@@ -321,7 +317,6 @@ function getAllUsersInGroup(req,res){
 
 function deleteMember(req, res) {
   const db = req.app.get("db");
-  console.log(req.params.sub,"-",req.params.groupId)
   db.query(
     `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
   ).then(data =>{
