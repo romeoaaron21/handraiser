@@ -223,8 +223,8 @@ class ChatPage extends PureComponent {
               this.displayChatList();
             });
         } else {
-          this.displayGroupList();
-          this.getGroupConversation();
+          // this.displayGroupList();
+          // this.getGroupConversation();
         }
       })
       .then(() => {
@@ -360,7 +360,7 @@ class ChatPage extends PureComponent {
     }
   };
 
-  sendChat = (url, message, type) => {
+  sendChat = (url, message, type, sub) => {
     const months = [
       "Jan",
       "Feb",
@@ -391,22 +391,25 @@ class ChatPage extends PureComponent {
     let convo = {
       message,
       sender_sub: this.state.sub,
-      chatmate_sub: this.state.chatmateSub,
+      chatmate_sub: sub ? sub : this.state.chatmateSub,
       time: datetime,
       type: type ? type : "text",
       link: url ? url : null
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(this.state.chatmateSub, "pm");
       const chat = [
         res.data,
         this.state.sub,
         this.state.chatmateSub
       ];
       socket.emit("getNormalChat", chat);
-      socket.emit("countUnreadMessages", chat);
-    });
+      //socket.emit("countUnreadMessages", chat);
+      
+    })
+    .then(() => {
+      $("#text").focus();
+    })
     $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
   };
   sendCode = (code, mode) => {
@@ -447,7 +450,6 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(this.state.chatmateSub, "pm");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalChat", chat);
     });
@@ -491,7 +493,6 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
     });
@@ -536,10 +537,9 @@ class ChatPage extends PureComponent {
     };
     const data = api.fetch(`/api/sendGroupChat`, "post", convo);
     data.then(res => {
-      this.displayBadge(parseInt(this.state.chatmateSub), "gc");
       const chat = [res.data, this.state.sub, this.state.chatmateSub];
       socket.emit("getNormalGroupChat", chat);
-      socket.emit("countUnreadMessages", chat);
+      //socket.emit("countUnreadMessages", chat);
     });
     $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
   };

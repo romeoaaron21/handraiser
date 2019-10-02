@@ -772,8 +772,8 @@ class ChatPageBox extends Component {
                 handleClose={this.handleImageMenuClose}
               />
               <TextField
+                id="text"
                 inputRef={textInput => (this.textInput = textInput)}
-                autoFocus
                 variant="outlined"
                 multiline
                 rowsMax="4"
@@ -800,11 +800,9 @@ class ChatPageBox extends Component {
                         this.props.chatmateInfo.sub !== undefined
                       ) {
                         this.props.sendChat(null, this.textInput.value, null);
-                        this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
                         this.openPicker();
                       } else if (this.props.chatmateInfo.sub === undefined) {
                         this.props.sendChatGroup(null, null, this.textInput.value);
-                        this.props.displayBadge(this.props.chatmateInfo.id, "gc")
                         this.openPicker();
                       }
                       this.textInput.value = ""
@@ -829,37 +827,34 @@ class ChatPageBox extends Component {
                     </InputAdornment>
                   )
                 }}
-                disabled={
-                  !this.state.gc && this.props.chatmateInfo.sub === undefined
-                    ? true
-                    : false
-                }
+                // disabled={
+                //   setTimeout(()=> {
+                //     if(!this.state.gc && this.props.chatmateInfo.sub === undefined){
+                //       return true
+                //     }
+                //   },300)
+                // }
               />
               {this.state.image || this.state.document
               ? <IconButton
                 onClick={() => {
                   if (this.props.chatmateInfo.sub === undefined) {
-                    this.textInput.value = ""
+                    
                     if (this.state.image) {
                       this.handleSendImage('group');
-                    } else if (this.state.document) {
-                      this.handleSendDocument('group');
                     } else {
-                      this.props.sendChatGroup();
-                      this.props.displayBadge(this.props.chatmateInfo.id, "gc")
-                      this.openPicker();
-                    } 
+                      this.handleSendDocument('group');
+                    }
+                    this.openPicker();
+                    this.textInput.value = ""
                   }
                   else {
                     if (this.state.image) {
                       this.handleSendImage();
-                    } else if (this.state.document) {
-                      this.handleSendDocument();
                     } else {
-                      this.props.sendChat(null, this.textInput.value, null);
-                      this.props.displayBadge(this.props.chatmateInfo.sub, "pm");
-                      this.openPicker();
-                    } 
+                      this.handleSendDocument();
+                    }
+                    this.openPicker();
                     this.textInput.value = ""
                   } 
                 }}
