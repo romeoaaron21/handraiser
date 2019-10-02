@@ -321,7 +321,6 @@ function getAllUsersInGroup(req,res){
 
 function deleteMember(req, res) {
   const db = req.app.get("db");
-  console.log(req.params.sub,"-",req.params.groupId)
   db.query(
     `DELETE FROM groupmembers WHERE member_sub = '${req.params.sub}' AND groupchat_id = ${req.params.groupId}`
   ).then(data =>{
