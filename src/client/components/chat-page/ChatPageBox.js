@@ -32,17 +32,22 @@ import Gallery from './gallery/galleryDialog';
 import AceEditor from 'react-ace';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import WarningIcon from '@material-ui/icons/Warning';
-
 import 'brace/mode/javascript'
 import 'brace/theme/github'
 import 'brace/theme/dracula'
 import io from "socket.io-client";
-//File Upload
 import S3FileUpload from 'react-s3'
-//config aws s3
-const config = {
+
+const imageConfig = {
   bucketName: 'boomcamp',
-  dirName: 'handraiser/image-uploads/chat-images', /* optional */
+  dirName: 'handraiser/image-uploads/chat-images',
+  region: 'us-west-2',
+  accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
+  secretAccessKey: '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',
+}
+const documentConfig = {
+  bucketName: 'boomcamp',
+  dirName: 'handraiser/file-uploads',
   region: 'us-west-2',
   accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
   secretAccessKey: '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',
@@ -78,7 +83,7 @@ class ChatPageBox extends Component {
     this.state = {
       openMenu: null,
       image: null,
-      progress: 0,
+      progress: false ,
       assist: [],
       imageMenu: null,
       splashDialog: false,
@@ -150,13 +155,12 @@ class ChatPageBox extends Component {
       }
     }
   };
-  //ANCHOR HANDLE IMAGE
   handleSendImage = type => {
     const { image } = this.state;
+    this.setState({ progress: true })
     const imageName = this.makeid(image.name);
-    //start file upload
     S3FileUpload
-    .uploadFile(image, config)
+    .uploadFile(image, imageConfig)
     .then(data => {
       if (type === 'group'){
         this.props.sendChatGroup(data.location, "image", imageName);
@@ -164,12 +168,14 @@ class ChatPageBox extends Component {
       else {
         this.props.sendChat(data.location, imageName, "image");
       }
+    })    
+    .then(()=>{
+      this.setState({ progress: false });
+      this.setState({ image: null});
     })
     .catch((err) =>{
       console.log(err)
     })
-    //end file upload
-    this.setState({ image: null });
     this.fileInput.value = "";
   };
   makeid = (name, length = 15) => {
@@ -188,7 +194,6 @@ class ChatPageBox extends Component {
       image: null
     });
   };
-  //ANCHOR GIF UPLOAD
   uploadGif = gif => {
     this.closeSplash();
     if (this.props.chatmateInfo.sub === undefined){
@@ -234,39 +239,21 @@ class ChatPageBox extends Component {
   //ANCHOR HANDLE DOCUMENT
   handleSendDocument = type => {
     const { document } = this.state;
-
-    const uploadTask = storage.ref(`documents/${document.name}`).put(document);
-    uploadTask.on(
-      "state_changed",
-      snapshot => {
-        this.setState({
-          progress: Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          )
-        });
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        storage
-          .ref("documents")
-          .child(document.name)
-          .getDownloadURL()
-          .then(url => {
-            if (type === 'group'){
-              this.props.sendChatGroup(url, "file", document.name);
-            }
-            else {
-              this.props.sendChat(url, document.name, "file");
-            }
-            this.setState({
-              progress: 0
-            });
-          });
+    this.setState({ progress: true })
+    S3FileUpload
+    .uploadFile(document, documentConfig)
+    .then(data => {
+      if (type === 'group'){
+        this.props.sendChatGroup(data.location, "file", document.name);
       }
-    );
-    this.setState({ document: null });
+      else {
+        this.props.sendChat(data.location, document.name, "file");
+      }
+    })
+    .then(()=>{
+      this.setState({ progress: false });
+      this.setState({ document: null});
+    })
     this.documentInput.value = "";
   };
   verifyDocument = files => {
@@ -481,13 +468,12 @@ class ChatPageBox extends Component {
               <Divider />
             </div>
             {/* End Chatbox Header */}
-            {this.state.progress > 0 && (
-              <Progress
-                variant="determinate"
+            {this.state.progress
+              ? <Progress
                 style={{ height: 7 }}
-                value={this.state.progress}
               />
-            )}
+              : null
+            }
 
             {/* Main Chatbox */}
             <div
