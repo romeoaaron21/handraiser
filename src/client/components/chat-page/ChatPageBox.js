@@ -392,7 +392,7 @@ class ChatPageBox extends Component {
         >
           <div style={{ height: "92%" }}>
             {/* Chatbox Header */}
-            <div style={{ height: "11%" }}>
+            <div>
               <div className={classes.chatBoxHeader}>
                 <span
                   style={{
@@ -870,7 +870,8 @@ class ChatPageBox extends Component {
             open={this.state.splashDialog}
             handleClose={this.closeSplash}
           />
-          <Emoji 
+          <Emoji
+            openPicker={this.openPicker}
             anchorEl={this.state.emoji} 
             handleEmoji={this.handleEmoji} 
           />
