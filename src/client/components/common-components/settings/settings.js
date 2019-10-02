@@ -36,11 +36,19 @@ import api from "./../../../services/fetchApi";
 //LOADER
 import Loader from "../loader/loader";
 
-//Firebase
-import { storage } from "../upload-photo/firebase/firebase";
-
 import DeleteClass from "./modal/delete";
 import AddCoMentor from "./modal/addCoMentor";
+
+//File Upload
+import S3FileUpload from "react-s3";
+//config AMAZON S3
+const config = {
+  bucketName: "boomcamp",
+  dirName: "handraiser/image-uploads/class-headers" /* optional */,
+  region: "us-west-2",
+  accessKeyId: "AKIAQQHQFF5EPNACIXE3",
+  secretAccessKey: "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"
+};
 
 const styles = theme => ({
   root: {
@@ -354,15 +362,14 @@ class Settings extends PureComponent {
   delete = (id, classHeader) => {
     api.fetch(`/api/cohorts/${id}/delete`, "post").then(() => {
       // Create a reference to the file to delete
+      var filename = classHeader.split("/");
       if (classHeader !== null) {
-        var desertRef = storage.refFromURL(classHeader);
-
-        desertRef
-          .delete()
-          .then(function() {})
-          .catch(function(error) {});
+        S3FileUpload.deleteFile(filename[6], config)
+          .then(response => {
+            window.location.href = `/cohorts`;
+          })
+          .catch(err => console.error(err));
       }
-      window.location.href = `/cohorts`;
     });
   };
 

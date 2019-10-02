@@ -25,9 +25,6 @@ import SearchImageIcon from "../../../images/searchImage.png";
 //API
 import api from "../../../services/fetchApi";
 
-//Firebase
-import { storage } from "./firebase/firebase";
-
 //Loader
 import Loader from "../loader/loader";
 
@@ -36,6 +33,17 @@ import {
   extractImageFileExtensionFromBase64,
   image64toCanvasRef
 } from "./ReusableUtils";
+
+//File Upload
+import S3FileUpload from "react-s3";
+//config AMAZON S3
+const config = {
+  bucketName: "boomcamp",
+  dirName: "handraiser/image-uploads/class-headers" /* optional */,
+  region: "us-west-2",
+  accessKeyId: "AKIAQQHQFF5EPNACIXE3",
+  secretAccessKey: "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"
+};
 
 const styles = theme => ({
   root: {
@@ -558,45 +566,28 @@ class UploadPhoto extends React.Component {
       const { imgSrcExt } = this.state;
       const imageData64 = canvasRef.toDataURL("image/" + imgSrcExt);
 
-      const myFilename = "previewFile." + imgSrcExt;
+      const myFilename = `${this.props.cohortId}.` + imgSrcExt;
 
       // file to be uploaded
       const myNewCroppedFile = base64StringtoFile(imageData64, myFilename);
 
-      const uploadTask = storage
-        .ref(`class-header/${this.props.cohortId}`)
-        .put(myNewCroppedFile);
-      uploadTask.on(
-        "state_changed",
-        snapshot => {
-          // progrss function ....
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          this.setState({ progress });
-        },
-        error => {
-          // error function ....
-          console.log(error);
-        },
-        () => {
-          // complete function ....
-          storage
-            .ref("class-header")
-            .child(`${this.props.cohortId}`)
-            .getDownloadURL()
-            .then(url => {
-              this.setState({ imgUrl: url });
-              api
-                .fetch(`/upload/${this.props.cohortId}`, "POST", { url })
-                .then(res => {
-                  this.setState({ imageURL: `${res.file}` });
-                  this.props.loadStateFn();
-                  this.props.uploadPhotoFn();
-                });
+      //start file upload
+      S3FileUpload.uploadFile(myNewCroppedFile, config)
+        .then(data => {
+          var url = data.location;
+          this.setState({ imgUrl: url });
+          api
+            .fetch(`/upload/${this.props.cohortId}`, "POST", { url })
+            .then(res => {
+              this.setState({ imageURL: `${res.file}` });
+              this.props.loadStateFn();
+              this.props.uploadPhotoFn();
             });
-        }
-      );
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      //end file upload
     }
   };
 
