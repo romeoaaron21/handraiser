@@ -68,16 +68,16 @@ class ChatPage extends PureComponent {
     //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
       if (conversation[1] === this.state.sub) {
-        this.displayChatList();
+        // this.displayChatList();
         this.setState({ senderText: "" });
         this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
-        this.displayChatList();
+        // this.displayChatList();
         this.setState({ chatmateText: "" });
         this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
-        this.displayChatList();
+        // this.displayChatList();
         this.getConversation();
       }
     });
