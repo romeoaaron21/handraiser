@@ -67,7 +67,7 @@ handraiser
 
 ## Administrator
 ------
-To access administrator privileges, press `Ctrl + Shift + Alt + PgUp` on the sign-in page, then login using:
+To access administrator privileges, press `Ctrl + Shift + Alt + PgUp` on the sign-in page, then login using or go to http://boom-handraiser.com:3000/admin/sign-in:
 ```
     username: admin
     password: Admin123
