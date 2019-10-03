@@ -3,11 +3,11 @@
 
 * Frontend Dependencies (inside the `app` directory)
 ```
-    $ cd app & yarn install
+    $ cd app && yarn install
 ```    
 * Backend Dependencies (inside the `server` directory)
 ```
-    $ cd server & yarn install
+    $ cd server && yarn install
 ```
 * Nodemon:
 ```
