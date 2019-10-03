@@ -71,7 +71,7 @@ class ChatPage extends PureComponent {
         if(conversation[3] === 'compose'){
            this.displayChatList();
         }
-        this.setState({ senderText: "" });
+        this.setState({ senderText: "", chatmateSub: conversation[2], newChatmateSub:conversation[2]});
         this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
         if(conversation[3] === 'compose'){
