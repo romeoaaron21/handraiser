@@ -64,7 +64,9 @@ class Splash extends React.Component {
       trending: [],
       query: " ",
       showTrend: true,
-      results: []
+      results: [],
+      countPrev: 0,
+      noMoreGif: false
     };
   }
   componentDidMount = () => {
@@ -126,6 +128,13 @@ class Splash extends React.Component {
         this.setState({
           results: this.state.results.concat(res.data.data)
         });
+        if (this.state.countPrev === this.state.results.length) {
+          this.setState({ noMoreGif: true });
+        } else {
+          this.setState({
+            countPrev: this.state.results.length,
+          });
+        }
       })
       .catch(err => {
         console.log(err);
@@ -238,7 +247,7 @@ class Splash extends React.Component {
                   />
                 </div>
               ))}
-              {this.state.results.length === 9
+              {this.state.results.length >= 9 && !this.state.noMoreGif
               ? <div
                 className={classes.gifItem}
                 style={{ cursor: "pointer", height: "309px" }}
