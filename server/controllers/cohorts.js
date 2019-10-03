@@ -72,7 +72,9 @@ function deleteCohort(req, res) {
   const { classHeader } = req.body;
 
   db.query(
-    `DELETE FROM member WHERE cohort_id = ${id};
+    `
+    DELETE FROM chat WHERE cohort_id = '${id}';
+    DELETE FROM member WHERE cohort_id = ${id};
     DELETE FROM cohorts WHERE id = ${id};`
   )
     .then(cohort => {
