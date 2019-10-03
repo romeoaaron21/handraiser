@@ -68,19 +68,26 @@ class ChatPage extends PureComponent {
     //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
       if (conversation[1] === this.state.sub) {
-        // this.displayChatList();
+        if(conversation[3] === 'compose'){
+           this.displayChatList();
+        }
         this.setState({ senderText: "" });
         this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
-        // this.displayChatList();
+        if(conversation[3] === 'compose'){
+          this.displayChatList();
+       }
         this.setState({ chatmateText: "" });
         this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
-        // this.displayChatList();
+        if(conversation[3] === 'compose'){
+          this.displayChatList();
+       }
         this.getConversation();
       }
     });
+
     //END OF UPDATED FOR FASTER CHATTING
 
     socket.on("setStudentChatText", chatText => {
@@ -377,7 +384,7 @@ class ChatPage extends PureComponent {
     }
   };
 
-  sendChat = (url, message, type, sub) => {
+  sendChat = (url, message, type, sub, compose) => {
     const months = [
       "Jan",
       "Feb",
@@ -416,7 +423,7 @@ class ChatPage extends PureComponent {
     const data = api.fetch(`/api/sendStudentChat`, "post", convo);
     data
       .then(res => {
-        const chat = [res.data, this.state.sub, sub ? sub : this.state.chatmateSub];
+        const chat = [res.data, this.state.sub, sub ? sub : this.state.chatmateSub, compose];
         socket.emit("getNormalChat", chat);
         //socket.emit("countUnreadMessages", chat);
       })

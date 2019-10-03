@@ -220,11 +220,14 @@ class ChatPageList extends PureComponent {
                     </IconButton>
                   </Tooltip>
                 ) : (
+                  this.props.userInfo.privilege === 'mentor' ?
                   <Tooltip title="Create Group" placement="left">
                     <IconButton onClick={this.handleClickOpenGroup}>
                       <GroupAddIcon />
                     </IconButton>
                   </Tooltip>
+                  :
+                  null
                 )}
               </Hidden>
 
