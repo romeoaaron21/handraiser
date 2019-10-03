@@ -238,7 +238,7 @@ class Splash extends React.Component {
                   />
                 </div>
               ))}
-              {this.state.results.length <= 9
+              {this.state.results.length === 9
               ? <div
                 className={classes.gifItem}
                 style={{ cursor: "pointer", height: "309px" }}
