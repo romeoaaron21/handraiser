@@ -546,9 +546,10 @@ class ChatBox extends PureComponent {
                 item
                 className={`${classes.chatContentWrapper} ${classes.scrollBar}`}
                 style={
-                  this.props.privileged === "mentor"
-                    ? { minHeight: "490px" }
-                    : { minHeight: "482px", maxHeight: "443px" }
+                  this.props.privileged === "mentor" &&
+                  this.state.assist.sub === this.props.chatmateInfo.sub
+                    ? { minHeight: "460px" }
+                    : { minHeight: "488px", maxHeight: "443px" }
                 }
               >
                 {this.props.conversation.map((convo, i) =>
