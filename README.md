@@ -49,7 +49,7 @@ handraiser
     CREATE DATABASE handraiser;
 ```
 #### Step 4
-  * From the root directory of the application, run this command in the terminal:
+  * From the `server` directory of the application, run this command in the terminal:
 ```
     $ yarn migrate up
 ```
