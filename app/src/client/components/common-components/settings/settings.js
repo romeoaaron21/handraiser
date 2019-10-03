@@ -362,13 +362,15 @@ class Settings extends PureComponent {
   delete = (id, classHeader) => {
     api.fetch(`/api/cohorts/${id}/delete`, "post").then(() => {
       // Create a reference to the file to delete
-      var filename = classHeader.split("/");
       if (classHeader !== null) {
+        var filename = classHeader.split("/");
         S3FileUpload.deleteFile(filename[6], config)
           .then(response => {
             window.location.href = `/cohorts`;
           })
           .catch(err => console.error(err));
+      } else {
+        window.location.href = `/cohorts`;
       }
     });
   };
