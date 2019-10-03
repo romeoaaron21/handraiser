@@ -6,7 +6,6 @@ const express = require("express");
 const massive = require("massive");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const fileUpload = require("express-fileupload");
 const admin = require("./controllers/admin.js");
 const list = require("./controllers/list.js");
 const user = require("./controllers/user.js");
@@ -32,9 +31,6 @@ massive({
   app.use(express.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
-
-  //UPLOAD IMAGES
-  app.use(fileUpload());
 
   //WEBSOCKET START
   const server = http.Server(app);
