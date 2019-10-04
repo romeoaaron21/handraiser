@@ -51,10 +51,7 @@ class ChatPage extends PureComponent {
       refreshChatmate: false,
       notInGroup: false,
       groupMembers: [],
-      //gc convo slice
       groupShow: 7,
-      pmShow: 7
-      //gc convo slice end
     };
   }
 

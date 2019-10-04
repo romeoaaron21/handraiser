@@ -96,7 +96,6 @@ class ChatPageBox extends Component {
       openSnippet: false,
       anchorEl: null,
       openEditGroup: false,
-      gc: false,
       //group
       groupId: null,
       userNotInGroup: [],
@@ -363,8 +362,9 @@ class ChatPageBox extends Component {
 
   render() {
     const { classes } = this.props;
+    let gcConver;
     if (this.state.gc === false) {
-      this.props.groupListInfo.map(gc => {
+      this.props.groupListInfo.forEach(gc => {
         if (gc.id === this.props.chatmateInfo.id) {
           this.setState({ gc: true });
         }
@@ -373,6 +373,12 @@ class ChatPageBox extends Component {
     setTimeout(() => {
         this.setState({chatmate:true})
     }, 3000)
+    if (this.props.groupConversation.length >= 8){
+      gcConver = [...this.props.groupConversation].slice((this.props.groupConversation.length - 1) - this.props.groupShow, this.props.groupConversation.length)
+    }
+    else {
+      gcConver = this.props.groupConversation
+    }
     return (
       <Grid item md={6} xs={8} style={{ minHeight: "800px" }}>
         <ToastContainer
@@ -500,9 +506,11 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                {(this.props.chatmateInfo.sub === undefined && this.props.groupConversation.length > 0) && (this.props.groupConversation.length - 1 !== this.props.groupShow )
+                {(this.props.chatmateInfo.sub === undefined && this.props.groupConversation.length >= 8) && (this.props.groupConversation.length - 1 !== this.props.groupShow )
                ? <div id="seeMore" style={{display:'flex', justifyContent:'center', cursor:'pointer'}} onClick={this.props.showMoreGroup}>
+                  <Typography variant="overline">
                   Show more
+                  </Typography>
                 </div>
                 : null
                 }
@@ -574,7 +582,7 @@ class ChatPageBox extends Component {
                     ) : null
                   )
                 ) : this.state.gc ? (
-                  [...this.props.groupConversation].slice((this.props.groupConversation.length - 1) - this.props.groupShow, this.props.groupConversation.length).map((gcConvo, i) =>
+                    gcConver.map((gcConvo, i) =>
                     this.props.chatmateInfo.id === gcConvo.groupchat_id ? (
                       //ANCHOR GC CHATBOX
                       <React.Fragment key={i}>

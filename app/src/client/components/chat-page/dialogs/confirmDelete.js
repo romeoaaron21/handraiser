@@ -8,11 +8,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 class ConfirmDelete extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-
     render() {
         return (
             <div>
