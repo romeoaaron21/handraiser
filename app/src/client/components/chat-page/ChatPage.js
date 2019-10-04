@@ -310,7 +310,7 @@ class ChatPage extends PureComponent {
 
       // this.getGroupConversation();
       // this.displayChatList();
-      // this.displayGroupMembers();
+      this.displayGroupMembers();
     } else if (this.state.refreshChatmate) {
       if (chatmateSub.length > 15) {
         const data = api.fetch(
