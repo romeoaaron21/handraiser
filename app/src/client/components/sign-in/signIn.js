@@ -83,69 +83,41 @@ class SignInSide extends Component {
   openSignInGoogle = key => this.setState({ signInGoogleDialog: true });
   closeSignInGoogle = () => this.setState({ signInGoogleDialog: false });
 
+  //UNCOMMENT THIS WHEN DEPLOY
   responseGoogleStudent = google => {
-    const user = decode(google.tokenId);
-    const data = {
-      first_name: user.given_name,
-      last_name: user.family_name,
-      sub: user.sub,
-      privilege: "student",
-      avatar: user.picture
-    };
+    if (google.expectedDomain === "boom.camp") {
+      toast.error("Sorry, invalid email!", {
+        hideProgressBar: true,
+        draggable: false
+      });
+    } else {
+      const user = decode(google.tokenId);
+      const data = {
+        first_name: user.given_name,
+        last_name: user.family_name,
+        sub: user.sub,
+        privilege: "student",
+        avatar: user.picture
+      };
 
-    api.fetch("/sign-in", "post", data).then(res => {
-      console.log(res.data.user);
-      if (res.data.user.privilege !== "student") {
-        toast.error("Sorry, you're not a student", {
-          hideProgressBar: true,
-          draggable: false
-        });
-      } else {
-        api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
-          socket.emit("active", res.data.user);
-          socket.emit("activeChat", res.data.user);
-          localStorage.setItem("id_token", google.tokenId);
-          window.location.href = "/cohorts";
-        });
-      }
-    });
+      api.fetch("/sign-in", "post", data).then(res => {
+        console.log(res.data.user);
+        if (res.data.user.privilege !== "student") {
+          toast.error("Sorry, you're not a student", {
+            hideProgressBar: true,
+            draggable: false
+          });
+        } else {
+          api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
+            socket.emit("active", res.data.user);
+            socket.emit("activeChat", res.data.user);
+            localStorage.setItem("id_token", google.tokenId);
+            window.location.href = "/cohorts";
+          });
+        }
+      });
+    }
   };
-
-  // UNCOMMENT THIS WHEN DEPLOY
-  // responseGoogleStudent = google => {
-  //   if (google.expectedDomain === "boom.camp") {
-  //     toast.error("Sorry, invalid email!", {
-  //       hideProgressBar: true,
-  //       draggable: false
-  //     });
-  //   } else {
-  //     const user = decode(google.tokenId);
-  //     const data = {
-  //       first_name: user.given_name,
-  //       last_name: user.family_name,
-  //       sub: user.sub,
-  //       privilege: "student",
-  //       avatar: user.picture
-  //     };
-
-  //     api.fetch("/sign-in", "post", data).then(res => {
-  //       console.log(res.data.user);
-  //       if (res.data.user.privilege !== "student") {
-  //         toast.error("Sorry, you're not a student", {
-  //           hideProgressBar: true,
-  //           draggable: false
-  //         });
-  //       } else {
-  //         api.fetch(`/status/${data.sub}/active`, "patch").then(res => {
-  //           socket.emit("active", res.data.user);
-  //           socket.emit("activeChat", res.data.user);
-  //           localStorage.setItem("id_token", google.tokenId);
-  //           window.location.href = "/cohorts";
-  //         });
-  //       }
-  //     });
-  //   }
-  // };
 
   loginAdmin = e => {
     this.Auth.login(this.state.usernameAdmin, this.state.passwordAdmin).then(
