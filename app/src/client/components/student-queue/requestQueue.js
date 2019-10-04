@@ -209,7 +209,7 @@ class requestQueue extends Component {
             align="center"
             className={classes.responsiveHeader}
           >
-            Queue Students
+            Student Requests
           </Typography>
         </Paper>
         <Paper
@@ -271,7 +271,7 @@ class requestQueue extends Component {
                               <div
                                 className={`${classes.queueaction} actionShow`}
                               >
-                                <Tooltip title="See Details" placement="top">
+                                <Tooltip title="Show Concern" placement="top">
                                   <IconButton
                                     className={classes.responsive}
                                     onClick={this.handleChange(member.id)}
