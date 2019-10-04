@@ -36,7 +36,7 @@ function sendStudentChat(req, res) {
       link: link
     })
     .then(() => {
-      db.query(`SELECT * from chat ORDER BY id ASC`).then(chats => {
+      db.query(`SELECT * FROM chat WHERE sender_id='${sender_sub}' OR chatmate_id='${sender_sub}' ORDER BY id ASC`).then(chats => {
         res.status(201).json(chats);
       });
     });

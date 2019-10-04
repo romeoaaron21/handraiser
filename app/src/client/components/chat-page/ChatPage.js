@@ -71,20 +71,21 @@ class ChatPage extends PureComponent {
         if(conversation[3] === 'compose'){
            this.displayChatList();
         }
-        this.setState({ senderText: "", chatmateSub: conversation[2], newChatmateSub:conversation[2]});
-        this.getConversation();
+        this.setState({ senderText: "", chatmateSub: conversation[2], newChatmateSub:conversation[2], conversation:[...conversation[0]]});
+        // this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
         if(conversation[3] === 'compose'){
           this.displayChatList();
        }
-        this.setState({ chatmateText: "" });
-        this.getConversation();
+        this.setState({ chatmateText: "", conversation:[...conversation[0]] });
+        // this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
         if(conversation[3] === 'compose'){
           this.displayChatList();
        }
-        this.getConversation();
+       this.setState({conversation:[...conversation[0]]})
+        // this.getConversation();
       }
     });
 
@@ -114,9 +115,9 @@ class ChatPage extends PureComponent {
       this.setState({ groupConversation: conversation[0] });
 
       if (conversation[1] === this.state.sub) {
-        this.setState({ senderText: "" });
+        this.setState({ senderText: ""})
       } else if (conversation[2] === this.state.chatmateSub) {
-        this.setState({ chatmateText: "" });
+        this.setState({ chatmateText: ""});
       }
     });
 

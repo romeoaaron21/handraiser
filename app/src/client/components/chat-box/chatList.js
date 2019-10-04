@@ -39,7 +39,7 @@ const styles = theme => ({
     maxHeight: "60px"
   },
   chatList: {
-    maxHeight: "380px",
+    maxHeight: "248px",
     minHeight: 248,
     boxShadow:
       "0 1px 2px 0 rgba(60,64,67,0.302), 0 2px 6px 2px rgba(60,64,67,0.149)",

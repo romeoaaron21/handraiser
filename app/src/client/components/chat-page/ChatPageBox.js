@@ -482,7 +482,7 @@ class ChatPageBox extends Component {
               className={classes.scrollBar}
             >
               <div className={classes.chatBoxContainer}>
-                {(!this.state.chatmate &&  this.props.chatmateInfo.sub === undefined && this.props.groupConversation.length > 0) && (this.props.groupConversation.length - 1 !== this.props.groupShow )
+                {(this.props.chatmateInfo.sub === undefined && this.props.groupConversation.length > 0) && (this.props.groupConversation.length - 1 !== this.props.groupShow )
                ? <div id="seeMore" style={{display:'flex', justifyContent:'center', cursor:'pointer'}} onClick={this.props.showMoreGroup}>
                   Show more
                 </div>
