@@ -85,7 +85,7 @@ class SignInSide extends Component {
 
   // UNCOMMENT THIS WHEN DEPLOY
   responseGoogleStudent = google => {
-    if(google.expectedDomain === 'boom.camp') {
+    if (google.expectedDomain === "boom.camp") {
       toast.error("Sorry, invalid email!", {
         hideProgressBar: true,
         draggable: false
@@ -304,6 +304,11 @@ class SignInSide extends Component {
               helperText={
                 this.state.passwordAdmin === "" ? "Password is required" : " "
               }
+              onKeyUp={e => {
+                if (e.key === "Enter") {
+                  this.loginAdmin();
+                }
+              }}
               InputLabelProps={{ classes: { root: classes.inputLabel } }}
               InputProps={{ classes: { root: classes.inputField } }}
             />
