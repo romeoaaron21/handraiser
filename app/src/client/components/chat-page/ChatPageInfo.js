@@ -183,14 +183,14 @@ class ChatPageInfo extends Component {
                           convo.chat_type === 'image' && ((convo.sender_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.chatmate_id) ||
                             (convo.chatmate_id === this.props.userInfo.sub && this.props.chatmateInfo.sub === convo.sender_id))
                             ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
-                              <img src={convo.link} />
+                              <img src={convo.link} alt=""/>
                             </GridListTile>
                             : null
                         ))
                         : this.props.groupConversation.map(convo => (
                           convo.chat_type === 'image' && this.props.chatmateInfo.id === convo.groupchat_id
                             ? <GridListTile style={{ cursor: 'pointer' }} cols={1} onClick={() => this.openGallery(convo.id)}>
-                              <img src={convo.link} />
+                              <img src={convo.link} alt=""/>
                             </GridListTile>
                             : null
                         ))

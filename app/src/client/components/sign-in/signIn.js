@@ -85,12 +85,12 @@ class SignInSide extends Component {
 
   // UNCOMMENT THIS WHEN DEPLOY
   responseGoogleStudent = google => {
-    if (google.expectedDomain === "boom.camp") {
+    /*if (google.expectedDomain === "boom.camp") {
       toast.error("Sorry, invalid email!", {
         hideProgressBar: true,
         draggable: false
       });
-    } else {
+    } else {*/
       const user = decode(google.tokenId);
       const data = {
         first_name: user.given_name,
@@ -116,7 +116,7 @@ class SignInSide extends Component {
           });
         }
       });
-    }
+    //}
   };
 
   loginAdmin = e => {
@@ -184,7 +184,7 @@ class SignInSide extends Component {
                     <Grid item xs={12}>
                       <GoogleLogin
                         clientId={process.env.REACT_APP_.GOOGLE_CLIENT_ID}
-                        hostedDomain="boom.camp"
+                        //hostedDomain="boom.camp"
                         onSuccess={this.responseGoogleStudent}
                         onFailure={this.responseGoogleStudent}
                         cookiePolicy={"single_host_origin"}
