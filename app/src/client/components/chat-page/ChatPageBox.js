@@ -800,12 +800,18 @@ class ChatPageBox extends Component {
                             ? true
                             : false
                         }
+                
                       >
                         <InsertEmoticon />
                       </IconButton>
                     </InputAdornment>
                   )
                 }}
+                disabled={
+                  !this.state.gc && this.props.chatmateInfo.sub === undefined
+                    ? true
+                    : false
+                }
                 // disabled={
                 //   setTimeout(()=> {
                 //     if(!this.state.gc && this.props.chatmateInfo.sub === undefined){
