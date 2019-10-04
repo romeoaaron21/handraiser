@@ -818,7 +818,6 @@ class ChatPageBox extends Component {
                             ? true
                             : false
                         }
-                
                       >
                         <InsertEmoticon />
                       </IconButton>
