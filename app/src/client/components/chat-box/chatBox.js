@@ -240,13 +240,17 @@ class ChatBox extends PureComponent {
       const currentFileSize = currentFile.size;
 
       if (currentFileSize > imageMaxSize) {
-        alert(
-          "This file is not allowed. " + currentFileSize + " bytes is too large"
-        );
+        toast.error("This file is too large!", {
+          hideProgressBar: true,
+          draggable: false
+        });
         return false;
       }
       if (!acceptedFileTypesArray.includes(currentFileType)) {
-        alert("This file is not allowed. Only images are allowed.");
+        toast.error("This file type is not allowed", {
+          hideProgressBar: true,
+          draggable: false
+        });
         return false;
       }
       return true;

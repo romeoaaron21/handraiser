@@ -37,6 +37,7 @@ import 'brace/theme/github'
 import 'brace/theme/dracula'
 import io from "socket.io-client";
 import S3FileUpload from 'react-s3'
+import { ToastContainer, toast } from "react-toastify";
 
 const imageConfig = {
   bucketName: 'boomcamp',
@@ -129,13 +130,17 @@ class ChatPageBox extends Component {
       const currentFileSize = currentFile.size;
 
       if (currentFileSize > imageMaxSize) {
-        alert(
-          "This file is not allowed. " + currentFileSize + " bytes is too large"
-        );
+        toast.error("This file is too large!", {
+          hideProgressBar: true,
+          draggable: false
+        });
         return false;
       }
       if (!acceptedFileTypesArray.includes(currentFileType)) {
-        alert("This file is not allowed. Only images are allowed.");
+        toast.error("This file type is not allowed", {
+          hideProgressBar: true,
+          draggable: false
+        });
         return false;
       }
       return true;
@@ -265,13 +270,22 @@ class ChatPageBox extends Component {
 
       const result = regex.test(currentFileType);
       if (currentFileSize > imageMaxSize) {
-        alert(
-          "This file is not allowed. " + currentFileSize + " bytes is too large"
+        toast.error(
+          "This file is not allowed. " +
+            currentFileSize +
+            " bytes is too large",
+          {
+            hideProgressBar: true,
+            draggable: false
+          }
         );
         return false;
       }
       if (!result && !acceptedDocumentsArray.includes(currentFileType)) {
-        alert("This file type is not allowed");
+        toast.error("This file type is not allowed", {
+          hideProgressBar: true,
+          draggable: false
+        });
         return false;
       }
       return true;
@@ -361,6 +375,10 @@ class ChatPageBox extends Component {
     }, 3000)
     return (
       <Grid item md={6} xs={8} style={{ minHeight: "800px" }}>
+        <ToastContainer
+          enableMultiContainer
+          position={toast.POSITION.TOP_RIGHT}
+        />
         <Paper
           style={{
             height: "800px",
