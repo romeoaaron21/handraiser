@@ -22,7 +22,7 @@ import AuthService from "../../auth/AuthService";
 import ClassroomBg from "../../images/classroomBg.jpg";
 import ChatList from "../chat-box/chatList";
 import ChatBox from "../chat-box/chatBox";
-import $ from 'jquery';
+import $ from "jquery";
 
 //end of added chatBox
 const styles = theme => ({
@@ -189,7 +189,7 @@ class Student extends PureComponent {
       })
       .then(() => {
         this.displayBadge();
-        $("#focus").focus()
+        $("#focus").focus();
       });
   };
 
@@ -209,7 +209,7 @@ class Student extends PureComponent {
       }
     }
   };
-  
+
   //ANCHOR send chat
   sendChat = (url, type, message) => {
     const months = [
@@ -251,7 +251,10 @@ class Student extends PureComponent {
     const data = api.fetch(`/api/sendChat`, "post", convo);
     this.setState({ value: this.state.sub });
     data.then(res => {
-      $("#scrollDiv").animate({ scrollTop: $('#scrollDiv').prop("scrollHeight")}, 1000);      
+      $("#scrollDiv").animate(
+        { scrollTop: $("#scrollDiv").prop("scrollHeight") },
+        1000
+      );
       socket.emit("sendChat", {
         chat: res.data,
         senderSub: this.state.sub,
@@ -259,7 +262,6 @@ class Student extends PureComponent {
       });
     });
     socket.emit("displayBadge");
-    
   };
   sendCode = (code, type) => {
     const months = [
@@ -898,6 +900,7 @@ class Student extends PureComponent {
                   <React.Fragment>
                     <Grid item xs={12} sm={8}>
                       <ChatBox
+                        studentReason={this.state.studentsReason}
                         cohort_id={this.props.cohort_id}
                         sendChat={this.sendChat}
                         handleChat={this.setChatText}

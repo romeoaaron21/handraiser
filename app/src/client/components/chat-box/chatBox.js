@@ -48,28 +48,27 @@ import Emoji from "./plugins/emoji";
 //gallery
 import Gallery from "../chat-page/gallery/galleryDialog";
 
-import Snippet from '../chat-page/snippet/snippet';
-import AceEditor from 'react-ace';
-import 'brace/mode/javascript'
-import 'brace/theme/github'
-import 'brace/theme/dracula'
-import S3FileUpload from 'react-s3'
+import Snippet from "../chat-page/snippet/snippet";
+import AceEditor from "react-ace";
+import "brace/mode/javascript";
+import "brace/theme/github";
+import "brace/theme/dracula";
+import S3FileUpload from "react-s3";
 
 const imageConfig = {
-  bucketName: 'boomcamp',
-  dirName: 'handraiser/image-uploads/chat-images',
-  region: 'us-west-2',
-  accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
-  secretAccessKey: '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',
-}
+  bucketName: "boomcamp",
+  dirName: "handraiser/image-uploads/chat-images",
+  region: "us-west-2",
+  accessKeyId: "AKIAQQHQFF5EPNACIXE3",
+  secretAccessKey: "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"
+};
 const documentConfig = {
-  bucketName: 'boomcamp',
-  dirName: 'handraiser/file-uploads',
-  region: 'us-west-2',
-  accessKeyId: 'AKIAQQHQFF5EPNACIXE3',
-  secretAccessKey: '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',
-}
-
+  bucketName: "boomcamp",
+  dirName: "handraiser/file-uploads",
+  region: "us-west-2",
+  accessKeyId: "AKIAQQHQFF5EPNACIXE3",
+  secretAccessKey: "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"
+};
 
 const StyledMenu = withStyles({
   paper: {
@@ -277,25 +276,24 @@ class ChatBox extends PureComponent {
   handleSendImage = priv => {
     const { image } = this.state;
     const imageName = this.makeid(image.name);
-    this.setState({ progress: true })
-    S3FileUpload
-    .uploadFile(image, imageConfig)
-    .then(data => {
-      if (priv === "student") {
-        this.props.sendChat(data.location, "image", imageName);
-        this.studentInput.value = ""
-      } else {
-        this.props.sendChatM(data.location, "image", imageName);
-        this.mentorInput.value = ""
-      }
-    })
-    .then(()=>{
-      this.setState({ progress: false });
-      this.setState({ image: null});
-    })
-    .catch((err) =>{
-      console.log(err)
-    })
+    this.setState({ progress: true });
+    S3FileUpload.uploadFile(image, imageConfig)
+      .then(data => {
+        if (priv === "student") {
+          this.props.sendChat(data.location, "image", imageName);
+          this.studentInput.value = "";
+        } else {
+          this.props.sendChatM(data.location, "image", imageName);
+          this.mentorInput.value = "";
+        }
+      })
+      .then(() => {
+        this.setState({ progress: false });
+        this.setState({ image: null });
+      })
+      .catch(err => {
+        console.log(err);
+      });
     this.fileInput.value = "";
   };
   makeid = (name, length = 15) => {
@@ -365,22 +363,21 @@ class ChatBox extends PureComponent {
   };
   handleSendDocument = priv => {
     const { document } = this.state;
-    this.setState({ progress: true })
-    S3FileUpload
-    .uploadFile(document, documentConfig)
-    .then(data => {
-      if (priv === "student") {
-        this.props.sendChat(data.location, "file", document.name);
-        this.studentInput.value = ""
-      } else {
-        this.props.sendChatM(data.location, "file", document.name);
-        this.mentorInput.value = ""
-      }
-    })
-    .then(()=>{
-      this.setState({ progress: false });
-      this.setState({ document: null});
-    })
+    this.setState({ progress: true });
+    S3FileUpload.uploadFile(document, documentConfig)
+      .then(data => {
+        if (priv === "student") {
+          this.props.sendChat(data.location, "file", document.name);
+          this.studentInput.value = "";
+        } else {
+          this.props.sendChatM(data.location, "file", document.name);
+          this.mentorInput.value = "";
+        }
+      })
+      .then(() => {
+        this.setState({ progress: false });
+        this.setState({ document: null });
+      });
     this.documentInput.value = "";
   };
   verifyDocument = files => {
@@ -502,12 +499,7 @@ class ChatBox extends PureComponent {
             </StyledMenu>
           </Box>
         </Paper>
-        {this.state.progress
-          ? <Progress
-            style={{ height: 7 }}
-            />
-          : null
-        }
+        {this.state.progress ? <Progress style={{ height: 7 }} /> : null}
 
         <Paper
           elevation={0}
@@ -531,8 +523,8 @@ class ChatBox extends PureComponent {
             {this.props.privileged === "mentor" &&
             this.state.assist.sub === this.props.chatmateInfo.sub ? (
               <Paper className={classes.helpStatus}>
-                <Typography variant="subtitle2">
-                  Currently Helping....
+                <Typography variant="subtitle2" style={{ maxHeight: "57px" }}>
+                  Student Reason: {this.props.helpingStudent.reason}
                 </Typography>
               </Paper>
             ) : null}

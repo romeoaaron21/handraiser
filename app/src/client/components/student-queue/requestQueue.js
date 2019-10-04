@@ -16,6 +16,12 @@ import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import KeyBoardDown from "@material-ui/icons/KeyboardArrowDown";
 import EmptyQueue from "../../images/student-svg.png";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 import api from "../../services/fetchApi";
 
@@ -170,7 +176,9 @@ class requestQueue extends Component {
     super();
     this.state = {
       expanded: " ",
-      assist: []
+      assist: [],
+      showRequestDialog: false,
+      showRequestContent: ""
     };
   }
 
@@ -230,55 +238,39 @@ class requestQueue extends Component {
                     parseInt(this.props.cohort_id) ===
                       parseInt(member.cohort_id) ? (
                       <Grid item style={{ width: "100%" }} key={member.id}>
-                        <ExpansionPanel
-                          expanded={this.state.expanded === member.id}
-                        >
-                          <ExpansionPanelSummary>
-                            <ListItemAvatar>
-                              <Avatar
-                                src={member.avatar}
-                                className={classes.userAvatar}
-                              />
-                            </ListItemAvatar>
-                            <ListItemText>
-                              <Typography
-                                variant="h6"
-                                component="h3"
-                                className={classes.queueName}
-                              >
-                                {member.first_name.charAt(0).toUpperCase() +
-                                  member.first_name.slice(1)}{" "}
-                                {member.last_name.charAt(0).toUpperCase() +
-                                  member.last_name.slice(1)}
-                              </Typography>
-                            </ListItemText>
-
-                            {member.privilege === "student" &&
-                            member.sub === this.props.sub ? (
-                              <Tooltip title="Cancel Request" placement="top">
-                                <IconButton
-                                  className={classes.responsive}
-                                  onClick={() =>
-                                    this.props.removeStudentRequest(member.id)
-                                  }
-                                >
-                                  <Delete className={classes.actionIcon} />
-                                </IconButton>
-                              </Tooltip>
-                            ) : null}
-
-                            {this.props.priv === "mentor" ? (
-                              <div
-                                className={`${classes.queueaction} actionShow`}
-                              >
-                                <Tooltip title="Show Concern" placement="top">
-                                  <IconButton
-                                    className={classes.responsive}
-                                    onClick={this.handleChange(member.id)}
+                        {member.sub === this.props.sub ? (
+                          <Tooltip
+                            title="Show Request"
+                            placement="right"
+                            onClick={() =>
+                              this.setState({
+                                showRequestDialog: true,
+                                showRequestContent: member.reason
+                              })
+                            }
+                          >
+                            <ExpansionPanel
+                              expanded={this.state.expanded === member.id}
+                            >
+                              <ExpansionPanelSummary>
+                                <ListItemAvatar>
+                                  <Avatar
+                                    src={member.avatar}
+                                    className={classes.userAvatar}
+                                  />
+                                </ListItemAvatar>
+                                <ListItemText>
+                                  <Typography
+                                    variant="h6"
+                                    component="h3"
+                                    className={classes.queueName}
                                   >
-                                    <KeyBoardDown className={classes.icon} />
-                                  </IconButton>
-                                </Tooltip>
+                                    {member.first_name.charAt(0).toUpperCase() +
+                                      member.first_name.slice(1)}{" "}
+                                    {member.last_name.charAt(0).toUpperCase() +
+                                      member.last_name.slice(1)}
+                                  </Typography>
+                                </ListItemText>
 
                                 {member.privilege === "student" &&
                                 member.sub === this.props.sub ? (
@@ -299,50 +291,221 @@ class requestQueue extends Component {
                                   </Tooltip>
                                 ) : null}
 
-                                {this.props.helping ? null : (
-                                  <Tooltip title="Help Student" placement="top">
-                                    <IconButton
-                                      className={classes.responsive}
-                                      onClick={() => {
-                                        this.props.fetchAssist(
-                                          this.props.assist_id
-                                        );
-                                        this.props.helpStudent(
-                                          member.id,
-                                          this.props.assist_id
-                                        );
-                                        this.props.sendChatSub(member.sub);
-                                      }}
+                                {this.props.priv === "mentor" ? (
+                                  <div
+                                    className={`${classes.queueaction} actionShow`}
+                                  >
+                                    <Tooltip
+                                      title="Show Concern"
+                                      placement="top"
                                     >
-                                      <ThumbsUp
-                                        className={classes.actionIcon}
-                                      />
-                                    </IconButton>
-                                  </Tooltip>
-                                )}
+                                      <IconButton
+                                        className={classes.responsive}
+                                        onClick={this.handleChange(member.id)}
+                                      >
+                                        <KeyBoardDown
+                                          className={classes.icon}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
 
-                                <Tooltip title="Remove Request" placement="top">
+                                    {member.privilege === "student" &&
+                                    member.sub === this.props.sub ? (
+                                      <Tooltip
+                                        title="Cancel Request"
+                                        placement="top"
+                                      >
+                                        <IconButton
+                                          className={classes.responsive}
+                                          onClick={() =>
+                                            this.props.removeStudentRequest(
+                                              member.id
+                                            )
+                                          }
+                                        >
+                                          <Delete
+                                            className={classes.actionIcon}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                    ) : null}
+
+                                    {this.props.helping ? null : (
+                                      <Tooltip
+                                        title="Help Student"
+                                        placement="top"
+                                      >
+                                        <IconButton
+                                          className={classes.responsive}
+                                          onClick={() => {
+                                            this.props.fetchAssist(
+                                              this.props.assist_id
+                                            );
+                                            this.props.helpStudent(
+                                              member.id,
+                                              this.props.assist_id
+                                            );
+                                            this.props.sendChatSub(member.sub);
+                                          }}
+                                        >
+                                          <ThumbsUp
+                                            className={classes.actionIcon}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                    )}
+
+                                    <Tooltip
+                                      title="Remove Request"
+                                      placement="top"
+                                    >
+                                      <IconButton
+                                        className={classes.responsive}
+                                        onClick={() => {
+                                          this.props.removeStudentRequest(
+                                            member.id
+                                          );
+                                        }}
+                                      >
+                                        <Delete
+                                          className={classes.actionIcon}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </div>
+                                ) : null}
+                              </ExpansionPanelSummary>
+
+                              <ExpansionPanelDetails>
+                                <Typography className={classes.responsive}>
+                                  {member.reason}
+                                </Typography>
+                              </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                          </Tooltip>
+                        ) : (
+                          <ExpansionPanel
+                            expanded={this.state.expanded === member.id}
+                          >
+                            <ExpansionPanelSummary>
+                              <ListItemAvatar>
+                                <Avatar
+                                  src={member.avatar}
+                                  className={classes.userAvatar}
+                                />
+                              </ListItemAvatar>
+                              <ListItemText>
+                                <Typography
+                                  variant="h6"
+                                  component="h3"
+                                  className={classes.queueName}
+                                >
+                                  {member.first_name.charAt(0).toUpperCase() +
+                                    member.first_name.slice(1)}{" "}
+                                  {member.last_name.charAt(0).toUpperCase() +
+                                    member.last_name.slice(1)}
+                                </Typography>
+                              </ListItemText>
+
+                              {member.privilege === "student" &&
+                              member.sub === this.props.sub ? (
+                                <Tooltip title="Cancel Request" placement="top">
                                   <IconButton
                                     className={classes.responsive}
-                                    onClick={() => {
-                                      this.props.removeStudentRequest(
-                                        member.id
-                                      );
-                                    }}
+                                    onClick={() =>
+                                      this.props.removeStudentRequest(member.id)
+                                    }
                                   >
                                     <Delete className={classes.actionIcon} />
                                   </IconButton>
                                 </Tooltip>
-                              </div>
-                            ) : null}
-                          </ExpansionPanelSummary>
+                              ) : null}
 
-                          <ExpansionPanelDetails>
-                            <Typography className={classes.responsive}>
-                              {member.reason}
-                            </Typography>
-                          </ExpansionPanelDetails>
-                        </ExpansionPanel>
+                              {this.props.priv === "mentor" ? (
+                                <div
+                                  className={`${classes.queueaction} actionShow`}
+                                >
+                                  <Tooltip title="Show Concern" placement="top">
+                                    <IconButton
+                                      className={classes.responsive}
+                                      onClick={this.handleChange(member.id)}
+                                    >
+                                      <KeyBoardDown className={classes.icon} />
+                                    </IconButton>
+                                  </Tooltip>
+
+                                  {member.privilege === "student" &&
+                                  member.sub === this.props.sub ? (
+                                    <Tooltip
+                                      title="Cancel Request"
+                                      placement="top"
+                                    >
+                                      <IconButton
+                                        className={classes.responsive}
+                                        onClick={() =>
+                                          this.props.removeStudentRequest(
+                                            member.id
+                                          )
+                                        }
+                                      >
+                                        <Delete
+                                          className={classes.actionIcon}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
+                                  ) : null}
+
+                                  {this.props.helping ? null : (
+                                    <Tooltip
+                                      title="Help Student"
+                                      placement="top"
+                                    >
+                                      <IconButton
+                                        className={classes.responsive}
+                                        onClick={() => {
+                                          this.props.fetchAssist(
+                                            this.props.assist_id
+                                          );
+                                          this.props.helpStudent(
+                                            member.id,
+                                            this.props.assist_id
+                                          );
+                                          this.props.sendChatSub(member.sub);
+                                        }}
+                                      >
+                                        <ThumbsUp
+                                          className={classes.actionIcon}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
+                                  )}
+
+                                  <Tooltip
+                                    title="Remove Request"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      className={classes.responsive}
+                                      onClick={() => {
+                                        this.props.removeStudentRequest(
+                                          member.id
+                                        );
+                                      }}
+                                    >
+                                      <Delete className={classes.actionIcon} />
+                                    </IconButton>
+                                  </Tooltip>
+                                </div>
+                              ) : null}
+                            </ExpansionPanelSummary>
+
+                            <ExpansionPanelDetails>
+                              <Typography className={classes.responsive}>
+                                {member.reason}
+                              </Typography>
+                            </ExpansionPanelDetails>
+                          </ExpansionPanel>
+                        )}
                       </Grid>
                     ) : this.props.members.filter(
                         member =>
@@ -395,6 +558,32 @@ class requestQueue extends Component {
             </Grid>
           )}
         </Paper>
+
+        {/* SHOW REQUEST DIALOG */}
+        <Dialog
+          open={this.state.showRequestDialog}
+          onClose={() => this.setState({ showRequestDialog: false })}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth="xs"
+          fullWidth={true}
+        >
+          <DialogTitle id="alert-dialog-title">Your Reason</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {this.state.showRequestContent}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => this.setState({ showRequestDialog: false })}
+              color="primary"
+              autoFocus
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }

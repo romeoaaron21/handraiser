@@ -20,6 +20,20 @@ const styles = theme => ({
     color: "white",
     justifyContent: "center",
     borderRadius: 0,
+    wordBreak: "break-word",
+    maxHeight: "57px",
+    overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.3em"
+    },
+    "&::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#9b58ab",
+      borderRadius: "10px",
+      outline: "1px solid slategrey"
+    }
   },
 
   rightNav: {
@@ -119,16 +133,16 @@ const styles = theme => ({
     width: "100%"
   },
   custom: {
-    maxHeight:'auto',
+    maxHeight: "auto"
   },
   chatContentWrapper: {
-    padding: '15px 15px 0 15px',
+    padding: "15px 15px 0 15px",
     overflowY: "auto",
-    height:'auto',
+    height: "auto",
     maxHeight: "435px",
-    "@media (max-height: 425px)":{
-      maxHeight: '485px',
-      minHeight: '490px'
+    "@media (max-height: 425px)": {
+      maxHeight: "485px",
+      minHeight: "490px"
     }
   },
   chatContent: {
@@ -202,12 +216,12 @@ const styles = theme => ({
     boxShadow: 0,
     elavation: 0
   },
-  footerDone:{
+  footerDone: {
     borderBottomRightRadius: "5px",
     borderBottomLeftRadius: "5px",
     backgroundColor: "#983cac",
     display: "flex",
-    justifyContent:'center',
+    justifyContent: "center",
     alignItems: "center",
     bottom: 0,
     width: "100%",
@@ -218,26 +232,34 @@ const styles = theme => ({
     }
   },
   chatInfo: {
-    color: '#f7f7f7',
-    textTransform: 'uppercase',
+    color: "#f7f7f7",
+    textTransform: "uppercase",
     fontSize: 14,
     "@media (max-width: 425px)": {
       height: "40px",
       fontSize: 9.8,
-      alignItems: 'center',
-      display: 'flex'
+      alignItems: "center",
+      display: "flex"
     }
   },
   textAreaChat: {
-    resize:'none',
-    background:'none',
-    border: 'none',
-    overflow: 'auto',
-    outline: 'none',
-    lineHeight: '1.5',
-    boxShadow:'none',
-    fontSize: '16px',
-    fontFamily: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+    resize: "none",
+    background: "none",
+    border: "none",
+    overflow: "auto",
+    outline: "none",
+    lineHeight: "1.5",
+    boxShadow: "none",
+    fontSize: "16px",
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      "Segoe UI",
+      "Roboto",
+      "Helvetica",
+      "Arial",
+      "sans-serif"
+    ]
   },
   snippet: {
     color: "#000",
