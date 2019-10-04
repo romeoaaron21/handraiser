@@ -774,50 +774,59 @@ class UploadPhoto extends React.Component {
               >
                 {({ getRootProps, getInputProps, acceptedFiles }) => {
                   return (
-                    <Grid
-                      container
-                      {...getRootProps({ className: classes.container })}
-                    >
+                    <React.Fragment>
+                      <div style={{ fontSize: "10px" }}>
+                        &#8250; It must be at least 800 pixels wide and 200
+                        pixels tall
+                      </div>
                       <Grid
-                        item
-                        className={classes.upload112121212121212121211Div}
+                        container
+                        {...getRootProps({ className: classes.container })}
                       >
-                        <div
-                          className={classes.uploadIcon}
-                          onClick={() => this.clickUploadFile()}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Typography gutterBottom className={classes.dragPhoto}>
-                          Drag a photo here
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Typography gutterBottom className={classes.or}>
-                          - or -
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          className={classes.selectBtn}
-                          onClick={() => this.clickUploadFile()}
+                        <Grid
+                          item
+                          className={classes.upload112121212121212121211Div}
                         >
-                          Select a photo from your computer
-                        </Button>
+                          <div
+                            className={classes.uploadIcon}
+                            onClick={() => this.clickUploadFile()}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Typography
+                            gutterBottom
+                            className={classes.dragPhoto}
+                          >
+                            Drag a photo here
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography gutterBottom className={classes.or}>
+                            - or -
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Button
+                            className={classes.selectBtn}
+                            onClick={() => this.clickUploadFile()}
+                          >
+                            Select a photo from your computer
+                          </Button>
 
-                        <input
-                          style={{ display: "none" }}
-                          id="file"
-                          ref={ref => {
-                            this.uploadInput = ref;
-                          }}
-                          type="file"
-                          accept={acceptedFileTypes}
-                          multiple={false}
-                          onChange={this.handleFileSelect}
-                        />
+                          <input
+                            style={{ display: "none" }}
+                            id="file"
+                            ref={ref => {
+                              this.uploadInput = ref;
+                            }}
+                            type="file"
+                            accept={acceptedFileTypes}
+                            multiple={false}
+                            onChange={this.handleFileSelect}
+                          />
+                        </Grid>
                       </Grid>
-                    </Grid>
+                    </React.Fragment>
                   );
                 }}
               </Dropzone>
