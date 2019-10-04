@@ -524,7 +524,7 @@ class ChatBox extends PureComponent {
             this.state.assist.sub === this.props.chatmateInfo.sub ? (
               <Paper className={classes.helpStatus}>
                 <Typography variant="subtitle2" style={{ maxHeight: "57px" }}>
-                  Student Reason: {this.props.helpingStudent.reason}
+                  Student Concern: {this.props.helpingStudent.reason}
                 </Typography>
               </Paper>
             ) : null}
