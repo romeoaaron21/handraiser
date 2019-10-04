@@ -156,6 +156,26 @@ class Student extends PureComponent {
     };
   }
 
+
+
+
+  deleteMessage = (id) => {
+    const data = api.fetch(
+      `/api/deleteMessage/${id}`,
+      "delete"
+    );
+    data.then(res => {
+      socket.emit("initialConversation", res.data);
+    })
+  }
+
+
+
+
+
+
+
+
   //added dh
 
   viewChatBox = () => {
@@ -920,6 +940,7 @@ class Student extends PureComponent {
                         sendChatSub={this.selectChatmate}
                         //send code
                         sendCode={this.sendCode}
+                        deleteMessage={this.deleteMessage}
                       />
                     </Grid>
                   </React.Fragment>
@@ -946,6 +967,7 @@ class Student extends PureComponent {
                         fetchAssist={this.fetchAssist}
                         //send code
                         sendCode={this.sendCode}
+                        deleteMessage={this.deleteMessage}
                       />
                     </Grid>
                   </React.Fragment>

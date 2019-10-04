@@ -197,6 +197,22 @@ function seenChat(req, res) {
 
 }
 
+function deleteMessage(req, res) {
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db.query(`DELETE FROM chat WHERE id = ${id}`)
+  .then(()=> {
+    db.query(`SELECT * FROM chat ORDER BY id ASC`)
+    .then(chats => {
+      res.status(200).json(chats)
+    })
+  })
+  .catch(()=>{
+    res.status(500).end()
+  })
+}
+
 module.exports = {
   displayUserInfo,
   displayStudents,
@@ -206,5 +222,6 @@ module.exports = {
   sendChat,
   getChat,
   displayMentor,
-  seenChat
+  seenChat,
+  deleteMessage
 };

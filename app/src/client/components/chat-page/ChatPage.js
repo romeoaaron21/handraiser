@@ -58,10 +58,44 @@ class ChatPage extends PureComponent {
   handleDrawerOpen = () => this.setState({ open: true });
   handleDrawerClose = () => this.setState({ open: false });
 
+
+
+
+
+  deleteMessage = (id) => {
+    if(id[1] === "pm"){
+    const data = api.fetch(
+      `/api/deleteMessage/${id[0]}`,
+      "delete"
+    );
+    data.then(res => {
+        socket.emit("getNormalChat", [res.data, this.state.sub, this.state.chatmateSub]);
+      })
+    }
+    else {
+      const data = api.fetch(
+        `/api/deleteGroupMessage/${id[0]}`,
+        "delete"
+      );
+      data.then(res => {
+          socket.emit("getNormalGroupChat", [res.data, this.state.sub, this.state.chatmateSub]);
+        })
+    }
+  }
+
+
+
+
+
+
+
+
+
   componentDidMount() {
     setTimeout(() => {
       $('#scrollDiv').scrollTop($('#scrollDiv')[0].scrollHeight);
     }, 1000);
+    
     //START OF UPDATED FOR FASTER CHATTING
     socket.on("getNormalChat", conversation => {
       if (conversation[1] === this.state.sub) {
@@ -69,20 +103,17 @@ class ChatPage extends PureComponent {
            this.displayChatList();
         }
         this.setState({ senderText: "", chatmateSub: conversation[2], newChatmateSub:conversation[2], conversation:[...conversation[0]]});
-        // this.getConversation();
       } else if (conversation[1] === this.state.chatmateSub) {
         if(conversation[3] === 'compose'){
           this.displayChatList();
        }
         this.setState({ chatmateText: "", conversation:[...conversation[0]] });
-        // this.getConversation();
       }
       if (conversation[2] === this.state.sub) {
         if(conversation[3] === 'compose'){
           this.displayChatList();
        }
        this.setState({conversation:[...conversation[0]]})
-        // this.getConversation();
       }
     });
 
@@ -148,7 +179,7 @@ class ChatPage extends PureComponent {
         sub[1] === parseInt(this.props.match.params.chatmateSub)
       ) {
         this.setState({ refreshChatmate: true });
-        this.selectChatmate(this.props.match.params.chatmateSub);
+        this.editGroupName(this.props.match.params.chatmateSub);
       }
     });
 
@@ -300,15 +331,17 @@ class ChatPage extends PureComponent {
         data.then(res => {
           this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data });
         });
+        this.displayGroupMembers();
       }
-      // this.getConversation();
+    } 
+    if (this.state.groupShow === 7) {
+      $("#focus").focus();
+    }
+  };
 
-      // this.displayGroupList();
 
-      // this.getGroupConversation();
-      // this.displayChatList();
-      this.displayGroupMembers();
-    } else if (this.state.refreshChatmate) {
+  editGroupName = (chatmateSub) => {
+    if (this.state.refreshChatmate) {
       if (chatmateSub.length > 15) {
         const data = api.fetch(
           `/api/getChatUsersInfo/${this.state.sub}/${chatmateSub}`,
@@ -331,31 +364,9 @@ class ChatPage extends PureComponent {
           this.setState({ chatmateSub: chatmateSub, chatmateInfo: res.data });
         });
       }
-      // this.displayChatList();
-      // this.getConversation();
-
-      // this.displayGroupList();
-      // this.getGroupConversation();
       this.setState({ refreshChatmate: false });
     }
-    // if (this.props.match.params.chatmateSub.length <= 15) {
-    //   api
-    //     .fetch(
-    //       `/api/checkInGroup/${this.state.userInfo.sub}/${this.state.chatmateInfo.id}`,
-    //       "get"
-    //     )
-    //     .then(res => {
-    //       if (res.data.length > 0) {
-    //         this.setState({ notInGroup: false });
-    //       } else {
-    //         this.setState({ notInGroup: true });
-    //       }
-    //     });
-    // }
-    if (this.state.groupShow === 7) {
-      $("#focus").focus();
-    }
-  };
+  }
 
   //START OF UPDATED FOR FASTER CHATTING
   getConversation = () => {
@@ -677,6 +688,7 @@ class ChatPage extends PureComponent {
               pmShow={this.state.pmShow}
               showMoreGroup={this.showMoreGroup}
               //gc convo slice end
+              deleteMessage={this.deleteMessage}
             />
             <ChatPageInfo
               userInfo={this.state.userInfo}

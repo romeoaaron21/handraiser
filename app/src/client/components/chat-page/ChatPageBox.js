@@ -38,6 +38,7 @@ import 'brace/theme/dracula'
 import io from "socket.io-client";
 import S3FileUpload from 'react-s3'
 import { ToastContainer, toast } from "react-toastify";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const imageConfig = {
   bucketName: 'boomcamp',
@@ -104,7 +105,9 @@ class ChatPageBox extends Component {
       checkInGroup: false,
       chatmate: false,
       chatMateSub: this.props.chatmateInfo.sub,
-      pmConvo: ''
+      pmConvo: '',
+      chatMenu: null,
+      messageId: null,
     };
   }
   openSnippet = () => {
@@ -347,6 +350,13 @@ class ChatPageBox extends Component {
     this.setState({ openEditGroup: true, anchorEl: null });
   };
   handleCloseEditGroup = () => this.setState({ openEditGroup: false });
+  handleChatMenu = (event, id) => {
+    this.setState({ chatMenu: event.currentTarget, messageId: id });
+  };
+
+  handleCloseChatMenu = () => {
+    this.setState({ chatMenu: null, messageId: null });
+  };
 
   //leave group  / delete member
   leaveGroup = (groupId, sub) => {
@@ -529,6 +539,14 @@ class ChatPageBox extends Component {
                             <Avatar style={{ marginRight: "10px" }} src={this.props.chatmateInfo.avatar}/>
                             :null
                             }
+
+                          {convo.sender_id !== this.props.userInfo.sub? null : (
+                            <MoreHorizIcon
+                              style={{ marginRight: 5 }}
+                              className={classes.chatHover}
+                              onClick={(e)=> this.handleChatMenu(e, [convo.id, "pm"])}
+                            />
+                          )}
                                 <Box 
                                 className={
                                     (convo.chat_type === "image" || 
@@ -575,6 +593,22 @@ class ChatPageBox extends Component {
                                     {convo.time}
                                   </Typography>
                                 </Box>
+
+
+
+
+                                {/* {this.props.userInfo.sub === convo.sender_id?
+                                <button onClick={()=>this.props.deleteMessage(convo.id)}>delete message</button>
+                                :
+                                null
+                                } */}
+                                
+
+
+
+
+
+
                               </div>
                         ):
                         null}
@@ -599,6 +633,15 @@ class ChatPageBox extends Component {
                               src={gcConvo.avatar}
                             />
                           ) : null}
+
+                          {gcConvo.sender_sub !== this.props.userInfo.sub? null : (
+                            <MoreHorizIcon
+                              style={{ marginRight: 5 }}
+                              className={classes.chatHover}
+                              onClick={(e)=> this.handleChatMenu(e, [gcConvo.id, "gc"])}
+                            />
+                          )}
+
                             <Box 
                                 className={
                                     (gcConvo.chat_type === "image" || 
@@ -649,7 +692,9 @@ class ChatPageBox extends Component {
                               {gcConvo.time}
                             </Typography>
                           </Box>
+                         
                         </div>
+                        
                       </React.Fragment>
                     ) : null
                   )
@@ -837,13 +882,6 @@ class ChatPageBox extends Component {
                     ? true
                     : false
                 }
-                // disabled={
-                //   setTimeout(()=> {
-                //     if(!this.state.gc && this.props.chatmateInfo.sub === undefined){
-                //       return true
-                //     }
-                //   },500)
-                // }
               />
               {this.state.image || this.state.document
               ? <IconButton
@@ -909,7 +947,24 @@ class ChatPageBox extends Component {
             refreshComponent={this.props.refreshComponent}
             sub={this.props.userInfo.sub}
           />
-
+            <Menu
+            id="simple-menu"
+            anchorEl={this.state.chatMenu}
+            keepMounted
+            open={Boolean(this.state.chatMenu)}
+            onClose={this.handleCloseChatMenu}
+            style={{ height: 500, width: 150, marginTop: 10, marginLeft: 4 }}
+          >
+            {/* <MenuItem onClick={this.handleCloseChatMenu} dense>
+              Edit
+            </MenuItem> */}
+            <MenuItem onClick={() => {
+              this.handleCloseChatMenu();
+              this.props.deleteMessage(this.state.messageId)
+              }} dense>
+              Delete
+            </MenuItem>
+          </Menu>
         </Paper>
       </Grid>
     );

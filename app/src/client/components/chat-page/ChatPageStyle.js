@@ -165,6 +165,14 @@ const styles = theme => ({
     alignItems: "center",
     marginTop: 50
   },
+
+  chatHover: {
+    cursor: "pointer",
+    color: "#ffff",
+    paddingTop: "31px",
+    marginLeft: 5,
+    "&:hover": {color: 'gray'}
+  },
   // End ChatPageBox
 
   // ChatInfo

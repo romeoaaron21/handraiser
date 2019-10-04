@@ -309,6 +309,11 @@ massive({
   app.get("/api/getAllUsersInGroup/:groupId", chat.getAllUsersInGroup);
   //End of Group Chat
 
+
+
+  app.delete("/api/deleteMessage/:id", students.deleteMessage);
+  app.delete("/api/deleteGroupMessage/:id", chat.deleteGroupMessage);
+
   server.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);
   });

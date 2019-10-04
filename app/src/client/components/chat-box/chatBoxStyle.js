@@ -276,7 +276,15 @@ const styles = theme => ({
     display: "flex",
     justifyContent: "flex-start",
     marginTop: "10px"
+  },
+  chatHover: {
+    cursor: "pointer",
+    color: "#ffff",
+    paddingTop: "25px",
+    marginLeft: 5,
+    "&:hover": {color: 'gray'}
   }
+
 });
 
 export default styles;

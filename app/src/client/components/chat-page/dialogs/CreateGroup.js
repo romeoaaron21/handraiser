@@ -80,7 +80,7 @@ class CreateGroup extends Component {
     return exist;
   };
 
-  handleToggle = value => () => {
+  handleToggle = value => {
     const currentIndex = this.state.checked.indexOf(value);
     const newChecked = [...this.state.checked];
 

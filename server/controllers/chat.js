@@ -198,7 +198,7 @@ function seenNormalGroupChat(req, res) {
   const user_id = req.body.chatmate;
   const groupchat_id = req.body.groupchat_id;
 
-  db.query(`SELECT * from groupmessage`)
+  db.query(`SELECT * from groupmessage ORDER BY id ASC`)
     .then(gc => {
       gc.map(group => {
         if (group.groupchat_id === groupchat_id) {
@@ -325,6 +325,22 @@ function deleteMember(req, res) {
 
 }
 
+function deleteGroupMessage(req, res) {
+  const db = req.app.get("db");
+  const { id } = req.params;
+
+  db.query(`DELETE FROM groupmessage WHERE id = ${id}`)
+  .then(()=> {
+    db.query(`SELECT * FROM groupmessage ORDER BY id ASC`)
+    .then(chats => {
+      res.status(200).json(chats)
+    })
+  })
+  .catch(()=>{
+    res.status(500).end()
+  })
+}
+
 module.exports = {
   getChatUsersInfo,
   sendStudentChat,
@@ -349,5 +365,6 @@ module.exports = {
   checkInGroup,
   getNormalChat,
   checkParams,
-  getAllUsersInGroup
+  getAllUsersInGroup,
+  deleteGroupMessage,
 };

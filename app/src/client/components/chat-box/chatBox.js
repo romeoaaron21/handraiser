@@ -47,6 +47,7 @@ import Emoji from "./plugins/emoji";
 
 //gallery
 import Gallery from "../chat-page/gallery/galleryDialog";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 import Snippet from "../chat-page/snippet/snippet";
 import AceEditor from "react-ace";
@@ -145,7 +146,9 @@ class ChatBox extends PureComponent {
       imgArray: [],
       document: null,
       openSnippet: false,
-      studentChat: ""
+      studentChat: "",
+      chatMenu: null,
+      messageId: null,
     };
   }
   openSnippet = () => {
@@ -433,6 +436,14 @@ class ChatBox extends PureComponent {
       selected: null
     });
   };
+  handleChatMenu = (event, id) => {
+    this.setState({ chatMenu: event.currentTarget, messageId: id });
+  };
+
+  handleCloseChatMenu = () => {
+    this.setState({ chatMenu: null, messageId: null });
+  };
+
   //ANCHOR render
   render() {
     const { classes } = this.props;
@@ -570,6 +581,20 @@ class ChatBox extends PureComponent {
                               className={classes.chatAvatar}
                             />
                           ) : null}
+
+                          {this.props.senderInfo.sub ===
+                          convo.chatmate_id ? null : (
+                            <MoreHorizIcon
+                              style={{ marginRight: 5 }}
+                              className={classes.chatHover}
+                              onClick={(e)=>{
+                                this.handleChatMenu(e,convo.id);
+
+                              }
+                              }
+                            />
+                          )}
+
                           <Box
                             className={
                               convo.chat_type === "image" ||
@@ -661,8 +686,25 @@ class ChatBox extends PureComponent {
                               >
                                 {convo.time}
                               </Typography>
+
+                              {/* {this.props.senderInfo.sub === convo.sender_id ? (
+                                <button
+                                  onClick={() =>
+                                    this.props.deleteMessage(convo.id)
+                                  }
+                                >
+                                  delete chat
+                                </button>
+                              ) : null} */}
                             </div>
                           </Box>
+                          {/* {this.props.senderInfo.sub === convo.chatmate_id ? (
+                              <MoreHorizIcon
+                                className={classes.chatHover}
+                                onClick={this.handleChatMenu}
+                              />
+                            ) : null} */}
+
                         </Box>
                       ) : null}
                     </React.Fragment>
@@ -919,6 +961,25 @@ class ChatBox extends PureComponent {
             sendChat={this.props.sendCode}
             type="pm"
           />
+           <Menu
+            id="simple-menu"
+            anchorEl={this.state.chatMenu}
+            keepMounted
+            open={Boolean(this.state.chatMenu)}
+            onClose={this.handleCloseChatMenu}
+            style={{ height: 500, width: 150, marginTop: 10, marginLeft: 4 }}
+          >
+            {/* <MenuItem onClick={this.handleCloseChatMenu} dense>
+              Edit
+            </MenuItem> */}
+            <MenuItem onClick={() => {
+              this.handleCloseChatMenu();
+              this.props.deleteMessage(this.state.messageId)
+            }} dense>
+              Delete
+            </MenuItem>
+          </Menu>
+
         </Paper>
       </React.Fragment>
     );

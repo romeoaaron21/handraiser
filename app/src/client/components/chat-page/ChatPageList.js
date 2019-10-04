@@ -307,8 +307,14 @@ class ChatPageList extends PureComponent {
                               button
                               onClick={() => {
                                 this.props.changeChatmate(chatmate.sub);
-                                this.props.displayBadge(chatmate.sub, "pm");
                                 this.props.selectChatmate(chatmate.sub);
+
+
+                                if(this.unreadChat(chatmate.sub) !== 0){
+                                  this.props.displayBadge(chatmate.sub, "pm")
+                                }
+
+
                               }}
                               style={
                                 this.props.chatmateInfo.sub === chatmate.sub
@@ -415,7 +421,11 @@ class ChatPageList extends PureComponent {
                           onClick={() => {
                             this.props.changeChatmate(gc.id);
                             this.props.selectChatmate(gc.id);
-                            this.props.displayBadge(gc.id, "gc");
+
+                            if(this.unreadGroupChat(gc.id) !== 0){
+                              this.props.displayBadge(gc.id, "gc");
+                            }
+                            
                           }}
                           style={
                             this.props.chatmateInfo.id === gc.id
