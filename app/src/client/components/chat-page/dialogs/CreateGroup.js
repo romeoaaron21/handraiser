@@ -40,7 +40,8 @@ class CreateGroup extends Component {
       btnCreate: true,
       groupLists: [],
       groupNameExist: false,
-      helperText: ""
+      helperText: "",
+      selectAll: false
     };
   }
 
@@ -127,6 +128,29 @@ class CreateGroup extends Component {
     });
   };
 
+  toggleSelectAll = (users) => {
+    this.setState({selectAll: !this.state.selectAll})
+    var newChecked = []
+    if(!this.state.selectAll){
+      users.map(value => {
+        newChecked.push(value.sub)
+      })
+      this.setState({ checked: newChecked });
+    }else{
+      this.setState({ checked: [] });
+    }
+
+    if (
+      this.state.groupName.length > 1 &&
+      newChecked.length > 1 &&
+      !this.state.groupNameExist
+    ) {
+      this.setState({ btnCreate: false });
+    } else {
+      this.setState({ btnCreate: true });
+    }
+  }
+
   render() {
     const { classes } = this.props;
     const userFilter = this.state.allUsers.filter(data => {
@@ -147,13 +171,12 @@ class CreateGroup extends Component {
       }
       return null;
     });
-
     return (
       <Dialog
         open={this.props.openDialog}
         onClose={this.props.handleClose}
         aria-labelledby="form-dialog-title"
-        maxWidth="sm"
+        maxWidth="md"
       >
         <DialogTitle id="form-dialog-title">
           Create Group
@@ -204,6 +227,30 @@ class CreateGroup extends Component {
             className={classes.scrollBar}
           >
             <List>
+              <ListItem
+                key={'selectAll'}
+                dense
+                button
+                onClick={()=>{
+                  this.toggleSelectAll(userFilter)
+                }}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={this.state.selectAll}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Select All"
+
+                />
+              </ListItem>
+
+
+
               {userFilter.map(value => {
                 const labelId = `checkbox-list-label-${value.id}`;
 
@@ -213,7 +260,9 @@ class CreateGroup extends Component {
                     role={undefined}
                     dense
                     button
-                    onClick={this.handleToggle(value.sub)}
+                    onClick={()=>{
+                      this.handleToggle(value.sub)
+                    }}
                   >
                     <ListItemIcon>
                       <Checkbox
